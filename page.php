@@ -10,7 +10,7 @@
   <!-- Navbar -->
 
 <?php include './config/header.php';
-include './config/sidebar.php';?>  
+include './config/sidebar.php';?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -57,7 +57,7 @@ include './config/sidebar.php';?>
   </div>
   <!-- /.content-wrapper -->
 
-<?php include './config/footer.php' ?>  
+<?php include './config/footer.php' ?>
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->

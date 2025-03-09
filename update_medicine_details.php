@@ -49,7 +49,9 @@ $medicines = getMedicines($con, $medicineId);
 <head>
  <?php include './config/site_css_links.php';?>
  <?php include './config/data_tables_css.php';?>
- <title>Update Medicine Details - Clinic's Patient Management System in PHP</title>
+  <!-- Logo for the tab bar -->
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
+ <title>Update Medicine Details - Mamatid Health Center System</title>
 
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -58,7 +60,7 @@ $medicines = getMedicines($con, $medicineId);
     <!-- Navbar -->
 
     <?php include './config/header.php';
-include './config/sidebar.php';?>  
+include './config/sidebar.php';?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
@@ -66,7 +68,7 @@ include './config/sidebar.php';?>
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Medicine Details</h1>
+              <h1>MEDICINE DETAILS</h1>
             </div>
           </div>
         </div><!-- /.container-fluid -->
@@ -78,7 +80,7 @@ include './config/sidebar.php';?>
         <!-- Default box -->
         <div class="card card-outline card-primary rounded-0 shadow">
           <div class="card-header">
-            <h3 class="card-title">Update Medicine Details</h3>
+            <h3 class="card-title">UPDATE MEDICINE DETAILS</h3>
 
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">

@@ -46,7 +46,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Logo for the tab bar -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Login - Clinic's Patient Management System in PHP</title>
+  <title>Login - Mamatid Health Center System</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">

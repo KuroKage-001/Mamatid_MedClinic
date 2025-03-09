@@ -1,4 +1,4 @@
-<?php 
+<?php
 include './config/connection.php';
 include './common_service/common_functions.php';
 
@@ -9,7 +9,9 @@ include './common_service/common_functions.php';
  <?php include './config/site_css_links.php' ?>
 
  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
- <title>Reports - Clinic's Patient Management System in PHP</title>
+  <!-- Logo for the tab bar -->
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
+ <title>Reports - Mamatid Health Center System</title>
 
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -18,7 +20,7 @@ include './common_service/common_functions.php';
   <!-- Navbar -->
 
 <?php include './config/header.php';
-include './config/sidebar.php';?>  
+include './config/sidebar.php';?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -26,7 +28,7 @@ include './config/sidebar.php';?>
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Reports</h1>
+            <h1>REPORTS</h1>
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -38,7 +40,7 @@ include './config/sidebar.php';?>
       <!-- Default box -->
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">Patient Visits Between Two Dates</h3>
+          <h3 class="card-title">PATIENT VISITS BETWEEN TWO DATES</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -73,7 +75,7 @@ include './config/sidebar.php';?>
 
 <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">Disease Based Report Between Two Dates</h3>
+          <h3 class="card-title">DISEASE BASED REPORT BETWEEN TWO DATES</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">

@@ -7,7 +7,7 @@ if (isset($_POST['save_Patient'])) {
 
     $patientName = trim($_POST['patient_name']);
     $address = trim($_POST['address']);
-    $purpose = trim($_POST['purpose']); // Changed from CNIC to Purpose
+    $purpose = trim($_POST['purpose']);
     
     $dateBirth = trim($_POST['date_of_birth']);
     $dateArr = explode("/", $dateBirth);
@@ -20,7 +20,7 @@ if (isset($_POST['save_Patient'])) {
 
     $gender = $_POST['gender'];
     if ($patientName != '' && $address != '' && $purpose != '' && $dateBirth != '' && $phoneNumber != '' && $gender != '') {
-        $query = "INSERT INTO `patients`(`patient_name`, 
+        $query = "INSERT INTO `patients`(`patient_name`,
           `address`, `purpose`, `date_of_birth`, `phone_number`, `gender`)
           VALUES('$patientName', '$address', '$purpose', '$dateBirth',
           '$phoneNumber', '$gender');";
@@ -42,9 +42,9 @@ if (isset($_POST['save_Patient'])) {
 }
 
 try {
-    $query = "SELECT `id`, `patient_name`, `address`, 
+    $query = "SELECT `id`, `patient_name`, `address`,
                      `purpose`, date_format(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
-                     `phone_number`, `gender`, 
+                     `phone_number`, `gender`,
                      date_format(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
               FROM `patients`
               ORDER BY `patient_name` ASC;";
@@ -71,7 +71,7 @@ try {
   <div class="wrapper">
     <!-- Navbar -->
     <?php include './config/header.php';
-          include './config/sidebar.php'; ?>  
+          include './config/sidebar.php'; ?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
@@ -107,7 +107,7 @@ try {
                 </div>
                 <br><br><br>
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Address</label> 
+                  <label>Address</label>
                   <input type="text" id="address" name="address" required="required"
                     class="form-control form-control-sm rounded-0"/>
                 </div>
@@ -121,7 +121,7 @@ try {
                     <label>Date of Birth</label>
                     <div class="input-group date" id="date_of_birth" data-target-input="nearest">
                       <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" 
-                             data-target="#date_of_birth" name="date_of_birth" 
+                             data-target="#date_of_birth" name="date_of_birth"
                              data-toggle="datetimepicker" autocomplete="off" />
                       <div class="input-group-append" data-target="#date_of_birth" data-toggle="datetimepicker">
                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -185,7 +185,7 @@ try {
                   </tr>
                 </thead>
                 <tbody>
-                  <?php 
+                  <?php
                   $count = 0;
                   while($row = $stmtPatient1->fetch(PDO::FETCH_ASSOC)){
                     $count++;
@@ -220,13 +220,13 @@ try {
     </div>
     <!-- /.content -->
     <!-- /.content-wrapper -->
-    <?php 
+    <?php
       include './config/footer.php';
       $message = '';
       if(isset($_GET['message'])) {
         $message = $_GET['message'];
       }
-    ?>  
+    ?>
     <!-- /.control-sidebar -->
     <?php include './config/site_js_links.php'; ?>
     <?php include './config/data_tables_js.php'; ?>

@@ -8,14 +8,16 @@ $patients = getPatients($con);
 <html lang="en">
 <head>
  <?php include './config/site_css_links.php';?>
- <title>Patient History - Clinic's Patient Management System in PHP</title>
+  <!-- Logo for the tab bar -->
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
+ <title>Patient History - Mamatid Health Center System</title>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
   <?php include './config/header.php';
-        include './config/sidebar.php';?>  
+        include './config/sidebar.php';?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -23,7 +25,7 @@ $patients = getPatients($con);
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Patient History</h1>
+            <h1>PATIENT HISTORY</h1>
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -35,7 +37,7 @@ $patients = getPatients($con);
       <!-- Default box -->
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">Search Patient History</h3>
+          <h3 class="card-title">SEARCH PATIENT HISTORY</h3>
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>

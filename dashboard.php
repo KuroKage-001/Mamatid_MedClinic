@@ -23,7 +23,7 @@ $queryYear = "SELECT count(*) as `year`
 
 $queryMonth = "SELECT count(*) as `month`
   FROM `patient_visits`
-  WHERE YEAR(`visit_date`) = $year 
+  WHERE YEAR(`visit_date`) = $year
     AND MONTH(`visit_date`) = $month;";
 
 $todaysCount      = 0;

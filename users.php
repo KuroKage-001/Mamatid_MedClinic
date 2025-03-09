@@ -10,26 +10,11 @@ if(isset($_POST['save_user'])) {
 
   $encryptedPassword = md5($password);
 
-//$targetDir = "user_images/";
 $baseName = basename($_FILES["profile_picture"]["name"]);
 
-//time is a php function which gives unix time value.
-//unix time value is all seconds from 1970
-
-//abc.x.y.z.png
-
-// $extArr = explode(".", $baseName);
-// $extension = end($extArr);
-
-//$targetFile =  time(). '.'.$extension;
-
 $targetFile =  time().$baseName;
-// 12312312312312312
-//abc.jpg
-//abc.jpg
-//244574700_322087779604661_8207402889226768946_n
 
-  $status = move_uploaded_file($_FILES["profile_picture"]["tmp_name"], 
+  $status = move_uploaded_file($_FILES["profile_picture"]["tmp_name"],
     'user_images/'.$targetFile);
 
   if($status) {
@@ -37,7 +22,7 @@ $targetFile =  time().$baseName;
       $con->beginTransaction();
 
           $query = "INSERT INTO `users`(`display_name`,
-`user_name`, `password`, `profile_picture`) 
+`user_name`, `password`, `profile_picture`)
 VALUES('$displayName', '$userName', '$encryptedPassword', '$targetFile');";
 
     $stmtUser = $con->prepare($query);
@@ -45,7 +30,7 @@ VALUES('$displayName', '$userName', '$encryptedPassword', '$targetFile');";
 
     $con->commit();
 
-    $message = 'user registered successfully';    
+    $message = 'user registered successfully';
 
     } catch(PDOException $ex) {
       $con->rollback();
@@ -61,19 +46,9 @@ VALUES('$displayName', '$userName', '$encryptedPassword', '$targetFile');";
 header("location:congratulation.php?goto_page=users.php&message=$message");
 exit;
 }
-  //https://www.w3schools.com/php/php_file_upload.asp
-/**
-we will save the user picture in a separate folder.
-and in database we will store the picture name only.
 
-ON THE OTHER HAND
-mysql supports blob data for storing pictures, 
-but we are not going to use it. why?
-find reason?
-*/
-
-$queryUsers = "select `id`, `display_name`, `user_name`, 
-`profile_picture` from `users` 
+$queryUsers = "select `id`, `display_name`, `user_name`,
+`profile_picture` from `users`
 order by `display_name` asc;";
 $stmtUsers = '';
 
@@ -94,7 +69,9 @@ try {
 
  
  <?php include './config/data_tables_css.php';?>
- <title>Users - Clinic's Patient Management System in PHP</title>
+  <!-- Logo for the tab bar -->
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
+ <title>Users - Mamatid Health Center System</title>
 
  <style>
   .user-img{
@@ -110,7 +87,7 @@ try {
   <div class="wrapper">
     <!-- Navbar -->
     <?php include './config/header.php';
-include './config/sidebar.php';?>  
+include './config/sidebar.php';?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
@@ -118,7 +95,7 @@ include './config/sidebar.php';?>
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Users</h1>
+              <h1>USERS</h1>
             </div>
           </div>
         </div><!-- /.container-fluid -->
@@ -128,7 +105,7 @@ include './config/sidebar.php';?>
         <!-- Default box -->
         <div class="card card-outline card-primary rounded-0 shadow">
           <div class="card-header">
-            <h3 class="card-title">Add User</h3>
+            <h3 class="card-title">ADD USERS</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                 <i class="fas fa-minus"></i>
@@ -153,21 +130,21 @@ include './config/sidebar.php';?>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Password</label>
-                <input type="password" id="password" 
+                <input type="password" id="password"
                 name="password" required="required"
                 class="form-control form-control-sm rounded-0" />
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Picture</label>
-                <input type="file" id="profile_picture" 
+                <input type="file" id="profile_picture"
                 name="profile_picture" required="required"
                 class="form-control form-control-sm rounded-0" />
               </div>
 
               <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
                 <label>&nbsp;</label>
-                <button type="submit" id="save_medicine" 
+                <button type="submit" id="save_medicine"
                 name="save_user" class="btn btn-primary btn-sm btn-flat btn-block">Save</button>
               </div>
             </div>
@@ -182,7 +159,7 @@ include './config/sidebar.php';?>
       
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">All Users</h3>
+          <h3 class="card-title">ALL USERS</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -194,8 +171,8 @@ include './config/sidebar.php';?>
         <div class="card-body">
          <div class="row table-responsive">
 
-          <table id="all_users" 
-          class="table table-striped dataTable table-bordered dtr-inline" 
+          <table id="all_users"
+          class="table table-striped dataTable table-bordered dtr-inline"
           role="grid" aria-describedby="all_users_info">
           <colgroup>
             <col width="5%">
@@ -231,7 +208,7 @@ include './config/sidebar.php';?>
 
              <td class="px-2 py-1 align-middle text-center">
                 <a href="update_user.php?user_id=<?php echo $row['id']; ?>" class="btn btn-primary btn-sm btn-flat">
-                  <i class="fa fa-edit"></i> 
+                  <i class="fa fa-edit"></i>
                 </a>
               </td>
          </tr>
@@ -250,14 +227,14 @@ include './config/sidebar.php';?>
 <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php 
+<?php
 include './config/footer.php';
 
 $message = '';
 if(isset($_GET['message'])) {
   $message = $_GET['message'];
 }
-?>  
+?>
 <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
@@ -285,7 +262,7 @@ if(isset($_GET['message'])) {
       if(userName !== '') {
         $.ajax({
           url: "ajax/check_user_name.php",
-          type: 'GET', 
+          type: 'GET',
           data: {
             'user_name': userName
           },
@@ -306,7 +283,7 @@ if(isset($_GET['message'])) {
         });
       }
 
-    });    
+    });
   });
 </script>
 </body>

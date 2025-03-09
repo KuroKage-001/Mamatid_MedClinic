@@ -9,9 +9,9 @@ if(isset($_POST['save_medicine'])) {
    $id = $_POST['hidden_id'];
     if($medicineName !== '') {
       
-        $query = "UPDATE `medicines` 
-        set `medicine_name` ='$medicineName' 
-        where `id`= $id";   
+        $query = "UPDATE `medicines`
+        set `medicine_name` ='$medicineName'
+        where `id`= $id";
     try{
     	$con->beginTransaction();
 
@@ -53,6 +53,8 @@ try {
 <html lang="en">
 <head>
  <?php include './config/site_css_links.php';?>
+   <!-- Logo for the tab bar -->
+   <link rel="icon" type="image/png" href="dist/img/logo01.png">
  <title>Update Medicine - Clinic's Patient Management System in PHP</title>
 
  <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -65,7 +67,7 @@ try {
   <!-- Navbar -->
 
 <?php include './config/header.php';
-include './config/sidebar.php';?>  
+include './config/sidebar.php';?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -73,7 +75,7 @@ include './config/sidebar.php';?>
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Medicines</h1>
+            <h1>MEDICINES</h1>
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -85,7 +87,7 @@ include './config/sidebar.php';?>
       <!-- Default box -->
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">Update Medicine</h3>
+          <h3 class="card-title">UPDATE MEDICINE</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
