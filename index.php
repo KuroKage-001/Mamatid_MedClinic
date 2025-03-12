@@ -9,7 +9,7 @@
 
     $encryptedPassword = md5($password);
 
-    $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture` 
+    $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`
               FROM `users`
               WHERE `user_name` = '$userName'
                 AND `password` = '$encryptedPassword';";
