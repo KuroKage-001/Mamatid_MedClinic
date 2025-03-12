@@ -88,7 +88,30 @@
       50% { opacity: 0; }
       100% { opacity: 1; }
     }
+
+    /* Form */
+    form {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+    .input-group-text {
+      border-right: none;
+    }
+    .form-control {
+      border-left: none;
+      box-shadow: none !important;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      transition: background 0.3s ease-in-out;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
   </style>
+
 </head>
 <body class="hold-transition login-page light-mode">
 <div class="login-box">
@@ -99,54 +122,47 @@
   <strong>Mamatid Health Center System</strong>
 </div>
   </div>
-  <!-- /.login-logo -->
+  <!-- Logo -->
   <div class="card card-outline card-primary rounded-0 shadow">
     <div class="card-body login-card-body">
       <p class="login-box-msg">
         <span id="typewriter-text"></span><span class="cursor">|</span>
       </p>
-      <form method="post">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control form-control-lg rounded-0" 
-                 placeholder="Username" id="user_name" name="user_name">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-user"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="password" class="form-control form-control-lg rounded-0" 
-                 placeholder="Password" id="password" name="password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <button name="login" type="submit" class="btn btn-primary rounded-0 btn-block">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <p class="text-danger">
-              <?php 
-              if($message != '') {
-                echo $message;
-              }
-              ?>
-            </p>
-          </div>
-        </div>
-      </form>
+      <form method="post" class="p-3">
+  <div class="mb-3">
+    <label for="user_name" class="form-label fw-bold">Username</label>
+    <div class="input-group">
+      <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+      <input type="text" class="form-control form-control-lg" 
+             placeholder="Enter your username" id="user_name" name="user_name" required>
     </div>
-    <!-- /.login-card-body -->
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label fw-bold">Password</label>
+    <div class="input-group">
+      <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+      <input type="password" class="form-control form-control-lg" 
+             placeholder="Enter your password" id="password" name="password" required>
+    </div>
+  </div>
+
+  <button name="login" type="submit" 
+          class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+    Sign In
+  </button>
+
+  <!-- Error Message Display -->
+  <?php if ($message != ''): ?>
+    <div class="alert alert-danger text-center mt-3" role="alert">
+      <?php echo $message; ?>
+    </div>
+  <?php endif; ?>
+</form>
+
+    </div>
   </div>
 </div>
-<!-- /.login-box -->
 
 <!-- typewriting animation for the <p class="login-box-msg">Please enter your login credentials</p> -->
 <script>
