@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function getGender222() {
 	//do not use this function
@@ -34,7 +34,7 @@ function getGender($gender = '') {
 
 function getMedicines($con, $medicineId = 0) {
 
-	$query = "select `id`, `medicine_name` from `medicines` 
+	$query = "select `id`, `medicine_name` from `medicines`
 	order by `medicine_name` asc;";
 
 	$stmt = $con->prepare($query);
@@ -64,7 +64,7 @@ function getMedicines($con, $medicineId = 0) {
 
 
 function getPatients($con) {
-$query = "select `id`, `patient_name`, `phone_number` 
+$query = "select `id`, `patient_name`, `phone_number`
 from `patients` order by `patient_name` asc;";
 
 	$stmt = $con->prepare($query);
@@ -92,13 +92,13 @@ function getDateTextBox($label, $dateId) {
 	$d = '<div class="col-lg-3 col-md-3 col-sm-4 col-xs-10">
                 <div class="form-group">
                   <label>'.$label.'</label>
-                  <div class="input-group rounded-0 date" 
-                  id="" 
+                  <div class="input-group rounded-0 date"
+                  id=""
                   data-target-input="nearest">
-                  <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-toggle="datetimepicker" 
+                  <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-toggle="datetimepicker"
 data-target="#'.$dateId.'" name="'.$dateId.'" id="'.$dateId.'" required="required" autocomplete="off"/>
-                  <div class="input-group-append rounded-0" 
-                  data-target="#'.$dateId.'" 
+                  <div class="input-group-append rounded-0"
+                  data-target="#'.$dateId.'"
                   data-toggle="datetimepicker">
                   <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                 </div>

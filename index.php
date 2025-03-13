@@ -15,30 +15,41 @@
                 AND `password` = '$encryptedPassword';";
 
     try {
-      $stmtLogin = $con->prepare($query);
-      $stmtLogin->execute();
+        $stmtLogin = $con->prepare($query);
+        $stmtLogin->execute();
 
-      $count = $stmtLogin->rowCount();
-      if($count == 1) {
-        $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
+        $count = $stmtLogin->rowCount();
+        if ($count == 1) {
+            $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
 
-        $_SESSION['user_id']         = $row['id'];
-        $_SESSION['display_name']    = $row['display_name'];
-        $_SESSION['user_name']       = $row['user_name'];
-        $_SESSION['profile_picture'] = $row['profile_picture'];
+            $_SESSION['user_id']         = $row['id'];
+            $_SESSION['display_name']    = $row['display_name'];
+            $_SESSION['user_name']       = $row['user_name'];
+            $_SESSION['profile_picture'] = $row['profile_picture'];
 
-        header("location:dashboard.php");
+            // Set a cookie for the username if "Remember Me" is checked
+            if (isset($_POST['remember_me'])) {
+                setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
+            } else {
+                setcookie("remembered_username", "", time() - 3600, "/"); // Clear cookie if unchecked
+            }
+
+            header("location:dashboard.php");
+            exit;
+        } else {
+            $message = 'Incorrect username or password.';
+        }
+    } catch (PDOException $ex) {
+        echo $ex->getTraceAsString();
+        echo $ex->getMessage();
         exit;
-      } else {
-        $message = 'Incorrect username or password.';
-      }
-    } catch(PDOException $ex) {
-      echo $ex->getTraceAsString();
-      echo $ex->getMessage();
-      exit;
     }
-  }
+}
+
+// Retrieve the stored username if available
+$rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembered_username'] : '';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +81,7 @@ body.login-page.light-mode {
 <body class="hold-transition login-page light-mode">
 <div class="login-box">
   <div class="login-logo mb-4">
-    <img src="dist/img/mamatid-transparent01.png" 
+    <img src="dist/img/mamatid-transparent01.png"
          class="img-thumbnail p-0 border rounded-circle" id="system-logo">
          <div class="text-center h3 mb-0 text-stroked">
   <strong>Mamatid Health Center System</strong>
@@ -83,37 +94,56 @@ body.login-page.light-mode {
         <span id="typewriter-text"></span><span class="cursor">|</span>
       </p>
       <form method="post" class="p-3">
-  <div class="mb-3">
+      <div class="mb-3">
     <label for="user_name" class="form-label fw-bold">Username</label>
     <div class="input-group">
-      <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
-      <input type="text" class="form-control form-control-lg" 
-             placeholder="Enter your username" id="user_name" name="user_name" required>
+        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+        <input type="text" class="form-control form-control-lg"
+               placeholder="Enter your username" id="user_name" name="user_name"
+               value="<?php echo htmlspecialchars($rememberedUsername); ?>" required>
     </div>
-  </div>
+</div>
 
-  <div class="mb-3">
+<div class="mb-3">
     <label for="password" class="form-label fw-bold">Password</label>
     <div class="input-group">
-      <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
-      <input type="password" class="form-control form-control-lg" 
-             placeholder="Enter your password" id="password" name="password" required>
+        <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+        <input type="password" class="form-control form-control-lg"
+               placeholder="Enter your password" id="password" name="password" required>
     </div>
-  </div>
+</div>
 
-  <button name="login" type="submit" 
-          class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+<div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me"
+           <?php echo ($rememberedUsername != '') ? 'checked' : ''; ?>>
+    <label class="form-check-label" for="remember_me">
+        Remember me
+    </label>
+</div>
+
+<button name="login" type="submit"
+        class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
     Sign In
-  </button>
+</button>
 
   <!-- Error Message Display -->
   <?php if ($message != ''): ?>
-    <div class="alert alert-danger text-center mt-3" role="alert">
-      <?php echo $message; ?>
+    <div id="alertMessage" class="alert alert-danger text-center mt-3" role="alert" style="opacity: 0.9;">
+      <i class="fas fa-exclamation-circle"></i> <?php echo $message; ?>
     </div>
-  <?php endif; ?>
-</form>
 
+    <script>
+      // Auto-hide alert after 5 seconds
+      setTimeout(function() {
+        var alertBox = document.getElementById("alertMessage");
+        if (alertBox) {
+          alertBox.style.transition = "opacity 0.5s ease";
+          alertBox.style.opacity = "0";
+          setTimeout(() => alertBox.remove(), 500);
+        }
+      }, 5000);
+    </script>
+  <?php endif; ?>
     </div>
   </div>
 </div>
