@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2025 at 01:08 PM
+-- Generation Time: Mar 13, 2025 at 03:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -108,7 +108,8 @@ INSERT INTO `patients` (`id`, `patient_name`, `address`, `purpose`, `date_of_bir
 (2, 'Pomeranian La Baskerville', 'Baskerville  Main Baskerville', '989877789089', '2025-01-21', '09918719610', 'Female', '2025-03-02 17:11:52'),
 (3, 'Hugo Le Baskerville', 'Main House', 'SECRET', '1979-11-30', '09918719610', 'Male', '2025-03-02 17:11:52'),
 (4, 'Vikir Van Baskerville', 'Main House', '1234567', '2003-08-28', '09918719610', 'Male', '2025-03-02 17:11:52'),
-(5, 'Osiris Le Baskerville', 'Main House', 'SECRET01', '2025-03-11', '09918719610', 'Male', '2025-03-02 17:18:27');
+(5, 'Osiris Le Baskerville', 'Main House', 'SECRET01', '2025-03-11', '09918719610', 'Male', '2025-03-02 17:18:27'),
+(6, 'Abel Baskerville', 'Baskerville Main House 01', 'Checkup', '2000-11-11', '09918719610', 'Male', '2025-03-12 23:15:03');
 
 -- --------------------------------------------------------
 
@@ -133,7 +134,8 @@ INSERT INTO `patient_medication_history` (`id`, `patient_visit_id`, `medicine_de
 (2, 1, 6, 2, '500'),
 (3, 2, 2, 2, '250'),
 (4, 2, 7, 2, '250'),
-(5, 5, 2, 4, '3');
+(5, 5, 2, 4, '3'),
+(6, 8, 2, 90, '6');
 
 -- --------------------------------------------------------
 
@@ -165,7 +167,8 @@ INSERT INTO `patient_visits` (`id`, `visit_date`, `next_visit_date`, `bp`, `weig
 (4, '2025-03-03', '2025-03-04', '45', '56', 'Dog', 3, '2025-03-02 07:27:29', 0, 0, 0),
 (5, '2025-03-04', '2025-03-05', '56', '45', 'Dog', 4, '2025-03-02 07:27:29', 0, 0, 0),
 (6, '2025-03-02', '2025-03-02', '56', '56', 'Dog', 4, '2025-03-02 09:55:41', 1, 0, 1),
-(7, '2025-03-02', '2025-03-02', '100', '100', 'Cat', 4, '2025-03-02 10:08:36', 1, 1, 0);
+(7, '2025-03-02', '2025-03-02', '100', '100', 'Cat', 4, '2025-03-02 10:08:36', 1, 1, 0),
+(8, '2025-03-12', '2025-03-12', '100', '160', 'Snale', 6, '2025-03-12 15:16:29', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -187,7 +190,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `display_name`, `user_name`, `password`, `profile_picture`) VALUES
 (1, 'Administrator', 'admin', '0192023a7bbd73250516f069df18b500', '1656551981avatar.png '),
-(2, 'John Doe', 'jdoe', '9c86d448e84d4ba23eb089e0b5160207', '1656551999avatar_.png');
+(2, 'John Doe', 'jdoe', '9c86d448e84d4ba23eb089e0b5160207', '1656551999avatar_.png'),
+(3, 'Dr. Leo', 'Doc Leo', '489a0257b661b64dac6618593232b1de', '1741792677IMG_20250131_221137_601.jpg'),
+(4, 'Dr. Vikir', 'Doc Vikir', '2f3763b2a0daa3ba0baa8f23e4206048', '1741794222vikir.png');
 
 --
 -- Indexes for dumped tables
@@ -267,25 +272,25 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `patient_medication_history`
 --
 ALTER TABLE `patient_medication_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `patient_visits`
 --
 ALTER TABLE `patient_visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

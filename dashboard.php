@@ -129,43 +129,45 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     }
 
     .chart-select {
-      width: 100%;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #333;
-      background-color: #fff; /* default white background */
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L1 4h10L6 9z' fill='%23333'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 12px 12px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #fff; /* default white background */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L1 4h10L6 9z' fill='%23333'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px 12px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
-    .chart-select:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-    }
+.chart-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
 
-    /* Active state classes */
-    .chart-select.active-weekly {
-      background-color: rgba(128, 0, 128, 0.7); /* Purple */
-      color: #fff;
-    }
+/* Active state classes */
+.chart-select.active-weekly {
+  background-color: rgba(46, 9, 88, 0.7);
+  color: #fff;
+}
 
-    .chart-select.active-monthly {
-      background-color: rgba(255, 0, 255, 0.7); /* Fuchsia */
-      color: #fff;
-    }
+.chart-select.active-monthly {
+  background-color: rgba(255, 0, 255, 0.7);
+  color: #fff;
+}
 
-    .chart-select.active-yearly {
-      background-color: rgba(128, 0, 0, 0.7); /* Maroon */
-      color: #fff;
-    }
+.chart-select.active-yearly {
+  background-color: rgba(195, 11, 41, 0.7);
+  color: #fff;
+}
   </style>
 
 </head>
@@ -173,26 +175,28 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
   <!-- Site wrapper -->
   <div class="wrapper">
     <!-- Navbar -->
-    <?php 
+    <?php
       include './config/header.php';
       include './config/sidebar.php';
     ?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
-      <section class="content-header">
-        <div class="container-fluid">
-          <div class="row align-items-center mb-2">
-            <div class="col-md-6">
-              <h1>Dashboard</h1>
-            </div>
-            <div class="col-md-6 text-right">
-              <!-- Live-updating Date & Time styled with a Bootstrap badge -->
-              <h4><span id="datetime" class="badge"></span></h4>
-            </div>
-          </div>
-        </div><!-- /.container-fluid -->
-      </section>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row align-items-center mb-2">
+      <!-- Dashboard Title -->
+      <div class="col-12 col-md-6 text-md-left text-center">
+        <h1>Dashboard</h1>
+      </div>
+      <!-- Date & Time (Responsive) -->
+      <div class="col-12 col-md-6 text-md-right text-center">
+        <!-- Keep your h4 & badge design -->
+        <h4><span id="datetime" class="badge"></span></h4>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
       
       <!-- Main content -->
       <section class="content">
@@ -321,12 +325,12 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     const ctx = document.getElementById('patientChart').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
-  // Function to update the active class on the dropdown
+  // Function to update the active class on the dropdown element
   function updateDropdownActiveClass(value) {
     const selectEl = document.getElementById("chartType");
     // Remove any active state classes
     selectEl.classList.remove("active-weekly", "active-monthly", "active-yearly");
-    // Add the active class based on the selected value
+    // Add the appropriate active class based on the value
     if (value === "weekly") {
       selectEl.classList.add("active-weekly");
     } else if (value === "monthly") {
@@ -380,7 +384,7 @@ function renderChart(type) {
   });
 }
 
-// Initial render using weekly data and set the active class on the dropdown
+// Initial render using weekly data and set the active class on the dropdown.
 renderChart("weekly");
   updateDropdownActiveClass("weekly");
 

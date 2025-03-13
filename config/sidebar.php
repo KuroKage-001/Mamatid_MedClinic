@@ -28,7 +28,9 @@ if(!(isset($_SESSION['user_id']))) {
       
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column" 
+            data-widget="treeview" role="menu" data-accordion="false">
+          
           <!-- Dashboard -->
           <li class="nav-item" id="mnu_dashboard">
             <a href="dashboard.php" class="nav-link">
@@ -59,13 +61,15 @@ if(!(isset($_SESSION['user_id']))) {
                   <p>Add Blood Pressure</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="patient_history.php" class="nav-link" id="mi_patient_history">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Patient History</p>
-                </a>
-              </li>
             </ul>
+          </li>
+
+          <!-- Patient History -->
+          <li class="nav-item" id="mnu_patient_history">
+            <a href="patient_history.php" class="nav-link">
+              <i class="nav-icon fas fa-history"></i>
+              <p>Patient History</p>
+            </a>
           </li>
 
           <!-- Medicines -->
@@ -117,6 +121,14 @@ if(!(isset($_SESSION['user_id']))) {
             <a href="users.php" class="nav-link">
               <i class="nav-icon fa fa-users"></i>
               <p> Users </p>
+            </a>
+          </li>
+
+          <!-- Time In/Time Out -->
+          <li class="nav-item" id="mnu_time_tracker">
+            <a href="time_tracker.php" class="nav-link">
+              <i class="nav-icon fas fa-user-clock"></i>
+              <p>Time In / Time Out</p>
             </a>
           </li>
 

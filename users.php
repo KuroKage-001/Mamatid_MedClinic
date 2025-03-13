@@ -69,7 +69,6 @@ try {
     border-radius: 50%;
   }
   
-  /* Professional form styling */
   .card-body form {
     background: #fff;
     padding: 1.5rem;
