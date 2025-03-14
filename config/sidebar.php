@@ -1,5 +1,5 @@
 <?php
-if(!(isset($_SESSION['user_id']))) {
+if (!(isset($_SESSION['user_id']))) {
   header("location:index.php");
   exit;
 }
@@ -14,13 +14,11 @@ if(!(isset($_SESSION['user_id']))) {
     <div class="sidebar">
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 position-relative" style="position: relative;">
-        <!-- Image positioned absolutely to the left -->
         <div class="image" style="position: absolute; left: -5%; top: 50%; transform: translateY(-75%); z-index: 1;">
           <img src="user_images/<?php echo $_SESSION['profile_picture'];?>"
                class="user-img"
                alt="User Image" />
         </div>
-        <!-- Info container with left margin to leave space for the image -->
         <div class="info" style="margin-left: 4em; position: relative; z-index: 2;">
           <a href="#" class="d-block user-display-name"><?php echo $_SESSION['display_name'];?></a>
         </div>
@@ -116,20 +114,29 @@ if(!(isset($_SESSION['user_id']))) {
             </ul>
           </li> 
 
-          <!-- Users -->
-          <li class="nav-item" id="mnu_users">
-            <a href="users.php" class="nav-link">
+          <!-- Users & Time Tracker -->
+          <li class="nav-item" id="mnu_user_management">
+            <a href="#" class="nav-link">
               <i class="nav-icon fa fa-users"></i>
-              <p> Users </p>
+              <p>
+                Users
+                <i class="right fas fa-angle-left"></i>
+              </p>
             </a>
-          </li>
-
-          <!-- Time In/Time Out -->
-          <li class="nav-item" id="mnu_time_tracker">
-            <a href="time_tracker.php" class="nav-link">
-              <i class="nav-icon fas fa-user-clock"></i>
-              <p>Time In / Time Out</p>
-            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="users.php" class="nav-link" id="mi_users">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Users</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="time_tracker.php" class="nav-link" id="mi_time_tracker">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Time In|Time Out</p>
+                </a>
+              </li>
+            </ul>
           </li>
 
           <!-- Logout -->
@@ -145,6 +152,20 @@ if(!(isset($_SESSION['user_id']))) {
     </div>
     <!-- /.sidebar -->
 </aside>
+
+<script>
+  function showMenuSelected(topMenuId, subMenuId) {
+    $('.nav-item').removeClass('menu-open');
+    $('.nav-link').removeClass('active');
+    if (topMenuId) {
+      $(topMenuId).addClass('menu-open');
+      $(topMenuId + ' > .nav-link').addClass('active');
+    }
+    if (subMenuId) {
+      $(subMenuId).addClass('active');
+    }
+  }
+</script>
 
 <!-- Additional CSS -->
 <style>
@@ -172,5 +193,12 @@ if(!(isset($_SESSION['user_id']))) {
   
   .user-display-name:hover {
     background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Custom active styles for Users and Time In|Time Out sub-menu items */
+  #mi_users.nav-link.active,
+  #mi_time_tracker.nav-link.active {
+    background-color: lightblue !important;
+    color: white !important;
   }
 </style>
