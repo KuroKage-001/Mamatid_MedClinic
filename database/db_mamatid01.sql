@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2025 at 03:58 PM
+-- Generation Time: Mar 14, 2025 at 07:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -173,6 +173,87 @@ INSERT INTO `patient_visits` (`id`, `visit_date`, `next_visit_date`, `bp`, `weig
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `time_in_logs`
+--
+
+CREATE TABLE `time_in_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_in` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `time_in_logs`
+--
+DELIMITER $$
+CREATE TRIGGER `after_time_in_insert` AFTER INSERT ON `time_in_logs` FOR EACH ROW BEGIN
+  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
+  VALUES (NEW.user_id, NEW.log_date, NEW.time_in, NULL, 0.00)
+  ON DUPLICATE KEY UPDATE `time_in` = NEW.time_in;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_logs`
+--
+
+CREATE TABLE `time_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_in` time DEFAULT NULL,
+  `time_out` time DEFAULT NULL,
+  `total_hours` decimal(5,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `time_logs`
+--
+
+INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
+(7, 4, '2025-03-14', '06:39:18', NULL, 0.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_out_logs`
+--
+
+CREATE TABLE `time_out_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_out` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `time_out_logs`
+--
+DELIMITER $$
+CREATE TRIGGER `after_time_out_insert` AFTER INSERT ON `time_out_logs` FOR EACH ROW BEGIN
+  DECLARE v_time_in TIME;
+  -- Get the corresponding Time In
+  SELECT `time_in` INTO v_time_in
+  FROM `time_in_logs`
+  WHERE `user_id` = NEW.user_id AND `log_date` = NEW.log_date;
+  -- Update time_logs with Time Out and calculate total hours
+  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
+  VALUES (NEW.user_id, NEW.log_date, v_time_in, NEW.time_out, 
+          ROUND(TIMESTAMPDIFF(SECOND, v_time_in, NEW.time_out) / 3600, 2))
+  ON DUPLICATE KEY UPDATE 
+    `time_out` = NEW.time_out,
+    `total_hours` = ROUND(TIMESTAMPDIFF(SECOND, `time_in`, NEW.time_out) / 3600, 2);
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -240,6 +321,28 @@ ALTER TABLE `patient_visits`
   ADD KEY `fk_patients_visit_patient_id` (`patient_id`);
 
 --
+-- Indexes for table `time_in_logs`
+--
+ALTER TABLE `time_in_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_time_in` (`user_id`,`log_date`);
+
+--
+-- Indexes for table `time_logs`
+--
+ALTER TABLE `time_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_date` (`user_id`,`log_date`),
+  ADD KEY `fk_time_logs_user_id` (`user_id`);
+
+--
+-- Indexes for table `time_out_logs`
+--
+ALTER TABLE `time_out_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_time_out` (`user_id`,`log_date`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -287,6 +390,24 @@ ALTER TABLE `patient_visits`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `time_in_logs`
+--
+ALTER TABLE `time_in_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `time_logs`
+--
+ALTER TABLE `time_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `time_out_logs`
+--
+ALTER TABLE `time_out_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -314,6 +435,24 @@ ALTER TABLE `patient_medication_history`
 --
 ALTER TABLE `patient_visits`
   ADD CONSTRAINT `fk_patients_visit_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`);
+
+--
+-- Constraints for table `time_in_logs`
+--
+ALTER TABLE `time_in_logs`
+  ADD CONSTRAINT `time_in_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `time_logs`
+--
+ALTER TABLE `time_logs`
+  ADD CONSTRAINT `fk_time_logs_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `time_out_logs`
+--
+ALTER TABLE `time_out_logs`
+  ADD CONSTRAINT `time_out_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
