@@ -62,14 +62,6 @@ if (!(isset($_SESSION['user_id']))) {
             </ul>
           </li>
 
-          <!-- Patient History -->
-          <li class="nav-item" id="mnu_patient_history">
-            <a href="patient_history.php" class="nav-link">
-              <i class="nav-icon fas fa-history"></i>
-              <p>Patient History</p>
-            </a>
-          </li>
-
           <!-- Medicines -->
           <li class="nav-item" id="mnu_medicines">
             <a href="#" class="nav-link">
@@ -100,11 +92,19 @@ if (!(isset($_SESSION['user_id']))) {
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
               <p>
-                Reports
+                Patient Hisotry | Reports
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <!-- Patient History -->
+              <li class="nav-item" id="mnu_patient_history">
+                <a href="patient_history.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Patient History</p>
+                </a>
+              </li>
+              <!-- Reports -->
               <li class="nav-item">
                 <a href="reports.php" class="nav-link" id="mi_reports">
                   <i class="far fa-circle nav-icon"></i>
@@ -152,20 +152,6 @@ if (!(isset($_SESSION['user_id']))) {
     </div>
     <!-- /.sidebar -->
 </aside>
-
-<script>
-  function showMenuSelected(topMenuId, subMenuId) {
-    $('.nav-item').removeClass('menu-open');
-    $('.nav-link').removeClass('active');
-    if (topMenuId) {
-      $(topMenuId).addClass('menu-open');
-      $(topMenuId + ' > .nav-link').addClass('active');
-    }
-    if (subMenuId) {
-      $(subMenuId).addClass('active');
-    }
-  }
-</script>
 
 <!-- Additional CSS -->
 <style>

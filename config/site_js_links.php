@@ -13,5 +13,5 @@
 
 <script src="dist/js/common_javascript_functions.js"></script>
 
-
+<script src="dist/js/sidebar.js"></script>
 

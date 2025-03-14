@@ -178,6 +178,10 @@ try {
 
 <?php include './config/site_js_links.php'; ?>
 <?php include './config/data_tables_js.php'; ?>
+<!-- Page content -->
+<script>
+  showMenuSelected("#mnu_users", "");
+</script>
 
 <script>
     showMenuSelected("#mnu_users", "");
