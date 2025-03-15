@@ -170,6 +170,11 @@ try {
     showMenuSelected("#mnu_users", "");
     var message = '<?php echo isset($_GET['message']) ? addslashes($_GET['message']) : ''; ?>';
     if (message !== '') showCustomMessage(message);
+
+    // Fade out the alert after 5 seconds (5000 milliseconds)
+    setTimeout(function(){
+        $('.alert.alert-info').fadeOut('slow');
+    }, 5000);
 </script>
 </body>
 </html>

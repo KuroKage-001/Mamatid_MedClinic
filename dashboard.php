@@ -26,10 +26,10 @@ $queryMonth = "SELECT count(*) as `month`
   WHERE YEAR(`visit_date`) = $year
     AND MONTH(`visit_date`) = $month;";
 
-$todaysCount      = 0;
-$currentWeekCount = 0;
-$currentMonthCount= 0;
-$currentYearCount = 0;
+$todaysCount       = 0;
+$currentWeekCount  = 0;
+$currentMonthCount = 0;
+$currentYearCount  = 0;
 
 try {
     $stmtToday = $con->prepare($queryToday);
@@ -129,45 +129,45 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     }
 
     .chart-select {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  background-color: #fff; /* default white background */
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L1 4h10L6 9z' fill='%23333'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 12px 12px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+      background-color: #fff; /* default white background */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L1 4h10L6 9z' fill='%23333'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 12px 12px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-.chart-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-}
+    .chart-select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
 
-/* Active state classes */
-.chart-select.active-weekly {
-  background-color: rgba(46, 9, 88, 0.7);
-  color: #fff;
-}
+    /* Active state classes with updated colors */
+    .chart-select.active-weekly {
+      background-color: rgba(54, 162, 235, 0.7); /* Soft Blue */
+      color: #fff;
+    }
 
-.chart-select.active-monthly {
-  background-color: rgba(255, 0, 255, 0.7);
-  color: #fff;
-}
+    .chart-select.active-monthly {
+      background-color: rgba(255, 159, 64, 0.7); /* Warm Orange */
+      color: #fff;
+    }
 
-.chart-select.active-yearly {
-  background-color: rgba(195, 11, 41, 0.7);
-  color: #fff;
-}
+    .chart-select.active-yearly {
+      background-color: rgba(75, 192, 192, 0.7); /* Cool Teal */
+      color: #fff;
+    }
   </style>
 
 </head>
@@ -181,22 +181,21 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     ?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-<!-- Content Header (Page header) -->
-<section class="content-header">
-  <div class="container-fluid">
-    <div class="row align-items-center mb-2">
-      <!-- Dashboard Title -->
-      <div class="col-12 col-md-6 text-md-left text-center">
-        <h1>Dashboard</h1>
-      </div>
-      <!-- Date & Time (Responsive) -->
-      <div class="col-12 col-md-6 text-md-right text-center">
-        <!-- Keep your h4 & badge design -->
-        <h4><span id="datetime" class="badge"></span></h4>
-      </div>
-    </div>
-  </div><!-- /.container-fluid -->
-</section>
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row align-items-center mb-2">
+            <!-- Dashboard Title -->
+            <div class="col-12 col-md-6 text-md-left text-center">
+              <h1>Dashboard</h1>
+            </div>
+            <!-- Date & Time (Responsive) -->
+            <div class="col-12 col-md-6 text-md-right text-center">
+              <h4><span id="datetime" class="badge"></span></h4>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
       
       <!-- Main content -->
       <section class="content">
@@ -204,7 +203,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
           <!-- Stat Boxes -->
           <div class="row">
             <div class="col-lg-3 col-6">
-              <div class="small-box bg-info">
+              <div class="small-box bg-success">
                 <div class="inner">
                   <h3><?php echo $todaysCount; ?></h3>
                   <p>Today's Patients</p>
@@ -216,7 +215,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             </div>
             <!-- ./col -->
             <div class="col-lg-3 col-6">
-              <div class="small-box bg-purple">
+              <div class="small-box bg-primary">
                 <div class="inner">
                   <h3><?php echo $currentWeekCount; ?></h3>
                   <p>Current Week</p>
@@ -228,7 +227,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             </div>
             <!-- ./col -->
             <div class="col-lg-3 col-6">
-              <div class="small-box bg-fuchsia text-reset">
+              <div class="small-box bg-warning text-dark">
                 <div class="inner">
                   <h3><?php echo $currentMonthCount; ?></h3>
                   <p>Current Month</p>
@@ -240,7 +239,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             </div>
             <!-- ./col -->
             <div class="col-lg-3 col-6">
-              <div class="small-box bg-maroon text-reset">
+              <div class="small-box bg-danger">
                 <div class="inner">
                   <h3><?php echo $currentYearCount; ?></h3>
                   <p>Current Year</p>
@@ -325,74 +324,74 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     const ctx = document.getElementById('patientChart').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
-  // Function to update the active class on the dropdown element
-  function updateDropdownActiveClass(value) {
-    const selectEl = document.getElementById("chartType");
-    // Remove any active state classes
-    selectEl.classList.remove("active-weekly", "active-monthly", "active-yearly");
-    // Add the appropriate active class based on the value
-    if (value === "weekly") {
-      selectEl.classList.add("active-weekly");
-    } else if (value === "monthly") {
-      selectEl.classList.add("active-monthly");
-    } else if (value === "yearly") {
-      selectEl.classList.add("active-yearly");
-    }
-  }
-
-// Render chart function remains the same:
-function renderChart(type) {
-  if (currentChart) {
-    currentChart.destroy();
-  }
-  
-  let backgroundColor, borderColor;
-  if (type === "weekly") {
-    backgroundColor = "rgba(128, 0, 128, 0.7)"; // Purple
-    borderColor = "rgba(128, 0, 128, 1)";
-  } else if (type === "monthly") {
-    backgroundColor = "rgba(255, 0, 255, 0.7)"; // Fuchsia
-    borderColor = "rgba(255, 0, 255, 1)";
-  } else if (type === "yearly") {
-    backgroundColor = "rgba(128, 0, 0, 0.7)";   // Maroon
-    borderColor = "rgba(128, 0, 0, 1)";
-  } else {
-    backgroundColor = "rgba(0, 123, 255, 0.7)";
-    borderColor = "rgba(0, 123, 255, 1)";
-  }
-  
-  currentChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: chartData[type].labels,
-      datasets: [{
-        label: "Number of Patients",
-        data: chartData[type].data,
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 10 }
+      // Function to update the active class on the dropdown element
+      function updateDropdownActiveClass(value) {
+        const selectEl = document.getElementById("chartType");
+        // Remove any active state classes
+        selectEl.classList.remove("active-weekly", "active-monthly", "active-yearly");
+        // Add the appropriate active class based on the value
+        if (value === "weekly") {
+          selectEl.classList.add("active-weekly");
+        } else if (value === "monthly") {
+          selectEl.classList.add("active-monthly");
+        } else if (value === "yearly") {
+          selectEl.classList.add("active-yearly");
         }
       }
-    }
-  });
-}
 
-// Initial render using weekly data and set the active class on the dropdown.
-renderChart("weekly");
-  updateDropdownActiveClass("weekly");
+      // Render chart function remains the same with updated colors:
+      function renderChart(type) {
+        if (currentChart) {
+          currentChart.destroy();
+        }
+        
+        let backgroundColor, borderColor;
+        if (type === "weekly") {
+          backgroundColor = "rgba(54, 162, 235, 0.7)"; // Soft Blue
+          borderColor = "rgba(54, 162, 235, 1)";
+        } else if (type === "monthly") {
+          backgroundColor = "rgba(255, 159, 64, 0.7)"; // Warm Orange
+          borderColor = "rgba(255, 159, 64, 1)";
+        } else if (type === "yearly") {
+          backgroundColor = "rgba(75, 192, 192, 0.7)";   // Cool Teal
+          borderColor = "rgba(75, 192, 192, 1)";
+        } else {
+          backgroundColor = "rgba(0, 123, 255, 0.7)";
+          borderColor = "rgba(0, 123, 255, 1)";
+        }
+        
+        currentChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: chartData[type].labels,
+            datasets: [{
+              label: "Number of Patients",
+              data: chartData[type].data,
+              backgroundColor: backgroundColor,
+              borderColor: borderColor,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 10 }
+              }
+            }
+          }
+        });
+      }
 
-  document.getElementById("chartType").addEventListener("change", function() {
-    renderChart(this.value);
-    updateDropdownActiveClass(this.value);
-  });
-});
+      // Initial render using weekly data and set the active class on the dropdown.
+      renderChart("weekly");
+      updateDropdownActiveClass("weekly");
+
+      document.getElementById("chartType").addEventListener("change", function() {
+        renderChart(this.value);
+        updateDropdownActiveClass(this.value);
+      });
+    });
   </script>
 </body>
 </html>
