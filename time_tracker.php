@@ -2,6 +2,9 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 
+// Set the timezone to your local timezone
+date_default_timezone_set('Asia/Manila');
+
 $message = '';
 $userId = $_SESSION['user_id'];
 $today = date('Y-m-d');
@@ -26,31 +29,16 @@ if (isset($_POST['action'])) {
         $con->beginTransaction();
 
         if ($action == 'time_in' && $canTimeIn) {
-            // Insert into time_logs
-            $query = "INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) 
-                      VALUES (:uid, :today, :time_in, NULL, 0.00)";
+            $query = "INSERT INTO `time_in_logs` (`user_id`, `log_date`, `time_in`) 
+                      VALUES (:uid, :today, :time_in)";
             $stmt = $con->prepare($query);
             $stmt->execute([':uid' => $userId, ':today' => $today, ':time_in' => $currentTime]);
-
             $message = 'Time In recorded successfully!';
         } elseif ($action == 'time_out' && $canTimeOut) {
-            // Calculate total hours
-            $timeIn = new DateTime($logToday['time_in']);
-            $timeOut = new DateTime($currentTime);
-            $interval = $timeIn->diff($timeOut);
-            $totalHours = $interval->h + ($interval->i / 60) + ($interval->s / 3600);
-
-            // Update time_logs
-            $query = "UPDATE `time_logs` SET `time_out` = :time_out, `total_hours` = :total_hours 
-                      WHERE `user_id` = :uid AND `log_date` = :today";
+            $query = "INSERT INTO `time_out_logs` (`user_id`, `log_date`, `time_out`) 
+                      VALUES (:uid, :today, :time_out)";
             $stmt = $con->prepare($query);
-            $stmt->execute([
-                ':time_out' => $currentTime,
-                ':total_hours' => round($totalHours, 2),
-                ':uid' => $userId,
-                ':today' => $today
-            ]);
-
+            $stmt->execute([':uid' => $userId, ':today' => $today, ':time_out' => $currentTime]);
             $message = 'Time Out recorded successfully!';
         } else {
             $message = $action == 'time_in' ? 'You have already timed in today.' : 'No active Time In found or Time Out already recorded.';
@@ -62,7 +50,6 @@ if (isset($_POST['action'])) {
         $message = 'Error: ' . $ex->getMessage();
     }
 
-    // Redirect to prevent resubmission
     header("Location: time_tracker.php?message=" . urlencode($message));
     exit;
 }
@@ -161,9 +148,9 @@ try {
                         <tbody>
                             <?php while ($log = $stmtLogs->fetch(PDO::FETCH_ASSOC)): ?>
                                 <tr>
-                                    <td><?php echo $log['log_date']; ?></td>
-                                    <td><?php echo $log['time_in'] ?: 'N/A'; ?></td>
-                                    <td><?php echo $log['time_out'] ?: 'Not yet timed out'; ?></td>
+                                    <td><?php echo date('Y F d', strtotime($log['log_date'])); ?></td>
+                                    <td><?php echo $log['time_in'] ? date('h:i:s A', strtotime($log['time_in'])) : 'N/A'; ?></td>
+                                    <td><?php echo $log['time_out'] ? date('h:i:s A', strtotime($log['time_out'])) : 'Not yet timed out'; ?></td>
                                     <td><?php echo $log['time_out'] ? number_format($log['total_hours'], 2) : 'N/A'; ?></td>
                                 </tr>
                             <?php endwhile; ?>
@@ -178,10 +165,6 @@ try {
 
 <?php include './config/site_js_links.php'; ?>
 <?php include './config/data_tables_js.php'; ?>
-<!-- Page content -->
-<script>
-  showMenuSelected("#mnu_users", "");
-</script>
 
 <script>
     showMenuSelected("#mnu_users", "");
