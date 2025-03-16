@@ -2,10 +2,12 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 
+// Initialize message variable to store user feedback
 $message = '';
 
 if(isset($_POST['submit'])) {
 
+  // Retrieve posted form values
   $patientId     = $_POST['patient'];
   $visitDate     = $_POST['visit_date'];
   $nextVisitDate = $_POST['next_visit_date'];
@@ -18,24 +20,26 @@ if(isset($_POST['submit'])) {
   $smoke   = isset($_POST['smoke']) ? 1 : 0;
   $obese   = isset($_POST['obese']) ? 1 : 0;
 
-  // Fix: assign default empty arrays if not set
+  // Fix: assign default empty arrays if not set for medicines data
   $medicineDetailIds = $_POST['medicineDetailIds'] ?? [];
   $quantities        = $_POST['quantities'] ?? [];
   $dosages           = $_POST['dosages'] ?? [];
 
+  // Convert visit date from mm/dd/yyyy to yyyy-mm-dd format
   $visitDateArr = explode("/", $visitDate);
   $visitDate = $visitDateArr[2].'-'.$visitDateArr[0].'-'.$visitDateArr[1];
 
+  // Convert next visit date if provided
   if($nextVisitDate != '') {
     $nextVisitDateArr = explode("/", $nextVisitDate);
     $nextVisitDate = $nextVisitDateArr[2].'-'.$nextVisitDateArr[0].'-'.$nextVisitDateArr[1];
   }
 
   try {
-
+    // Start transaction to ensure data consistency across multiple inserts
     $con->beginTransaction();
 
-    // first, store a row in patient visits including the new checkbox fields
+    // Insert a new record into patient_visits with the checkbox fields included
     $queryVisit = "INSERT INTO `patient_visits`(`visit_date`, 
       `next_visit_date`, `bp`, `weight`, `disease`, `patient_id`, `alcohol`, `smoke`, `obese`) 
       VALUES('$visitDate', 
@@ -44,19 +48,22 @@ if(isset($_POST['submit'])) {
     $stmtVisit = $con->prepare($queryVisit);
     $stmtVisit->execute();
 
+    // Retrieve the last inserted patient visit id for linking medication history
     $lastInsertId = $con->lastInsertId(); // latest patient visit id
 
-    // now store data in medication history
+    // Now store data in patient_medication_history for each medicine detail provided
     $size = sizeof($medicineDetailIds);
     $curMedicineDetailId = 0;
     $curQuantity = 0;
     $curDosage = 0;
 
+    // Loop through each provided medicine detail to insert corresponding medication history records
     for($i = 0; $i < $size; $i++) {
       $curMedicineDetailId = $medicineDetailIds[$i];
       $curQuantity = $quantities[$i];
       $curDosage = $dosages[$i];
 
+      // Insert each medication history record linked to the patient visit
       $qeuryMedicationHistory = "INSERT INTO `patient_medication_history`(
         `patient_visit_id`,
         `medicine_details_id`, `quantity`, `dosage`)
@@ -65,19 +72,23 @@ if(isset($_POST['submit'])) {
       $stmtDetails->execute();
     }
 
+    // Commit the transaction if all inserts were successful
     $con->commit();
     $message = 'Patient Medication stored successfully.';
   } catch(PDOException $ex) {
+    // Roll back the transaction if any error occurred
     $con->rollback();
     echo $ex->getTraceAsString();
     echo $ex->getMessage();
     exit;
   }
 
+  // Redirect to congratulation page with feedback message via URL parameter
   header("location:congratulation.php?goto_page=new_prescription.php&message=$message");
   exit;
 }
 
+// Retrieve patients and medicines list for the dropdown selections
 $patients = getPatients($con);
 $medicines = getMedicines($con);
 
@@ -111,7 +122,7 @@ $medicines = getMedicines($con);
       </section>
       <!-- Main content -->
       <section class="content">
-        <!-- Default box -->
+        <!-- Default box for adding blood pressure and prescription information -->
         <div class="card card-outline card-primary rounded-0 shadow">
           <div class="card-header">
             <h3 class="card-title">ADD BLOOD PRESSURE</h3>
@@ -125,12 +136,14 @@ $medicines = getMedicines($con);
             <!-- best practices-->
             <form method="post">
               <div class="row">
+                <!-- Patient selection dropdown -->
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                   <label>Select Patient</label>
                   <select id="patient" name="patient" class="form-control form-control-sm rounded-0" required="required">
                     <?php echo $patients; ?>
                   </select>
                 </div>
+                <!-- Visit Date input with datetimepicker -->
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-10">
                   <div class="form-group">
                     <label>Visit Date</label>
@@ -142,6 +155,7 @@ $medicines = getMedicines($con);
                     </div>
                   </div>
                 </div>
+                <!-- Next Visit Date input with datetimepicker -->
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-10">
                   <div class="form-group">
                     <label>Next Visit Date</label>
@@ -154,6 +168,7 @@ $medicines = getMedicines($con);
                   </div>
                 </div>
                 <div class="clearfix">&nbsp;</div>
+                <!-- BP, Weight, and Disease input fields -->
                 <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
                   <label>BP</label>
                   <input id="bp" class="form-control form-control-sm rounded-0" name="bp" required="required" />
@@ -192,6 +207,7 @@ $medicines = getMedicines($con);
 
               <div class="col-md-12"><hr /></div>
               <div class="clearfix">&nbsp;</div>
+              <!-- Row for selecting medicine details to add to the prescription list -->
               <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                   <label>Select Medicine</label>
@@ -221,6 +237,7 @@ $medicines = getMedicines($con);
               </div>
 
               <div class="clearfix">&nbsp;</div>
+              <!-- Table to display the current list of medicines added -->
               <div class="row table-responsive">
                 <table id="medication_list" class="table table-striped table-bordered">
                   <colgroup>
@@ -247,6 +264,7 @@ $medicines = getMedicines($con);
               </div>
 
               <div class="clearfix">&nbsp;</div>
+              <!-- Submit button to save the new prescription -->
               <div class="row">
                 <div class="col-md-10">&nbsp;</div>
                 <div class="col-md-2">
@@ -274,12 +292,15 @@ $medicines = getMedicines($con);
 
   <?php include './config/site_js_links.php'; ?>
 
+  <!-- Include necessary JS libraries for datetimepicker and date range functionality -->
   <script src="plugins/moment/moment.min.js"></script>
   <script src="plugins/daterangepicker/daterangepicker.js"></script>
   <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 
   <script>
+    // Initialize serial counter for listing medicines
     var serial = 1;
+    // Highlight the active menu items for patients and new prescription
     showMenuSelected("#mnu_patients", "#mi_new_prescription");
 
     var message = '<?php echo $message;?>';
@@ -288,12 +309,16 @@ $medicines = getMedicines($con);
     }
 
     $(document).ready(function() {
+      // Add consistent padding and alignment classes to table header and cells
       $('#medication_list').find('td').addClass("px-2 py-1 align-middle");
       $('#medication_list').find('th').addClass("p-1 align-middle");
+      
+      // Initialize datetimepicker for visit and next visit dates
       $('#visit_date, #next_visit_date').datetimepicker({
         format: 'L'
       });
 
+      // When a medicine is selected, trigger AJAX request to fetch corresponding packings
       $("#medicine").change(function() {
         var medicineId = $(this).val();
         if(medicineId !== '') {
@@ -304,6 +329,7 @@ $medicines = getMedicines($con);
             cache:false,
             async:false,
             success: function (data, status, xhr) {
+              // Populate the packing dropdown with retrieved options
               $("#packing").html(data);
             },
             error: function (jqXhr, textStatus, errorMessage) {
@@ -313,6 +339,7 @@ $medicines = getMedicines($con);
         }
       });
 
+      // When clicking "add_to_list", validate inputs and append a new row to the medication list
       $("#add_to_list").click(function() {
         var medicineId = $("#medicine").val();
         var medicineName = $("#medicine option:selected").text();
@@ -325,6 +352,7 @@ $medicines = getMedicines($con);
 
         var oldData = $("#current_medicines_list").html();
 
+        // Ensure all required fields are provided before adding to the list
         if(medicineName !== '' && packing !== '' && quantity !== '' && dosage !== '') {
           var inputs = '';
           inputs += '<input type="hidden" name="medicineDetailIds[]" value="'+medicineDetailId+'" />';
@@ -342,6 +370,7 @@ $medicines = getMedicines($con);
           oldData += tr;
           serial++;
 
+          // Update the list and clear the input fields
           $("#current_medicines_list").html(oldData);
           $("#medicine").val('');
           $("#packing").val('');
@@ -353,6 +382,7 @@ $medicines = getMedicines($con);
       });
     });
 
+    // Function to delete a row from the medication list table
     function deleteCurrentRow(obj) {
       var rowIndex = obj.parentNode.parentNode.rowIndex;
       document.getElementById("medication_list").deleteRow(rowIndex);

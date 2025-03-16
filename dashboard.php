@@ -4,54 +4,66 @@ date_default_timezone_set('Asia/Manila');
 
 include './config/connection.php';
 
+// Set current date components used throughout the queries
 $date  = date('Y-m-d');
 $year  = date('Y');
 $month = date('m');
 
 // Existing queries for stat boxes
+
+// Query for today's patient visits
 $queryToday = "SELECT count(*) as `today`
   FROM `patient_visits`
   WHERE DATE(`created_at`) = '$date';";
 
+// Query for current week visits
 $queryWeek = "SELECT count(*) as `week`
   FROM `patient_visits`
   WHERE YEARWEEK(`visit_date`, 1) = YEARWEEK('$date', 1);";
 
+// Query for current year visits
 $queryYear = "SELECT count(*) as `year`
   FROM `patient_visits`
   WHERE YEAR(`visit_date`) = YEAR('$date');";
 
+// Query for current month visits
 $queryMonth = "SELECT count(*) as `month`
   FROM `patient_visits`
   WHERE YEAR(`visit_date`) = $year
     AND MONTH(`visit_date`) = $month;";
 
+// Initialize counts to default values
 $todaysCount       = 0;
 $currentWeekCount  = 0;
 $currentMonthCount = 0;
 $currentYearCount  = 0;
 
 try {
+    // Execute query for today's patient count
     $stmtToday = $con->prepare($queryToday);
     $stmtToday->execute();
     $r = $stmtToday->fetch(PDO::FETCH_ASSOC);
     $todaysCount = $r['today'];
 
+    // Execute query for current week's patient count
     $stmtWeek = $con->prepare($queryWeek);
     $stmtWeek->execute();
     $r = $stmtWeek->fetch(PDO::FETCH_ASSOC);
     $currentWeekCount = $r['week'];
 
+    // Execute query for current year's patient count
     $stmtYear = $con->prepare($queryYear);
     $stmtYear->execute();
     $r = $stmtYear->fetch(PDO::FETCH_ASSOC);
     $currentYearCount = $r['year'];
 
+    // Execute query for current month's patient count
     $stmtMonth = $con->prepare($queryMonth);
     $stmtMonth->execute();
     $r = $stmtMonth->fetch(PDO::FETCH_ASSOC);
     $currentMonthCount = $r['month'];
 } catch(PDOException $ex) {
+    // For production, consider logging errors rather than echoing detailed messages
     echo $ex->getMessage();
     echo $ex->getTraceAsString();
     exit;
@@ -60,7 +72,7 @@ try {
 /* Dynamic Data for Chart */
 
 // WEEKLY DATA: Count patients for the current week grouped by day name,
-// and also retrieve the earliest visit_date for each day.
+// and also retrieve the earliest visit_date for each day
 $queryWeekly = "SELECT DAYNAME(visit_date) as day, MIN(visit_date) as first_date, COUNT(*) as count
                 FROM patient_visits
                 WHERE YEARWEEK(visit_date, 1) = YEARWEEK('$date', 1)
@@ -71,14 +83,14 @@ $stmtWeekly->execute();
 $weeklyLabels = [];
 $weeklyData   = [];
 while($row = $stmtWeekly->fetch(PDO::FETCH_ASSOC)) {
-    // Format: "DayName - (MonthName Day)"
+    // Format the earliest visit date for each day as "Month Day"
     $formattedDate = date("F j", strtotime($row['first_date']));
     $weeklyLabels[] = $row['day'] . " - (" . $formattedDate . ")";
     $weeklyData[]   = $row['count'];
 }
 
 // MONTHLY DATA: Count patients for each day in the current month,
-// and calculate the week number within the month.
+// and calculate the week number within the month
 $queryMonthly = "SELECT
                     visit_date,
                     DAYNAME(visit_date) as day_name,
@@ -93,12 +105,13 @@ $stmtMonthly->execute();
 $monthlyLabels = [];
 $monthlyData   = [];
 while($row = $stmtMonthly->fetch(PDO::FETCH_ASSOC)) {
+    // Format the visit date and include the week number and day name in the label
     $formattedDate = date("F j", strtotime($row['visit_date']));
     $monthlyLabels[] = "W" . $row['week_in_month'] . " - " . $row['day_name'] . " (" . $formattedDate . ")";
     $monthlyData[]   = $row['count'];
 }
 
-// YEARLY DATA: Count patients for the current year grouped by month.
+// YEARLY DATA: Count patients for the current year grouped by month
 $queryYearly = "SELECT MONTH(visit_date) as month, COUNT(*) as count
                 FROM patient_visits
                 WHERE YEAR(visit_date) = '$year'
@@ -109,6 +122,7 @@ $stmtYearly->execute();
 $yearlyLabels = [];
 $yearlyData   = [];
 while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
+    // Convert month number to full month name
     $monthName = date("F", mktime(0, 0, 0, $row['month'], 10));
     $yearlyLabels[] = $monthName;
     $yearlyData[]   = $row['count'];
@@ -124,10 +138,12 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
   <title>Dashboard - Mamatid Health Center System</title>
 
   <style>
+    /* Dark mode overrides for specific background classes */
     .dark-mode .bg-fuchsia, .dark-mode .bg-maroon {
       color: #fff!important;
     }
 
+    /* Styling for the chart type dropdown */
     .chart-select {
       width: 100%;
       padding: 0.5rem 1rem;
@@ -256,6 +272,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
           <div class="container my-4">
             <div class="row">
               <div class="col-md-4">
+                <!-- Dropdown to select chart type -->
                 <select id="chartType" class="chart-select">
                   <option value="weekly">Weekly Breakdown</option>
                   <option value="monthly">Monthly Breakdown</option>
@@ -265,6 +282,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             </div>
             <div class="row my-3">
               <div class="col">
+                <!-- Canvas for rendering the Chart.js chart -->
                 <canvas id="patientChart"></canvas>
               </div>
             </div>
@@ -283,11 +301,12 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
   <!-- Include Chart.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // Highlight the active menu item on page load
     $(function(){
       showMenuSelected("#mnu_dashboard", "");
     });
     
-    // JavaScript to update date and time every second in the desired format:
+    // JavaScript to update date and time every second in the desired format
     function updateDateTime() {
       var now = new Date();
       var options = {
@@ -304,7 +323,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Dynamic chart data from PHP arrays
+    // Dynamic chart data retrieved from PHP arrays and encoded as JSON
     const chartData = {
       weekly: {
         labels: <?php echo json_encode($weeklyLabels); ?>,
@@ -324,7 +343,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     const ctx = document.getElementById('patientChart').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
-      // Function to update the active class on the dropdown element
+      // Function to update the active class on the dropdown element based on selected chart type
       function updateDropdownActiveClass(value) {
         const selectEl = document.getElementById("chartType");
         // Remove any active state classes
@@ -339,7 +358,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         }
       }
 
-      // Render chart function remains the same with updated colors:
+      // Render chart function with updated color schemes based on selected chart type
       function renderChart(type) {
         if (currentChart) {
           currentChart.destroy();
@@ -360,6 +379,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
           borderColor = "rgba(0, 123, 255, 1)";
         }
         
+        // Instantiate the Chart.js bar chart
         currentChart = new Chart(ctx, {
           type: 'bar',
           data: {
@@ -383,10 +403,11 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         });
       }
 
-      // Initial render using weekly data and set the active class on the dropdown.
+      // Initial render using weekly data and set the active class on the dropdown
       renderChart("weekly");
       updateDropdownActiveClass("weekly");
 
+      // Update the chart when the dropdown selection changes
       document.getElementById("chartType").addEventListener("change", function() {
         renderChart(this.value);
         updateDropdownActiveClass(this.value);
