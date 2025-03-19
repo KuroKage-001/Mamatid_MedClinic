@@ -1,56 +1,64 @@
 <?php
+// Include database connection and common functions
 include './config/connection.php';
 include './common_service/common_functions.php';
 
 $message = '';
+
+// Handle form submission to save a new patient
 if (isset($_POST['save_Patient'])) {
-
+    // Retrieve and sanitize form inputs
     $patientName = trim($_POST['patient_name']);
-    $address = trim($_POST['address']);
-    $purpose = trim($_POST['purpose']);
-    
-    $dateBirth = trim($_POST['date_of_birth']);
-    $dateArr = explode("/", $dateBirth);
-    $dateBirth = $dateArr[2].'-'.$dateArr[0].'-'.$dateArr[1];
-
+    $address     = trim($_POST['address']);
+    $purpose     = trim($_POST['purpose']);
+    $dateBirth   = trim($_POST['date_of_birth']);
     $phoneNumber = trim($_POST['phone_number']);
+    $gender      = $_POST['gender'];
 
+    // Convert date format from MM/DD/YYYY to YYYY-MM-DD
+    $dateArr   = explode("/", $dateBirth);
+    $dateBirth = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
+
+    // Format patient name and address (capitalize each word)
     $patientName = ucwords(strtolower($patientName));
-    $address = ucwords(strtolower($address));
+    $address     = ucwords(strtolower($address));
 
-    $gender = $_POST['gender'];
+    // Check if all required fields are provided
     if ($patientName != '' && $address != '' && $purpose != '' && $dateBirth != '' && $phoneNumber != '' && $gender != '') {
-        $query = "INSERT INTO `patients`(`patient_name`,
-          `address`, `purpose`, `date_of_birth`, `phone_number`, `gender`)
-          VALUES('$patientName', '$address', '$purpose', '$dateBirth',
-          '$phoneNumber', '$gender');";
+        // Prepare INSERT query
+        $query = "INSERT INTO `patients`(`patient_name`, `address`, `purpose`, `date_of_birth`, `phone_number`, `gender`)
+                  VALUES('$patientName', '$address', '$purpose', '$dateBirth', '$phoneNumber', '$gender');";
         try {
+            // Start transaction and execute query
             $con->beginTransaction();
             $stmtPatient = $con->prepare($query);
             $stmtPatient->execute();
             $con->commit();
             $message = 'Patient added successfully.';
-        } catch(PDOException $ex) {
+        } catch (PDOException $ex) {
+            // Rollback on error and output exception details (for debugging only)
             $con->rollback();
             echo $ex->getMessage();
             echo $ex->getTraceAsString();
             exit;
         }
     }
+    // Redirect with a success or error message
     header("Location:congratulation.php?goto_page=patients.php&message=$message");
     exit;
 }
 
+// Retrieve all patients for the listing
 try {
-    $query = "SELECT `id`, `patient_name`, `address`,
-                     `purpose`, date_format(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
+    $query = "SELECT `id`, `patient_name`, `address`, `purpose`,
+                     DATE_FORMAT(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
                      `phone_number`, `gender`,
-                     date_format(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
+                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
               FROM `patients`
               ORDER BY `patient_name` ASC;";
     $stmtPatient1 = $con->prepare($query);
     $stmtPatient1->execute();
-} catch(PDOException $ex) {
+} catch (PDOException $ex) {
     echo $ex->getMessage();
     echo $ex->getTraceAsString();
     exit;
@@ -61,20 +69,23 @@ try {
 <head>
   <?php include './config/site_css_links.php'; ?>
   <?php include './config/data_tables_css.php'; ?>
+  <!-- Tempus Dominus DateTime Picker CSS -->
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- Logo for the tab bar -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Patients - Mamatid Health Center System</title>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
-  <!-- Site wrapper -->
+  <!-- Site Wrapper -->
   <div class="wrapper">
-    <!-- Navbar -->
-    <?php include './config/header.php';
-          include './config/sidebar.php'; ?>
-    <!-- Content Wrapper. Contains page content -->
+    <!-- Navbar and Sidebar -->
+    <?php 
+      include './config/header.php';
+      include './config/sidebar.php'; 
+    ?>
+    <!-- Content Wrapper -->
     <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
+      <!-- Content Header -->
       <section class="content-header">
         <div class="container-fluid">
           <div class="row mb-2">
@@ -82,16 +93,17 @@ try {
               <h1>GENERAL INFORMATION</h1>
             </div>
           </div>
-        </div><!-- /.container-fluid -->
+        </div>
       </section>
 
-      <!-- Main content -->
+      <!-- Main Content -->
       <section class="content">
-        <!-- Default box -->
+        <!-- Patient Add Form -->
         <div class="card card-outline card-primary rounded-0 shadow">
           <div class="card-header">
             <h3 class="card-title">ADD PATIENT</h3>
             <div class="card-tools">
+              <!-- Collapse Button -->
               <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                 <i class="fas fa-minus"></i>
               </button>
@@ -100,22 +112,25 @@ try {
           <div class="card-body">
             <form method="post">
               <div class="row">
+                <!-- Patient Name -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <label>Patient Name</label>
                   <input type="text" id="patient_name" name="patient_name" required="required"
-                    class="form-control form-control-sm rounded-0"/>
+                         class="form-control form-control-sm rounded-0"/>
                 </div>
-                <br><br><br>
+                <!-- Address -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <label>Address</label>
                   <input type="text" id="address" name="address" required="required"
-                    class="form-control form-control-sm rounded-0"/>
+                         class="form-control form-control-sm rounded-0"/>
                 </div>
+                <!-- Purpose -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <label>Purpose</label>
                   <input type="text" id="purpose" name="purpose" required="required"
-                    class="form-control form-control-sm rounded-0"/>
+                         class="form-control form-control-sm rounded-0"/>
                 </div>
+                <!-- Date of Birth -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <div class="form-group">
                     <label>Date of Birth</label>
@@ -129,11 +144,13 @@ try {
                     </div>
                   </div>
                 </div>
+                <!-- Phone Number -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <label>Phone Number</label>
                   <input type="text" id="phone_number" name="phone_number" required="required"
-                    class="form-control form-control-sm rounded-0"/>
+                         class="form-control form-control-sm rounded-0"/>
                 </div>
+                <!-- Gender -->
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <label>Gender</label>
                   <select class="form-control form-control-sm rounded-0" id="gender" name="gender">
@@ -146,7 +163,7 @@ try {
                 <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp;</div>
                 <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
                   <button type="submit" id="save_Patient" name="save_Patient" 
-                    class="btn btn-primary btn-sm btn-flat btn-block">Save</button>
+                          class="btn btn-primary btn-sm btn-flat btn-block">Save</button>
                 </div>
               </div>
             </form>
@@ -154,10 +171,11 @@ try {
         </div>
       </section>
 
+      <!-- Spacer -->
       <br/><br/><br/>
 
+      <!-- Patient List Section -->
       <section class="content">
-        <!-- Default box -->
         <div class="card card-outline card-primary rounded-0 shadow">
           <div class="card-header">
             <h3 class="card-title">TOTAL PATIENTS</h3>
@@ -169,8 +187,7 @@ try {
           </div>
           <div class="card-body">
             <div class="row table-responsive">
-              <table id="all_patients" class="table table-striped dataTable table-bordered dtr-inline" 
-                     role="grid" aria-describedby="all_patients_info">
+              <table id="all_patients" class="table table-striped dataTable table-bordered dtr-inline" role="grid" aria-describedby="all_patients_info">
                 <thead>
                   <tr>
                     <th>S.No</th>
@@ -187,8 +204,8 @@ try {
                 <tbody>
                   <?php
                   $count = 0;
-                  while($row = $stmtPatient1->fetch(PDO::FETCH_ASSOC)){
-                    $count++;
+                  while ($row = $stmtPatient1->fetch(PDO::FETCH_ASSOC)) {
+                      $count++;
                   ?>
                   <tr>
                     <td><?php echo $count; ?></td>
@@ -213,35 +230,40 @@ try {
               </table>
             </div>
           </div>
-          <!-- /.card-footer-->
+          <!-- /.card-footer -->
         </div>
-        <!-- /.card -->
       </section>
     </div>
-    <!-- /.content -->
     <!-- /.content-wrapper -->
+
     <?php
+      // Include the footer and get any message passed via GET
       include './config/footer.php';
-      $message = '';
-      if(isset($_GET['message'])) {
-        $message = $_GET['message'];
-      }
+      $message = isset($_GET['message']) ? $_GET['message'] : '';
     ?>
     <!-- /.control-sidebar -->
     <?php include './config/site_js_links.php'; ?>
     <?php include './config/data_tables_js.php'; ?>
+    <!-- Scripts for date/time picker and DataTable -->
     <script src="plugins/moment/moment.min.js"></script>
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <script>
+      // Highlight the patients menu
       showMenuSelected("#mnu_patients", "#mi_patients");
+      
+      // Display custom message if available
       var message = '<?php echo $message;?>';
       if(message !== '') {
         showCustomMessage(message);
       }
+      
+      // Initialize the datetimepicker for Date of Birth
       $('#date_of_birth').datetimepicker({
           format: 'L'
       });
+      
+      // Initialize the DataTable for patient listing
       $(function () {
         $("#all_patients").DataTable({
           "responsive": true,
