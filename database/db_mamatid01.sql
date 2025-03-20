@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 14, 2025 at 07:53 AM
+-- Generation Time: Mar 20, 2025 at 04:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -184,6 +184,13 @@ CREATE TABLE `time_in_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `time_in_logs`
+--
+
+INSERT INTO `time_in_logs` (`id`, `user_id`, `log_date`, `time_in`) VALUES
+(4, 3, '2025-03-16', '03:02:04');
+
+--
 -- Triggers `time_in_logs`
 --
 DELIMITER $$
@@ -215,7 +222,7 @@ CREATE TABLE `time_logs` (
 --
 
 INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
-(7, 4, '2025-03-14', '06:39:18', NULL, 0.00);
+(12, 3, '2025-03-16', '03:02:04', '03:03:33', 0.02);
 
 -- --------------------------------------------------------
 
@@ -229,6 +236,13 @@ CREATE TABLE `time_out_logs` (
   `log_date` date NOT NULL,
   `time_out` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `time_out_logs`
+--
+
+INSERT INTO `time_out_logs` (`id`, `user_id`, `log_date`, `time_out`) VALUES
+(2, 3, '2025-03-16', '03:03:33');
 
 --
 -- Triggers `time_out_logs`
@@ -393,19 +407,19 @@ ALTER TABLE `patient_visits`
 -- AUTO_INCREMENT for table `time_in_logs`
 --
 ALTER TABLE `time_in_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `time_logs`
 --
 ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `time_out_logs`
 --
 ALTER TABLE `time_out_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
