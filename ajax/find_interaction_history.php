@@ -42,8 +42,3 @@ $serial = 0;
 
 echo $data;
 ?>
-
-
-
-
-
