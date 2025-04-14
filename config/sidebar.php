@@ -43,8 +43,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
 
                 <!-- General Menu (Patients & Prescriptions) -->
-                <li class="nav-item <?php echo (in_array($current_page, ['patients.php', 'new_prescription.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['patients.php', 'new_prescription.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-injured"></i>
                         <p>
                             General
@@ -52,26 +52,68 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <!-- Add Patients -->
                         <li class="nav-item">
-                            <a href="patients.php" class="nav-link <?php echo ($current_page == 'patients.php' ? 'active' : ''); ?>" id="mi_patients">
+                            <a href="family_members.php" class="nav-link <?php echo ($current_page == 'family_members.php' ? 'active' : ''); ?>" id="mi_family_members">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Patients</p>
+                                <p>Family Members</p>
                             </a>
                         </li>
-                        <!-- Add Blood Pressure (Prescription) -->
                         <li class="nav-item">
-                            <a href="new_prescription.php" class="nav-link <?php echo ($current_page == 'new_prescription.php' ? 'active' : ''); ?>" id="mi_new_prescription">
+                            <a href="random_blood_sugar.php" class="nav-link <?php echo ($current_page == 'random_blood_sugar.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Blood Pressure</p>
+                                <p>Random Blood Sugar</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="deworming.php" class="nav-link <?php echo ($current_page == 'deworming.php' ? 'active' : ''); ?>" id="mi_deworming">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Deworming</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="tetanus_toxoid.php" class="nav-link <?php echo ($current_page == 'tetanus_toxoid.php' ? 'active' : ''); ?>" id="mi_tetanus_toxoid">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Tetanus Toxoid</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="bp_monitoring.php" class="nav-link <?php echo ($current_page == 'bp_monitoring.php' ? 'active' : ''); ?>" id="mi_bp_monitoring">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>BP Monitoring</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="family_planning.php" class="nav-link <?php echo ($current_page == 'family_planning.php' ? 'active' : ''); ?>" id="mi_family_planning">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Family Planning</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Appointments Menu -->
+                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-calendar-check"></i>
+                        <p>
+                            Appointments
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <!-- Manage Appointments -->
+                        <li class="nav-item">
+                            <a href="manage_appointments.php" class="nav-link <?php echo ($current_page == 'manage_appointments.php' ? 'active' : ''); ?>" id="mi_appointments">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Manage Appointments</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
                 <!-- Medicines Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php']) ? 'menu-open' : ''); ?>" id="mnu_medicines">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php', 'medicine_inventory.php']) ? 'menu-open' : ''); ?>" id="mnu_medicines">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php', 'medicine_inventory.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-pills"></i>
                         <p>
                             Medicines
@@ -91,6 +133,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <a href="medicine_details.php" class="nav-link <?php echo ($current_page == 'medicine_details.php' ? 'active' : ''); ?>" id="mi_medicine_details">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Medicine Details</p>
+                            </a>
+                        </li>
+                        <!-- Medicine Inventory -->
+                        <li class="nav-item">
+                            <a href="medicine_inventory.php" class="nav-link <?php echo ($current_page == 'medicine_inventory.php' ? 'active' : ''); ?>" id="mi_medicine_inventory">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Inventory Management</p>
                             </a>
                         </li>
                     </ul>

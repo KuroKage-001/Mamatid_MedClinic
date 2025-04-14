@@ -53,6 +53,15 @@ $packing = $_GET['packing'];
 
 // Get list of medicines as HTML options (function defined in common_functions.php)
 $medicines = getMedicines($con, $medicineId);
+
+// Add this after the existing query to get medicine details
+$inventoryQuery = "SELECT quantity, batch_number, expiry_date, unit_price 
+                  FROM medicine_inventory 
+                  WHERE medicine_details_id = :medicine_detail_id";
+$inventoryStmt = $con->prepare($inventoryQuery);
+$inventoryStmt->bindParam(':medicine_detail_id', $medicineDetailId);
+$inventoryStmt->execute();
+$inventoryData = $inventoryStmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -116,6 +125,34 @@ $medicines = getMedicines($con, $medicineId);
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
                   <label>Packing</label>
                   <input id="packing" name="packing" class="form-control form-control-sm rounded-0" required value="<?php echo $packing; ?>" />
+                </div>
+
+                <!-- Current Stock -->
+                <div class="form-group">
+                    <label for="quantity">Current Stock</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                           value="<?php echo $inventoryData['quantity'] ?? 0; ?>" required>
+                </div>
+
+                <!-- Batch Number -->
+                <div class="form-group">
+                    <label for="batch_number">Batch Number</label>
+                    <input type="text" class="form-control" id="batch_number" name="batch_number" 
+                           value="<?php echo $inventoryData['batch_number'] ?? ''; ?>">
+                </div>
+
+                <!-- Expiry Date -->
+                <div class="form-group">
+                    <label for="expiry_date">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiry_date" name="expiry_date" 
+                           value="<?php echo $inventoryData['expiry_date'] ?? ''; ?>">
+                </div>
+
+                <!-- Unit Price -->
+                <div class="form-group">
+                    <label for="unit_price">Unit Price</label>
+                    <input type="number" step="0.01" class="form-control" id="unit_price" name="unit_price" 
+                           value="<?php echo $inventoryData['unit_price'] ?? 0; ?>">
                 </div>
 
                 <!-- Submit button -->

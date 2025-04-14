@@ -84,6 +84,7 @@ try {
   <?php include './config/site_css_links.php'; ?>
   <?php include './config/data_tables_css.php'; ?>
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Update Patient Informations - Mamatid Health Center System</title>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">

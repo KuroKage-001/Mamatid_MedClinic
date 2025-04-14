@@ -44,10 +44,16 @@ $medicines = getMedicines($con);
 // Query to retrieve medicine details along with medicine name
 // Note: Consider using an explicit JOIN syntax for clarity
 $query = "select `m`.`medicine_name`,
-`md`.`id`, `md`.`packing`,  `md`.`medicine_id` 
-from `medicines` as `m`, 
-`medicine_details` as `md` 
-where `m`.`id` = `md`.`medicine_id` 
+`md`.`id`, `md`.`packing`,  `md`.`medicine_id`,
+COALESCE(mi.quantity, 0) as current_stock,
+CASE 
+    WHEN COALESCE(mi.quantity, 0) <= 10 THEN 'LOW'
+    WHEN COALESCE(mi.quantity, 0) <= 20 THEN 'MEDIUM'
+    ELSE 'GOOD'
+END as stock_status
+from `medicines` as `m` 
+JOIN `medicine_details` as `md` ON `m`.`id` = `md`.`medicine_id`
+LEFT JOIN medicine_inventory mi ON md.id = mi.medicine_details_id
 order by `m`.`id` asc, `md`.`id` asc;";
 
 try {
@@ -159,6 +165,8 @@ try {
                     <th>S.No</th>
                     <th>Medicine Name</th>
                     <th>Packing</th>
+                    <th>Current Stock</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -173,11 +181,24 @@ try {
                     <td class="text-center"><?php echo $serial; ?></td>
                     <td><?php echo $row['medicine_name']; ?></td>
                     <td><?php echo $row['packing']; ?></td>
+                    <td class="text-center"><?php echo $row['current_stock']; ?></td>
+                    <td class="text-center">
+                      <span class="badge badge-<?php 
+                        echo $row['stock_status'] == 'LOW' ? 'danger' : 
+                            ($row['stock_status'] == 'MEDIUM' ? 'warning' : 'success'); 
+                      ?>">
+                        <?php echo $row['stock_status']; ?>
+                      </span>
+                    </td>
                     <td class="text-center">
                       <!-- Link to update medicine detail, passing required parameters -->
                       <a href="update_medicine_details.php?medicine_id=<?php echo $row['medicine_id']; ?>&medicine_detail_id=<?php echo $row['id']; ?>&packing=<?php echo $row['packing']; ?>" 
-                      class="btn btn-primary btn-sm btn-flat">
+                        class="btn btn-primary btn-sm btn-flat">
                         <i class="fa fa-edit"></i>
+                      </a>
+                      <a href="medicine_inventory.php?medicine_detail_id=<?php echo $row['id']; ?>" 
+                        class="btn btn-info btn-sm btn-flat">
+                        <i class="fa fa-boxes"></i>
                       </a>
                     </td>
                   </tr>
