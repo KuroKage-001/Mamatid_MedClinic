@@ -1,7 +1,7 @@
 <?php
 // Include the PDF library and database connection
-include("./pdflib/logics-builder-pdf.php");
-include './config/connection.php';
+include("../pdflib/logics-builder-pdf.php");
+include '../config/connection.php';
 
 // Set report title and retrieve GET parameters
 $reportTitle = "Disease Based Visits";

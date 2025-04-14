@@ -1,6 +1,6 @@
 <?php
-include './config/connection.php';
-include './common_service/common_functions.php';
+include '../config/connection.php';
+include '../common_service/common_functions.php';
 
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
@@ -11,7 +11,7 @@ $toArr = explode("/", $to);
 $fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
 $toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
 
-$query = "SELECT * FROM random_blood_sugar 
+$query = "SELECT * FROM tetanus_toxoid 
           WHERE DATE(date) BETWEEN :from_date AND :to_date 
           ORDER BY date DESC";
 
@@ -27,7 +27,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Random Blood Sugar Report</title>
+  <title>Tetanus Toxoid Report</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -63,7 +63,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
   <div class="header">
     <h2>MAMATID HEALTH CENTER</h2>
-    <h3>RANDOM BLOOD SUGAR REPORT</h3>
+    <h3>TETANUS TOXOID REPORT</h3>
   </div>
   
   <div class="date-range">
@@ -77,8 +77,8 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Name</th>
         <th>Age</th>
         <th>Address</th>
-        <th>Blood Sugar Reading</th>
-        <th>Classification</th>
+        <th>Diagnosis</th>
+        <th>Remarks</th>
       </tr>
     </thead>
     <tbody>
@@ -88,17 +88,8 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td><?php echo htmlspecialchars($row['name']); ?></td>
         <td><?php echo htmlspecialchars($row['age']); ?></td>
         <td><?php echo htmlspecialchars($row['address']); ?></td>
-        <td><?php echo htmlspecialchars($row['result']); ?></td>
-        <td><?php 
-          $result = floatval($row['result']);
-          if ($result < 70) {
-            echo "Low";
-          } elseif ($result >= 70 && $result <= 140) {
-            echo "Normal";
-          } else {
-            echo "High";
-          }
-        ?></td>
+        <td><?php echo htmlspecialchars($row['diagnosis']); ?></td>
+        <td><?php echo htmlspecialchars($row['remarks']); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

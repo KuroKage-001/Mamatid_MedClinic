@@ -4,9 +4,11 @@ include '../config/connection.php';
 if(isset($_GET['patient_id'])) {
     $patient_id = $_GET['patient_id'];
     
-    $query = "SELECT * FROM family_planning 
-              WHERE patient_id = :patient_id 
-              ORDER BY date DESC";
+    $query = "SELECT fp.*, c.full_name, c.civil_status, c.educational_attainment 
+              FROM family_planning fp 
+              JOIN clients c ON fp.name = c.full_name 
+              WHERE c.id = :patient_id 
+              ORDER BY fp.date DESC";
     
     $stmt = $con->prepare($query);
     $stmt->bindParam(':patient_id', $patient_id);
@@ -20,7 +22,7 @@ if(isset($_GET['patient_id'])) {
     foreach($result as $row) {
         $html .= '<tr>';
         $html .= '<td class="p-1 align-middle text-center">' . $sno++ . '</td>';
-        $html .= '<td class="p-1 align-middle">' . htmlspecialchars($row['name']) . '</td>';
+        $html .= '<td class="p-1 align-middle">' . htmlspecialchars($row['full_name']) . '</td>';
         $html .= '<td class="p-1 align-middle text-center">' . date('m/d/Y', strtotime($row['date'])) . '</td>';
         $html .= '<td class="p-1 align-middle text-center">' . htmlspecialchars($row['age']) . '</td>';
         $html .= '<td class="p-1 align-middle">' . htmlspecialchars($row['address']) . '</td>';

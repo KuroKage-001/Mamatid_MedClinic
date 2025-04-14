@@ -12,27 +12,32 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="dashboard.php" class="brand-link logo-switch bg-primary">
-        <h4 class="brand-image-xl logo-xs mb-0 text-center"><b>MHC</b></h4>
-        <h4 class="brand-image-xl logo-xl mb-0 text-center">Clinic <b>MHC</b></h4>
+        <h3 class="brand-image-xl logo-xs mb-0 text-center"><b>MHC</b></h3>
+        <h3 class="brand-image-xl logo-xl mb-0 text-center">Clinic <b>MHC</b></h3>
     </a>
 
+    <br>
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel -->
-        <div class="user-panel mt-3 pb-3 mb-3 position-relative">
-            <!-- User Image -->
-            <div class="image" style="position: absolute; left: -5%; top: 50%; transform: translateY(-75%); z-index: 1;">
-                <img src="user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-img" alt="User Image" />
-            </div>
-            <!-- User Info -->
-            <div class="info" style="margin-left: 4em; position: relative; z-index: 2;">
-                <a href="#" class="d-block user-display-name"><?php echo $_SESSION['display_name']; ?></a>
+        <div class="user-panel mt-3 pb-3 mb-3">
+            <div class="user-info-container d-flex align-items-center">
+                <!-- User Image -->
+                <div class="user-image-container">
+                    <img src="user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-img" alt="User Image" />
+                    <span class="user-status-indicator online"></span>
+                </div>
+                <!-- User Info -->
+                <div class="user-info">
+                    <a href="#" class="d-block user-display-name"><?php echo $_SESSION['display_name']; ?></a>
+                    <span class="user-role">Administrator</span>
+                </div>
             </div>
         </div>
         
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-legacy" data-widget="treeview" role="menu" data-accordion="false">
                 
                 <!-- Dashboard Menu Item -->
                 <li class="nav-item" id="mnu_dashboard">
@@ -43,6 +48,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
 
                 <!-- General Menu (Patients & Prescriptions) -->
+                <li class="nav-header">PATIENT MANAGEMENT</li>
                 <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-injured"></i>
@@ -61,7 +67,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <li class="nav-item">
                             <a href="random_blood_sugar.php" class="nav-link <?php echo ($current_page == 'random_blood_sugar.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Random Blood Sugar</p>
+                                <p>RBS</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -91,6 +97,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
+                <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'active' : ''); ?>">
@@ -101,7 +108,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <!-- Manage Appointments -->
                         <li class="nav-item">
                             <a href="manage_appointments.php" class="nav-link <?php echo ($current_page == 'manage_appointments.php' ? 'active' : ''); ?>" id="mi_appointments">
                                 <i class="far fa-circle nav-icon"></i>
@@ -116,26 +122,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php', 'medicine_inventory.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-pills"></i>
                         <p>
-                            Medicines
+                            Inventory
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <!-- Add Medicine -->
                         <li class="nav-item">
                             <a href="medicines.php" class="nav-link <?php echo ($current_page == 'medicines.php' ? 'active' : ''); ?>" id="mi_medicines">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Medicine</p>
                             </a>
                         </li>
-                        <!-- Medicine Details -->
                         <li class="nav-item">
                             <a href="medicine_details.php" class="nav-link <?php echo ($current_page == 'medicine_details.php' ? 'active' : ''); ?>" id="mi_medicine_details">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Medicine Details</p>
                             </a>
                         </li>
-                        <!-- Medicine Inventory -->
                         <li class="nav-item">
                             <a href="medicine_inventory.php" class="nav-link <?php echo ($current_page == 'medicine_inventory.php' ? 'active' : ''); ?>" id="mi_medicine_inventory">
                                 <i class="far fa-circle nav-icon"></i>
@@ -145,24 +148,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <!-- Reports Menu (Patient History & Reports) -->
+                <li class="nav-header">REPORTS & MANAGEMENT</li>
+                <!-- Reports Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-edit"></i>
+                        <i class="nav-icon fas fa-chart-line"></i>
                         <p>
-                            Patient History | Reports
+                            Reports
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <!-- Patient History -->
                         <li class="nav-item" id="mnu_patient_history">
                             <a href="patient_history.php" class="nav-link <?php echo ($current_page == 'patient_history.php' ? 'active' : ''); ?>" id="mi_patient_history">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Patient History</p>
                             </a>
                         </li>
-                        <!-- Reports -->
                         <li class="nav-item">
                             <a href="reports.php" class="nav-link <?php echo ($current_page == 'reports.php' ? 'active' : ''); ?>" id="mi_reports">
                                 <i class="far fa-circle nav-icon"></i>
@@ -172,7 +174,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <!-- Users & Time Tracker Menu -->
+                <!-- Users Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fa fa-users"></i>
@@ -182,14 +184,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <!-- Users -->
                         <li class="nav-item">
                             <a href="users.php" class="nav-link <?php echo ($current_page == 'users.php' ? 'active' : ''); ?>" id="mi_users">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Users</p>
                             </a>
                         </li>
-                        <!-- Time In | Time Out -->
                         <li class="nav-item">
                             <a href="time_tracker.php" class="nav-link <?php echo ($current_page == 'time_tracker.php' ? 'active' : ''); ?>" id="mi_time_tracker">
                                 <i class="far fa-circle nav-icon"></i>
@@ -199,62 +199,195 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <!-- Logout Menu Item -->
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link">
+                <!-- Logout -->
+                <li class="nav-item mt-3">
+                    <a href="logout.php" class="nav-link logout-link">
                         <i class="nav-icon fa fa-sign-out-alt"></i>
-                        <p> Logout </p>
+                        <p>Logout</p>
                     </a>
                 </li>
+                <br>
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 </aside>
 
-<!-- Additional CSS -->
 <style>
-/* User image styling */
-.user-img {
-    width: 3em !important;
-    height: 3em !important;
-    border-radius: 50% !important;
-    object-fit: cover;
-    object-position: center;
+/* Root Variables */
+:root {
+    --transition-speed: 0.3s;
+    --primary-color: #3699FF;
+    --hover-color: #187DE4;
+    --active-bg: rgba(54, 153, 255, 0.15);
+    --text-muted: #B5B5C3;
 }
 
-/* Display name styling */
-.user-display-name {
-    font-size: 1.2rem;
-    font-weight: bold;
+/* Sidebar Container */
+.main-sidebar {
+    background: #1E1E2D;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    width: 260px;
+}
+
+/* Brand Logo */
+.brand-link {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 1rem 1rem !important;
+}
+
+.brand-link .logo-xs,
+.brand-link .logo-xl {
     color: #fff;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-    transition: background 0.3s ease;
-    display: inline-block;
+    letter-spacing: 1px;
 }
+
+/* User Panel */
+.user-info-container {
+    padding: 0 1rem;
+    position: relative;
+}
+
+.user-image-container {
+    position: relative;
+    margin-right: 1rem;
+}
+
+.user-img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: transform var(--transition-speed);
+}
+
+.user-img:hover {
+    transform: scale(1.05);
+}
+
+.user-status-indicator {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background-color: #50CD89;
+    border: 2px solid #1E1E2D;
+    border-radius: 50%;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-display-name {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    transition: color var(--transition-speed);
+}
+
 .user-display-name:hover {
-    background: rgba(0, 0, 0, 0.7);
+    color: var(--primary-color);
+    text-decoration: none;
 }
 
-/* Global active state styling for sidebar links */
+.user-role {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Navigation */
+.nav-header {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    padding: 1.5rem 1rem 0.5rem !important;
+}
+
+.nav-sidebar .nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.nav-sidebar .nav-link {
+    color: #9899AC !important;
+    padding: 0.75rem 1rem;
+    margin: 0 0.5rem;
+    border-radius: 0.475rem;
+    transition: all var(--transition-speed);
+}
+
+.nav-sidebar .nav-link:hover {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
 .nav-sidebar .nav-link.active {
-    background-color: rgba(54, 162, 235, 0.7) !important;
+    color: var(--primary-color) !important;
+    background-color: var(--active-bg) !important;
+}
+
+.nav-sidebar .nav-link .nav-icon {
+    color: inherit;
+    font-size: 1.15rem;
+    margin-right: 0.75rem;
+}
+
+/* Treeview */
+.nav-treeview {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.nav-treeview .nav-link {
+    padding: 0.55rem 1rem;
+    font-size: 0.925rem;
+}
+
+.nav-treeview .nav-icon {
+    font-size: 0.85rem !important;
+}
+
+/* Menu Open State */
+.nav-sidebar .menu-open > .nav-link {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Logout Link */
+.logout-link {
+    margin-top: 2rem !important;
+    background-color: rgba(255, 87, 87, 0.1);
+    color: #FF5757 !important;
+    transition: all var(--transition-speed);
+}
+
+.logout-link:hover {
+    background-color: #FF5757 !important;
     color: #fff !important;
 }
 
-/* Active state for submenu (nav-treeview) links */
-.nav-sidebar .nav-treeview .nav-link.active {
-    background-color: rgba(54, 162, 235, 0.7) !important;
-    color: #fff !important;
-}
-
-/* Force parent menu (when open) to display active background */
-.nav-sidebar > .menu-open > .nav-link {
-    background-color: rgba(54, 162, 235, 0.7) !important;
-    color: #fff !important;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .user-panel {
+        padding: 0.5rem;
+    }
+    
+    .user-img {
+        width: 35px !important;
+        height: 35px !important;
+    }
+    
+    .user-display-name {
+        font-size: 0.9rem;
+    }
+    
+    .user-role {
+        font-size: 0.75rem;
+    }
 }
 </style>

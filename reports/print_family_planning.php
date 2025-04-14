@@ -1,17 +1,23 @@
 <?php
-include './config/connection.php';
-include './common_service/common_functions.php';
+include '../config/connection.php';
+include '../common_service/common_functions.php';
 
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
+
+// Convert the date strings to MySQL format (yyyy-mm-dd)
+$fromArr = explode("/", $from);
+$toArr = explode("/", $to);
+$fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
+$toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
 
 $query = "SELECT * FROM family_planning 
           WHERE DATE(date) BETWEEN :from_date AND :to_date 
           ORDER BY date DESC";
 
 $stmt = $con->prepare($query);
-$stmt->bindParam(':from_date', $from);
-$stmt->bindParam(':to_date', $to);
+$stmt->bindParam(':from_date', $fromMysql);
+$stmt->bindParam(':to_date', $toMysql);
 $stmt->execute();
 
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -71,8 +77,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Name</th>
         <th>Age</th>
         <th>Address</th>
-        <th>Civil Status</th>
-        <th>Educational Attainment</th>
       </tr>
     </thead>
     <tbody>
@@ -82,8 +86,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td><?php echo htmlspecialchars($row['name']); ?></td>
         <td><?php echo htmlspecialchars($row['age']); ?></td>
         <td><?php echo htmlspecialchars($row['address']); ?></td>
-        <td><?php echo htmlspecialchars($row['civil_status']); ?></td>
-        <td><?php echo htmlspecialchars($row['educational_attainment']); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

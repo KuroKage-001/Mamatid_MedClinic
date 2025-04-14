@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 14, 2025 at 01:03 PM
+-- Generation Time: Apr 15, 2025 at 12:39 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,9 +48,11 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 'Vikir Baskerville', '09918719610', 'Mamatid', '2025-02-10', 'Male', '2025-04-15', '15:00:00', 'kkkkk', 'pending', '', '2025-04-14 08:14:37', NULL),
-(2, 'Tess Maldove', '09918719610', 'Mamatid 01', '2025-04-14', 'Female', '2025-04-15', '12:00:00', 'checkup', 'pending', NULL, '2025-04-14 08:16:53', NULL),
-(3, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-15', '22:15:00', 'Checkup', 'completed', 'Okay!', '2025-04-14 09:09:42', '2025-04-14 09:28:31');
+(1, 'Vikir Baskerville', '09918719610', 'Mamatid', '2025-02-10', 'Male', '2025-04-15', '15:00:00', 'kkkkk', 'completed', 'Done', '2025-04-14 08:14:37', '2025-04-14 20:58:53'),
+(2, 'Tess Maldove', '09918719610', 'Mamatid 01', '2025-04-14', 'Female', '2025-04-15', '12:00:00', 'checkup', 'completed', 'Done', '2025-04-14 08:16:53', '2025-04-14 20:59:22'),
+(3, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-15', '22:15:00', 'Checkup', 'completed', 'Okay!', '2025-04-14 09:09:42', '2025-04-14 09:28:31'),
+(4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
+(5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'pending', NULL, '2025-04-14 21:07:07', NULL);
 
 -- --------------------------------------------------------
 
@@ -71,6 +73,13 @@ CREATE TABLE `bp_monitoring` (
   `cp_number` varchar(20) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bp_monitoring`
+--
+
+INSERT INTO `bp_monitoring` (`id`, `name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`, `created_at`) VALUES
+(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 'Male', '100', 1, 1, 0, '09918719610', '2025-04-14 11:37:47');
 
 -- --------------------------------------------------------
 
@@ -99,7 +108,8 @@ CREATE TABLE `clients` (
 INSERT INTO `clients` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
 (1, 'Vikir Baskerville', 'vikir@gmail.com', '0ecc8a29dd0f2feb66805502e89013b6', '09918719610', 'Mamatid 01', '2016-06-14', 'Male', '2025-04-14 08:25:43', '90301cd1e766b6ea4c21aed6196782cab92223e8ad34700c599b9a8a6319510d', '2025-04-14 12:02:00'),
 (2, 'admin', 'admin@gmail.com', '0192023a7bbd73250516f069df18b500', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-14 08:54:37', NULL, NULL),
-(3, 'Doc Leo', 'leomaresc853@gmail.com', 'b9818d72c31e400826d5f19ed8b7d36f', '09918719610', 'Baskerville Main Villa', '2020-07-15', 'Male', '2025-04-14 09:03:17', '371dc36b4be5583ae6075db18fa7296787c6460324850637b27537b6e1e11615', '2025-04-14 12:03:34');
+(3, 'Doc Leo', 'leomaresc853@gmail.com', 'b9818d72c31e400826d5f19ed8b7d36f', '09918719610', 'Baskerville Main Villa', '2020-07-15', 'Male', '2025-04-14 09:03:17', '371dc36b4be5583ae6075db18fa7296787c6460324850637b27537b6e1e11615', '2025-04-14 12:03:34'),
+(4, 'Doc Vikir', 'docvikir@gmail.com', '8e6abe9f6ae4aabaf88ab9d3ecee4e41', '09918719610', 'Main Villa', '2018-06-06', 'Male', '2025-04-14 22:03:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -121,7 +131,8 @@ CREATE TABLE `deworming` (
 --
 
 INSERT INTO `deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 50, '2025-04-14', '2025-04-14 10:32:04');
+(1, 'Vikir Baskerville 01', '2025-04-14', 50, '2025-04-14', '2025-04-14 10:32:04'),
+(2, 'Pomeranian Baskerville', '2025-04-15', 50, '2025-04-07', '2025-04-14 22:37:11');
 
 -- --------------------------------------------------------
 
@@ -142,7 +153,8 @@ CREATE TABLE `family_members` (
 --
 
 INSERT INTO `family_members` (`id`, `serial_number`, `name`, `date`, `created_at`) VALUES
-(1, '1', 'Vikir Baskerville 01', '2025-04-14', '2025-04-14 10:12:51');
+(1, '1', 'Vikir Baskerville 01', '2025-04-14', '2025-04-14 10:12:51'),
+(2, '2', 'Pomeranian Baskerville', '2025-04-15', '2025-04-14 22:36:12');
 
 -- --------------------------------------------------------
 
@@ -158,6 +170,13 @@ CREATE TABLE `family_planning` (
   `address` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `family_planning`
+--
+
+INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`) VALUES
+(1, 'Vikir Baskerville 01', '2025-04-15', 50, 'Mamatid 01', '2025-04-14 18:02:33');
 
 -- --------------------------------------------------------
 
@@ -288,106 +307,6 @@ CREATE TABLE `medicine_stock_view` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
---
-
-CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) NOT NULL,
-  `batch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `patients`
---
-
-CREATE TABLE `patients` (
-  `id` int(11) NOT NULL,
-  `patient_name` varchar(60) NOT NULL,
-  `address` varchar(100) NOT NULL,
-  `purpose` varchar(100) NOT NULL,
-  `date_of_birth` date NOT NULL,
-  `phone_number` varchar(12) NOT NULL,
-  `gender` varchar(6) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `patients`
---
-
-INSERT INTO `patients` (`id`, `patient_name`, `address`, `purpose`, `date_of_birth`, `phone_number`, `gender`, `created_at`) VALUES
-(1, 'Mark Cooper', 'Sample Address 101 - Updated', '123654789', '1999-06-23', '091235649879', 'Male', '2025-03-02 17:11:52'),
-(2, 'Pomeranian La Baskerville', 'Baskerville  Main Baskerville', '989877789089', '2025-01-21', '09918719610', 'Female', '2025-03-02 17:11:52'),
-(3, 'Hugo Le Baskerville', 'Main House', 'SECRET', '1979-11-30', '09918719610', 'Male', '2025-03-02 17:11:52'),
-(4, 'Vikir Van Baskerville', 'Main House', '1234567', '2003-08-28', '09918719610', 'Male', '2025-03-02 17:11:52'),
-(5, 'Osiris Le Baskerville', 'Main House', 'SECRET01', '2025-03-11', '09918719610', 'Male', '2025-03-02 17:18:27'),
-(6, 'Abel Baskerville', 'Baskerville Main House 01', 'Checkup', '2000-11-11', '09918719610', 'Male', '2025-03-12 23:15:03');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `patient_medication_history`
---
-
-CREATE TABLE `patient_medication_history` (
-  `id` int(11) NOT NULL,
-  `patient_visit_id` int(11) NOT NULL,
-  `medicine_details_id` int(11) NOT NULL,
-  `quantity` tinyint(4) NOT NULL,
-  `dosage` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `patient_medication_history`
---
-
-INSERT INTO `patient_medication_history` (`id`, `patient_visit_id`, `medicine_details_id`, `quantity`, `dosage`) VALUES
-(1, 1, 1, 5, '250'),
-(2, 1, 6, 2, '500'),
-(3, 2, 2, 2, '250'),
-(4, 2, 7, 2, '250'),
-(5, 5, 2, 4, '3'),
-(6, 8, 2, 90, '6');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `patient_visits`
---
-
-CREATE TABLE `patient_visits` (
-  `id` int(11) NOT NULL,
-  `visit_date` date NOT NULL,
-  `next_visit_date` date DEFAULT NULL,
-  `bp` varchar(23) NOT NULL,
-  `weight` varchar(12) NOT NULL,
-  `disease` varchar(30) NOT NULL,
-  `patient_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `alcohol` tinyint(1) NOT NULL DEFAULT 0,
-  `smoke` tinyint(1) NOT NULL DEFAULT 0,
-  `obese` tinyint(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `patient_visits`
---
-
-INSERT INTO `patient_visits` (`id`, `visit_date`, `next_visit_date`, `bp`, `weight`, `disease`, `patient_id`, `created_at`, `alcohol`, `smoke`, `obese`) VALUES
-(1, '2022-06-28', '2022-06-30', '120/80', '65 kg.', 'Wounded Arm', 1, '2025-03-02 07:27:29', 0, 0, 0),
-(2, '2022-06-30', '2022-07-02', '120/80', '65 kg.', 'Rhinovirus', 1, '2025-03-02 07:27:29', 0, 0, 0),
-(4, '2025-03-03', '2025-03-04', '45', '56', 'Dog', 3, '2025-03-02 07:27:29', 0, 0, 0),
-(5, '2025-03-04', '2025-03-05', '56', '45', 'Dog', 4, '2025-03-02 07:27:29', 0, 0, 0),
-(6, '2025-03-02', '2025-03-02', '56', '56', 'Dog', 4, '2025-03-02 09:55:41', 1, 0, 1),
-(7, '2025-03-02', '2025-03-02', '100', '100', 'Cat', 4, '2025-03-02 10:08:36', 1, 1, 0),
-(8, '2025-03-12', '2025-03-12', '100', '160', 'Snale', 6, '2025-03-12 15:16:29', 1, 1, 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `random_blood_sugar`
 --
 
@@ -406,7 +325,8 @@ CREATE TABLE `random_blood_sugar` (
 --
 
 INSERT INTO `random_blood_sugar` (`id`, `name`, `date`, `address`, `age`, `result`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 50, 'None', '2025-04-14 10:28:13');
+(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 50, 'None', '2025-04-14 10:28:13'),
+(2, 'Pomeranian Baskerville', '2025-04-15', 'Mamatid 01', 50, 'None', '2025-04-14 22:36:52');
 
 -- --------------------------------------------------------
 
@@ -639,33 +559,6 @@ ALTER TABLE `medicine_inventory_transactions`
   ADD KEY `medicine_inventory_id` (`medicine_inventory_id`);
 
 --
--- Indexes for table `migrations`
---
-ALTER TABLE `migrations`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `patients`
---
-ALTER TABLE `patients`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `patient_medication_history`
---
-ALTER TABLE `patient_medication_history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_patient_medication_history_patients_visits_id` (`patient_visit_id`),
-  ADD KEY `fk_patient_medication_history_medicine_details_id` (`medicine_details_id`);
-
---
--- Indexes for table `patient_visits`
---
-ALTER TABLE `patient_visits`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_patients_visit_patient_id` (`patient_id`);
-
---
 -- Indexes for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
@@ -714,37 +607,37 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
 --
 ALTER TABLE `bp_monitoring`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `deworming`
 --
 ALTER TABLE `deworming`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
 --
 ALTER TABLE `family_planning`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `medicines`
@@ -771,34 +664,10 @@ ALTER TABLE `medicine_inventory_transactions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `migrations`
---
-ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `patients`
---
-ALTER TABLE `patients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `patient_medication_history`
---
-ALTER TABLE `patient_medication_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `patient_visits`
---
-ALTER TABLE `patient_visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
 -- AUTO_INCREMENT for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tetanus_toxoid`
@@ -851,19 +720,6 @@ ALTER TABLE `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory_transactions`
   ADD CONSTRAINT `fk_transactions_inventory` FOREIGN KEY (`medicine_inventory_id`) REFERENCES `medicine_inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `patient_medication_history`
---
-ALTER TABLE `patient_medication_history`
-  ADD CONSTRAINT `fk_patient_medication_history_medicine_details_id` FOREIGN KEY (`medicine_details_id`) REFERENCES `medicine_details` (`id`),
-  ADD CONSTRAINT `fk_patient_medication_history_patients_visits_id` FOREIGN KEY (`patient_visit_id`) REFERENCES `patient_visits` (`id`);
-
---
--- Constraints for table `patient_visits`
---
-ALTER TABLE `patient_visits`
-  ADD CONSTRAINT `fk_patients_visit_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`);
 
 --
 -- Constraints for table `time_in_logs`

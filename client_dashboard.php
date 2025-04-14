@@ -387,7 +387,15 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     
     <script>
         $(function() {
-            // Show success message if redirected from successful booking
+            // Initialize SweetAlert2
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            // Show success message if redirected from successful action
             const urlParams = new URLSearchParams(window.location.search);
             const message = urlParams.get('message');
             if (message) {
@@ -398,7 +406,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             }
 
             // Handle delete appointment
-            $('.delete-appointment').click(function() {
+            $('.delete-appointment').on('click', function(e) {
+                e.preventDefault();
                 const id = $(this).data('id');
                 const date = $(this).data('date');
                 const time = $(this).data('time');
@@ -410,7 +419,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = `delete_appointment.php?id=${id}`;

@@ -239,7 +239,7 @@ include './common_service/common_functions.php';
         var from = $("#patients_from").val();
         var to = $("#patients_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_patients_visits.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_patients_visits.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -254,7 +254,7 @@ include './common_service/common_functions.php';
         var to = $("#disease_to").val();
         var disease = $("#disease").val().trim();
         if(from !== '' && to !== '' && disease !== '') {
-          var win = window.open("print_diseases.php?from=" + from + "&to=" + to + "&disease=" + disease, "_blank");
+          var win = window.open("reports/print_diseases.php?from=" + from + "&to=" + to + "&disease=" + disease, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -265,7 +265,7 @@ include './common_service/common_functions.php';
 
       // Medicine Inventory Report
       $("#print_inventory").click(function() {
-        var win = window.open("print_inventory.php", "_blank");
+        var win = window.open("reports/print_inventory.php", "_blank");
         if(win) {
           win.focus();
         } else {
@@ -278,7 +278,7 @@ include './common_service/common_functions.php';
         var from = $("#family_from").val();
         var to = $("#family_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_family_planning.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_family_planning.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -292,7 +292,7 @@ include './common_service/common_functions.php';
         var from = $("#deworming_from").val();
         var to = $("#deworming_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_deworming.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_deworming.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -306,7 +306,7 @@ include './common_service/common_functions.php';
         var from = $("#bp_from").val();
         var to = $("#bp_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_bp_monitoring.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_bp_monitoring.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -320,7 +320,7 @@ include './common_service/common_functions.php';
         var from = $("#blood_sugar_from").val();
         var to = $("#blood_sugar_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_blood_sugar.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_blood_sugar.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {
@@ -334,7 +334,7 @@ include './common_service/common_functions.php';
         var from = $("#tetanus_from").val();
         var to = $("#tetanus_to").val();
         if(from !== '' && to !== '') {
-          var win = window.open("print_tetanus_toxoid.php?from=" + from + "&to=" + to, "_blank");
+          var win = window.open("reports/print_tetanus_toxoid.php?from=" + from + "&to=" + to, "_blank");
           if(win) {
             win.focus();
           } else {

@@ -1,6 +1,6 @@
 <?php
-include './config/connection.php';
-include './common_service/common_functions.php';
+include '../config/connection.php';
+include '../common_service/common_functions.php';
 
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
@@ -11,7 +11,7 @@ $toArr = explode("/", $to);
 $fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
 $toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
 
-$query = "SELECT * FROM bp_monitoring 
+$query = "SELECT * FROM deworming 
           WHERE DATE(date) BETWEEN :from_date AND :to_date 
           ORDER BY date DESC";
 
@@ -27,7 +27,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BP Monitoring Report</title>
+  <title>Deworming Report</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -63,7 +63,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
   <div class="header">
     <h2>MAMATID HEALTH CENTER</h2>
-    <h3>BP MONITORING REPORT</h3>
+    <h3>DEWORMING REPORT</h3>
   </div>
   
   <div class="date-range">
@@ -75,13 +75,8 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <tr>
         <th>Date</th>
         <th>Name</th>
-        <th>Sex</th>
-        <th>Address</th>
-        <th>BP Reading</th>
-        <th>Alcohol</th>
-        <th>Smoke</th>
-        <th>Obese</th>
-        <th>Contact #</th>
+        <th>Age</th>
+        <th>Birthday</th>
       </tr>
     </thead>
     <tbody>
@@ -89,13 +84,8 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <tr>
         <td><?php echo date('m/d/Y', strtotime($row['date'])); ?></td>
         <td><?php echo htmlspecialchars($row['name']); ?></td>
-        <td><?php echo htmlspecialchars($row['sex']); ?></td>
-        <td><?php echo htmlspecialchars($row['address']); ?></td>
-        <td><?php echo htmlspecialchars($row['bp']); ?></td>
-        <td><?php echo $row['alcohol'] ? 'Yes' : 'No'; ?></td>
-        <td><?php echo $row['smoke'] ? 'Yes' : 'No'; ?></td>
-        <td><?php echo $row['obese'] ? 'Yes' : 'No'; ?></td>
-        <td><?php echo htmlspecialchars($row['cp_number']); ?></td>
+        <td><?php echo htmlspecialchars($row['age']); ?></td>
+        <td><?php echo date('m/d/Y', strtotime($row['birthday'])); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
