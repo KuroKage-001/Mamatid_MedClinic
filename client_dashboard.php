@@ -46,75 +46,155 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
 
     <style>
-        .main-sidebar { background-color: #3c4b64 !important }
-        .nav-sidebar .nav-item > .nav-link { color: #fff !important; }
-        .card-primary.card-outline { border-top: 3px solid #3c4b64; }
+        :root {
+            --header-bg: #1a1a2d;
+            --sidebar-bg: #1E1E2D;
+            --primary-color: #3699FF;
+            --text-primary: #ffffff;
+            --text-muted: #B5B5C3;
+            --transition-speed: 0.3s;
+        }
+
+        /* Sidebar Styling */
+        .main-sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand-link {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding: 1rem !important;
+            background: var(--header-bg);
+        }
+
+        .brand-link .brand-image {
+            border-radius: 8px;
+            margin-right: 0.75rem;
+        }
+
+        .brand-text {
+            color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* User Panel */
+        .user-panel {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-panel .info a {
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: color var(--transition-speed);
+        }
+
+        .user-panel .info a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Sidebar Navigation */
+        .nav-sidebar .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-sidebar .nav-link {
+            color: #9899AC !important;
+            padding: 0.75rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 0.475rem;
+            transition: all var(--transition-speed);
+        }
+
+        .nav-sidebar .nav-link:hover {
+            color: var(--text-primary) !important;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-sidebar .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: rgba(54, 153, 255, 0.15) !important;
+        }
+
+        .nav-sidebar .nav-link i {
+            margin-right: 0.75rem;
+        }
+
+        /* Header Styling */
+        .main-header {
+            background: var(--header-bg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .main-header .navbar-nav .nav-link {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .main-header .navbar-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .login-user {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Footer Styling */
+        .main-footer {
+            background: var(--header-bg) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            padding: 1rem;
+        }
+
+        .main-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--transition-speed);
+        }
+
+        .main-footer a:hover {
+            color: #187DE4;
+        }
+
+        /* Content Wrapper Adjustments */
+        .content-wrapper {
+            background: #f5f8fa;
+            padding-top: 60px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.475rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #ebedf3;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .brand-text {
+                font-size: 1.1rem;
+            }
+            
+            .login-user {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-dark navbar-light fixed-top">
-            <!-- Left navbar links -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-                </li>
-            </ul>
-            <a href="#" class="navbar-brand">
-                <span class="brand-text font-weight-light">Mamatid Health Center System</span>
-            </a>
-            <!-- Right navbar links -->
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <div class="login-user text-light font-weight-bolder">Hello, <?php echo $_SESSION['client_name']; ?>!</div>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="client_dashboard.php" class="brand-link">
-                <img src="dist/img/logo01.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Client Portal</span>
-            </a>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Sidebar user panel -->
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="info">
-                        <a href="#" class="d-block"><?php echo $_SESSION['client_name']; ?></a>
-                    </div>
-                </div>
-
-                <!-- Sidebar Menu -->
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="client_dashboard.php" class="nav-link active">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="book_appointment.php" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-plus"></i>
-                                <p>Book Appointment</p>
-                            </a>
-                        </li>
-                        <li class="nav-item mt-auto">
-                            <a href="client_logout.php" class="nav-link text-danger">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+        <?php include './config/client_header.php'; ?>
+        <?php include './config/client_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -379,8 +459,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             </section>
         </div>
 
-        <!-- Footer -->
-        <?php include './config/footer.php'; ?>
+        <?php include './config/client_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

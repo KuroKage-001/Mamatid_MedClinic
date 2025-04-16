@@ -83,45 +83,187 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
     <!-- Additional Custom CSS -->
     <link rel="stylesheet" href="dist/css/adminlte01.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    
+    <!-- Include SweetAlert2 CSS -->
+    <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+    
+    <!-- Include jQuery and SweetAlert2 JS -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <!-- Include Animate.css for smooth animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
     <style>
         /* Background image styling for the login page */
         body.login-page.light-mode {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
                         url('dist/img/bg-001.jpg') no-repeat center center fixed;
             background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Login box styling: smaller and centered */
+        /* Login box styling */
         .login-box {
             max-width: 400px;
             width: 90%;
-            margin: 2rem auto;
+            margin: 0 auto;
         }
 
-        /* Rounded corners for the outer card */
+        /* Card styling */
         .card.card-outline.card-primary {
-            border-radius: 10px !important;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
 
-        /* Rounded corners for the inner card body */
         .card-body.login-card-body {
-            border-radius: 10px !important;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        /* Logo styling */
+        .login-logo img {
+            width: 120px;
+            height: 120px;
+            transition: transform 0.3s ease;
+            border-radius: 50% !important;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-logo img:hover {
+            transform: scale(1.05);
         }
 
         .text-stroked {
             color: white;
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .cursor {
-            animation: blink 1s infinite;
+        /* Form styling */
+        .form-control {
+            height: 45px;
+            border-radius: 10px;
+            border: 1px solid #e4e6ef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+        .form-control:focus {
+            border-color: #3699FF;
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+        }
+
+        .input-group-text {
+            border-radius: 10px;
+            border: 1px solid #e4e6ef;
+            background-color: #f5f8fa;
+            color: #7E8299;
+        }
+
+        /* Button styling */
+        .btn-primary {
+            height: 45px;
+            border-radius: 10px;
+            background-color: #3699FF;
+            border-color: #3699FF;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #187DE4;
+            border-color: #187DE4;
+            transform: translateY(-1px);
+        }
+
+        /* Remember me checkbox styling */
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            margin-top: 0;
+            border: 1px solid #e4e6ef;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            padding-left: 0.5rem;
+            color: #7E8299;
+            cursor: pointer;
+        }
+
+        /* Form labels */
+        .form-label {
+            color: #3F4254;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Links styling */
+        .btn-link {
+            color: #3699FF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .btn-link:hover {
+            color: #187DE4;
+            text-decoration: none;
+        }
+
+        .btn-outline-primary {
+            border-color: #3699FF;
+            color: #3699FF;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #3699FF;
+            border-color: #3699FF;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Modern toast styling */
+        .modern-toast {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15) !important;
+            backdrop-filter: blur(4px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+        }
+
+        .modern-toast.swal2-icon-error {
+            border-left: 4px solid #dc3545 !important;
+        }
+
+        .modern-toast .swal2-title {
+            color: #1a1a1a !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .modern-toast .swal2-html-container {
+            color: #4a5568 !important;
+            font-size: 0.95rem !important;
+            margin: 5px 0 0 0 !important;
+            padding: 0 !important;
+        }
+
+        .modern-toast .swal2-timer-progress-bar {
+            background: #dc3545 !important;
+            height: 3px !important;
         }
     </style>
 </head>
@@ -145,24 +287,53 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
                     <span id="typewriter-text"></span><span class="cursor">|</span>
                 </p>
 
-                <?php 
-                if($message != '') {
-                    echo '<div id="alertMessage" class="alert alert-danger text-center" role="alert" style="opacity: 0.9;">
-                        <i class="fas fa-exclamation-circle"></i> '.$message.'
-                    </div>';
-                }
-                ?>
+                <?php if (!empty($message)): ?>
+                <script>
+                    $(document).ready(function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'modern-toast'
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Access Denied',
+                            html: '<div style="display: flex; align-items: center; gap: 8px;">' +
+                                  '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
+                                  '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
+                                  '</div>',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown animate__faster'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp animate__faster'
+                            }
+                        });
+                    });
+                </script>
+                <?php endif; ?>
 
                 <!-- Login Form -->
                 <form method="post" class="p-3">
                     <!-- Email field -->
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-bold">Email</label>
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light">
+                            <span class="input-group-text">
                                 <i class="fas fa-envelope"></i>
                             </span>
-                            <input type="email" class="form-control form-control-lg"
+                            <input type="email" class="form-control"
                                    placeholder="Enter your email"
                                    id="email" name="email"
                                    value="<?php echo htmlspecialchars($rememberedEmail); ?>"
@@ -171,13 +342,13 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
                     </div>
 
                     <!-- Password field -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-bold">Password</label>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light">
+                            <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" class="form-control form-control-lg"
+                            <input type="password" class="form-control"
                                    placeholder="Enter your password"
                                    id="password" name="password"
                                    required>
@@ -185,7 +356,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
                     </div>
 
                     <!-- Remember Me checkbox -->
-                    <div class="form-check mb-3">
+                    <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox"
                                id="remember_me" name="remember_me"
                                <?php echo ($rememberedEmail !== '') ? 'checked' : ''; ?>>
@@ -194,22 +365,15 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
                         </label>
                     </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="submit" name="login" class="btn btn-primary btn-block">Sign In</button>
-                        </div>
-                    </div>
+                    <button type="submit" name="login" class="btn btn-primary w-100">
+                        Sign In
+                    </button>
                 </form>
 
                 <div class="text-center mt-4">
                     <div class="row">
-                        <div class="col-12 mb-3">
-                            <a href="forgot_password.php" class="btn btn-link text-primary">
-                                <i class="fas fa-key mr-1"></i> Forgot Password?
-                            </a>
-                        </div>
                         <div class="col-12">
-                            <a href="client_register.php" class="btn btn-outline-primary">
+                            <a href="client_register.php" class="btn btn-outline-primary w-100">
                                 <i class="fas fa-user-plus mr-1"></i> Create New Account
                             </a>
                         </div>
@@ -247,16 +411,6 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
 
             typeEffect();
         });
-
-        // Auto-hide alert after 5 seconds
-        if (document.getElementById("alertMessage")) {
-            setTimeout(function() {
-                var alertBox = document.getElementById("alertMessage");
-                alertBox.style.transition = "opacity 0.5s ease";
-                alertBox.style.opacity = "0";
-                setTimeout(() => alertBox.remove(), 500);
-            }, 5000);
-        }
     </script>
 </body>
 </html> 

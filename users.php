@@ -33,6 +33,10 @@ if (isset($_POST['save_user'])) {
             // Commit transaction
             $con->commit();
             $message = 'User registered successfully';
+            
+            // Redirect with success message
+            header("location:users.php?message=" . urlencode($message));
+            exit;
         } catch (PDOException $ex) {
             // Rollback transaction on error and output debug info (not recommended for production)
             $con->rollback();
@@ -42,11 +46,9 @@ if (isset($_POST['save_user'])) {
         }
     } else {
         $message = 'A problem occurred in image uploading.';
+        header("location:users.php?message=" . urlencode($message) . "&type=error");
+        exit;
     }
-
-    // Redirect to congratulation page with a message
-    header("location:congratulation.php?goto_page=users.php&message=$message");
-    exit;
 }
 
 // Query to get all users ordered by display name
@@ -212,7 +214,14 @@ try {
                     <td class="px-2 py-1 align-middle"><?php echo $row['display_name']; ?></td>
                     <td class="px-2 py-1 align-middle"><?php echo $row['user_name']; ?></td>
                     <td class="px-2 py-1 align-middle text-center">
-                      <a href="update_user.php?user_id=<?php echo $row['id']; ?>" class="btn btn-primary btn-sm btn-flat">
+                      <?php 
+                        // Determine button color based on permissions
+                        $buttonClass = ($_SESSION['user_id'] == $row['id']) ? 'btn-success' : 'btn-danger';
+                        $isDisabled = ($_SESSION['user_id'] != $row['id']) ? 'disabled' : '';
+                      ?>
+                      <a href="update_user.php?user_id=<?php echo $row['id']; ?>" 
+                         class="btn <?php echo $buttonClass; ?> btn-sm btn-flat" 
+                         <?php echo $isDisabled; ?>>
                         <i class="fa fa-edit"></i>
                       </a>
                     </td>
@@ -244,14 +253,29 @@ try {
     // Highlight the Users menu in the sidebar
     showMenuSelected("#mnu_users", "");
 
-    // If a message exists, display it using a custom message function
-    var message = '<?php echo $message; ?>';
-    if (message !== '') {
-      showCustomMessage(message);
-    }
+    $(function() {
+      // Initialize Toast
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
 
-    // Duplicate username check using AJAX on blur event
-    $(document).ready(function() {
+      // Show message if redirected with message parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      const type = urlParams.get('type') || 'success';
+      
+      if (message) {
+          Toast.fire({
+              icon: type,
+              title: message
+          });
+      }
+
+      // Duplicate username check using AJAX on blur event
       $("#user_name").blur(function() {
         var userName = $(this).val().trim();
         $(this).val(userName);

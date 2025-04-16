@@ -67,59 +67,153 @@ if (isset($_POST['reset_password'])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Forgot Password - Mamatid Health Center</title>
-    <?php include './config/site_css_links.php'; ?>
+    
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <!-- iCheck Bootstrap -->
+    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+    <!-- Additional Custom CSS -->
+    <link rel="stylesheet" href="dist/css/adminlte01.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    
+    <!-- Include SweetAlert2 CSS -->
+    <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+    
+    <!-- Include jQuery and SweetAlert2 JS -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
     <style>
+        /* Background image styling */
         body.login-page.light-mode {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
                         url('dist/img/bg-001.jpg') no-repeat center center fixed;
             background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        /* Login box styling */
         .login-box {
-            margin-top: 20vh;
+            max-width: 400px;
+            width: 90%;
+            margin: 0 auto;
         }
+
+        /* Card styling */
         .card {
-            background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
+            border: none;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
-        .card-header {
-            border-radius: 15px 15px 0 0 !important;
-            background-color: transparent !important;
+
+        .card-body {
+            border-radius: 15px;
+            padding: 2rem;
         }
+
+        /* Logo styling */
+        .login-logo img {
+            width: 120px;
+            height: 120px;
+            transition: transform 0.3s ease;
+            border-radius: 50% !important;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-logo img:hover {
+            transform: scale(1.05);
+        }
+
         .text-stroked {
             color: white;
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-        .input-group-text {
-            border-right: none;
-            background-color: transparent;
-        }
+
+        /* Form styling */
         .form-control {
-            border-left: none;
-        }
-        .form-control:focus {
-            border-color: #80bdff;
-            box-shadow: none;
-        }
-        .btn-primary {
-            background-color: #3c4b64;
-            border-color: #3c4b64;
-        }
-        .btn-primary:hover {
-            background-color: #2d3a4e;
-            border-color: #2d3a4e;
-        }
-        .alert {
+            height: 45px;
             border-radius: 10px;
+            border: 1px solid #e4e6ef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .cursor {
-            animation: blink 1s infinite;
+
+        .form-control:focus {
+            border-color: #3699FF;
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
         }
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+
+        .input-group-text {
+            border-radius: 10px;
+            border: 1px solid #e4e6ef;
+            background-color: #f5f8fa;
+            color: #7E8299;
+        }
+
+        /* Button styling */
+        .btn-primary {
+            height: 45px;
+            border-radius: 10px;
+            background-color: #3699FF;
+            border-color: #3699FF;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #187DE4;
+            border-color: #187DE4;
+            transform: translateY(-1px);
+        }
+
+        /* Links styling */
+        .btn-link {
+            color: #3699FF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-link:hover {
+            color: #187DE4;
+            text-decoration: none;
+        }
+
+        /* Icon styling */
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            background: rgba(54, 153, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .icon-container i {
+            font-size: 2.5rem;
+            color: #3699FF;
+        }
+
+        /* Message text styling */
+        .message-text {
+            color: #7E8299;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
@@ -129,73 +223,84 @@ if (isset($_POST['reset_password'])) {
         <!-- Logo / Branding -->
         <div class="login-logo mb-4">
             <img src="dist/img/mamatid-transparent01.png"
-                 class="img-thumbnail p-0 border rounded-circle" style="width: 100px;" alt="System Logo">
+                 class="img-thumbnail p-0 border-0" id="system-logo" alt="System Logo">
             <div class="text-center h3 mb-0 text-stroked">
                 <strong>Password Recovery</strong>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-body p-4">
-                <?php if ($message): ?>
-                    <div id="alertMessage" class="alert alert-info alert-dismissible fade show">
-                        <i class="fas fa-info-circle mr-1"></i> <?php echo $message; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="icon-container">
+                        <i class="fas fa-lock-open"></i>
                     </div>
-                <?php endif; ?>
-
-                <div class="text-center mb-4">
-                    <i class="fas fa-lock-open fa-3x text-primary mb-3"></i>
-                    <p class="text-muted">
+                    <p class="message-text">
                         Enter your email address and we'll send you instructions to reset your password.
                     </p>
                 </div>
 
                 <form method="post">
-                    <div class="input-group mb-4">
-                        <div class="input-group-prepend">
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
                             <span class="input-group-text">
-                                <i class="fas fa-envelope text-primary"></i>
+                                <i class="fas fa-envelope"></i>
                             </span>
+                            <input type="email" class="form-control"
+                                   id="email" name="email" required
+                                   placeholder="Enter your email address">
                         </div>
-                        <input type="email" class="form-control form-control-lg" 
-                               name="email" required
-                               placeholder="Enter your email address">
                     </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="submit" name="reset_password" 
-                                    class="btn btn-primary btn-block btn-lg">
-                                <i class="fas fa-paper-plane mr-1"></i> Send Reset Link
-                            </button>
-                        </div>
-                    </div>
+                    <button type="submit" name="reset_password" class="btn btn-primary w-100">
+                        <i class="fas fa-paper-plane mr-2"></i> Send Reset Link
+                    </button>
                 </form>
 
                 <div class="text-center mt-4">
-                    <a href="client_login.php" class="btn btn-link text-primary">
-                        <i class="fas fa-arrow-left mr-1"></i> Back to Login
+                    <a href="client_login.php" class="btn btn-link">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Login
                     </a>
                 </div>
+
+                <?php if (!empty($message)): ?>
+                <script>
+                    $(document).ready(function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'modern-toast'
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: '<?php echo strpos(strtolower($message), 'error') !== false ? 'error' : 'success'; ?>',
+                            title: '<?php echo strpos(strtolower($message), 'error') !== false ? 'Error' : 'Success'; ?>',
+                            text: '<?php echo addslashes($message); ?>',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown animate__faster'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp animate__faster'
+                            }
+                        });
+                    });
+                </script>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
     <?php include './config/site_js_links.php'; ?>
-    
-    <script>
-        // Auto-hide alert after 5 seconds
-        if (document.getElementById("alertMessage")) {
-            setTimeout(function() {
-                var alertBox = document.getElementById("alertMessage");
-                alertBox.style.transition = "opacity 0.5s ease";
-                alertBox.style.opacity = "0";
-                setTimeout(() => alertBox.remove(), 500);
-            }, 5000);
-        }
-    </script>
 </body>
 </html> 

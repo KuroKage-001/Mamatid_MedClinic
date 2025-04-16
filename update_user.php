@@ -2,10 +2,22 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("location:index.php");
+    exit;
+}
+
 // Initialize feedback message variable
 $message = '';
 // Retrieve the user ID from GET parameters (ensure proper sanitization if needed)
 $user_id = $_GET['user_id'];
+
+// Check if the logged-in user has permission to edit this user
+if ($_SESSION['user_id'] != $user_id) {
+    header("location:users.php?message=" . urlencode("You don't have permission to edit other users.") . "&type=error");
+    exit;
+}
 
 // Query to fetch current user's details
 $query = "SELECT `id`, `display_name`, `user_name` from `users`
@@ -25,6 +37,29 @@ try {
 
 // Check if the update form has been submitted
 if (isset($_POST['save_user'])) {
+  // Verify current password first
+  $currentPassword = trim($_POST['current_password']);
+  
+  // Check if current password is empty
+  if (empty($currentPassword)) {
+    $message = "Please enter your current password to proceed with the update";
+    header("location:update_user.php?user_id=" . $user_id . "&message=" . urlencode($message) . "&type=warning");
+    exit;
+  }
+  
+  $encryptedCurrentPassword = md5($currentPassword);
+  
+  // Check if current password is correct
+  $verifyQuery = "SELECT id FROM users WHERE id = ? AND password = ?";
+  $stmt = $con->prepare($verifyQuery);
+  $stmt->execute([$_SESSION['user_id'], $encryptedCurrentPassword]);
+  
+  if ($stmt->rowCount() == 0) {
+    $message = "Current password is incorrect";
+    header("location:update_user.php?user_id=" . $user_id . "&message=" . urlencode($message) . "&type=error");
+    exit;
+  }
+
   // Retrieve and trim user input values
   $displayName = trim($_POST['display_name']);
   $userName = trim($_POST['username']);
@@ -73,9 +108,11 @@ if (isset($_POST['save_user'])) {
     $con->beginTransaction();
     $stmtUpdateUser = $con->prepare($updateUserQuery);
     $stmtUpdateUser->execute();
-    $message = "user update successfully";
     $con->commit();
-
+    $message = "User updated successfully";
+    // Redirect to users.php with the message
+    header("Location:users.php?message=" . urlencode($message));
+    exit;
   } catch(PDOException $ex) {
     // Rollback transaction in case of error
     $con->rollback();
@@ -83,8 +120,6 @@ if (isset($_POST['save_user'])) {
     echo $ex->getMessage();
     exit;
   }
-  // Redirect to congratulation page with feedback message
-  header("Location:congratulation.php?goto_page=users.php&message=$message");
 }
 ?>
 
@@ -98,6 +133,13 @@ if (isset($_POST['save_user'])) {
   <!-- Logo for the tab bar -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Update User  Details - Mamatid Health Center System</title>
+  
+  <!-- Include SweetAlert2 CSS -->
+  <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+  
+  <!-- Include jQuery and SweetAlert2 JS -->
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 
@@ -105,7 +147,7 @@ if (isset($_POST['save_user'])) {
   <div class="wrapper">
     <!-- Navbar -->
     <?php
-      include './config/site_header.php';
+      include './config/header.php';
       include './config/sidebar.php';
     ?>
 
@@ -156,7 +198,12 @@ if (isset($_POST['save_user'])) {
                     class="form-control form-control-sm rounded-0" value="<?php echo $row['user_name'];?>" />
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Password</label>
+                  <label>Current Password</label>
+                  <input type="password" id="current_password" name="current_password" required="required"
+                    class="form-control form-control-sm rounded-0"/>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                  <label>New Password</label>
                   <input type="password" id="password" name="password"
                     class="form-control form-control-sm rounded-0"/>
                 </div>
@@ -168,10 +215,13 @@ if (isset($_POST['save_user'])) {
               </div>
               <div class="clearfix">&nbsp;</div>
               <div class="row">
-                <div class="col-lg-11 col-md-10 col-sm-10">&nbsp;</div>
-                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+                <div class="col-lg-10 col-md-9 col-sm-9">&nbsp;</div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                   <button type="submit" id="save_user"
                     name="save_user" class="btn btn-primary btn-sm btn-flat btn-block">Update</button>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-1">
+                  <button type="button" id="delete_user" class="btn btn-danger btn-sm btn-flat btn-block">Delete</button>
                 </div>
               </div>
             </form>
@@ -197,11 +247,63 @@ if (isset($_POST['save_user'])) {
     ?>
 
     <script>
-      var message = '<?php echo $message;?>';
+      $(function() {
+        // Initialize Toast
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        });
 
-      if(message !== '') {
-        showCustomMessage(message);
-      }
+        // Show message if redirected with message parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+        const type = urlParams.get('type') || 'success';
+        
+        if (message) {
+          Toast.fire({
+            icon: type,
+            title: message
+          });
+        }
+
+        // Form validation before submit
+        $('#save_user').on('click', function(e) {
+          const currentPassword = $('#current_password').val().trim();
+          
+          if (!currentPassword) {
+            e.preventDefault();
+            Toast.fire({
+              icon: 'warning',
+              title: 'Please enter your current password to proceed with the update'
+            });
+          }
+        });
+
+        // Delete user confirmation
+        $('#delete_user').on('click', function() {
+          Swal.fire({
+            title: 'Delete User?',
+            text: "Are you sure you want to delete this user? This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = 'delete_user.php?user_id=<?php echo $user_id; ?>';
+            }
+          });
+        });
+      });
     </script>
 </body>
 </html>
