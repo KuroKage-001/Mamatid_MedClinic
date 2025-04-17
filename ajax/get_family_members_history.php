@@ -7,9 +7,8 @@ $startDate = date('Y-m-d', strtotime("-$days days"));
 
 $query = "SELECT 
     DATE(date) as visit_date,
-    COUNT(*) as visit_count,
-    AVG(CAST(bp AS DECIMAL(10,2))) as avg_bp
-FROM bp_monitoring 
+    COUNT(*) as visit_count
+FROM family_members 
 WHERE date BETWEEN :start_date AND :end_date
 GROUP BY DATE(date)
 ORDER BY visit_date ASC";
@@ -25,7 +24,7 @@ try {
     
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $labels[] = date('M j, Y', strtotime($row['visit_date']));
-        $values[] = round($row['avg_bp'], 2);
+        $values[] = intval($row['visit_count']);
     }
     
     // Fill in missing dates with zero values
@@ -53,5 +52,4 @@ try {
     echo json_encode([
         'error' => $ex->getMessage()
     ]);
-}
-?> 
+} 

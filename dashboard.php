@@ -294,6 +294,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       backdrop-filter: blur(10px);
     }
 
+    /* Chart Select Styles */
     .chart-select {
       width: 100%;
       padding: 15px 25px;
@@ -301,7 +302,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       font-weight: 500;
       color: #2d3748;
       background-color: #ffffff;
-      border: 2px solid #e2e8f0;
+      border: 2px solid #000000;  /* Set default border color to black */
       border-radius: 15px;
       appearance: none;
       -webkit-appearance: none;
@@ -315,14 +316,14 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     }
 
     .chart-select:hover {
-      border-color: #cbd5e0;
+      border-color: #000000;  /* Keep black border on hover for default state */
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
 
     .chart-select:focus {
       outline: none;
-      border-color: #4299e1;
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+      border-color: #000000;  /* Keep black border on focus for default state */
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
     }
 
     .chart-select.active-weekly {
@@ -453,6 +454,40 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             <div class="row">
               <div class="col-12">
                 <canvas id="patientChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Analytics Section -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="history-analytics-container chart-container mt-4">
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <select id="historyType" class="chart-select">
+                  <option value="" data-color="#000000">Select History Type</option>
+                  <option value="family_members" data-color="#8B5CF6">Family Members</option>
+                  <option value="bp" data-color="#EF4444">Blood Pressure History</option>
+                  <option value="blood_sugar" data-color="#3B82F6">Blood Sugar History</option>
+                  <option value="tetanus" data-color="#EC4899">Tetanus History</option>
+                  <option value="deworming" data-color="#10B981">Deworming History</option>
+                  <option value="family" data-color="#F59E0B">Family Planning History</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <select id="historyDateRange" class="chart-select">
+                  <option value="7">Last 7 Days</option>
+                  <option value="30">Last 30 Days</option>
+                  <option value="90">Last 90 Days</option>
+                  <option value="365">Last Year</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <canvas id="historyChart"></canvas>
               </div>
             </div>
           </div>
@@ -676,6 +711,150 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       document.getElementById("chartType").addEventListener("change", function() {
         renderChart(this.value);
         updateDropdownActiveClass(this.value);
+      });
+    });
+
+    // History Analytics Chart Configuration
+    let historyChart;
+
+    function updateChartSelectStyles() {
+      const historyTypeSelect = document.getElementById('historyType');
+      const selectedOption = historyTypeSelect.options[historyTypeSelect.selectedIndex];
+      const color = selectedOption.getAttribute('data-color');
+      
+      // Always use the selected option's color
+      historyTypeSelect.style.borderColor = color;
+      historyTypeSelect.style.backgroundColor = selectedOption.value ? `${color}10` : '#ffffff';
+    }
+
+    function initializeHistoryChart() {
+      const ctx = document.getElementById('historyChart').getContext('2d');
+      historyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'History Data',
+            data: [],
+            borderColor: 'rgba(99, 102, 241, 1)',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(255, 255, 255, 0.98)',
+              titleColor: '#1e293b',
+              bodyColor: '#475569',
+              borderColor: 'rgba(226, 232, 240, 0.9)',
+              borderWidth: 1,
+              padding: 12,
+              cornerRadius: 8,
+              displayColors: true,
+              bodyFont: {
+                size: 13,
+                family: "'Inter', sans-serif"
+              },
+              titleFont: {
+                size: 14,
+                family: "'Inter', sans-serif",
+                weight: '600'
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                display: true,
+                color: 'rgba(0, 0, 0, 0.03)',
+                drawBorder: false
+              },
+              ticks: {
+                font: {
+                  size: 12,
+                  family: "'Inter', sans-serif",
+                  weight: '500'
+                },
+                color: '#64748b'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  size: 11,
+                  family: "'Inter', sans-serif",
+                  weight: '500'
+                },
+                color: '#64748b'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateHistoryChart(historyType, dateRange) {
+      if (!historyType) return;
+
+      const selectedOption = document.getElementById('historyType').options[
+        document.getElementById('historyType').selectedIndex
+      ];
+      const color = selectedOption.getAttribute('data-color');
+
+      fetch(`ajax/get_${historyType}_history.php?days=${dateRange}`)
+        .then(response => response.json())
+        .then(data => {
+          const chartTitle = historyType.split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          historyChart.data.labels = data.labels;
+          historyChart.data.datasets[0].label = `${chartTitle} History`;
+          historyChart.data.datasets[0].data = data.values;
+          
+          // Update chart colors based on selected option
+          historyChart.data.datasets[0].borderColor = color;
+          historyChart.data.datasets[0].backgroundColor = `${color}20`;
+          
+          historyChart.update();
+        })
+        .catch(error => console.error('Error fetching history data:', error));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeHistoryChart();
+      
+      // Set initial border color for history type select
+      updateChartSelectStyles();
+
+      // Event listeners for history selectors
+      document.getElementById('historyType').addEventListener('change', function() {
+        updateHistoryChart(this.value, document.getElementById('historyDateRange').value);
+        updateChartSelectStyles();
+      });
+
+      document.getElementById('historyDateRange').addEventListener('change', function() {
+        const historyType = document.getElementById('historyType').value;
+        if (historyType) {
+          updateHistoryChart(historyType, this.value);
+        }
       });
     });
   </script>
