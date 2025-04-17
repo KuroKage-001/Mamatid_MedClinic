@@ -108,4 +108,84 @@ data-target="#'.$dateId.'" name="'.$dateId.'" id="'.$dateId.'" required="require
 
           return $d;
 }
+
+function getAllPatientsWithHistory($con) {
+    // Get all unique patient names from all history tables
+    $query = "SELECT DISTINCT name, cp_number as phone_number 
+              FROM (
+                  SELECT name, cp_number FROM bp_monitoring
+                  UNION
+                  SELECT name, '' as cp_number FROM family_members
+                  UNION
+                  SELECT name, '' as cp_number FROM random_blood_sugar
+                  UNION
+                  SELECT name, '' as cp_number FROM deworming
+                  UNION
+                  SELECT name, '' as cp_number FROM tetanus_toxoid
+                  UNION
+                  SELECT name, '' as cp_number FROM family_planning
+              ) AS combined_patients 
+              ORDER BY name ASC";
+
+    $stmt = $con->prepare($query);
+    try {
+        $stmt->execute();
+    } catch(PDOException $ex) {
+        echo $ex->getTraceAsString();
+        echo $ex->getMessage();
+        exit;
+    }
+
+    $data = '<option value="">Select Patient</option>';
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $phoneDisplay = !empty($row['phone_number']) ? ' (' . $row['phone_number'] . ')' : '';
+        $data = $data.'<option value="'.htmlspecialchars($row['name']).'">'
+                     .htmlspecialchars($row['name']).$phoneDisplay.'</option>';
+    }
+    return $data;
+}
+
+function getPatientHistory($con, $patientName) {
+    $result = array(
+        'family' => array(),
+        'deworming' => array(),
+        'bp' => array(),
+        'blood_sugar' => array(),
+        'tetanus' => array()
+    );
+    
+    if (!empty($patientName)) {
+        // Get family planning records
+        $query = "SELECT * FROM family_planning WHERE name = ? ORDER BY date DESC";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$patientName]);
+        $result['family'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get deworming records
+        $query = "SELECT * FROM deworming WHERE name = ? ORDER BY date DESC";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$patientName]);
+        $result['deworming'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get BP monitoring records
+        $query = "SELECT * FROM bp_monitoring WHERE name = ? ORDER BY date DESC";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$patientName]);
+        $result['bp'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get blood sugar records
+        $query = "SELECT * FROM random_blood_sugar WHERE name = ? ORDER BY date DESC";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$patientName]);
+        $result['blood_sugar'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get tetanus records
+        $query = "SELECT * FROM tetanus_toxoid WHERE name = ? ORDER BY date DESC";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$patientName]);
+        $result['tetanus'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    return $result;
+}
 ?>

@@ -1,40 +1,36 @@
 <?php
-include '../config/connection.php';
+// Include database connection and common functions
+require_once '../config/connection.php';
+require_once '../common_service/common_functions.php';
 
-if(isset($_GET['patient_id'])) {
-    $patient_id = $_GET['patient_id'];
-    
-    $query = "SELECT pv.*, c.full_name as patient_name, m.medicine_name 
-              FROM patient_visits pv 
-              JOIN clients c ON pv.patient_id = c.id 
-              LEFT JOIN medicines m ON pv.medicine_id = m.id 
-              WHERE pv.patient_id = :patient_id 
-              ORDER BY pv.visit_date DESC";
-    
-    $stmt = $con->prepare($query);
-    $stmt->bindParam(':patient_id', $patient_id);
-    $stmt->execute();
-    
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    $html = '';
-    $sno = 1;
-    
-    foreach($result as $row) {
-        $html .= '<tr>';
-        $html .= '<td class="p-1 align-middle text-center">' . $sno++ . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . date('m/d/Y', strtotime($row['visit_date'])) . '</td>';
-        $html .= '<td class="p-1 align-middle">' . htmlspecialchars($row['disease']) . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . ($row['alcohol'] ? 'Yes' : 'No') . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . ($row['smoke'] ? 'Yes' : 'No') . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . ($row['obese'] ? 'Yes' : 'No') . '</td>';
-        $html .= '<td class="p-1 align-middle">' . htmlspecialchars($row['medicine_name']) . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . htmlspecialchars($row['packing']) . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . htmlspecialchars($row['quantity']) . '</td>';
-        $html .= '<td class="p-1 align-middle text-center">' . htmlspecialchars($row['dosage']) . '</td>';
-        $html .= '</tr>';
-    }
-    
-    echo $html;
+// Initialize response array
+$response = array(
+    'success' => false,
+    'message' => '',
+    'data' => array()
+);
+
+// Check if patient_name is provided
+if (!isset($_GET['patient_name']) || empty($_GET['patient_name'])) {
+    $response['message'] = 'Patient name is required';
+    echo json_encode($response);
+    exit;
 }
+
+try {
+    // Get patient history data
+    $patientName = $_GET['patient_name'];
+    $historyData = getPatientHistory($con, $patientName);
+    
+    // Set success response
+    $response['success'] = true;
+    $response['data'] = $historyData;
+    
+} catch (Exception $e) {
+    $response['message'] = 'An error occurred while retrieving patient history: ' . $e->getMessage();
+}
+
+// Return JSON response
+header('Content-Type: application/json');
+echo json_encode($response);
 ?>

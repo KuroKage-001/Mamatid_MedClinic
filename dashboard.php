@@ -285,22 +285,24 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
 
     /* Chart Section Styling */
     .chart-container {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      background: linear-gradient(145deg, #ffffff, #f5f7fa);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
       margin-top: 30px;
+      border: 1px solid rgba(228, 231, 236, 0.8);
+      backdrop-filter: blur(10px);
     }
 
     .chart-select {
       width: 100%;
-      padding: 12px 20px;
+      padding: 15px 25px;
       font-size: 1rem;
       font-weight: 500;
-      color: #333;
-      background-color: #fff;
+      color: #2d3748;
+      background-color: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 15px;
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -308,13 +310,19 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       background-repeat: no-repeat;
       background-position: right 15px center;
       background-size: 16px;
-      transition: all var(--transition-speed);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-select:hover {
+      border-color: #cbd5e0;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
 
     .chart-select:focus {
       outline: none;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      border-color: #4299e1;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
     }
 
     .chart-select.active-weekly {
@@ -503,30 +511,30 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       const chartThemes = {
         weekly: {
           gradient: ctx.createLinearGradient(0, 0, 0, 400),
-          border: 'rgb(54, 162, 235)',
+          border: '#3498db',
           label: 'Weekly Patient Visits'
         },
         monthly: {
           gradient: ctx.createLinearGradient(0, 0, 0, 400),
-          border: 'rgb(255, 159, 64)',
+          border: '#f39c12',
           label: 'Monthly Patient Visits'
         },
         yearly: {
           gradient: ctx.createLinearGradient(0, 0, 0, 400),
-          border: 'rgb(14, 179, 69)',
+          border: '#2ecc71',
           label: 'Yearly Patient Visits'
         }
       };
 
-      // Set up gradients
-      chartThemes.weekly.gradient.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
-      chartThemes.weekly.gradient.addColorStop(1, 'rgba(54, 162, 235, 0.0)');
+      // Set up gradients with more opacity
+      chartThemes.weekly.gradient.addColorStop(0, 'rgba(52, 152, 219, 0.6)');
+      chartThemes.weekly.gradient.addColorStop(1, 'rgba(52, 152, 219, 0.1)');
       
-      chartThemes.monthly.gradient.addColorStop(0, 'rgba(255, 159, 64, 0.5)');
-      chartThemes.monthly.gradient.addColorStop(1, 'rgba(255, 159, 64, 0.0)');
+      chartThemes.monthly.gradient.addColorStop(0, 'rgba(243, 156, 18, 0.6)');
+      chartThemes.monthly.gradient.addColorStop(1, 'rgba(243, 156, 18, 0.1)');
       
-      chartThemes.yearly.gradient.addColorStop(0, 'rgba(75, 192, 192, 0.5)');
-      chartThemes.yearly.gradient.addColorStop(1, 'rgba(75, 192, 192, 0.0)');
+      chartThemes.yearly.gradient.addColorStop(0, 'rgba(46, 204, 113, 0.6)');
+      chartThemes.yearly.gradient.addColorStop(1, 'rgba(46, 204, 113, 0.1)');
 
       function updateDropdownActiveClass(value) {
         const selectEl = document.getElementById("chartType");
@@ -542,47 +550,64 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         const theme = chartThemes[type];
         
         currentChart = new Chart(ctx, {
-          type: 'line',
+          type: 'bar',
           data: {
             labels: chartData[type].labels,
             datasets: [{
               label: theme.label,
               data: chartData[type].data,
-              fill: true,
-              backgroundColor: theme.gradient,
-              borderColor: theme.border,
+              backgroundColor: type === 'weekly' ? 'rgba(56, 189, 248, 0.85)' :  // Sky blue
+                             type === 'monthly' ? 'rgba(168, 85, 247, 0.85)' :  // Purple
+                             'rgba(34, 197, 94, 0.85)',  // Green
+              borderColor: type === 'weekly' ? 'rgba(56, 189, 248, 1)' :
+                          type === 'monthly' ? 'rgba(168, 85, 247, 1)' :
+                          'rgba(34, 197, 94, 1)',
               borderWidth: 2,
-              pointBackgroundColor: theme.border,
-              pointBorderColor: '#fff',
-              pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6,
-              tension: 0.3
+              borderRadius: 12,
+              borderSkipped: false,
+              maxBarThickness: 40,
+              minBarLength: 5,
+              shadowOffsetX: 3,
+              shadowOffsetY: 3,
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.1)'
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-              duration: 750,
-              easing: 'easeInOutQuart'
+              duration: 1000,
+              easing: 'easeInOutQuart',
+              delay: function(context) {
+                return context.dataIndex * 100;
+              }
             },
-            interaction: {
-              intersect: false,
-              mode: 'index'
+            layout: {
+              padding: {
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 20
+              }
             },
             scales: {
               y: {
                 beginAtZero: true,
                 grid: {
-                  color: 'rgba(0, 0, 0, 0.05)',
-                  drawBorder: false
+                  display: true,
+                  color: 'rgba(0, 0, 0, 0.03)',
+                  drawBorder: false,
+                  lineWidth: 1
                 },
                 ticks: {
-                  stepSize: 10,
                   font: {
-                    size: 12
-                  }
+                    size: 12,
+                    family: "'Inter', sans-serif",
+                    weight: '500'
+                  },
+                  color: '#64748b',
+                  padding: 10
                 }
               },
               x: {
@@ -593,8 +618,12 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                   maxRotation: 45,
                   minRotation: 45,
                   font: {
-                    size: 11
-                  }
+                    size: 11,
+                    family: "'Inter', sans-serif",
+                    weight: '500'
+                  },
+                  color: '#64748b',
+                  padding: 10
                 }
               }
             },
@@ -603,26 +632,37 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                 display: false
               },
               tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                titleColor: '#1a1a1a',
-                bodyColor: '#666',
+                enabled: true,
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                titleColor: '#1e293b',
+                bodyColor: '#475569',
                 bodyFont: {
-                  size: 13
+                  size: 13,
+                  family: "'Inter', sans-serif"
                 },
                 titleFont: {
                   size: 14,
-                  weight: 'bold'
+                  family: "'Inter', sans-serif",
+                  weight: '600'
                 },
-                padding: 12,
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 1,
+                padding: {
+                  x: 15,
+                  y: 12
+                },
+                cornerRadius: 12,
                 displayColors: false,
+                borderColor: 'rgba(226, 232, 240, 0.9)',
+                borderWidth: 1,
                 callbacks: {
                   label: function(context) {
                     return `Patients: ${context.parsed.y}`;
                   }
                 }
               }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
             }
           }
         });
