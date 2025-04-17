@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 12:39 AM
+-- Generation Time: Apr 17, 2025 at 10:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -106,10 +106,9 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
-(1, 'Vikir Baskerville', 'vikir@gmail.com', '0ecc8a29dd0f2feb66805502e89013b6', '09918719610', 'Mamatid 01', '2016-06-14', 'Male', '2025-04-14 08:25:43', '90301cd1e766b6ea4c21aed6196782cab92223e8ad34700c599b9a8a6319510d', '2025-04-14 12:02:00'),
 (2, 'admin', 'admin@gmail.com', '0192023a7bbd73250516f069df18b500', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-14 08:54:37', NULL, NULL),
-(3, 'Doc Leo', 'leomaresc853@gmail.com', 'b9818d72c31e400826d5f19ed8b7d36f', '09918719610', 'Baskerville Main Villa', '2020-07-15', 'Male', '2025-04-14 09:03:17', '371dc36b4be5583ae6075db18fa7296787c6460324850637b27537b6e1e11615', '2025-04-14 12:03:34'),
-(4, 'Doc Vikir', 'docvikir@gmail.com', '8e6abe9f6ae4aabaf88ab9d3ecee4e41', '09918719610', 'Main Villa', '2018-06-06', 'Male', '2025-04-14 22:03:53', NULL, NULL);
+(5, 'admin04', 'admin04@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-17 08:36:04', NULL, NULL),
+(6, 'admin01', 'admin01@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-04-17 08:37:27', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -366,13 +365,6 @@ CREATE TABLE `time_in_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `time_in_logs`
---
-
-INSERT INTO `time_in_logs` (`id`, `user_id`, `log_date`, `time_in`) VALUES
-(4, 3, '2025-03-16', '03:02:04');
-
---
 -- Triggers `time_in_logs`
 --
 DELIMITER $$
@@ -399,13 +391,6 @@ CREATE TABLE `time_logs` (
   `total_hours` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `time_logs`
---
-
-INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
-(12, 3, '2025-03-16', '03:02:04', '03:03:33', 0.02);
-
 -- --------------------------------------------------------
 
 --
@@ -418,13 +403,6 @@ CREATE TABLE `time_out_logs` (
   `log_date` date NOT NULL,
   `time_out` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `time_out_logs`
---
-
-INSERT INTO `time_out_logs` (`id`, `user_id`, `log_date`, `time_out`) VALUES
-(2, 3, '2025-03-16', '03:03:33');
 
 --
 -- Triggers `time_out_logs`
@@ -467,9 +445,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `display_name`, `user_name`, `password`, `profile_picture`) VALUES
 (1, 'Administrator', 'admin', '0192023a7bbd73250516f069df18b500', '1656551981avatar.png '),
-(2, 'John Doe', 'jdoe', '9c86d448e84d4ba23eb089e0b5160207', '1656551999avatar_.png'),
-(3, 'Dr. Leo', 'Doc Leo', '489a0257b661b64dac6618593232b1de', '1741792677IMG_20250131_221137_601.jpg'),
-(4, 'Dr. Vikir', 'Doc Vikir', '2f3763b2a0daa3ba0baa8f23e4206048', '1741794222vikir.png');
+(5, 'Administrator01', 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', '1744879233leo.jpg'),
+(6, 'Administrator02', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', '1744879313Cat 7.jpg');
 
 -- --------------------------------------------------------
 
@@ -619,7 +596,7 @@ ALTER TABLE `bp_monitoring`
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `deworming`
@@ -697,7 +674,7 @@ ALTER TABLE `time_out_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
