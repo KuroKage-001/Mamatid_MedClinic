@@ -1,0 +1,39 @@
+@startuml Random Blood Sugar Activity
+
+start
+
+partition "Add Blood Sugar Record" {
+  :Enter Patient Details;
+  note right
+    Required Info:
+    * Name
+    * Date
+    * Address
+    * Age
+    * Result
+  end note
+  :Submit Form;
+  
+  if (Validation OK?) then (yes)
+    :Format Data;
+    :Save Record;
+    if (Save Success?) then (yes)
+      :Show Success Message;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Error;
+  endif
+}
+
+partition "View Records" {
+  :Display Blood Sugar Records;
+  if (Edit Record?) then (yes)
+    :Navigate to Update Page;
+  endif
+}
+
+stop
+
+@enduml 

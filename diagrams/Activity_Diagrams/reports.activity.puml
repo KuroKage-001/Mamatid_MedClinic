@@ -1,0 +1,32 @@
+@startuml Reports Activity
+
+start
+
+:Select Report Type;
+note right
+  Report Types:
+  * Medicine Inventory
+  * Family Planning
+  * Deworming
+  * BP Monitoring
+  * Blood Sugar
+  * Tetanus Toxoid
+end note
+
+if (Date Range Required?) then (yes)
+  :Select Date Range;
+  :Enter From Date;
+  :Enter To Date;
+endif
+
+:Generate Report;
+
+if (Generation Success?) then (yes)
+  :Open PDF in New Tab;
+else (no)
+  :Show Error Message;
+endif
+
+stop
+
+@enduml 

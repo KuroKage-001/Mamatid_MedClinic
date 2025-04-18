@@ -1,0 +1,38 @@
+@startuml Family Planning Activity
+
+start
+
+partition "Add Family Planning Record" {
+  :Enter Patient Details;
+  note right
+    Required Info:
+    * Name
+    * Date
+    * Age
+    * Address
+  end note
+  :Submit Form;
+  
+  if (Validation OK?) then (yes)
+    :Format Data;
+    :Save Record;
+    if (Save Success?) then (yes)
+      :Show Success Message;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Error;
+  endif
+}
+
+partition "View Records" {
+  :Display Family Planning Records;
+  if (Edit Record?) then (yes)
+    :Navigate to Update Page;
+  endif
+}
+
+stop
+
+@enduml 

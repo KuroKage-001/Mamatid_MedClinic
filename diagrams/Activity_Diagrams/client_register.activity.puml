@@ -1,0 +1,73 @@
+@startuml Client Registration Activity
+
+|Staff/Admin|
+start
+
+:Click Register New Client;
+
+partition "Personal Information" {
+  :Enter Client Details;
+  note right
+    Required fields:
+    * Full Name
+    * Date of Birth
+    * Gender
+    * Contact Number
+    * Address
+    * Civil Status
+    * Occupation
+  end note
+
+  :Upload Photo (Optional);
+  
+  :Submit Personal Information;
+  
+  if (Validation Successful?) then (yes)
+    :Save Personal Information;
+  else (no)
+    :Show Validation Errors;
+    :Return to Form;
+  endif
+}
+
+partition "Medical Information" {
+  :Enter Medical History;
+  note right
+    Fields:
+    * Blood Type
+    * Allergies
+    * Medical Conditions
+    * Current Medications
+    * Family History
+  end note
+
+  :Enter Vital Signs;
+  note right
+    * Blood Pressure
+    * Temperature
+    * Weight
+    * Height
+    * Pulse Rate
+  end note
+
+  :Submit Medical Information;
+
+  if (Validation Successful?) then (yes)
+    :Save Medical Information;
+  else (no)
+    :Show Validation Errors;
+    :Return to Form;
+  endif
+}
+
+if (All Information Saved?) then (yes)
+  :Generate Client ID;
+  :Show Success Message;
+  :Redirect to Client Profile;
+else (no)
+  :Show Error Message;
+endif
+
+stop
+
+@enduml

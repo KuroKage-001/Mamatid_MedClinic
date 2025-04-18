@@ -1,0 +1,30 @@
+@startuml Manage Appointments Activity
+
+start
+:View Appointments List;
+
+while (Select Action) is (Update Status)
+  :Click Update Button;
+  :Show Update Modal;
+  :Select New Status;
+  note right
+    Status Options:
+    * Pending
+    * Approved
+    * Completed
+    * Cancelled
+  end note
+  :Add Notes;
+  :Submit Update;
+  
+  if (Update Success?) then (yes)
+    :Show Success Message;
+    :Refresh List;
+  else (no)
+    :Show Error Message;
+  endif
+endwhile (Done)
+
+stop
+
+@enduml 

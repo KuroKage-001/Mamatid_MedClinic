@@ -1,0 +1,46 @@
+@startuml Medicine Inventory Activity
+
+start
+
+partition "Add Inventory" {
+  :Select Medicine;
+  :Enter Inventory Details;
+  note right
+    Required Info:
+    * Quantity
+    * Batch Number
+    * Expiry Date
+    * Unit Price
+  end note
+  :Submit Form;
+  
+  if (Validation OK?) then (yes)
+    :Begin Transaction;
+    :Insert Inventory Record;
+    :Record IN Transaction;
+    if (Save Success?) then (yes)
+      :Commit Transaction;
+      :Show Success Message;
+    else (no)
+      :Rollback Transaction;
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Error;
+  endif
+}
+
+partition "View Inventory" {
+  :Display Current Stock;
+  :Show Analytics Chart;
+  note right
+    Status Colors:
+    * Green: Good
+    * Yellow: Medium
+    * Red: Low
+  end note
+}
+
+stop
+
+@enduml 

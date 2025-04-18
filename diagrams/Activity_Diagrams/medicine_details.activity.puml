@@ -1,0 +1,41 @@
+@startuml Medicine Details Activity
+
+start
+
+partition "Add Medicine Details" {
+  :Select Medicine;
+  :Enter Packing Details;
+  :Submit Form;
+  
+  if (Validation OK?) then (yes)
+    :Save Details;
+    if (Save Success?) then (yes)
+      :Show Success Message;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Error;
+  endif
+}
+
+partition "View Details" {
+  :Display Medicine Details;
+  note right
+    Shows:
+    * Medicine Name
+    * Packing
+    * Current Stock
+    * Stock Status
+  end note
+  
+  if (Edit Details?) then (yes)
+    :Navigate to Update Page;
+  elseif (View Inventory?) then (yes)
+    :Navigate to Inventory Page;
+  endif
+}
+
+stop
+
+@enduml 

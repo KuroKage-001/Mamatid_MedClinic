@@ -1,0 +1,44 @@
+@startuml Patient History Activity
+
+start
+
+:Select Patient;
+:Click Search;
+
+partition "View History" {
+  :Load All Categories;
+  note right
+    Categories:
+    * Family Planning
+    * Deworming
+    * BP Monitoring
+    * Blood Sugar
+    * Tetanus Toxoid
+  end note
+  
+  :Display History Tabs;
+  
+  while (Select Action) is (View Category)
+    :Switch Tab;
+    :Display Category Records;
+  endwhile (Export)
+}
+
+partition "Export History" {
+  :Select Export Format;
+  note right
+    Formats:
+    * Copy
+    * CSV
+    * Excel
+    * PDF
+    * Print
+  end note
+  
+  :Process Export;
+  :Download/Display Result;
+}
+
+stop
+
+@enduml 

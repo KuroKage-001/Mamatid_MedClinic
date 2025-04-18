@@ -1,0 +1,35 @@
+@startuml Book Appointment Activity
+
+start
+
+if (Client Logged In?) then (yes)
+  :Display Booking Form;
+  :Fill Appointment Details;
+  note right
+    Required Info:
+    * Date
+    * Time
+    * Reason
+  end note
+  
+  :Submit Booking;
+  
+  if (Validation Passed?) then (yes)
+    :Get Client Details;
+    :Create Appointment;
+    if (Booking Success?) then (yes)
+      :Show Success Message;
+      :Redirect to Dashboard;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Errors;
+  endif
+else (no)
+  :Redirect to Login;
+endif
+
+stop
+
+@enduml 

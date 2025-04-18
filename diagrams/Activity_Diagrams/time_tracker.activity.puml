@@ -1,0 +1,80 @@
+ @startuml Time Tracker Activity
+
+|User|
+start
+
+:Access Time Tracker Page;
+
+partition "Initialize" {
+  :Check Today's Log;
+  if (Log Exists for Today?) then (yes)
+    if (Time Out Recorded?) then (yes)
+      :Disable Both Buttons;
+    else (no)
+      :Enable Time Out Button;
+      :Disable Time In Button;
+    endif
+  else (no)
+    :Enable Time In Button;
+    :Disable Time Out Button;
+  endif
+}
+
+partition "Time Actions" {
+  if (Action Selected?) then (Time In)
+    :Click Time In Button;
+    :Get Current Time;
+    :Begin Transaction;
+    
+    if (Can Time In?) then (yes)
+      :Insert Time In Record;
+      :Commit Transaction;
+      :Show Success Message;
+    else (no)
+      :Show "Already Timed In" Message;
+      :Rollback Transaction;
+    endif
+    
+  else (Time Out)
+    :Click Time Out Button;
+    :Get Current Time;
+    :Begin Transaction;
+    
+    if (Can Time Out?) then (yes)
+      :Insert Time Out Record;
+      :Commit Transaction;
+      :Show Success Message;
+    else (no)
+      :Show "No Active Time In" Message;
+      :Rollback Transaction;
+    endif
+  endif
+}
+
+partition "View History" {
+  :Display Time Log History;
+  note right
+    Shows for each log:
+    * Date
+    * Time In
+    * Time Out
+    * Total Hours
+  end note
+  
+  :Initialize DataTable;
+  :Enable Export Options;
+  note right
+    Export formats:
+    * Copy
+    * CSV
+    * Excel
+    * PDF
+    * Print
+  end note
+}
+
+:Update Real-time Clock Display;
+
+stop
+
+@enduml

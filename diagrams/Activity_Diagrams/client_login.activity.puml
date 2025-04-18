@@ -1,0 +1,34 @@
+@startuml Client Login Activity
+
+start
+:Access Client Portal;
+
+if (Remember Me Cookie Exists?) then (yes)
+  :Pre-fill Email;
+endif
+
+:Enter Email and Password;
+:Submit Login Form;
+
+if (Credentials Valid?) then (yes)
+  :Store Client Session;
+  if (Remember Me Checked?) then (yes)
+    :Set Email Cookie;
+  else (no)
+    :Clear Email Cookie;
+  endif
+  :Redirect to Client Dashboard;
+else (no)
+  :Show Error Toast;
+  :Return to Login Form;
+endif
+
+stop
+
+note right
+  Alternative Actions:
+  * Click "Create New Account"
+  * Navigate to Registration
+end note
+
+@enduml 

@@ -1,0 +1,32 @@
+@startuml Medicine Management Activity
+
+start
+
+partition "Add Medicine" {
+  :Enter Medicine Name;
+  :Check Name Availability;
+  
+  if (Name Available?) then (yes)
+    :Enable Save Button;
+    :Submit Form;
+    if (Save Success?) then (yes)
+      :Show Success Message;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Disable Save Button;
+    :Show Name Taken Message;
+  endif
+}
+
+partition "View Medicines" {
+  :Display Medicine List;
+  if (Edit Medicine?) then (yes)
+    :Navigate to Update Page;
+  endif
+}
+
+stop
+
+@enduml 

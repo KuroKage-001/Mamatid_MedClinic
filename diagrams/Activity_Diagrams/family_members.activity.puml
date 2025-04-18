@@ -1,0 +1,37 @@
+@startuml Family Members Activity
+
+start
+
+partition "Add Member" {
+  :Enter Member Details;
+  note right
+    Required Info:
+    * Serial Number
+    * Name
+    * Date
+  end note
+  :Submit Form;
+  
+  if (Validation OK?) then (yes)
+    :Format Name;
+    :Save Member;
+    if (Save Success?) then (yes)
+      :Show Success Message;
+    else (no)
+      :Show Error Message;
+    endif
+  else (no)
+    :Show Validation Error;
+  endif
+}
+
+partition "View Members" {
+  :Display Members List;
+  if (Edit Member?) then (yes)
+    :Navigate to Update Page;
+  endif
+}
+
+stop
+
+@enduml 
