@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2025 at 10:44 AM
+-- Generation Time: Apr 18, 2025 at 07:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,8 @@ INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `da
 (2, 'Tess Maldove', '09918719610', 'Mamatid 01', '2025-04-14', 'Female', '2025-04-15', '12:00:00', 'checkup', 'completed', 'Done', '2025-04-14 08:16:53', '2025-04-14 20:59:22'),
 (3, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-15', '22:15:00', 'Checkup', 'completed', 'Okay!', '2025-04-14 09:09:42', '2025-04-14 09:28:31'),
 (4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
-(5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'pending', NULL, '2025-04-14 21:07:07', NULL);
+(5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'completed', 'Done', '2025-04-14 21:07:07', '2025-04-17 16:02:26'),
+(7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54');
 
 -- --------------------------------------------------------
 
@@ -79,7 +80,8 @@ CREATE TABLE `bp_monitoring` (
 --
 
 INSERT INTO `bp_monitoring` (`id`, `name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 'Male', '100', 1, 1, 0, '09918719610', '2025-04-14 11:37:47');
+(2, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 'Female', '100', 1, 1, 1, '09918719610', '2025-04-17 10:07:19'),
+(3, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 'Male', '120', 1, 0, 0, '09918719610', '2025-04-17 10:07:43');
 
 -- --------------------------------------------------------
 
@@ -130,8 +132,8 @@ CREATE TABLE `deworming` (
 --
 
 INSERT INTO `deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 50, '2025-04-14', '2025-04-14 10:32:04'),
-(2, 'Pomeranian Baskerville', '2025-04-15', 50, '2025-04-07', '2025-04-14 22:37:11');
+(3, 'Vikir Baskerville', '2025-04-17', 20, '2000-09-22', '2025-04-17 10:05:00'),
+(4, 'Pomeranian Baskerville', '2025-04-17', 20, '2010-12-15', '2025-04-17 10:05:32');
 
 -- --------------------------------------------------------
 
@@ -152,8 +154,8 @@ CREATE TABLE `family_members` (
 --
 
 INSERT INTO `family_members` (`id`, `serial_number`, `name`, `date`, `created_at`) VALUES
-(1, '1', 'Vikir Baskerville 01', '2025-04-14', '2025-04-14 10:12:51'),
-(2, '2', 'Pomeranian Baskerville', '2025-04-15', '2025-04-14 22:36:12');
+(3, '1', 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
+(4, '2', 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05');
 
 -- --------------------------------------------------------
 
@@ -175,7 +177,8 @@ CREATE TABLE `family_planning` (
 --
 
 INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-15', 50, 'Mamatid 01', '2025-04-14 18:02:33');
+(2, 'Vikir Baskerville', '2025-04-17', 20, 'Baskerville Main House', '2025-04-17 10:08:04'),
+(3, 'Pomeranian Baskerville', '2025-04-17', 10, 'Baskerville Main House 1', '2025-04-17 10:08:16');
 
 -- --------------------------------------------------------
 
@@ -248,7 +251,8 @@ CREATE TABLE `medicine_inventory` (
 --
 
 INSERT INTO `medicine_inventory` (`id`, `medicine_details_id`, `quantity`, `batch_number`, `expiry_date`, `unit_price`, `created_at`, `updated_at`) VALUES
-(1, 2, 50, '1', '2025-04-15', 10.00, '2025-04-14 09:43:58', '2025-04-14 09:43:58');
+(1, 2, 50, '1', '2025-04-15', 10.00, '2025-04-14 09:43:58', '2025-04-14 09:43:58'),
+(2, 7, 10, '2', '2029-11-30', 50.00, '2025-04-17 14:24:37', '2025-04-17 14:24:37');
 
 -- --------------------------------------------------------
 
@@ -271,7 +275,8 @@ CREATE TABLE `medicine_inventory_transactions` (
 --
 
 INSERT INTO `medicine_inventory_transactions` (`id`, `medicine_inventory_id`, `transaction_type`, `quantity`, `transaction_date`, `notes`, `reference_id`) VALUES
-(1, 1, 'IN', 50, '2025-04-14 09:43:58', 'Initial stock entry', NULL);
+(1, 1, 'IN', 50, '2025-04-14 09:43:58', 'Initial stock entry', NULL),
+(2, 2, 'IN', 10, '2025-04-17 14:24:37', 'Initial stock entry', NULL);
 
 -- --------------------------------------------------------
 
@@ -324,8 +329,8 @@ CREATE TABLE `random_blood_sugar` (
 --
 
 INSERT INTO `random_blood_sugar` (`id`, `name`, `date`, `address`, `age`, `result`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 50, 'None', '2025-04-14 10:28:13'),
-(2, 'Pomeranian Baskerville', '2025-04-15', 'Mamatid 01', 50, 'None', '2025-04-14 22:36:52');
+(3, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 20, 'None', '2025-04-17 10:02:55'),
+(4, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', '2025-04-17 10:03:29');
 
 -- --------------------------------------------------------
 
@@ -349,7 +354,8 @@ CREATE TABLE `tetanus_toxoid` (
 --
 
 INSERT INTO `tetanus_toxoid` (`id`, `name`, `date`, `address`, `age`, `diagnosis`, `remarks`, `created_at`) VALUES
-(1, 'Vikir Baskerville 01', '2025-04-14', 'Mamatid 01', 50, 'None', 'None', '2025-04-14 10:34:23');
+(2, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 20, 'None', 'None', '2025-04-17 10:05:59'),
+(3, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', 'None', '2025-04-17 10:06:19');
 
 -- --------------------------------------------------------
 
@@ -363,6 +369,13 @@ CREATE TABLE `time_in_logs` (
   `log_date` date NOT NULL,
   `time_in` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `time_in_logs`
+--
+
+INSERT INTO `time_in_logs` (`id`, `user_id`, `log_date`, `time_in`) VALUES
+(5, 6, '2025-04-17', '22:12:29');
 
 --
 -- Triggers `time_in_logs`
@@ -390,6 +403,13 @@ CREATE TABLE `time_logs` (
   `time_out` time DEFAULT NULL,
   `total_hours` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `time_logs`
+--
+
+INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
+(14, 6, '2025-04-17', '22:12:29', NULL, 0.00);
 
 -- --------------------------------------------------------
 
@@ -584,13 +604,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
 --
 ALTER TABLE `bp_monitoring`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -602,19 +622,19 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `deworming`
 --
 ALTER TABLE `deworming`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
 --
 ALTER TABLE `family_planning`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `medicines`
@@ -632,37 +652,37 @@ ALTER TABLE `medicine_details`
 -- AUTO_INCREMENT for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `medicine_inventory_transactions`
 --
 ALTER TABLE `medicine_inventory_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tetanus_toxoid`
 --
 ALTER TABLE `tetanus_toxoid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `time_in_logs`
 --
 ALTER TABLE `time_in_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `time_logs`
 --
 ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `time_out_logs`
