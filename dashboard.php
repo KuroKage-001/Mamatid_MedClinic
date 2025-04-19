@@ -443,9 +443,10 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                 <div class="history-select-wrapper">
                 <select id="historyDateRange" class="chart-select">
                   <option value="7">Last 7 Days</option>
+                  <option value="14">Last 14 Days</option>
                   <option value="30">Last 30 Days</option>
                   <option value="90">Last 90 Days</option>
-                  <option value="365">Last Year</option>
+                  <option value="0">All Data</option>
                 </select>
                   <div class="history-select-icon">
                     <i class="fas fa-calendar-alt"></i>
@@ -843,7 +844,15 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     };
 
     function getHistoryTypeColor(type) {
-        return historyTypeColors[type] || 'rgba(107, 114, 128, 1)'; // Default to gray if type not found
+        const colors = {
+            'bp': 'rgba(239, 68, 68, 1)',
+            'blood_sugar': 'rgba(16, 185, 129, 1)',
+            'tetanus': 'rgba(59, 130, 246, 1)',
+            'family_members': 'rgba(139, 92, 246, 1)',
+            'family_planning': 'rgba(245, 158, 11, 1)',
+            'deworming': 'rgba(6, 182, 212, 1)'
+        };
+        return colors[type] || 'rgba(107, 114, 128, 1)';
     }
 
     function showLoader() {
@@ -860,32 +869,55 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         }
 
         showLoader();
-
-        fetch(`ajax/get_${type}_history.php?days=${days}`)
+        
+        console.log(`Fetching history data for type: ${type}, days: ${days}`);
+        
+        // Add timestamp to prevent caching
+        const timestamp = new Date().getTime();
+        fetch(`ajax/get_${type}_history.php?days=${days}&t=${timestamp}`)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Received data:', data);
                 hideLoader();
+                
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                    return;
+                }
+                
+                // Handle BP data format differently
+                if (type === 'bp') {
+                    if (!data.labels || !data.bp_values || !data.patient_counts) {
+                        console.error('Invalid BP data format received:', data);
+                        return;
+                    }
+                } else {
+                    if (!data.labels || !data.values) {
+                        console.error('Invalid data format received:', data);
+                        return;
+                    }
+                }
                 
                 // Create gradient
                 const gradient = historyCtx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');  // Soft black at top
-                gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');  // Nearly transparent white at bottom
-
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+                
                 const chartConfig = {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            },
-                            plugins: {
-                                legend: {
-                                    display: true,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
@@ -895,33 +927,33 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                                     family: "'Inter', sans-serif",
                                     weight: '500'
                                 },
-                                color: '#1a1a1a'  // Dark gray for better readability
+                                color: '#1a1a1a'
                             }
-                                },
-                                tooltip: {
+                        },
+                        tooltip: {
                             enabled: true,
-                                    mode: 'index',
-                                    intersect: false,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                    titleColor: '#1e293b',
-                                    bodyColor: '#475569',
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                            titleColor: '#1e293b',
+                            bodyColor: '#475569',
                             borderColor: 'rgba(0, 0, 0, 0.1)',
-                                    borderWidth: 1,
-                                    padding: 12,
-                                    cornerRadius: 8,
-                                    displayColors: true,
-                                    bodyFont: {
-                                        size: 13,
-                                        family: "'Inter', sans-serif"
-                                    },
-                                    titleFont: {
-                                        size: 14,
-                                        family: "'Inter', sans-serif",
-                                        weight: '600'
-                                    }
-                                }
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            bodyFont: {
+                                size: 13,
+                                family: "'Inter', sans-serif"
                             },
-                            scales: {
+                            titleFont: {
+                                size: 14,
+                                family: "'Inter', sans-serif",
+                                weight: '600'
+                            }
+                        }
+                    },
+                    scales: {
                         x: {
                             grid: {
                                 display: false
@@ -935,30 +967,30 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                                     family: "'Inter', sans-serif",
                                     weight: '500'
                                 },
-                                color: '#4a4a4a'  // Darker gray for better readability
+                                color: '#4a4a4a'
                             }
                         },
-                                y: {
-                                    beginAtZero: true,
-                                    grid: {
-                                color: 'rgba(0, 0, 0, 0.06)',  // Very light black for grid
-                                        drawBorder: false
-                                    },
-                                    ticks: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.06)',
+                                drawBorder: false
+                            },
+                            ticks: {
                                 padding: 10,
-                                        font: {
-                                            size: 12,
-                                            family: "'Inter', sans-serif",
-                                            weight: '500'
-                                        },
-                                color: '#4a4a4a'  // Darker gray for better readability
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', sans-serif",
+                                    weight: '500'
+                                },
+                                color: '#4a4a4a'
                             }
                         }
                     }
                 };
-
+                
                 if (type === 'bp') {
-                    // Blood Pressure specific chart configuration
+                    // Special configuration for BP chart
                     historyChart = new Chart(historyCtx, {
                         type: 'line',
                         data: {
@@ -967,63 +999,26 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                                 {
                                     label: 'Average Blood Pressure',
                                     data: data.bp_values,
-                                    borderColor: 'rgba(0, 0, 0, 0.8)',  // Soft black for line
-                                    backgroundColor: gradient,
+                                    borderColor: getHistoryTypeColor('bp'),
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
                                     borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.4,
-                                    yAxisID: 'y-bp'
+                                    fill: false,
+                                    tension: 0.4
                                 },
                                 {
                                     label: 'Number of Patients',
                                     data: data.patient_counts,
-                                    borderColor: 'rgba(0, 0, 0, 0.6)',  // Slightly transparent black
-                                    backgroundColor: 'rgba(0, 0, 0, 0.1)',  // Very light black
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                     borderWidth: 2,
-                                    yAxisID: 'y-patients',
                                     type: 'bar'
                                 }
                             ]
                         },
-                        options: {
-                            ...chartConfig,
-                            scales: {
-                                ...chartConfig.scales,
-                                'y-bp': {
-                                    position: 'left',
-                                    title: {
-                                        display: true,
-                                        text: 'Blood Pressure',
-                                        font: {
-                                            size: 12,
-                                            weight: '500'
-                                        },
-                                        color: '#4a4a4a'
-                                    },
-                                    grid: {
-                                        color: 'rgba(0, 0, 0, 0.06)'
-                                    }
-                                },
-                                'y-patients': {
-                                    position: 'right',
-                                    title: {
-                                        display: true,
-                                        text: 'Number of Patients',
-                                        font: {
-                                            size: 12,
-                                            weight: '500'
-                                        },
-                                        color: '#4a4a4a'
-                                    },
-                                    grid: {
-                                        display: false
-                                    }
-                                }
-                            }
-                        }
+                        options: chartConfig
                     });
                 } else {
-                    // Standard chart configuration for other types
+                    // Standard configuration for other charts
                     const chartTitle = type.split('_')
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
@@ -1035,8 +1030,8 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                             datasets: [{
                                 label: `${chartTitle} History`,
                                 data: data.values,
-                                borderColor: 'rgba(0, 0, 0, 0.8)',  // Soft black for line
-                                backgroundColor: gradient,
+                                borderColor: getHistoryTypeColor(type),
+                                backgroundColor: `${getHistoryTypeColor(type).replace('1)', '0.1)')}`,
                                 borderWidth: 2,
                                 fill: true,
                                 tension: 0.4
@@ -1045,12 +1040,37 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                         options: chartConfig
                     });
                 }
+                
+                // Now that we have data, update the column visibility
+                try {
+                    initializeColumnVisibility();
+                } catch (err) {
+                    console.warn('Column visibility initialization error:', err);
+                }
             })
             .catch(error => {
-                console.error('Error fetching history data:', error);
+                console.error('Error updating history chart:', error);
                 hideLoader();
             });
     }
+
+    // Immediately update when changing type or date range
+    document.getElementById('historyType').addEventListener('change', function() {
+        const selectedType = this.value;
+        const selectedDays = document.getElementById('historyDateRange').value;
+        if (selectedType) {
+            updateChartSelectStyles();
+            updateHistoryChart(selectedType, selectedDays);
+        }
+    });
+
+    document.getElementById('historyDateRange').addEventListener('change', function() {
+        const selectedType = document.getElementById('historyType').value;
+        const selectedDays = this.value;
+        if (selectedType) {
+            updateHistoryChart(selectedType, selectedDays);
+        }
+    });
 
     // Enhanced select styling and interaction
     function updateChartSelectStyles() {
@@ -1066,34 +1086,6 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             historyTypeSelect.style.backgroundColor = '#ffffff';
         }
     }
-
-    // Event listeners with loading states
-    document.getElementById('historyType').addEventListener('change', function() {
-        const type = this.value;
-        if (type) {
-            const days = document.getElementById('historyDateRange').value;
-            updateHistoryChart(type, days);
-            updateChartSelectStyles();
-        }
-    });
-
-    document.getElementById('historyDateRange').addEventListener('change', function() {
-        const type = document.getElementById('historyType').value;
-        if (type) {
-            updateHistoryChart(type, this.value);
-        }
-    });
-
-    // Initialize chart and styles when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        const historyType = document.getElementById('historyType');
-        updateChartSelectStyles();
-        
-        // If a type is already selected, load its chart
-        if (historyType.value) {
-            updateHistoryChart(historyType.value, document.getElementById('historyDateRange').value);
-        }
-    });
 
     // Initialize collapse functionality
     $(document).ready(function() {
@@ -1244,6 +1236,17 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       // Initialize column visibility dropdown
       function initializeColumnVisibility() {
         const columnVisibilityMenu = document.getElementById('columnVisibility');
+        // Check if element exists before proceeding
+        if (!columnVisibilityMenu || !currentChart || !currentChart.data || !currentChart.data.datasets) {
+          console.log('Required elements for column visibility not found');
+          return;
+        }
+        
+        // Clear existing items
+        while (columnVisibilityMenu.firstChild) {
+          columnVisibilityMenu.removeChild(columnVisibilityMenu.firstChild);
+        }
+        
         const datasets = currentChart.data.datasets;
         
         datasets.forEach((dataset, index) => {
@@ -1260,15 +1263,24 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
           
           const label = document.createElement('label');
           label.appendChild(checkbox);
-          label.appendChild(document.createTextNode(dataset.label));
+          label.appendChild(document.createTextNode(dataset.label || `Dataset ${index + 1}`));
           
           item.appendChild(label);
           columnVisibilityMenu.appendChild(item);
         });
       }
 
-      // Call this after chart initialization
-      initializeColumnVisibility();
+      // Only call this after chart initialization and when element exists
+      document.addEventListener('DOMContentLoaded', function() {
+        // Delay initialization to ensure chart is ready
+        setTimeout(() => {
+          try {
+            initializeColumnVisibility();
+          } catch (err) {
+            console.warn('Column visibility initialization error:', err);
+          }
+        }, 1000);
+      });
     });
 
     // Add this to your existing JavaScript, after the history chart initialization
@@ -1359,6 +1371,42 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
       document.getElementById('historyBtnExcel').addEventListener('click', exportHistoryToExcel);
       document.getElementById('historyBtnPDF').addEventListener('click', exportHistoryToPDF);
       document.getElementById('historyBtnPrint').addEventListener('click', printHistoryChart);
+    });
+
+    // Initialize chart and styles when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const historyType = document.getElementById('historyType');
+        updateChartSelectStyles();
+        
+        // If a type is already selected, load its chart
+        if (historyType.value) {
+            updateHistoryChart(historyType.value, document.getElementById('historyDateRange').value);
+        }
+
+        // Set up auto-refresh every 5 minutes
+        setInterval(() => {
+            const selectedType = document.getElementById('historyType').value;
+            const selectedDays = document.getElementById('historyDateRange').value;
+            if (selectedType) {
+                console.log('Auto-refreshing history chart...');
+                updateHistoryChart(selectedType, selectedDays);
+            }
+        }, 300000); // 5 minutes in milliseconds
+    });
+
+    // Add manual refresh button
+    document.getElementById('historyDateRange').insertAdjacentHTML('afterend', 
+        '<button id="refreshHistory" class="btn btn-gradient btn-sm export-btn ml-2">' +
+        '<i class="fas fa-sync-alt"></i> Refresh</button>'
+    );
+
+    document.getElementById('refreshHistory').addEventListener('click', function() {
+        const selectedType = document.getElementById('historyType').value;
+        const selectedDays = document.getElementById('historyDateRange').value;
+        if (selectedType) {
+            console.log('Manually refreshing history chart...');
+            updateHistoryChart(selectedType, selectedDays);
+        }
     });
   </script>
 </body>

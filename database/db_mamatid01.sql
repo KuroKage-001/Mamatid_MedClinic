@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2025 at 05:11 PM
+-- Generation Time: Apr 19, 2025 at 09:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -82,7 +82,9 @@ CREATE TABLE `bp_monitoring` (
 
 INSERT INTO `bp_monitoring` (`id`, `name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`, `created_at`) VALUES
 (2, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 'Female', '100', 1, 1, 1, '09918719610', '2025-04-17 10:07:19'),
-(3, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 'Male', '120', 1, 0, 0, '09918719610', '2025-04-17 10:07:43');
+(3, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 'Male', '120', 1, 0, 0, '09918719610', '2025-04-17 10:07:43'),
+(5, 'Yeomra Baskerville', '2025-04-19', 'Hell Main House', 'Male', '50/20', 1, 1, 0, '00000000000', '2025-04-19 16:45:13'),
+(6, 'Osiris Baskerville', '2025-04-19', 'Baskerville Main House 2', 'Male', '70/80', 0, 1, 0, '88888888888', '2025-04-19 16:46:16');
 
 -- --------------------------------------------------------
 
@@ -134,7 +136,9 @@ CREATE TABLE `deworming` (
 
 INSERT INTO `deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) VALUES
 (3, 'Vikir Baskerville', '2025-04-17', 20, '2000-09-22', '2025-04-17 10:05:00'),
-(4, 'Pomeranian Baskerville', '2025-04-17', 20, '2010-12-15', '2025-04-17 10:05:32');
+(4, 'Pomeranian Baskerville', '2025-04-17', 20, '2010-12-15', '2025-04-17 10:05:32'),
+(5, 'Yeomra Baskerville', '2025-04-20', 20, '2025-04-20', '2025-04-19 18:04:07'),
+(6, 'Osiris Baskerville', '2025-04-20', 90, '2025-04-20', '2025-04-19 18:04:27');
 
 -- --------------------------------------------------------
 
@@ -144,7 +148,6 @@ INSERT INTO `deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) 
 
 CREATE TABLE `family_members` (
   `id` int(11) NOT NULL,
-  `serial_number` varchar(50) NOT NULL,
   `name` varchar(100) NOT NULL,
   `date` date NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -154,10 +157,10 @@ CREATE TABLE `family_members` (
 -- Dumping data for table `family_members`
 --
 
-INSERT INTO `family_members` (`id`, `serial_number`, `name`, `date`, `created_at`) VALUES
-(3, '1', 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
-(4, '2', 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05'),
-(5, '3', 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03');
+INSERT INTO `family_members` (`id`, `name`, `date`, `created_at`) VALUES
+(3, 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
+(4, 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05'),
+(5, 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03');
 
 -- --------------------------------------------------------
 
@@ -181,7 +184,8 @@ CREATE TABLE `family_planning` (
 INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`) VALUES
 (2, 'Vikir Baskerville', '2025-04-17', 20, 'Baskerville Main House', '2025-04-17 10:08:04'),
 (3, 'Pomeranian Baskerville', '2025-04-17', 10, 'Baskerville Main House 1', '2025-04-17 10:08:16'),
-(4, 'Yeomra Baskerville', '2025-04-19', 25, 'Hell 0001', '2025-04-19 14:58:50');
+(6, 'Yeomra Baskerville', '2025-04-19', 20, 'Hell 0001', '2025-04-19 15:56:41'),
+(7, 'Osiris Baskerville', '2025-04-19', 25, 'Baskerville Main House 2', '2025-04-19 16:18:22');
 
 -- --------------------------------------------------------
 
@@ -332,8 +336,9 @@ CREATE TABLE `random_blood_sugar` (
 --
 
 INSERT INTO `random_blood_sugar` (`id`, `name`, `date`, `address`, `age`, `result`, `created_at`) VALUES
-(3, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 20, 'None', '2025-04-17 10:02:55'),
-(4, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', '2025-04-17 10:03:29');
+(4, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', '2025-04-17 10:03:29'),
+(5, 'Yeomra Baskerville', '2025-04-20', 'Hell Main House', 500, 'None', '2025-04-19 18:35:33'),
+(6, 'Osiris Baskerville', '2025-04-20', 'Baskerville Main House 2', 70, 'None', '2025-04-19 18:35:56');
 
 -- --------------------------------------------------------
 
@@ -357,8 +362,9 @@ CREATE TABLE `tetanus_toxoid` (
 --
 
 INSERT INTO `tetanus_toxoid` (`id`, `name`, `date`, `address`, `age`, `diagnosis`, `remarks`, `created_at`) VALUES
-(2, 'Vikir Baskerville', '2025-04-17', 'Baskerville Main House', 20, 'None', 'None', '2025-04-17 10:05:59'),
-(3, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', 'None', '2025-04-17 10:06:19');
+(3, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', 'None', '2025-04-17 10:06:19'),
+(4, 'Yeomra Baskerville', '2025-04-20', 'Hell Main House', 1000, 'None', 'None', '2025-04-19 17:22:21'),
+(5, 'Osiris Baskerville', '2025-04-20', 'Baskerville Main House 2', 29, 'None', 'none', '2025-04-19 17:38:40');
 
 -- --------------------------------------------------------
 
@@ -626,7 +632,7 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT for table `bp_monitoring`
 --
 ALTER TABLE `bp_monitoring`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -638,7 +644,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `deworming`
 --
 ALTER TABLE `deworming`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `family_members`
@@ -650,7 +656,7 @@ ALTER TABLE `family_members`
 -- AUTO_INCREMENT for table `family_planning`
 --
 ALTER TABLE `family_planning`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `medicines`
@@ -680,13 +686,13 @@ ALTER TABLE `medicine_inventory_transactions`
 -- AUTO_INCREMENT for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tetanus_toxoid`
 --
 ALTER TABLE `tetanus_toxoid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `time_in_logs`
