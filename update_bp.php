@@ -1,223 +1,583 @@
 <?php
 include './config/connection.php';
-include './common_service/common_functions.php';
 
-$message = '';
+// Check if ID is provided
 $id = isset($_GET['id']) ? $_GET['id'] : '';
-
-if ($id == '') {
-    header("Location:bp_monitoring.php");
+if (empty($id)) {
+    header("Location: bp_monitoring.php");
     exit;
 }
 
-// Handle form submission to update BP monitoring record
-if (isset($_POST['update_bp'])) {
-    // Retrieve and sanitize form inputs
-    $name = trim($_POST['name']);
-    $date = trim($_POST['date']);
-    $address = trim($_POST['address']);
-    $sex = trim($_POST['sex']);
-    $bp = trim($_POST['bp']);
+$message = '';
+$errors = array();
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate and sanitize inputs
+    $name = trim($_POST['name'] ?? '');
+    $date = trim($_POST['date'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $sex = trim($_POST['sex'] ?? '');
+    $bp = trim($_POST['bp'] ?? '');
     $alcohol = isset($_POST['alcohol']) ? 1 : 0;
     $smoke = isset($_POST['smoke']) ? 1 : 0;
     $obese = isset($_POST['obese']) ? 1 : 0;
-    $cp_number = trim($_POST['cp_number']);
+    $cp_number = trim($_POST['cp_number'] ?? '');
 
-    // Convert date format from MM/DD/YYYY to YYYY-MM-DD
-    $dateArr = explode("/", $date);
-    $date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
+    // Validation
+    if (empty($name)) {
+        $errors[] = "Name is required";
+    }
+    if (empty($date)) {
+        $errors[] = "Date is required";
+    }
+    if (empty($address)) {
+        $errors[] = "Address is required";
+    }
+    if (empty($sex)) {
+        $errors[] = "Sex is required";
+    }
+    if (empty($bp)) {
+        $errors[] = "BP is required";
+    } elseif (!preg_match("/^\d{2,3}\/\d{2,3}$/", $bp)) {
+        $errors[] = "BP must be in format like 120/80";
+    }
 
-    // Format name and address (capitalize each word)
-    $name = ucwords(strtolower($name));
-    $address = ucwords(strtolower($address));
-
-    // Check if all required fields are provided
-    if ($name != '' && $date != '' && $address != '' && $sex != '' && $bp != '') {
-        // Prepare UPDATE query
-        $query = "UPDATE `bp_monitoring` SET 
-                 `name` = '$name',
-                 `date` = '$date',
-                 `address` = '$address',
-                 `sex` = '$sex',
-                 `bp` = '$bp',
-                 `alcohol` = $alcohol,
-                 `smoke` = $smoke,
-                 `obese` = $obese,
-                 `cp_number` = '$cp_number'
-                 WHERE `id` = $id;";
+    // If no errors, proceed with update
+    if (empty($errors)) {
         try {
-            // Start transaction and execute query
+            // Convert date from MM/DD/YYYY to YYYY-MM-DD
+            $date_obj = DateTime::createFromFormat('m/d/Y', $date);
+            if (!$date_obj) {
+                throw new Exception("Invalid date format");
+            }
+            $formatted_date = $date_obj->format('Y-m-d');
+
+            // Start transaction
             $con->beginTransaction();
+
+            // Prepare the update query with parameterized statement
+            $query = "UPDATE bp_monitoring SET 
+                     name = :name,
+                     date = :date,
+                     address = :address,
+                     sex = :sex,
+                     bp = :bp,
+                     alcohol = :alcohol,
+                     smoke = :smoke,
+                     obese = :obese,
+                     cp_number = :cp_number
+                     WHERE id = :id";
+
             $stmt = $con->prepare($query);
-            $stmt->execute();
-            $con->commit();
-            $message = 'BP monitoring record updated successfully.';
-        } catch (PDOException $ex) {
-            // Rollback on error and output exception details (for debugging only)
+            
+            // Bind parameters
+            $params = [
+                ':name' => ucwords(strtolower($name)),
+                ':date' => $formatted_date,
+                ':address' => ucwords(strtolower($address)),
+                ':sex' => $sex,
+                ':bp' => $bp,
+                ':alcohol' => $alcohol,
+                ':smoke' => $smoke,
+                ':obese' => $obese,
+                ':cp_number' => $cp_number,
+                ':id' => $id
+            ];
+
+            // Execute the update
+            $result = $stmt->execute($params);
+
+            if ($result) {
+                $con->commit();
+                header("Location: bp_monitoring.php?message=" . urlencode("Record updated successfully"));
+                exit;
+            } else {
+                throw new Exception("Failed to update record");
+            }
+        } catch (Exception $e) {
             $con->rollback();
-            echo $ex->getMessage();
-            echo $ex->getTraceAsString();
-            exit;
+            $errors[] = $e->getMessage();
         }
     }
-    // Redirect with a success or error message
-    header("Location:congratulation.php?goto_page=bp_monitoring.php&message=$message");
-    exit;
 }
 
-// Retrieve the BP monitoring record for editing
+// Fetch existing record
 try {
-    $query = "SELECT `id`, `name`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`,
-                     DATE_FORMAT(`date`, '%m/%d/%Y') as `date`
-              FROM `bp_monitoring`
-              WHERE `id` = $id;";
+    $query = "SELECT id, name, address, sex, bp, alcohol, smoke, obese, cp_number,
+             DATE_FORMAT(date, '%m/%d/%Y') as date
+             FROM bp_monitoring 
+             WHERE id = :id";
+    
     $stmt = $con->prepare($query);
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (PDOException $ex) {
-    echo $ex->getMessage();
-    echo $ex->getTraceAsString();
+    $stmt->execute([':id' => $id]);
+    $record = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$record) {
+        header("Location: bp_monitoring.php?message=" . urlencode("Record not found"));
+        exit;
+    }
+} catch (PDOException $e) {
+    header("Location: bp_monitoring.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <?php include './config/site_css_links.php'; ?>
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Update BP Monitoring - Mamatid Health Center System</title>
+    <?php include './config/site_css_links.php'; ?>
+    <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <title>Update BP Monitoring - Mamatid Health Center System</title>
+    <style>
+        :root {
+            --primary-color: #3699FF;
+            --secondary-color: #6993FF;
+            --success-color: #1BC5BD;
+            --info-color: #8950FC;
+            --warning-color: #FFA800;
+            --danger-color: #F64E60;
+            --light-color: #F3F6F9;
+            --dark-color: #1a1a2d;
+            --transition-speed: 0.3s;
+        }
+
+        /* Card Styling */
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card-outline {
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .card-header {
+            background: white;
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Form Controls */
+        .form-control {
+            height: calc(2.5rem + 2px);
+            border-radius: 8px;
+            border: 2px solid #e4e6ef;
+            padding: 0.625rem 1rem;
+            font-size: 1rem;
+            transition: all var(--transition-speed);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Select Styling */
+        select.form-control {
+            appearance: none;
+            background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+            background-size: 8px 10px;
+            padding-right: 2rem;
+        }
+
+        /* Date Picker Styling */
+        .input-group-text {
+            border-radius: 8px;
+            border: 2px solid #e4e6ef;
+            background-color: #f5f8fa;
+            color: var(--dark-color);
+        }
+
+        .input-group > .form-control {
+            border-top-right-radius: 8px !important;
+            border-bottom-right-radius: 8px !important;
+        }
+
+        /* Checkbox Styling */
+        .form-check {
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-left: -2rem;
+            margin-top: 0.15rem;
+            border: 2px solid #e4e6ef;
+            border-radius: 4px;
+            transition: all var(--transition-speed);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-check-label {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 0.65rem 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #ee2d41 100%);
+            border: none;
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons .btn {
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Alert Styling */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-danger {
+            background-color: #fff5f8;
+            color: var(--danger-color);
+        }
+
+         /* Content Header Styling */
+    .content-header {
+      padding: 20px 0;
+    }
+
+    .content-header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
-  <div class="wrapper">
-    <?php 
-      include './config/header.php';
-      include './config/sidebar.php'; 
-    ?>
-    <div class="content-wrapper">
-      <section class="content-header">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-              <h1>UPDATE BP MONITORING RECORD</h1>
+    <div class="wrapper">
+        <?php include './config/header.php'; ?>
+        <?php include './config/sidebar.php'; ?>
+        <div class="content-wrapper">
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row align-items-center mb-4">
+              <div class="col-12 col-md-6" style="padding-left: 20px;">
+                <h1>Update Family Planning Record</h1>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="content">
-        <div class="card card-outline card-primary rounded-0 shadow">
-          <div class="card-header">
-            <h3 class="card-title">UPDATE BP MONITORING RECORD</h3>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <form method="post">
-              <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Name</label>
-                  <input type="text" id="name" name="name" required="required"
-                         class="form-control form-control-sm rounded-0"
-                         value="<?php echo $row['name']; ?>"/>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <div class="form-group">
-                    <label>Date</label>
-                    <div class="input-group date" id="date" data-target-input="nearest">
-                      <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" 
-                             data-target="#date" name="date"
-                             data-toggle="datetimepicker" autocomplete="off"
-                             value="<?php echo $row['date']; ?>"/>
-                      <div class="input-group-append" data-target="#date" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                      </div>
+            <section class="content">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-edit mr-2"></i>Edit BP Record
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
-                  </div>
+                    <div class="card-body">
+                        <?php if (!empty($errors)): ?>
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    <?php foreach ($errors as $error): ?>
+                                        <li><?php echo $error; ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="post" id="updateForm">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" id="name" name="name" required
+                                           class="form-control" value="<?php echo htmlspecialchars($record['name']); ?>"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Date</label>
+                                    <div class="input-group date" id="date" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input" 
+                                               data-target="#date" name="date"
+                                               data-toggle="datetimepicker" autocomplete="off" required
+                                               value="<?php echo htmlspecialchars($record['date']); ?>"/>
+                                        <div class="input-group-append" data-target="#date" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Sex</label>
+                                    <select id="sex" name="sex" required class="form-control">
+                                        <option value="">Select Sex</option>
+                                        <option value="Male" <?php echo $record['sex'] == 'Male' ? 'selected' : ''; ?>>Male</option>
+                                        <option value="Female" <?php echo $record['sex'] == 'Female' ? 'selected' : ''; ?>>Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" id="address" name="address" required
+                                           class="form-control" value="<?php echo htmlspecialchars($record['address']); ?>"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">BP</label>
+                                    <input type="text" id="bp" name="bp" required
+                                           class="form-control" placeholder="e.g. 120/80"
+                                           value="<?php echo htmlspecialchars($record['bp']); ?>"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="alcohol" name="alcohol"
+                                               <?php echo $record['alcohol'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="alcohol">Alcohol</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="smoke" name="smoke"
+                                               <?php echo $record['smoke'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="smoke">Smoke</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="obese" name="obese"
+                                               <?php echo $record['obese'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="obese">Obese</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label">CP Number</label>
+                                    <input type="text" id="cp_number" name="cp_number"
+                                           class="form-control" value="<?php echo htmlspecialchars($record['cp_number']); ?>"/>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <a href="bp_monitoring.php" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                                <button type="button" class="btn btn-danger" id="deleteBtn">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <button type="submit" id="update_bp" name="update_bp" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Sex</label>
-                  <select id="sex" name="sex" required="required" class="form-control form-control-sm rounded-0">
-                    <option value="">Select Sex</option>
-                    <option value="Male" <?php echo $row['sex'] == 'Male' ? 'selected' : ''; ?>>Male</option>
-                    <option value="Female" <?php echo $row['sex'] == 'Female' ? 'selected' : ''; ?>>Female</option>
-                  </select>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
-                  <label>Address</label>
-                  <input type="text" id="address" name="address" required="required"
-                         class="form-control form-control-sm rounded-0"
-                         value="<?php echo $row['address']; ?>"/>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
-                  <label>BP</label>
-                  <input type="text" id="bp" name="bp" required="required"
-                         class="form-control form-control-sm rounded-0" placeholder="e.g. 120/80"
-                         value="<?php echo $row['bp']; ?>"/>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="alcohol" name="alcohol"
-                           <?php echo $row['alcohol'] ? 'checked' : ''; ?>>
-                    <label class="form-check-label" for="alcohol">Alcohol</label>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="smoke" name="smoke"
-                           <?php echo $row['smoke'] ? 'checked' : ''; ?>>
-                    <label class="form-check-label" for="smoke">Smoke</label>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="obese" name="obese"
-                           <?php echo $row['obese'] ? 'checked' : ''; ?>>
-                    <label class="form-check-label" for="obese">Obese</label>
-                  </div>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                  <label>CP Number</label>
-                  <input type="text" id="cp_number" name="cp_number"
-                         class="form-control form-control-sm rounded-0"
-                         value="<?php echo $row['cp_number']; ?>"/>
-                </div>
-              </div>
-              <div class="clearfix">&nbsp;</div>
-              <div class="row">
-                <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp;</div>
-                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
-                  <button type="submit" id="update_bp" name="update_bp" 
-                          class="btn btn-primary btn-sm btn-flat btn-block">Update</button>
-                </div>
-              </div>
-            </form>
-          </div>
+            </section>
         </div>
-      </section>
+        <?php include './config/footer.php'; ?>
     </div>
 
-    <?php include './config/footer.php'; ?>
-    
     <?php include './config/site_js_links.php'; ?>
     <script src="plugins/moment/moment.min.js"></script>
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
     <script>
-      showMenuSelected("#mnu_patients", "#mi_bp_monitoring");
-      
-      $('#date').datetimepicker({
-          format: 'L'
-      });
+        $(document).ready(function() {
+            // Initialize date picker
+            $('#date').datetimepicker({
+                format: 'L',
+                icons: {
+                    time: 'fas fa-clock',
+                    date: 'fas fa-calendar',
+                    up: 'fas fa-arrow-up',
+                    down: 'fas fa-arrow-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'fas fa-trash',
+                    close: 'fas fa-times'
+                }
+            });
+
+            // Delete button handler
+            $('#deleteBtn').click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This record will be permanently deleted!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#F64E60',
+                    cancelButtonColor: '#6e7881',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'delete_bp.php?id=<?php echo $id; ?>';
+                    }
+                });
+            });
+
+            // Form validation and submission
+            $('#updateForm').submit(function(e) {
+                e.preventDefault();
+
+                // Basic form validation
+                let isValid = true;
+                const name = $('#name').val().trim();
+                const date = $('#date input').val().trim();
+                const address = $('#address').val().trim();
+                const sex = $('#sex').val();
+                const bp = $('#bp').val().trim();
+
+                // Clear previous error messages
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+
+                // Validate each field
+                if (!name) {
+                    isValid = false;
+                    $('#name').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">Name is required</div>');
+                }
+
+                if (!date) {
+                    isValid = false;
+                    $('#date input').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">Date is required</div>');
+                }
+
+                if (!address) {
+                    isValid = false;
+                    $('#address').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">Address is required</div>');
+                }
+
+                if (!sex) {
+                    isValid = false;
+                    $('#sex').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">Sex is required</div>');
+                }
+
+                if (!bp) {
+                    isValid = false;
+                    $('#bp').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">BP is required</div>');
+                } else if (!/^\d{2,3}\/\d{2,3}$/.test(bp)) {
+                    isValid = false;
+                    $('#bp').addClass('is-invalid')
+                        .after('<div class="invalid-feedback">BP must be in format like 120/80</div>');
+                }
+
+                if (isValid) {
+                    // Show confirmation dialog
+                    Swal.fire({
+                        title: 'Update Record',
+                        text: "Are you sure you want to update this record?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3699FF',
+                        cancelButtonColor: '#6e7881',
+                        confirmButtonText: 'Yes, update it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                } else {
+                    // Scroll to first error
+                    const firstError = $('.is-invalid').first();
+                    if (firstError.length) {
+                        $('html, body').animate({
+                            scrollTop: firstError.offset().top - 100
+                        }, 500);
+                    }
+                }
+            });
+
+            // Show menu
+            showMenuSelected("#mnu_patients", "#mi_bp_monitoring");
+        });
     </script>
 </body>
 </html> 

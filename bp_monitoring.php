@@ -282,6 +282,127 @@ try {
         margin-bottom: 1rem;
       }
     }
+
+    /* Export Buttons and Column Visibility Styling */
+    .chart-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none !important;
+      padding: 8px 15px;
+      font-size: 0.875rem;
+    }
+
+    /* Gradient colors for each button */
+    #btnCopy {
+      background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+    }
+
+    #btnCSV {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+    }
+
+    #btnExcel {
+      background: linear-gradient(135deg, #20C997 0%, #1CB984 100%);
+    }
+
+    #btnPDF {
+      background: linear-gradient(135deg, #F64E60 0%, #EE2D41 100%);
+    }
+
+    #btnPrint {
+      background: linear-gradient(135deg, #8950FC 0%, #7337EE 100%);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      filter: brightness(110%);
+    }
+
+    .export-btn i {
+      font-size: 0.875rem;
+    }
+
+    /* Column visibility button and dropdown styles */
+    .btn-group .btn-gradient {
+      background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+      color: #fff !important;
+      border: none !important;
+      padding: 8px 15px;
+      font-size: 0.875rem;
+    }
+
+    .btn-group .btn-gradient:hover {
+      filter: brightness(110%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .dropdown-menu {
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+      border: none;
+      background: #fff;
+      min-width: 160px;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      color: #3F4254;
+      font-size: 0.875rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: #F3F6F9;
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .dropdown-item label {
+      margin: 0;
+      cursor: pointer;
+      color: #3F4254;
+      font-weight: 500;
+    }
+
+    /* Ensure dropdown text is visible */
+    .dropdown-toggle::after {
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* Add some spacing between button groups */
+    .chart-actions > * + * {
+      margin-left: 4px;
+    }
+
+    /* Make sure the buttons maintain their shape */
+    .btn {
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -415,6 +536,37 @@ try {
           </div>
           <div class="card-body">
             <div class="table-responsive">
+              <div class="mb-3">
+                <div class="row align-items-center">
+                  <div class="col-md-6">
+                    <div class="chart-actions">
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
+                        <i class="fas fa-copy"></i> Copy
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
+                        <i class="fas fa-file-csv"></i> CSV
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnExcel">
+                        <i class="fas fa-file-excel"></i> Excel
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnPDF">
+                        <i class="fas fa-file-pdf"></i> PDF
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnPrint">
+                        <i class="fas fa-print"></i> Print
+                      </button>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-gradient btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-columns"></i> Columns
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" id="columnVisibility">
+                          <!-- Column visibility options will be added dynamically -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <table id="all_bp" class="table table-striped table-hover">
                 <thead>
                   <tr>
@@ -478,20 +630,83 @@ try {
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <script>
       $(document).ready(function() {
-        // Initialize DataTable
-        $("#all_bp").DataTable({
+        // Initialize DataTable with export buttons
+        var table = $("#all_bp").DataTable({
           responsive: true,
           lengthChange: false,
           autoWidth: false,
-          buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+          buttons: [
+            {
+              extend: 'copy',
+              text: '<i class="fas fa-copy"></i> Copy',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'csv',
+              text: '<i class="fas fa-file-csv"></i> CSV',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'excel',
+              text: '<i class="fas fa-file-excel"></i> Excel',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'pdf',
+              text: '<i class="fas fa-file-pdf"></i> PDF',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'print',
+              text: '<i class="fas fa-print"></i> Print',
+              className: 'btn btn-gradient btn-sm'
+            }
+          ],
           language: {
             search: "",
             searchPlaceholder: "Search records..."
-          },
-          dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-               "<'row'<'col-sm-12'tr>>" +
-               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-        }).buttons().container().appendTo('#all_bp_wrapper .col-md-6:eq(0)');
+          }
+        });
+
+        // Custom button click handlers
+        $('#btnCopy').on('click', function() {
+          table.button('.buttons-copy').trigger();
+        });
+
+        $('#btnCSV').on('click', function() {
+          table.button('.buttons-csv').trigger();
+        });
+
+        $('#btnExcel').on('click', function() {
+          table.button('.buttons-excel').trigger();
+        });
+
+        $('#btnPDF').on('click', function() {
+          table.button('.buttons-pdf').trigger();
+        });
+
+        $('#btnPrint').on('click', function() {
+          table.button('.buttons-print').trigger();
+        });
+
+        // Initialize column visibility menu
+        var columnVisibility = $('#columnVisibility');
+        table.columns().every(function(index) {
+          var column = this;
+          var title = $(column.header()).text();
+          
+          var menuItem = $('<div class="dropdown-item">' +
+            '<input type="checkbox" checked="checked" id="col_' + index + '">' +
+            '<label for="col_' + index + '">' + title + '</label>' +
+            '</div>');
+            
+          $('input', menuItem).on('click', function() {
+            var isVisible = column.visible();
+            column.visible(!isVisible);
+          });
+          
+          columnVisibility.append(menuItem);
+        });
 
         // Initialize Date Picker
         $('#date').datetimepicker({

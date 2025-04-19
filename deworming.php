@@ -7,54 +7,75 @@ $message = '';
 // Handle form submission to save a new deworming record
 if (isset($_POST['save_deworming'])) {
     // Retrieve and sanitize form inputs
-    $name = trim($_POST['name']);
-    $date = trim($_POST['date']);
-    $age = trim($_POST['age']);
-    $birthday = trim($_POST['birthday']);
+    $name = trim($_POST['name'] ?? '');
+    $date = trim($_POST['date'] ?? '');
+    $age = trim($_POST['age'] ?? '');
+    $birthday = trim($_POST['birthday'] ?? '');
 
-    // Convert date format from MM/DD/YYYY to YYYY-MM-DD
-    $dateArr = explode("/", $date);
-    $date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
+    // Validation
+    $errors = [];
+    if (empty($name)) $errors[] = "Name is required";
+    if (empty($date)) $errors[] = "Date is required";
+    if (empty($age)) $errors[] = "Age is required";
+    if (empty($birthday)) $errors[] = "Birthday is required";
 
-    $birthdayArr = explode("/", $birthday);
-    $birthday = $birthdayArr[2] . '-' . $birthdayArr[0] . '-' . $birthdayArr[1];
-
-    // Format name (capitalize each word)
-    $name = ucwords(strtolower($name));
-
-    // Check if all required fields are provided
-    if ($name != '' && $date != '' && $age != '' && $birthday != '') {
-        // Prepare INSERT query
-        $query = "INSERT INTO `deworming`(`name`, `date`, `age`, `birthday`)
-                  VALUES('$name', '$date', '$age', '$birthday');";
+    if (empty($errors)) {
         try {
-            // Start transaction and execute query
+            // Convert date format from MM/DD/YYYY to YYYY-MM-DD
+            $dateArr = explode("/", $date);
+            if (count($dateArr) !== 3) {
+                throw new Exception("Invalid date format");
+            }
+            $formatted_date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
+
+            $birthdayArr = explode("/", $birthday);
+            if (count($birthdayArr) !== 3) {
+                throw new Exception("Invalid birthday format");
+            }
+            $formatted_birthday = $birthdayArr[2] . '-' . $birthdayArr[0] . '-' . $birthdayArr[1];
+
+            // Format name (capitalize each word)
+            $name = ucwords(strtolower($name));
+
+            // Prepare INSERT query with parameterized statement
+            $query = "INSERT INTO deworming (name, date, age, birthday) 
+                     VALUES (:name, :date, :age, :birthday)";
+
+            // Start transaction
             $con->beginTransaction();
+            
             $stmt = $con->prepare($query);
-            $stmt->execute();
-            $con->commit();
-            $message = 'Deworming record added successfully.';
-        } catch (PDOException $ex) {
-            // Rollback on error and output exception details (for debugging only)
+            $result = $stmt->execute([
+                ':name' => $name,
+                ':date' => $formatted_date,
+                ':age' => $age,
+                ':birthday' => $formatted_birthday
+            ]);
+
+            if ($result) {
+                $con->commit();
+                header("Location: deworming.php?message=" . urlencode("Record saved successfully"));
+                exit;
+            } else {
+                throw new Exception("Failed to save record");
+            }
+        } catch (Exception $e) {
             $con->rollback();
-            echo $ex->getMessage();
-            echo $ex->getTraceAsString();
-            exit;
+            $message = $e->getMessage();
         }
+    } else {
+        $message = implode(", ", $errors);
     }
-    // Redirect with a success or error message
-    header("Location:congratulation.php?goto_page=deworming.php&message=$message");
-    exit;
 }
 
 // Retrieve all deworming records for the listing
 try {
-    $query = "SELECT `id`, `name`, `age`,
-                     DATE_FORMAT(`date`, '%d %b %Y') as `date`,
-                     DATE_FORMAT(`birthday`, '%d %b %Y') as `birthday`,
-                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `deworming`
-              ORDER BY `date` DESC;";
+    $query = "SELECT id, name, age,
+                     DATE_FORMAT(date, '%d %b %Y') as date,
+                     DATE_FORMAT(birthday, '%d %b %Y') as birthday,
+                     DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
+              FROM deworming
+              ORDER BY date DESC";
     $stmt = $con->prepare($query);
     $stmt->execute();
 } catch (PDOException $ex) {
@@ -220,6 +241,127 @@ try {
       text-transform: capitalize;
     }
 
+    /* Export Buttons and Column Visibility Styling */
+    .chart-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none !important;
+      padding: 8px 15px;
+      font-size: 0.875rem;
+    }
+
+    /* Gradient colors for each button */
+    #btnCopy {
+      background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+    }
+
+    #btnCSV {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+    }
+
+    #btnExcel {
+      background: linear-gradient(135deg, #20C997 0%, #1CB984 100%);
+    }
+
+    #btnPDF {
+      background: linear-gradient(135deg, #F64E60 0%, #EE2D41 100%);
+    }
+
+    #btnPrint {
+      background: linear-gradient(135deg, #8950FC 0%, #7337EE 100%);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      filter: brightness(110%);
+    }
+
+    .export-btn i {
+      font-size: 0.875rem;
+    }
+
+    /* Column visibility button and dropdown styles */
+    .btn-group .btn-gradient {
+      background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+      color: #fff !important;
+      border: none !important;
+      padding: 8px 15px;
+      font-size: 0.875rem;
+    }
+
+    .btn-group .btn-gradient:hover {
+      filter: brightness(110%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .dropdown-menu {
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+      border: none;
+      background: #fff;
+      min-width: 160px;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      color: #3F4254;
+      font-size: 0.875rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: #F3F6F9;
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .dropdown-item label {
+      margin: 0;
+      cursor: pointer;
+      color: #3F4254;
+      font-weight: 500;
+    }
+
+    /* Ensure dropdown text is visible */
+    .dropdown-toggle::after {
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* Add some spacing between button groups */
+    .chart-actions > * + * {
+      margin-left: 4px;
+    }
+
+    /* Make sure the buttons maintain their shape */
+    .btn {
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       .card-header {
@@ -271,7 +413,7 @@ try {
             </div>
           </div>
           <div class="card-body">
-            <form method="post">
+            <form method="post" id="saveForm">
               <div class="row">
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <div class="form-group">
@@ -341,6 +483,37 @@ try {
           </div>
           <div class="card-body">
             <div class="table-responsive">
+              <div class="mb-3">
+                <div class="row align-items-center">
+                  <div class="col-md-6">
+                    <div class="chart-actions">
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
+                        <i class="fas fa-copy"></i> Copy
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
+                        <i class="fas fa-file-csv"></i> CSV
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnExcel">
+                        <i class="fas fa-file-excel"></i> Excel
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnPDF">
+                        <i class="fas fa-file-pdf"></i> PDF
+                      </button>
+                      <button class="btn btn-gradient btn-sm export-btn" id="btnPrint">
+                        <i class="fas fa-print"></i> Print
+                      </button>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-gradient btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-columns"></i> Columns
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" id="columnVisibility">
+                          <!-- Column visibility options will be added dynamically -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <table id="all_deworming" class="table table-striped table-hover">
                 <thead>
                   <tr>
@@ -361,14 +534,14 @@ try {
                   ?>
                   <tr>
                     <td><?php echo $count; ?></td>
-                    <td><?php echo $row['name']; ?></td>
-                    <td><?php echo $row['date']; ?></td>
-                    <td><?php echo $row['age']; ?></td>
-                    <td><?php echo $row['birthday']; ?></td>
-                    <td><?php echo $row['created_at']; ?></td>
+                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['date']); ?></td>
+                    <td><?php echo htmlspecialchars($row['age']); ?></td>
+                    <td><?php echo htmlspecialchars($row['birthday']); ?></td>
+                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                     <td>
                       <a href="update_deworming.php?id=<?php echo $row['id']; ?>" 
-                         class="btn btn-primary">
+                         class="btn btn-primary btn-sm">
                         <i class="fa fa-edit"></i>
                       </a>
                     </td>
@@ -392,20 +565,83 @@ try {
   
   <script>
     $(document).ready(function() {
-      // Initialize DataTable
-      $("#all_deworming").DataTable({
+      // Initialize DataTable with export buttons
+      var table = $("#all_deworming").DataTable({
         responsive: true,
         lengthChange: false,
         autoWidth: false,
-        buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        buttons: [
+          {
+            extend: 'copy',
+            text: '<i class="fas fa-copy"></i> Copy',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'csv',
+            text: '<i class="fas fa-file-csv"></i> CSV',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'excel',
+            text: '<i class="fas fa-file-excel"></i> Excel',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'pdf',
+            text: '<i class="fas fa-file-pdf"></i> PDF',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'print',
+            text: '<i class="fas fa-print"></i> Print',
+            className: 'btn btn-gradient btn-sm'
+          }
+        ],
         language: {
           search: "",
           searchPlaceholder: "Search records..."
-        },
-        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-             "<'row'<'col-sm-12'tr>>" +
-             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-      }).buttons().container().appendTo('#all_deworming_wrapper .col-md-6:eq(0)');
+        }
+      });
+
+      // Custom button click handlers
+      $('#btnCopy').on('click', function() {
+        table.button('.buttons-copy').trigger();
+      });
+
+      $('#btnCSV').on('click', function() {
+        table.button('.buttons-csv').trigger();
+      });
+
+      $('#btnExcel').on('click', function() {
+        table.button('.buttons-excel').trigger();
+      });
+
+      $('#btnPDF').on('click', function() {
+        table.button('.buttons-pdf').trigger();
+      });
+
+      $('#btnPrint').on('click', function() {
+        table.button('.buttons-print').trigger();
+      });
+
+      // Initialize column visibility menu
+      var columnVisibility = $('#columnVisibility');
+      table.columns().every(function(index) {
+        var column = this;
+        var title = $(column.header()).text();
+        
+        var menuItem = $('<div class="dropdown-item">' +
+          '<input type="checkbox" checked="checked" id="col_' + index + '">' +
+          '<label for="col_' + index + '">' + title + '</label>' +
+          '</div>');
+          
+        $('input', menuItem).on('click', function() {
+          var isVisible = column.visible();
+          column.visible(!isVisible);
+        });
+        
+        columnVisibility.append(menuItem);
+      });
 
       // Initialize Date Pickers
       $('#date, #birthday').datetimepicker({
@@ -429,21 +665,75 @@ try {
         position: 'top-end',
         showConfirmButton: false,
         timer: 3000,
-        timerProgressBar: true
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
       });
 
       // Show message if exists
-      var message = '<?php echo $message;?>';
+      var message = <?php echo json_encode(isset($_GET['message']) ? $_GET['message'] : ''); ?>;
       if(message !== '') {
         Toast.fire({
           icon: 'success',
           title: message
         });
       }
-    });
 
-    // Highlight current menu
-    showMenuSelected("#mnu_patients", "#mi_deworming");
+      // Form validation and submission
+      $('#saveForm').submit(function(e) {
+        // Basic form validation
+        let isValid = true;
+        const name = $('#name').val().trim();
+        const date = $('#date input').val().trim();
+        const age = $('#age').val().trim();
+        const birthday = $('#birthday input').val().trim();
+
+        // Clear previous error messages
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        // Validate each field
+        if (!name) {
+          isValid = false;
+          $('#name').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Name is required</div>');
+        }
+
+        if (!date) {
+          isValid = false;
+          $('#date input').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Date is required</div>');
+        }
+
+        if (!age) {
+          isValid = false;
+          $('#age').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Age is required</div>');
+        }
+
+        if (!birthday) {
+          isValid = false;
+          $('#birthday input').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Birthday is required</div>');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          // Scroll to first error
+          const firstError = $('.is-invalid').first();
+          if (firstError.length) {
+            $('html, body').animate({
+              scrollTop: firstError.offset().top - 100
+            }, 500);
+          }
+        }
+      });
+
+      // Show menu
+      showMenuSelected("#mnu_patients", "#mi_deworming");
+    });
   </script>
 </body>
 </html> 
