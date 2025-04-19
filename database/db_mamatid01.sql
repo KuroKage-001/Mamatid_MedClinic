@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2025 at 07:10 AM
+-- Generation Time: Apr 19, 2025 at 05:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,7 +53,8 @@ INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `da
 (3, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-15', '22:15:00', 'Checkup', 'completed', 'Okay!', '2025-04-14 09:09:42', '2025-04-14 09:28:31'),
 (4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
 (5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'completed', 'Done', '2025-04-14 21:07:07', '2025-04-17 16:02:26'),
-(7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54');
+(7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54'),
+(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'approved', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-04-19 10:09:44');
 
 -- --------------------------------------------------------
 
@@ -155,7 +156,8 @@ CREATE TABLE `family_members` (
 
 INSERT INTO `family_members` (`id`, `serial_number`, `name`, `date`, `created_at`) VALUES
 (3, '1', 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
-(4, '2', 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05');
+(4, '2', 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05'),
+(5, '3', 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03');
 
 -- --------------------------------------------------------
 
@@ -178,7 +180,8 @@ CREATE TABLE `family_planning` (
 
 INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`) VALUES
 (2, 'Vikir Baskerville', '2025-04-17', 20, 'Baskerville Main House', '2025-04-17 10:08:04'),
-(3, 'Pomeranian Baskerville', '2025-04-17', 10, 'Baskerville Main House 1', '2025-04-17 10:08:16');
+(3, 'Pomeranian Baskerville', '2025-04-17', 10, 'Baskerville Main House 1', '2025-04-17 10:08:16'),
+(4, 'Yeomra Baskerville', '2025-04-19', 25, 'Hell 0001', '2025-04-19 14:58:50');
 
 -- --------------------------------------------------------
 
@@ -375,7 +378,9 @@ CREATE TABLE `time_in_logs` (
 --
 
 INSERT INTO `time_in_logs` (`id`, `user_id`, `log_date`, `time_in`) VALUES
-(5, 6, '2025-04-17', '22:12:29');
+(5, 6, '2025-04-17', '22:12:29'),
+(6, 6, '2025-04-19', '17:31:09'),
+(7, 1, '2025-04-19', '20:51:57');
 
 --
 -- Triggers `time_in_logs`
@@ -410,7 +415,9 @@ CREATE TABLE `time_logs` (
 
 INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
 (14, 6, '2025-04-17', '22:12:29', NULL, 0.00),
-(15, 6, '2025-04-19', '17:43:52', '20:26:05', 2.70);
+(15, 6, '2025-04-19', '17:31:09', '17:31:15', 0.00),
+(17, 5, '2025-04-19', '17:43:52', '20:26:05', NULL),
+(18, 1, '2025-04-19', '20:51:57', '20:52:04', 0.00);
 
 -- --------------------------------------------------------
 
@@ -424,6 +431,14 @@ CREATE TABLE `time_out_logs` (
   `log_date` date NOT NULL,
   `time_out` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `time_out_logs`
+--
+
+INSERT INTO `time_out_logs` (`id`, `user_id`, `log_date`, `time_out`) VALUES
+(3, 6, '2025-04-19', '17:31:15'),
+(4, 1, '2025-04-19', '20:52:04');
 
 --
 -- Triggers `time_out_logs`
@@ -605,7 +620,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
@@ -629,13 +644,13 @@ ALTER TABLE `deworming`
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
 --
 ALTER TABLE `family_planning`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `medicines`
@@ -677,19 +692,19 @@ ALTER TABLE `tetanus_toxoid`
 -- AUTO_INCREMENT for table `time_in_logs`
 --
 ALTER TABLE `time_in_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `time_logs`
 --
 ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `time_out_logs`
 --
 ALTER TABLE `time_out_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
