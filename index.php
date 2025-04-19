@@ -70,22 +70,16 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Logo for the browser tab -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Login - Mamatid Health Center System</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Google Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- iCheck Bootstrap -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- AdminLTE CSS -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <!-- Additional Custom CSS -->
-  <link rel="stylesheet" href="dist/css/adminlte01.css">
-  
-  <!-- Include SweetAlert2 CSS -->
+  <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
   
   <!-- Include jQuery and SweetAlert2 JS -->
@@ -93,325 +87,350 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
   <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
   <style>
-    /* Background image styling for the login page */
-    body.login-page.light-mode {
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    :root {
+      --primary-color: #4F46E5;
+      --primary-hover: #4338CA;
+      --secondary-color: #6366F1;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --bg-light: #F9FAFB;
+      --border-color: #E5E7EB;
+    }
+
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    body.login-page {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%),
                   url('dist/img/bg-001.jpg') no-repeat center center fixed;
       background-size: cover;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
-    /* Login box styling */
-    .login-box {
-      max-width: 400px;
-      width: 90%;
-      margin: 0 auto;
+    body.login-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.50);
+      backdrop-filter: blur(2px);
     }
 
-    /* Card styling */
-    .card.card-outline.card-primary {
-      border-radius: 15px;
-      border: none;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+    .login-wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 1000px;
+      max-width: 95%;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      backdrop-filter: blur(8px);
     }
 
-    .card-body.login-card-body {
-      border-radius: 15px;
-      padding: 2rem;
+    .login-left {
+      flex: 1;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.85), rgba(99, 102, 241, 0.85));
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
     }
 
-    /* Logo styling */
+    .login-left::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('dist/img/bg-001.jpg') center/cover;
+      opacity: 0.6;
+      mix-blend-mode: multiply;
+    }
+
+    .login-left-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-left h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .login-left p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .login-right {
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+    }
+
     .login-logo img {
       width: 120px;
       height: 120px;
-      transition: transform 0.3s ease;
-      border-radius: 50% !important;
+      border-radius: 50%;
+      object-fit: cover;
+      padding: 8px;
       background: white;
-      padding: 5px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 2px solid var(--primary-color);
+      transition: all 0.3s ease;
     }
 
     .login-logo img:hover {
       transform: scale(1.05);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-color: var(--secondary-color);
     }
 
-    .text-stroked {
-      color: white;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    .login-form-group {
+      margin-bottom: 1.5rem;
     }
 
-    /* Form styling */
-    .form-control {
-      height: 45px;
-      border-radius: 10px;
-      border: 1px solid #e4e6ef;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .form-control:focus {
-      border-color: #3699FF;
-      box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-    }
-
-    .input-group-text {
-      border-radius: 10px;
-      border: 1px solid #e4e6ef;
-      background-color: #f5f8fa;
-      color: #7E8299;
-    }
-
-    /* Button styling */
-    .btn-primary {
-      height: 45px;
-      border-radius: 10px;
-      background-color: #3699FF;
-      border-color: #3699FF;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background-color: #187DE4;
-      border-color: #187DE4;
-      transform: translateY(-1px);
-    }
-
-    /* Remember me checkbox styling */
-    .form-check-input {
-      width: 20px;
-      height: 20px;
-      margin-top: 0;
-      border: 1px solid #e4e6ef;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .form-check-label {
-      padding-left: 0.5rem;
-      color: #7E8299;
-      cursor: pointer;
-    }
-
-    /* Typewriter cursor animation */
-    .cursor {
-      display: inline-block;
-      width: 2px;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    /* Form labels */
-    .form-label {
-      color: #3F4254;
-      font-size: 0.95rem;
+    .login-form-group label {
+      display: block;
+      color: var(--text-primary);
+      font-weight: 500;
       margin-bottom: 0.5rem;
     }
 
-    /* Modern toast styling */
-    .modern-toast {
-      background: rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15) !important;
-      backdrop-filter: blur(4px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.18) !important;
-      border-radius: 12px !important;
-      padding: 16px !important;
+    .login-input-group {
+      position: relative;
     }
 
-    .modern-toast.swal2-icon-error {
-      border-left: 4px solid #dc3545 !important;
+    .login-input-group input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: var(--text-primary);
+    }
+
+    .login-input-group input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      outline: none;
+    }
+
+    .login-input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .login-input-group input:focus + i {
+      color: var(--primary-color);
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .remember-me label {
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .login-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+      }
+
+      .login-left {
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .login-right {
+        padding: 2rem;
+      }
+    }
+
+    .modern-toast {
+      background: white !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+      border-radius: 16px !important;
+      padding: 1rem !important;
+      border-left: 4px solid #DC2626 !important;
     }
 
     .modern-toast .swal2-title {
-      color: #1a1a1a !important;
+      color: var(--text-primary) !important;
       font-size: 1.1rem !important;
       font-weight: 600 !important;
-      padding: 0 !important;
-      margin: 0 !important;
     }
 
     .modern-toast .swal2-html-container {
-      color: #4a5568 !important;
-      font-size: 0.95rem !important;
-      margin: 5px 0 0 0 !important;
-      padding: 0 !important;
+      color: var(--text-secondary) !important;
     }
 
     .modern-toast .swal2-timer-progress-bar {
-      background: #dc3545 !important;
+      background: #DC2626 !important;
       height: 3px !important;
     }
   </style>
 </head>
-<body class="hold-transition login-page light-mode">
-
-<!-- Main login container -->
-<div class="login-box">
-  <!-- Logo / Branding -->
-  <div class="login-logo mb-4">
-    <!-- Transparent logo -->
-    <img src="dist/img/mamatid-transparent01.png"
-         class="img-thumbnail p-0 border-0" id="system-logo" alt="System Logo">
-    <!-- System title -->
-    <div class="text-center h3 mb-0 text-stroked">
-      <strong>Mamatid Health Center System</strong>
+<body class="login-page">
+  <div class="login-wrapper">
+    <div class="login-left">
+      <div class="login-left-content">
+        <h1>Welcome Back!</h1>
+        <p>Access the Mamatid Health Center System to manage patient records, appointments, and healthcare services efficiently.</p>
+      </div>
     </div>
-  </div>
-
-  <!-- Login Card -->
-  <div class="card card-outline card-primary shadow">
-    <div class="card-body login-card-body">
-      <!-- Animated typewriter text -->
-      <p class="login-box-msg mb-4">
-        <span id="typewriter-text"></span><span class="cursor">|</span>
-      </p>
-
-      <!-- Login Form -->
+    
+    <div class="login-right">
+      <div class="login-logo">
+        <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+      </div>
+      
       <form method="post">
-        <!-- Username field -->
-        <div class="mb-4">
-          <label for="user_name" class="form-label">Username</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="fas fa-user"></i>
-            </span>
+        <div class="login-form-group">
+          <label for="user_name">Username</label>
+          <div class="login-input-group">
             <input 
               type="text"
-              class="form-control"
-              placeholder="Enter your username"
               id="user_name"
               name="user_name"
+              placeholder="Enter your username"
               value="<?php echo htmlspecialchars($rememberedUsername); ?>"
               required
             >
+            <i class="fas fa-user"></i>
           </div>
         </div>
 
-        <!-- Password field -->
-        <div class="mb-4">
-          <label for="password" class="form-label">Password</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="fas fa-lock"></i>
-            </span>
+        <div class="login-form-group">
+          <label for="password">Password</label>
+          <div class="login-input-group">
             <input
               type="password"
-              class="form-control"
-              placeholder="Enter your password"
               id="password"
               name="password"
+              placeholder="Enter your password"
               required
             >
+            <i class="fas fa-lock"></i>
           </div>
         </div>
 
-        <!-- Remember Me checkbox -->
-        <div class="form-check mb-4">
+        <div class="remember-me">
           <input 
-            class="form-check-input"
             type="checkbox"
             id="remember_me"
             name="remember_me"
             <?php echo ($rememberedUsername !== '') ? 'checked' : ''; ?>
           >
-          <label class="form-check-label" for="remember_me">
-            Remember me
-          </label>
+          <label for="remember_me">Remember me</label>
         </div>
 
-        <!-- Submit button -->
-        <button
-          name="login"
-          type="submit"
-          class="btn btn-primary w-100"
-        >
+        <button type="submit" name="login" class="login-btn">
           Sign In
         </button>
       </form>
-
-      <?php if (!empty($message)): ?>
-      <script>
-        $(document).ready(function() {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                showCloseButton: true,
-                timer: 4000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                },
-                customClass: {
-                    popup: 'modern-toast'
-                }
-            });
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Access Denied',
-                html: '<div style="display: flex; align-items: center; gap: 8px;">' +
-                      '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
-                      '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
-                      '</div>',
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown animate__faster'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp animate__faster'
-                }
-            });
-        });
-      </script>
-      <?php endif; ?>
     </div>
   </div>
-</div>
 
-<!-- Typewriting animation script -->
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const text = "Please enter your login credentials";
-    let index = 0;
-    const speed = 50;  // Typing speed
-    const pause = 2000; // Pause before repeating
-    const typewriter = document.getElementById("typewriter-text");
+  <?php if (!empty($message)): ?>
+  <script>
+    $(document).ready(function() {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        showCloseButton: true,
+        timer: 4000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        },
+        customClass: {
+          popup: 'modern-toast'
+        }
+      });
 
-    if (!typewriter) {
-      console.error("Element with id 'typewriter-text' not found!");
-      return;
-    }
-
-    function typeEffect() {
-      if (index < text.length) {
-        typewriter.innerHTML += text.charAt(index);
-        index++;
-        setTimeout(typeEffect, speed);
-      } else {
-        // After finishing, wait, then clear and restart
-        setTimeout(() => {
-          typewriter.innerHTML = "";
-          index = 0;
-          typeEffect();
-        }, pause);
-      }
-    }
-
-    typeEffect();
-  });
-</script>
-
+      Toast.fire({
+        icon: 'error',
+        title: 'Access Denied',
+        html: '<div style="display: flex; align-items: center; gap: 8px;">' +
+              '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
+              '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
+              '</div>',
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOutUp animate__faster'
+        }
+      });
+    });
+  </script>
+  <?php endif; ?>
 </body>
 </html>

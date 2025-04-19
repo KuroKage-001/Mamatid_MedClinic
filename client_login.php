@@ -70,347 +70,414 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Client Login - Mamatid Health Center</title>
+    <title>Client Portal - Mamatid Health Center</title>
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-    <!-- iCheck Bootstrap -->
-    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
-    <!-- Additional Custom CSS -->
-    <link rel="stylesheet" href="dist/css/adminlte01.css">
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
-    
-    <!-- Include SweetAlert2 CSS -->
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+    <link rel="icon" type="image/png" href="dist/img/logo01.png">
     
     <!-- Include jQuery and SweetAlert2 JS -->
     <script src="plugins/jquery/jquery.min.js"></script>
     <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
-    <!-- Include Animate.css for smooth animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
     <style>
-        /* Background image styling for the login page */
-        body.login-page.light-mode {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        :root {
+            --primary-color: #00A9FF;
+            --secondary-color: #89CFF3;
+            --accent-color: #A0E9FF;
+            --text-primary: #2B2A4C;
+            --text-secondary: #4A4A4A;
+            --bg-light: #F6F8FC;
+            --border-color: #E1E6EF;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%),
                         url('dist/img/bg-001.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
-        /* Login box styling */
-        .login-box {
-            max-width: 400px;
-            width: 90%;
-            margin: 0 auto;
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.50);
+            backdrop-filter: blur(3px);
         }
 
-        /* Card styling */
-        .card.card-outline.card-primary {
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.95);
+        .client-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 1000px;
+            max-width: 95%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
         }
 
-        .card-body.login-card-body {
-            border-radius: 15px;
-            padding: 2rem;
+        .client-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Logo styling */
-        .login-logo img {
+        .client-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('dist/img/bg-001.jpg') center/cover;
+            opacity: 0.5;
+            mix-blend-mode: overlay;
+        }
+
+        .client-left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .client-left h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .client-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .client-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .client-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .client-features li i {
+            margin-right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .client-right {
+            flex: 1;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .client-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .client-logo img {
             width: 120px;
             height: 120px;
-            transition: transform 0.3s ease;
-            border-radius: 50% !important;
+            border-radius: 50%;
+            padding: 8px;
             background: white;
-            padding: 5px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .login-logo img:hover {
-            transform: scale(1.05);
-        }
-
-        .text-stroked {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Form styling */
-        .form-control {
-            height: 45px;
-            border-radius: 10px;
-            border: 1px solid #e4e6ef;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: #3699FF;
-            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-        }
-
-        .input-group-text {
-            border-radius: 10px;
-            border: 1px solid #e4e6ef;
-            background-color: #f5f8fa;
-            color: #7E8299;
-        }
-
-        /* Button styling */
-        .btn-primary {
-            height: 45px;
-            border-radius: 10px;
-            background-color: #3699FF;
-            border-color: #3699FF;
-            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 169, 255, 0.2);
+            border: 2px solid var(--primary-color);
             transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
-            background-color: #187DE4;
-            border-color: #187DE4;
-            transform: translateY(-1px);
+        .client-logo img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 169, 255, 0.3);
         }
 
-        /* Remember me checkbox styling */
-        .form-check-input {
-            width: 20px;
-            height: 20px;
-            margin-top: 0;
-            border: 1px solid #e4e6ef;
-            border-radius: 6px;
-            cursor: pointer;
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .form-check-label {
-            padding-left: 0.5rem;
-            color: #7E8299;
-            cursor: pointer;
-        }
-
-        /* Form labels */
-        .form-label {
-            color: #3F4254;
-            font-size: 0.95rem;
+        .form-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
-        /* Links styling */
-        .btn-link {
-            color: #3699FF;
-            text-decoration: none;
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 169, 255, 0.1);
+            outline: none;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
             transition: color 0.3s ease;
         }
 
-        .btn-link:hover {
-            color: #187DE4;
-            text-decoration: none;
+        .input-group input:focus + i {
+            color: var(--primary-color);
         }
 
-        .btn-outline-primary {
-            border-color: #3699FF;
-            color: #3699FF;
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .client-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .btn-outline-primary:hover {
-            background-color: #3699FF;
-            border-color: #3699FF;
-            color: white;
-            transform: translateY(-1px);
+        .client-btn:hover {
+            background: #0095e0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 169, 255, 0.3);
         }
 
-        /* Modern toast styling */
+        .client-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #0095e0;
+        }
+
+        @media (max-width: 768px) {
+            .client-container {
+                flex-direction: column;
+            }
+
+            .client-left {
+                padding: 2rem;
+                text-align: center;
+            }
+
+            .client-features li {
+                justify-content: center;
+            }
+
+            .client-right {
+                padding: 2rem;
+            }
+        }
+
         .modern-toast {
-            background: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15) !important;
-            backdrop-filter: blur(4px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            border-radius: 12px !important;
-            padding: 16px !important;
-        }
-
-        .modern-toast.swal2-icon-error {
-            border-left: 4px solid #dc3545 !important;
+            background: white !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 16px !important;
+            padding: 1rem !important;
+            border-left: 4px solid #DC2626 !important;
         }
 
         .modern-toast .swal2-title {
-            color: #1a1a1a !important;
+            color: var(--text-primary) !important;
             font-size: 1.1rem !important;
             font-weight: 600 !important;
-            padding: 0 !important;
-            margin: 0 !important;
         }
 
         .modern-toast .swal2-html-container {
-            color: #4a5568 !important;
-            font-size: 0.95rem !important;
-            margin: 5px 0 0 0 !important;
-            padding: 0 !important;
-        }
-
-        .modern-toast .swal2-timer-progress-bar {
-            background: #dc3545 !important;
-            height: 3px !important;
+            color: var(--text-secondary) !important;
         }
     </style>
 </head>
 
-<body class="hold-transition login-page light-mode">
-    <div class="login-box">
-        <!-- Logo / Branding -->
-        <div class="login-logo mb-4">
-            <img src="dist/img/mamatid-transparent01.png"
-                 class="img-thumbnail p-0 border rounded-circle" id="system-logo" alt="System Logo">
-            <div class="text-center h3 mb-0 text-stroked">
-                <strong>Client Portal</strong>
+<body>
+    <div class="client-container">
+        <div class="client-left">
+            <div class="client-left-content">
+                <h1>Welcome to Your Health Portal</h1>
+                <p>Access your healthcare services and manage your appointments with ease.</p>
+                
+                <ul class="client-features">
+                    <li><i class="fas fa-calendar-check"></i> Book and manage appointments</li>
+                    <li><i class="fas fa-file-medical"></i> Access medical records</li>
+                    <li><i class="fas fa-bell"></i> Get health notifications</li>
+                    <li><i class="fas fa-comments"></i> Communicate with healthcare providers</li>
+                </ul>
             </div>
         </div>
-
-        <!-- Login Card -->
-        <div class="card card-outline card-primary shadow">
-            <div class="card-body login-card-body">
-                <!-- Animated typewriter text -->
-                <p class="login-box-msg">
-                    <span id="typewriter-text"></span><span class="cursor">|</span>
-                </p>
-
-                <?php if (!empty($message)): ?>
-                <script>
-                    $(document).ready(function() {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            showCloseButton: true,
-                            timer: 4000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer)
-                                toast.addEventListener('mouseleave', Swal.resumeTimer)
-                            },
-                            customClass: {
-                                popup: 'modern-toast'
-                            }
-                        });
-
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Access Denied',
-                            html: '<div style="display: flex; align-items: center; gap: 8px;">' +
-                                  '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
-                                  '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
-                                  '</div>',
-                            showClass: {
-                                popup: 'animate__animated animate__fadeInDown animate__faster'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__fadeOutUp animate__faster'
-                            }
-                        });
-                    });
-                </script>
-                <?php endif; ?>
-
-                <!-- Login Form -->
-                <form method="post" class="p-3">
-                    <!-- Email field -->
-                    <div class="mb-4">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            <input type="email" class="form-control"
-                                   placeholder="Enter your email"
-                                   id="email" name="email"
-                                   value="<?php echo htmlspecialchars($rememberedEmail); ?>"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- Password field -->
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                            <input type="password" class="form-control"
-                                   placeholder="Enter your password"
-                                   id="password" name="password"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- Remember Me checkbox -->
-                    <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox"
-                               id="remember_me" name="remember_me"
-                               <?php echo ($rememberedEmail !== '') ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="remember_me">
-                            Remember me
-                        </label>
-                    </div>
-
-                    <button type="submit" name="login" class="btn btn-primary w-100">
-                        Sign In
-                    </button>
-                </form>
-
-                <div class="text-center mt-4">
-                    <div class="row">
-                        <div class="col-12">
-                            <a href="client_register.php" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-user-plus mr-1"></i> Create New Account
-                            </a>
-                        </div>
+        
+        <div class="client-right">
+            <div class="client-logo">
+                <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+            </div>
+            
+            <form method="post">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-group">
+                        <input 
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            value="<?php echo htmlspecialchars($rememberedEmail); ?>"
+                            required
+                        >
+                        <i class="fas fa-envelope"></i>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input 
+                        type="checkbox"
+                        id="remember_me"
+                        name="remember_me"
+                        <?php echo ($rememberedEmail !== '') ? 'checked' : ''; ?>
+                    >
+                    <label for="remember_me">Remember me</label>
+                </div>
+
+                <button type="submit" name="login" class="client-btn">
+                    Sign In to Portal
+                </button>
+            </form>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="client_register.php">Create One</a></p>
             </div>
         </div>
     </div>
 
-    <?php include './config/site_js_links.php'; ?>
-
-    <!-- Typewriting animation script -->
+    <?php if (!empty($message)): ?>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const text = "Please enter your login credentials";
-            let index = 0;
-            const speed = 50;  // Typing speed
-            const pause = 2000; // Pause before repeating
-            const typewriter = document.getElementById("typewriter-text");
-
-            function typeEffect() {
-                if (index < text.length) {
-                    typewriter.innerHTML += text.charAt(index);
-                    index++;
-                    setTimeout(typeEffect, speed);
-                } else {
-                    // After finishing, wait, then clear and restart
-                    setTimeout(() => {
-                        typewriter.innerHTML = "";
-                        index = 0;
-                        typeEffect();
-                    }, pause);
+        $(document).ready(function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                showCloseButton: true,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                },
+                customClass: {
+                    popup: 'modern-toast'
                 }
-            }
+            });
 
-            typeEffect();
+            Toast.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                html: '<div style="display: flex; align-items: center; gap: 8px;">' +
+                      '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
+                      '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
+                      '</div>'
+            });
         });
     </script>
+    <?php endif; ?>
 </body>
 </html> 

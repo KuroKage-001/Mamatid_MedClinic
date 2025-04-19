@@ -7,8 +7,8 @@ $startDate = date('Y-m-d', strtotime("-$days days"));
 
 $query = "SELECT 
     DATE(date) as visit_date,
-    COUNT(*) as visit_count,
-    AVG(CAST(bp AS DECIMAL(10,2))) as avg_bp
+    GROUP_CONCAT(bp) as bp_values,
+    COUNT(*) as patient_count
 FROM bp_monitoring 
 WHERE date BETWEEN :start_date AND :end_date
 GROUP BY DATE(date)
@@ -21,32 +21,43 @@ try {
     $stmt->execute();
     
     $labels = [];
-    $values = [];
+    $bpValues = [];
+    $patientCounts = [];
     
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $labels[] = date('M j, Y', strtotime($row['visit_date']));
-        $values[] = round($row['avg_bp'], 2);
+        
+        // Calculate average BP for multiple readings on the same day
+        $readings = explode(',', $row['bp_values']);
+        $avgBp = array_sum($readings) / count($readings);
+        $bpValues[] = round($avgBp, 2);
+        
+        // Store patient count
+        $patientCounts[] = intval($row['patient_count']);
     }
     
     // Fill in missing dates with zero values
     $currentDate = strtotime($startDate);
     $endTimestamp = strtotime($endDate);
     $filledLabels = [];
-    $filledValues = [];
+    $filledBpValues = [];
+    $filledPatientCounts = [];
     
     while ($currentDate <= $endTimestamp) {
         $currentDateStr = date('M j, Y', $currentDate);
         $index = array_search($currentDateStr, $labels);
         
         $filledLabels[] = $currentDateStr;
-        $filledValues[] = ($index !== false) ? $values[$index] : 0;
+        $filledBpValues[] = ($index !== false) ? $bpValues[$index] : 0;
+        $filledPatientCounts[] = ($index !== false) ? $patientCounts[$index] : 0;
         
         $currentDate = strtotime('+1 day', $currentDate);
     }
     
     echo json_encode([
         'labels' => $filledLabels,
-        'values' => $filledValues
+        'bp_values' => $filledBpValues,
+        'patient_counts' => $filledPatientCounts
     ]);
     
 } catch(PDOException $ex) {
