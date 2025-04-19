@@ -233,6 +233,28 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
             box-shadow: 0 8px 20px rgba(0, 169, 255, 0.3);
         }
 
+        /* Typewriter animation styles */
+        .typewriter {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .typewriter h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: 0.15em;
+            animation: typing 3.5s steps(40, end);
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -396,6 +418,10 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
         <div class="client-right">
             <div class="client-logo">
                 <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+            </div>
+            
+            <div class="typewriter">
+                <h2>Enter your Credentials</h2>
             </div>
             
             <form method="post">

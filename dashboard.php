@@ -193,517 +193,9 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
 <head>
   <?php include './config/site_css_links.php'; ?>
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
+  <link rel="stylesheet" href="system_styles/dashboard.css">
   <title>Dashboard - Mamatid Health Center System</title>
-
-  <style>
-    :root {
-      --transition-speed: 0.3s;
-    }
-
-    /* Modern Card Styles */
-    .small-box {
-      border-radius: 15px;
-      overflow: hidden;
-      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-      border: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .small-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .small-box .inner {
-      padding: 20px;
-    }
-
-    .small-box .inner h3 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      transition: var(--transition-speed);
-    }
-
-    .small-box .inner p {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 0;
-      opacity: 0.9;
-    }
-
-    .small-box .icon {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 4rem;
-      opacity: 0.3;
-      transition: var(--transition-speed);
-    }
-
-    .small-box:hover .icon {
-      opacity: 0.5;
-      transform: translateY(-50%) scale(1.1);
-    }
-
-    /* Modern Gradients for Stat Boxes */
-    .bg-success {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%)!important;
-    }
-
-    .bg-primary {
-      background: linear-gradient(135deg, #007bff 0%, #6610f2 100%)!important;
-    }
-
-    .bg-warning {
-      background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)!important;
-      color: #fff!important;
-    }
-
-    .bg-danger {
-      background: linear-gradient(135deg, #dc3545 0%, #c81e1e 100%)!important;
-    }
-
-    /* DateTime Badge Styling */
-    #datetime {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 500;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
-      50% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
-      100% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
-    }
-
-    /* Chart Section Styling */
-    .chart-container {
-      background: linear-gradient(145deg, #ffffff, #f8fafc);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      border-radius: 24px;
-      padding: 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .chart-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #8B5CF6, #3B82F6, #10B981);
-      opacity: 0.7;
-    }
-
-    .chart-wrapper {
-      position: relative;
-      min-height: 400px;
-      padding: 1rem;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .chart-loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Chart Select Styles */
-    .chart-select {
-      width: 100%;
-      padding: 15px 25px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #2d3748;
-      background-color: #ffffff;
-      border: 2px solid #000000;  /* Set default border color to black */
-      border-radius: 15px;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 15px center;
-      background-size: 16px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .chart-select:hover {
-      border-color: #000000;  /* Keep black border on hover for default state */
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .chart-select:focus {
-      outline: none;
-      border-color: #000000;  /* Keep black border on focus for default state */
-      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .chart-select.active-weekly {
-      background-color: rgba(54, 162, 235, 0.1);
-      border-color: rgba(54, 162, 235, 0.5);
-    }
-
-    .chart-select.active-monthly {
-      background-color: rgba(255, 159, 64, 0.1);
-      border-color: rgba(255, 159, 64, 0.5);
-    }
-
-    .chart-select.active-yearly {
-      background-color: rgba(75, 192, 192, 0.1);
-      border-color: rgba(75, 192, 192, 0.5);
-    }
-
-    /* Content Header Styling */
-    .content-header {
-      padding: 20px 0;
-    }
-
-    .content-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin: 0;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-      .small-box .inner h3 {
-        font-size: 2rem;
-      }
-      
-      .small-box .icon {
-        font-size: 3rem;
-      }
-      
-      #datetime {
-        font-size: 1rem;
-        padding: 8px 15px;
-      }
-    }
-
-    /* History Analytics Section Styling */
-    .history-analytics-container {
-      background: linear-gradient(145deg, #ffffff, #f8fafc);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      border-radius: 24px;
-      padding: 2rem;
-      margin-top: 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .history-analytics-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #8B5CF6, #3B82F6, #10B981);
-      opacity: 0.7;
-    }
-
-    .history-select-wrapper {
-      position: relative;
-      margin-bottom: 1rem;
-    }
-
-    .history-select-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #64748b;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .chart-select {
-      width: 100%;
-      padding: 1rem 3rem 1rem 1.5rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #1e293b;
-      background-color: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 16px;
-      appearance: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
-    }
-
-    .chart-select:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transform: translateY(-1px);
-    }
-
-    .chart-select:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .history-chart-wrapper {
-      position: relative;
-      min-height: 400px;
-      padding: 1rem;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .chart-loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Animation for chart transitions */
-    @keyframes chartFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    #patientChart,
-    #historyChart {
-      animation: chartFadeIn 0.5s ease-out;
-    }
-
-    /* Collapse Button Styling */
-    .btn-tool {
-      padding: 0.5rem;
-      font-size: 1rem;
-      line-height: 1;
-      background: transparent;
-      border: none;
-      border-radius: 0.375rem;
-      color: #64748b;
-      transition: all 0.2s ease;
-    }
-
-    .btn-tool:hover {
-      color: #1e293b;
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-tool:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Enhanced Chart Section Styling */
-    .chart-period-info {
-      padding: 0.5rem 1rem;
-      background: rgba(0, 0, 0, 0.03);
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .period-label {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-
-    .period-value {
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .period-dates {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-
-    /* Stat Cards */
-    .stat-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 1.25rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-card-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .stat-card-info {
-      flex-grow: 1;
-    }
-
-    .stat-card-title {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-
-    .stat-card-value {
-      color: #1e293b;
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0;
-    }
-
-    .stat-card-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.04);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #1e293b;
-    }
-
-    .stat-card-footer {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-    }
-
-    .trend-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-      font-weight: 500;
-    }
-
-    .trend-indicator.positive {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
-    }
-
-    .trend-indicator.negative {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-    }
-
-    .trend-period {
-      color: #64748b;
-    }
-
-    .peak-patients {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-
-    /* Chart Legend and Actions */
-    .chart-footer {
-      padding-top: 1rem;
-      border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .chart-legend {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-
-    .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .legend-line {
-      width: 16px;
-      height: 2px;
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    .chart-actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: flex-end;
-    }
-
-    .chart-actions .btn {
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .chart-actions .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Chart Select Enhancement */
-    .chart-select-wrapper {
-      position: relative;
-    }
-
-    .chart-select-icon {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #64748b;
-      pointer-events: none;
-    }
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
@@ -905,13 +397,22 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
           </div>
                     <div class="col-md-6 text-right">
                       <div class="chart-actions">
-                        <button class="btn btn-outline-secondary btn-sm" id="downloadChart">
-                          <i class="fas fa-download"></i> Download Report
+                        <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
+                          <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button class="btn btn-outline-secondary btn-sm" id="shareChart">
-                          <i class="fas fa-share-alt"></i> Share
+                        <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
+                          <i class="fas fa-file-csv"></i> CSV
                         </button>
-        </div>
+                        <button class="btn btn-gradient btn-sm export-btn" id="btnExcel">
+                          <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="btnPDF">
+                          <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="btnPrint">
+                          <i class="fas fa-print"></i> Print
+                        </button>
+                      </div>                     
                     </div>
                   </div>
                 </div>
@@ -968,6 +469,41 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
                     </div>
                   </div>
                 <canvas id="historyChart"></canvas>
+                </div>
+                <div class="chart-footer mt-3">
+                  <div class="row align-items-center">
+                    <div class="col-md-6">
+                      <div class="chart-legend">
+                        <span class="legend-item">
+                          <span class="legend-dot"></span>
+                          History Data
+                        </span>
+                        <span class="legend-item">
+                          <span class="legend-line"></span>
+                          Trend Line
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 text-right">
+                      <div class="chart-actions">
+                        <button class="btn btn-gradient btn-sm export-btn" id="historyBtnCopy">
+                          <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="historyBtnCSV">
+                          <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="historyBtnExcel">
+                          <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="historyBtnPDF">
+                          <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="btn btn-gradient btn-sm export-btn" id="historyBtnPrint">
+                          <i class="fas fa-print"></i> Print
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1572,7 +1108,7 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
     });
 
     // Add event listeners for new buttons
-    document.getElementById('downloadChart').addEventListener('click', function() {
+    document.getElementById('btnCopy').addEventListener('click', function() {
         const canvas = document.getElementById('patientChart');
         const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
@@ -1581,9 +1117,248 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         link.click();
     });
 
-    document.getElementById('shareChart').addEventListener('click', function() {
-        // Implement share functionality based on your requirements
-        alert('Share functionality to be implemented based on your needs');
+    document.getElementById('btnCSV').addEventListener('click', function() {
+        const canvas = document.getElementById('patientChart');
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'patient-statistics.csv';
+        link.href = image;
+        link.click();
+    });
+
+    document.getElementById('btnExcel').addEventListener('click', function() {
+        const canvas = document.getElementById('patientChart');
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'patient-statistics.xls';
+        link.href = image;
+        link.click();
+    });
+
+    document.getElementById('btnPDF').addEventListener('click', function() {
+        const canvas = document.getElementById('patientChart');
+        const image = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(image, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('patient_statistics.pdf');
+    });
+
+    document.getElementById('btnPrint').addEventListener('click', function() {
+        const canvas = document.getElementById('patientChart');
+        const win = window.open('');
+        win.document.write(`<img src="${canvas.toDataURL()}" onload="window.print();window.close()" />`);
+    });
+
+    // Add this to your existing JavaScript, after the chart initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to export chart data as CSV
+      function exportToCSV() {
+        const labels = currentChart.data.labels;
+        const data = currentChart.data.datasets[0].data;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Add headers
+        csvContent += "Date,Patients\n";
+        
+        // Add data rows
+        labels.forEach((label, index) => {
+          csvContent += `${label},${data[index]}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "patient_statistics.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Function to copy data to clipboard
+      function copyToClipboard() {
+        const labels = currentChart.data.labels;
+        const data = currentChart.data.datasets[0].data;
+        let text = "Date\tPatients\n";
+        
+        labels.forEach((label, index) => {
+          text += `${label}\t${data[index]}\n`;
+        });
+        
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Data copied to clipboard!');
+        });
+      }
+
+      // Function to export to Excel
+      function exportToExcel() {
+        const labels = currentChart.data.labels;
+        const data = currentChart.data.datasets[0].data;
+        let csvContent = "data:application/vnd.ms-excel,";
+        
+        // Add headers
+        csvContent += "Date\tPatients\n";
+        
+        // Add data rows
+        labels.forEach((label, index) => {
+          csvContent += `${label}\t${data[index]}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "patient_statistics.xls");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Function to export to PDF
+      function exportToPDF() {
+        const canvas = document.getElementById('patientChart');
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('patient_statistics.pdf');
+      }
+
+      // Function to print chart
+      function printChart() {
+        const canvas = document.getElementById('patientChart');
+        const win = window.open('');
+        win.document.write(`<img src="${canvas.toDataURL()}" onload="window.print();window.close()" />`);
+      }
+
+      // Add event listeners to buttons
+      document.getElementById('btnCopy').addEventListener('click', copyToClipboard);
+      document.getElementById('btnCSV').addEventListener('click', exportToCSV);
+      document.getElementById('btnExcel').addEventListener('click', exportToExcel);
+      document.getElementById('btnPDF').addEventListener('click', exportToPDF);
+      document.getElementById('btnPrint').addEventListener('click', printChart);
+
+      // Initialize column visibility dropdown
+      function initializeColumnVisibility() {
+        const columnVisibilityMenu = document.getElementById('columnVisibility');
+        const datasets = currentChart.data.datasets;
+        
+        datasets.forEach((dataset, index) => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = dataset.hidden !== true;
+          checkbox.addEventListener('change', () => {
+            dataset.hidden = !checkbox.checked;
+            currentChart.update();
+          });
+          
+          const label = document.createElement('label');
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(dataset.label));
+          
+          item.appendChild(label);
+          columnVisibilityMenu.appendChild(item);
+        });
+      }
+
+      // Call this after chart initialization
+      initializeColumnVisibility();
+    });
+
+    // Add this to your existing JavaScript, after the history chart initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to export history chart data as CSV
+      function exportHistoryToCSV() {
+        const labels = historyChart.data.labels;
+        const data = historyChart.data.datasets[0].data;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Add headers
+        csvContent += "Date,Value\n";
+        
+        // Add data rows
+        labels.forEach((label, index) => {
+          csvContent += `${label},${data[index]}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "history_statistics.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Function to copy history data to clipboard
+      function copyHistoryToClipboard() {
+        const labels = historyChart.data.labels;
+        const data = historyChart.data.datasets[0].data;
+        let text = "Date\tValue\n";
+        
+        labels.forEach((label, index) => {
+          text += `${label}\t${data[index]}\n`;
+        });
+        
+        navigator.clipboard.writeText(text).then(() => {
+          alert('History data copied to clipboard!');
+        });
+      }
+
+      // Function to export history to Excel
+      function exportHistoryToExcel() {
+        const labels = historyChart.data.labels;
+        const data = historyChart.data.datasets[0].data;
+        let csvContent = "data:application/vnd.ms-excel,";
+        
+        // Add headers
+        csvContent += "Date\tValue\n";
+        
+        // Add data rows
+        labels.forEach((label, index) => {
+          csvContent += `${label}\t${data[index]}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "history_statistics.xls");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Function to export history to PDF
+      function exportHistoryToPDF() {
+        const canvas = document.getElementById('historyChart');
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('history_statistics.pdf');
+      }
+
+      // Function to print history chart
+      function printHistoryChart() {
+        const canvas = document.getElementById('historyChart');
+        const win = window.open('');
+        win.document.write(`<img src="${canvas.toDataURL()}" onload="window.print();window.close()" />`);
+      }
+
+      // Add event listeners to history chart buttons
+      document.getElementById('historyBtnCopy').addEventListener('click', copyHistoryToClipboard);
+      document.getElementById('historyBtnCSV').addEventListener('click', exportHistoryToCSV);
+      document.getElementById('historyBtnExcel').addEventListener('click', exportHistoryToExcel);
+      document.getElementById('historyBtnPDF').addEventListener('click', exportHistoryToPDF);
+      document.getElementById('historyBtnPrint').addEventListener('click', printHistoryChart);
     });
   </script>
 </body>

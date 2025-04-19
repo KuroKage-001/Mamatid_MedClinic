@@ -191,6 +191,28 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
       padding: 1rem;
     }
 
+    /* Typewriter animation styles */
+    .typewriter {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .typewriter h2 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 600;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 0.15em;
+      animation: typing 3.5s steps(40, end);
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
     .login-logo img {
       width: 120px;
       height: 120px;
@@ -347,6 +369,10 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
     <div class="login-right">
       <div class="login-logo">
         <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+      </div>
+      
+      <div class="typewriter">
+        <h2>Enter your Credentials</h2>
       </div>
       
       <form method="post">
