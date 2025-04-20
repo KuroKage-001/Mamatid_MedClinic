@@ -238,6 +238,54 @@ include './common_service/common_functions.php';
             </div>
           </div>
 
+          <!-- Family Members Report -->
+          <div class="card card-outline card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Family Members Report</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="form-group">
+                    <label class="form-label">From Date</label>
+                    <div class="input-group date" id="family_members_from_date" data-target-input="nearest">
+                      <input type="text" class="form-control datetimepicker-input" id="family_members_from" 
+                             data-target="#family_members_from_date" placeholder="Select start date"/>
+                      <div class="input-group-append" data-target="#family_members_from_date" data-toggle="datetimepicker">
+                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-group">
+                    <label class="form-label">To Date</label>
+                    <div class="input-group date" id="family_members_to_date" data-target-input="nearest">
+                      <input type="text" class="form-control datetimepicker-input" id="family_members_to" 
+                             data-target="#family_members_to_date" placeholder="Select end date"/>
+                      <div class="input-group-append" data-target="#family_members_to_date" data-toggle="datetimepicker">
+                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" id="print_family_members" class="btn btn-primary w-100">
+                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Deworming Report -->
           <div class="card card-outline card-primary">
             <div class="card-header">
@@ -514,6 +562,15 @@ include './common_service/common_functions.php';
           "reports/print_family_planning.php",
           $("#family_from").val(),
           $("#family_to").val()
+        );
+      });
+
+      // Family Members Report
+      $("#print_family_members").click(function() {
+        generateReport(
+          "reports/print_family_members.php",
+          $("#family_members_from").val(),
+          $("#family_members_to").val()
         );
       });
 

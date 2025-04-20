@@ -5,22 +5,26 @@ include '../common_service/common_functions.php';
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
 
-// Convert the date strings to MySQL format (yyyy-mm-dd)
-$fromArr = explode("/", $from);
-$toArr = explode("/", $to);
-$fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
-$toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
+try {
+    // Convert the date strings to MySQL format (yyyy-mm-dd)
+    $fromArr = explode("/", $from);
+    $toArr = explode("/", $to);
+    $fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
+    $toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
 
-$query = "SELECT * FROM random_blood_sugar 
-          WHERE DATE(date) BETWEEN :from_date AND :to_date 
-          ORDER BY date DESC";
+    $query = "SELECT * FROM random_blood_sugar 
+              WHERE DATE(date) BETWEEN :from_date AND :to_date 
+              ORDER BY date DESC";
 
-$stmt = $con->prepare($query);
-$stmt->bindParam(':from_date', $fromMysql);
-$stmt->bindParam(':to_date', $toMysql);
-$stmt->execute();
+    $stmt = $con->prepare($query);
+    $stmt->bindParam(':from_date', $fromMysql, PDO::PARAM_STR);
+    $stmt->bindParam(':to_date', $toMysql, PDO::PARAM_STR);
+    $stmt->execute();
 
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Error: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +71,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
   
   <div class="date-range">
-    <p>From: <?php echo date('F d, Y', strtotime($from)); ?> To: <?php echo date('F d, Y', strtotime($to)); ?></p>
+    <p>From: <?php echo date('F d, Y', strtotime($fromMysql)); ?> To: <?php echo date('F d, Y', strtotime($toMysql)); ?></p>
   </div>
 
   <table>
@@ -82,25 +86,31 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </tr>
     </thead>
     <tbody>
-      <?php foreach($result as $row): ?>
-      <tr>
-        <td><?php echo date('m/d/Y', strtotime($row['date'])); ?></td>
-        <td><?php echo htmlspecialchars($row['name']); ?></td>
-        <td><?php echo htmlspecialchars($row['age']); ?></td>
-        <td><?php echo htmlspecialchars($row['address']); ?></td>
-        <td><?php echo htmlspecialchars($row['result']); ?></td>
-        <td><?php 
-          $result = floatval($row['result']);
-          if ($result < 70) {
-            echo "Low";
-          } elseif ($result >= 70 && $result <= 140) {
-            echo "Normal";
-          } else {
-            echo "High";
-          }
-        ?></td>
-      </tr>
-      <?php endforeach; ?>
+      <?php if (count($result) > 0): ?>
+        <?php foreach($result as $row): ?>
+        <tr>
+          <td><?php echo date('m/d/Y', strtotime($row['date'])); ?></td>
+          <td><?php echo htmlspecialchars($row['name']); ?></td>
+          <td><?php echo htmlspecialchars($row['age']); ?></td>
+          <td><?php echo htmlspecialchars($row['address']); ?></td>
+          <td><?php echo htmlspecialchars($row['result']); ?></td>
+          <td><?php 
+            $result = floatval($row['result']);
+            if ($result < 70) {
+              echo "Low";
+            } elseif ($result >= 70 && $result <= 140) {
+              echo "Normal";
+            } else {
+              echo "High";
+            }
+          ?></td>
+        </tr>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <tr>
+          <td colspan="6" style="text-align: center;">No records found for the selected date range.</td>
+        </tr>
+      <?php endif; ?>
     </tbody>
   </table>
 

@@ -12,6 +12,8 @@ $patients = getAllPatientsWithHistory($con);
 <head>
   <?php include './config/site_css_links.php'; ?>
   <?php include './config/data_tables_css.php'; ?>
+  <!-- Toastr CSS -->
+  <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
   <!-- Logo for the tab bar -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Patient History - Mamatid Health Center System</title>
@@ -101,38 +103,67 @@ $patients = getAllPatientsWithHistory($con);
     /* Export Buttons */
     .export-buttons {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border: none !important;
+      color: #fff !important;
+      transition: all 0.3s ease;
     }
 
     .export-btn {
       display: inline-flex;
       align-items: center;
-      padding: 8px 16px;
-      border-radius: 8px;
+      gap: 6px;
+      padding: 8px 15px;
+      font-size: 0.875rem;
       font-weight: 500;
-      font-size: 0.9rem;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: var(--transition);
-      gap: 8px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
     }
 
-    .btn-copy { background: var(--primary-gradient); }
-    .btn-csv { background: var(--success-gradient); }
-    .btn-excel { background: var(--warning-gradient); }
-    .btn-pdf { background: var(--danger-gradient); }
-    .btn-print { background: var(--info-gradient); }
-
     .export-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     .export-btn i {
-      font-size: 1rem;
+      font-size: 0.875rem;
+    }
+
+    /* Button gradients */
+    #btnCopyAll, #btnCopy {
+      background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+    }
+
+    #btnCSVAll, #btnCSV {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+    }
+
+    #btnExcelAll, #btnExcel {
+      background: linear-gradient(135deg, #20C997 0%, #1CB984 100%);
+    }
+
+    #btnPDFAll, #btnPDF {
+      background: linear-gradient(135deg, #F64E60 0%, #EE2D41 100%);
+    }
+
+    #btnPrintAll, #btnPrint {
+      background: linear-gradient(135deg, #8950FC 0%, #7337EE 100%);
+    }
+
+    /* Loading state */
+    .export-btn.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .export-btn.loading i {
+      animation: fa-spin 2s infinite linear;
     }
 
     /* Tabs Styling */
@@ -229,6 +260,90 @@ $patients = getAllPatientsWithHistory($con);
         white-space: nowrap;
       }
     }
+
+    /* Export Buttons Styling */
+    .export-dropdown-btn {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: 500;
+      background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(54, 153, 255, 0.2);
+    }
+
+    .export-dropdown-btn:hover,
+    .export-dropdown-btn:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);
+      color: white;
+    }
+
+    .dropdown-menu {
+      padding: 8px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item.export-btn {
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-item.export-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .dropdown-item.export-btn:hover {
+      transform: translateX(5px);
+    }
+
+    .gradient-copy {
+      background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+    }
+
+    .gradient-csv {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+    }
+
+    .gradient-excel {
+      background: linear-gradient(135deg, #20C997 0%, #1CB984 100%);
+    }
+
+    .gradient-pdf {
+      background: linear-gradient(135deg, #F64E60 0%, #EE2D41 100%);
+    }
+
+    .gradient-print {
+      background: linear-gradient(135deg, #8950FC 0%, #7337EE 100%);
+    }
+
+    .dropdown-item.export-btn i {
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Loading state for dropdown button */
+    .export-dropdown-btn.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .export-dropdown-btn.loading i {
+      animation: fa-spin 2s infinite linear;
+    }
+
+    @media (max-width: 768px) {
+      .export-dropdown-btn {
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -283,22 +398,27 @@ $patients = getAllPatientsWithHistory($con);
                   </button>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                  <div class="chart-actions" id="exportAllButtons" style="display: none;">
-                    <button class="btn export-btn" id="btnCopy">
-                      <i class="fas fa-copy"></i> Copy All
+                  <div class="dropdown">
+                    <button class="btn btn-gradient-primary dropdown-toggle export-dropdown-btn" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-file-export mr-2"></i>Export Options
                     </button>
-                    <button class="btn export-btn" id="btnCSV">
-                      <i class="fas fa-file-csv"></i> CSV All
-                    </button>
-                    <button class="btn export-btn" id="btnExcel">
-                      <i class="fas fa-file-excel"></i> Excel All
-                    </button>
-                    <button class="btn export-btn" id="btnPDF">
-                      <i class="fas fa-file-pdf"></i> PDF All
-                    </button>
-                    <button class="btn export-btn" id="btnPrint">
-                      <i class="fas fa-print"></i> Print All
-                    </button>
+                    <div class="dropdown-menu dropdown-menu-right shadow-lg" aria-labelledby="exportDropdown">
+                      <button class="dropdown-item export-btn gradient-copy" id="btnCopyAll">
+                        <i class="fas fa-copy mr-2"></i> Copy All
+                      </button>
+                      <button class="dropdown-item export-btn gradient-csv" id="btnCSVAll">
+                        <i class="fas fa-file-csv mr-2"></i> CSV All
+                      </button>
+                      <button class="dropdown-item export-btn gradient-excel" id="btnExcelAll">
+                        <i class="fas fa-file-excel mr-2"></i> Excel All
+                      </button>
+                      <button class="dropdown-item export-btn gradient-pdf" id="btnPDFAll">
+                        <i class="fas fa-file-pdf mr-2"></i> PDF All
+                      </button>
+                      <button class="dropdown-item export-btn gradient-print" id="btnPrintAll">
+                        <i class="fas fa-print mr-2"></i> Print All
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -343,23 +463,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- Family Planning History -->
                     <div class="tab-pane fade show active" id="family" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('family', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('family', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('family', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('family', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('family', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                       <div class="table-responsive">
                           <table id="family_history" class="table table-hover">
                           <thead>
@@ -381,23 +484,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- Deworming History -->
                     <div class="tab-pane fade" id="deworming" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('deworming', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('deworming', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('deworming', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('deworming', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('deworming', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                       <div class="table-responsive">
                           <table id="deworming_history" class="table table-hover">
                           <thead>
@@ -419,23 +505,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- BP Monitoring History -->
                     <div class="tab-pane fade" id="bp" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('bp', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('bp', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('bp', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('bp', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('bp', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                       <div class="table-responsive">
                           <table id="bp_history" class="table table-hover">
                           <thead>
@@ -459,23 +528,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- Blood Sugar History -->
                     <div class="tab-pane fade" id="blood-sugar" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('bloodSugar', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('bloodSugar', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('bloodSugar', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('bloodSugar', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('bloodSugar', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                       <div class="table-responsive">
                           <table id="blood_sugar_history" class="table table-hover">
                           <thead>
@@ -497,23 +549,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- Tetanus Toxoid History -->
                     <div class="tab-pane fade" id="tetanus" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('tetanus', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('tetanus', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('tetanus', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('tetanus', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('tetanus', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                       <div class="table-responsive">
                           <table id="tetanus_history" class="table table-hover">
                           <thead>
@@ -536,23 +571,6 @@ $patients = getAllPatientsWithHistory($con);
                     <!-- Family Members History -->
                     <div class="tab-pane fade" id="family-members" role="tabpanel">
                       <div class="table-container">
-                        <div class="export-buttons">
-                          <button class="export-btn btn-copy" onclick="exportTable('familyMembers', 'copy')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                          <button class="export-btn btn-csv" onclick="exportTable('familyMembers', 'csv')">
-                            <i class="fas fa-file-csv"></i> CSV
-                          </button>
-                          <button class="export-btn btn-excel" onclick="exportTable('familyMembers', 'excel')">
-                            <i class="fas fa-file-excel"></i> Excel
-                          </button>
-                          <button class="export-btn btn-pdf" onclick="exportTable('familyMembers', 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                          </button>
-                          <button class="export-btn btn-print" onclick="exportTable('familyMembers', 'print')">
-                            <i class="fas fa-print"></i> Print
-                          </button>
-                        </div>
                         <div class="table-responsive">
                           <table id="family_members_history" class="table table-hover">
                             <thead>
@@ -560,6 +578,7 @@ $patients = getAllPatientsWithHistory($con);
                                 <th>S.No</th>
                                 <th>Name</th>
                                 <th>Date</th>
+                                <th>Created At</th>
                               </tr>
                             </thead>
                             <tbody id="family_members_data">
@@ -585,9 +604,37 @@ $patients = getAllPatientsWithHistory($con);
 
   <?php include './config/site_js_links.php'; ?>
   <?php include './config/data_tables_js.php'; ?>
+  <!-- Toastr -->
+  <script src="plugins/toastr/toastr.min.js"></script>
 
   <script>
     $(document).ready(function() {
+      // Configure toastr options
+      toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      };
+
+      // Function to handle AJAX errors globally
+      $(document).ajaxError(function(event, jqXHR, settings, error) {
+        console.error('Ajax error:', error);
+        console.error('Server response:', jqXHR.responseText);
+        toastr.error('An error occurred while processing your request. Please try again.');
+      });
+
       // Initialize DataTables with modern styling
       var tables = {
         family: $('#family_history').DataTable({
@@ -653,29 +700,46 @@ $patients = getAllPatientsWithHistory($con);
           language: {
             search: "",
             searchPlaceholder: "Search records...",
-            emptyTable: "No history available"
-          }
+            emptyTable: "No family members records available"
+          },
+          order: [[2, 'desc']], // Sort by date column by default
+          columnDefs: [
+            { targets: 2, type: 'date' }, // Ensure date column is treated as date
+            { targets: 3, type: 'date' }  // Ensure created_at column is treated as date
+          ]
         })
       };
 
-      // Function to combine all table data
+      // Function to get all table data
       function getAllTableData() {
-        var allData = [];
-        var patientName = $("#patient option:selected").text();
+        const patientName = $("#patient option:selected").text();
+        let allData = [];
         
-        // Add title
-        allData.push(['Patient History Report for: ' + patientName]);
+        // Add title and patient info
+        allData.push(['Patient History Report']);
+        allData.push(['Patient Name:', patientName]);
+        allData.push(['Generated on:', new Date().toLocaleString()]);
         allData.push([]);
 
         // Add data from each table
+        const tableNames = {
+          family: 'Family Planning History',
+          deworming: 'Deworming History',
+          bp: 'BP Monitoring History',
+          bloodSugar: 'Blood Sugar History',
+          tetanus: 'Tetanus Toxoid History',
+          familyMembers: 'Family Members History'
+        };
+
         Object.entries(tables).forEach(([key, table]) => {
-          var data = table.data().toArray();
+          const data = table.data().toArray();
           if (data.length > 0) {
             // Add section title
-            allData.push([key.toUpperCase() + ' HISTORY']);
+            allData.push([tableNames[key]]);
+            allData.push([]);
             
             // Add headers
-            var headers = [];
+            const headers = [];
             table.columns().every(function() {
               headers.push($(this.header()).text());
             });
@@ -683,7 +747,10 @@ $patients = getAllPatientsWithHistory($con);
             
             // Add data rows
             data.forEach(row => {
-              allData.push(row);
+              allData.push(row.map(cell => {
+                // Remove HTML tags if present
+                return cell.toString().replace(/<[^>]*>/g, '');
+              }));
             });
             
             // Add spacing
@@ -697,94 +764,96 @@ $patients = getAllPatientsWithHistory($con);
 
       // Function to show loading state
       function showLoading(button) {
-        button.prop('disabled', true)
-             .html('<i class="fas fa-spinner fa-spin mr-2"></i>Processing...');
+        const originalText = button.html();
+        button.addClass('loading')
+              .html('<i class="fas fa-spinner"></i> Processing...');
+        return originalText;
       }
 
       // Function to hide loading state
-      function hideLoading(button, icon, text) {
-        button.prop('disabled', false)
-             .html(`<i class="fas ${icon} mr-2"></i>${text}`);
+      function hideLoading(button, originalText) {
+        button.removeClass('loading').html(originalText);
       }
 
       // Copy All button
-      $('#btnCopy').on('click', function() {
+      $('#btnCopyAll').on('click', function() {
         const button = $(this);
-        showLoading(button);
+        const originalText = showLoading(button);
 
         setTimeout(() => {
-          var allData = getAllTableData();
-          var textData = allData.map(row => row.join('\t')).join('\n');
+          const allData = getAllTableData();
+          const textData = allData.map(row => row.join('\t')).join('\n');
           
-          var temp = $("<textarea>");
+          const temp = $("<textarea>");
           $("body").append(temp);
           temp.val(textData).select();
           document.execCommand("copy");
           temp.remove();
           
-          hideLoading(button, 'fa-copy', 'Copy All');
-          toastr.success('All history data copied to clipboard');
+          hideLoading(button, originalText);
+          toastr.success('Copied to clipboard');
         }, 500);
       });
 
       // CSV All button
-      $('#btnCSV').on('click', function() {
+      $('#btnCSVAll').on('click', function() {
         const button = $(this);
-        showLoading(button);
+        const originalText = showLoading(button);
 
         setTimeout(() => {
-          var allData = getAllTableData();
-          var csvContent = allData.map(row => 
+          const allData = getAllTableData();
+          const csvContent = allData.map(row => 
             row.map(cell => 
               typeof cell === 'string' ? `"${cell.replace(/"/g, '""')}"` : cell
             ).join(',')
           ).join('\n');
 
-              var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-              var link = document.createElement("a");
-                var url = URL.createObjectURL(blob);
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement("a");
+          const url = URL.createObjectURL(blob);
                 link.setAttribute("href", url);
                 link.setAttribute("download", "patient_history.csv");
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
           
-          hideLoading(button, 'fa-file-csv', 'CSV All');
-          toastr.success('Successfully exported to CSV');
+          hideLoading(button, originalText);
+          toastr.success('CSV file downloaded');
         }, 500);
       });
 
       // Excel All button
-      $('#btnExcel').on('click', function() {
+      $('#btnExcelAll').on('click', function() {
         const button = $(this);
-        showLoading(button);
+        const originalText = showLoading(button);
 
         setTimeout(() => {
-          var allData = getAllTableData();
-              var wb = XLSX.utils.book_new();
-          var ws = XLSX.utils.aoa_to_sheet(allData);
+          const allData = getAllTableData();
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet(allData);
               XLSX.utils.book_append_sheet(wb, ws, "Patient History");
               XLSX.writeFile(wb, "patient_history.xlsx");
           
-          hideLoading(button, 'fa-file-excel', 'Excel All');
-          toastr.success('Successfully exported to Excel');
+          hideLoading(button, originalText);
+          toastr.success('Excel file downloaded');
         }, 500);
       });
 
       // PDF All button
-      $('#btnPDF').on('click', function() {
+      $('#btnPDFAll').on('click', function() {
         const button = $(this);
-        showLoading(button);
+        const originalText = showLoading(button);
 
         setTimeout(() => {
-          var allData = getAllTableData();
-          var patientName = $("#patient option:selected").text();
+          const allData = getAllTableData();
+          const patientName = $("#patient option:selected").text();
           
-              var docDefinition = {
+          const docDefinition = {
             pageOrientation: 'landscape',
                 content: [
                   { text: 'Patient History Report', style: 'header' },
               { text: patientName, style: 'subheader' },
+              { text: 'Generated on: ' + new Date().toLocaleString(), style: 'date' },
               { text: '\n' }
                 ],
                 styles: {
@@ -797,6 +866,11 @@ $patients = getAllPatientsWithHistory($con);
                     fontSize: 14,
                     bold: true,
                     margin: [0, 10, 0, 5]
+              },
+              date: {
+                fontSize: 12,
+                color: '#666',
+                margin: [0, 0, 0, 20]
               },
               tableHeader: {
                 bold: true,
@@ -811,12 +885,12 @@ $patients = getAllPatientsWithHistory($con);
           };
 
           // Add each section
-          var currentSection = '';
-          var currentTable = [];
-          var currentHeaders = [];
+          let currentSection = '';
+          let currentTable = [];
+          let currentHeaders = [];
 
           allData.forEach((row, index) => {
-            if (row.length === 1 && row[0].includes('HISTORY')) {
+            if (row.length === 1 && Object.values(tableNames).includes(row[0])) {
               // If we have a previous table, add it
               if (currentTable.length > 0) {
                 docDefinition.content.push({
@@ -864,46 +938,74 @@ $patients = getAllPatientsWithHistory($con);
 
               pdfMake.createPdf(docDefinition).download("patient_history.pdf");
           
-          hideLoading(button, 'fa-file-pdf', 'PDF All');
-          toastr.success('Successfully exported to PDF');
+          hideLoading(button, originalText);
+          toastr.success('PDF file downloaded');
         }, 500);
       });
 
       // Print All button
-      $('#btnPrint').on('click', function() {
+      $('#btnPrintAll').on('click', function() {
         const button = $(this);
-        showLoading(button);
+        const originalText = showLoading(button);
 
         setTimeout(() => {
-          var allData = getAllTableData();
-          var patientName = $("#patient option:selected").text();
+          const allData = getAllTableData();
+          const patientName = $("#patient option:selected").text();
           
-          var printContent = `
+          let printContent = `
             <html>
             <head>
               <title>Patient History - ${patientName}</title>
               <style>
-                body { font-family: Arial, sans-serif; }
-                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f3f6f9; }
-                h1 { font-size: 24px; margin-bottom: 10px; }
-                h2 { font-size: 18px; color: #3699FF; margin: 20px 0 10px; }
-                .section-break { height: 20px; }
+                body { 
+                  font-family: Arial, sans-serif;
+                  padding: 20px;
+                }
+                h1 { 
+                  font-size: 24px;
+                  margin-bottom: 10px;
+                  color: #333;
+                }
+                h2 { 
+                  font-size: 18px;
+                  color: #3699FF;
+                  margin: 20px 0 10px;
+                }
+                .date {
+                  color: #666;
+                  margin-bottom: 30px;
+                }
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin-bottom: 30px;
+                }
+                th, td {
+                  border: 1px solid #ddd;
+                  padding: 8px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f3f6f9;
+                  font-weight: bold;
+                }
+                tr:nth-child(even) {
+                  background-color: #f9f9f9;
+                }
               </style>
             </head>
             <body>
               <h1>Patient History Report</h1>
               <h2>${patientName}</h2>
+              <div class="date">Generated on: ${new Date().toLocaleString()}</div>
           `;
 
-          var currentSection = '';
-          var currentTable = [];
-          var currentHeaders = [];
+          let currentSection = '';
+          let currentTable = [];
+          let currentHeaders = [];
 
           allData.forEach((row, index) => {
-            if (row.length === 1) {
-              if (row[0].includes('HISTORY')) {
+            if (row.length === 1 && Object.values(tableNames).includes(row[0])) {
                 // If we have a previous table, add it
                 if (currentTable.length > 0) {
                   printContent += '<table>';
@@ -912,7 +1014,6 @@ $patients = getAllPatientsWithHistory($con);
                     printContent += '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>';
                   });
                   printContent += '</table>';
-                  printContent += '<div class="section-break"></div>';
                 }
                 
                 // Start new section
@@ -920,7 +1021,6 @@ $patients = getAllPatientsWithHistory($con);
                 printContent += `<h2>${currentSection}</h2>`;
                 currentTable = [];
                 currentHeaders = [];
-              }
             } else if (row.length > 1) {
               if (currentHeaders.length === 0) {
                 currentHeaders = row;
@@ -942,17 +1042,139 @@ $patients = getAllPatientsWithHistory($con);
               
               printContent += '</body></html>';
               
-              var printWindow = window.open('', '_blank');
+          const printWindow = window.open('', '_blank');
               printWindow.document.write(printContent);
               printWindow.document.close();
               printWindow.focus();
               printWindow.print();
               printWindow.close();
 
-          hideLoading(button, 'fa-print', 'Print All');
+          hideLoading(button, originalText);
           toastr.success('Print window opened');
         }, 500);
       });
+
+      // Function to check missing records and show toast
+      function checkMissingRecords(responses) {
+        const tables = {
+          'Family Planning': responses.family?.data?.length > 0,
+          'Deworming': responses.deworming?.data?.length > 0,
+          'BP Monitoring': responses.bp?.data?.length > 0,
+          'Blood Sugar': responses.bloodSugar?.data?.length > 0,
+          'Tetanus Toxoid': responses.tetanus?.data?.length > 0,
+          'Family Members': responses.familyMembers?.data?.length > 0
+        };
+
+        // Get available and missing records
+        const availableRecords = Object.entries(tables)
+          .filter(([_, hasData]) => hasData)
+          .map(([name, _]) => name);
+
+        const missingRecords = Object.entries(tables)
+          .filter(([_, hasData]) => !hasData)
+          .map(([name, _]) => name);
+
+        // Initialize SweetAlert2 Toast
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        });
+
+        let title, html, icon;
+
+        if (availableRecords.length === 0) {
+          title = 'No Records Found';
+          html = 'Patient has no existing records in the system.';
+          icon = 'info';
+        } else if (missingRecords.length === 0) {
+          title = 'Complete Records';
+          html = 'Patient has complete information in all categories.';
+          icon = 'success';
+        } else {
+          title = 'Available Records';
+          html = `
+            <div style="text-align: left;">
+              <p style="margin-bottom: 8px;">Patient has records in:</p>
+              <ul style="list-style-type: none; padding-left: 0; margin-bottom: 12px;">
+                ${availableRecords.map(record => `
+                  <li><i class="fas fa-check-circle text-success"></i> ${record}</li>
+                `).join('')}
+              </ul>
+              ${missingRecords.length > 0 ? `
+                <p style="margin-bottom: 8px; color: #FFA800;">No records in:</p>
+                <ul style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                  ${missingRecords.map(record => `
+                    <li><i class="fas fa-exclamation-circle text-warning"></i> ${record}</li>
+                  `).join('')}
+                </ul>
+              ` : ''}
+            </div>
+          `;
+          icon = 'warning';
+        }
+
+        Toast.fire({
+          icon: icon,
+          title: title,
+          html: html,
+          customClass: {
+            popup: 'swal2-toast-custom',
+            title: 'swal2-toast-title-custom',
+            htmlContainer: 'swal2-toast-html-custom'
+          }
+        });
+      }
+
+      // Add custom styles for the toast
+      $('head').append(`
+        <style>
+          .swal2-toast-custom {
+            background: #fff !important;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+            padding: 15px !important;
+            width: auto !important;
+            max-width: 400px !important;
+          }
+          .swal2-toast-title-custom {
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            color: #181C32 !important;
+            margin-bottom: 8px !important;
+          }
+          .swal2-toast-html-custom {
+            font-size: 0.95rem !important;
+            color: #7E8299 !important;
+          }
+          .swal2-toast-html-custom ul {
+            margin: 0 !important;
+          }
+          .swal2-toast-html-custom li {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-bottom: 4px !important;
+          }
+          .swal2-toast-html-custom li:last-child {
+            margin-bottom: 0 !important;
+          }
+          .swal2-toast-html-custom .fas {
+            font-size: 14px !important;
+          }
+          .swal2-toast-html-custom .text-success {
+            color: #1BC5BD !important;
+          }
+          .swal2-toast-html-custom .text-warning {
+            color: #FFA800 !important;
+          }
+        </style>
+      `);
 
       // Function to load patient history data
       function loadPatientHistory(patientName) {
@@ -963,6 +1185,9 @@ $patients = getAllPatientsWithHistory($con);
           $(table.table().body()).html(loadingHtml);
         });
 
+        // Object to store all responses
+        let responses = {};
+
         // Load Family Members History
         $.ajax({
           url: 'ajax/get_patient_family_members.php',
@@ -970,27 +1195,31 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
-            console.log('Family Members Response:', response); // Debug log
+            responses.familyMembers = response;
+            try {
+              console.log('Family Members Response:', response);
             tables.familyMembers.clear();
-            if (response.success && response.data.length > 0) {
+              
+              if (response.success && response.data && response.data.length > 0) {
               response.data.forEach(record => {
                 tables.familyMembers.row.add([
                   record.sno,
                   record.name,
-                  record.date
+                    record.date,
+                    record.created_at
                 ]);
               });
+              }
+              
               tables.familyMembers.draw();
-              console.log('Family Members Data loaded:', response.data.length, 'records');
-            } else {
-              // Show "No data" message
+            } catch (e) {
+              console.error('Error processing response:', e);
               tables.familyMembers.clear().draw();
-              console.log('No family members data found');
             }
           },
           error: function(xhr, status, error) {
-            console.error('Error loading family members:', error, xhr.responseText);
-            toastr.error('Error loading family members history');
+            responses.familyMembers = { success: false, data: [] };
+            console.error('Error loading family members:', error);
             tables.familyMembers.clear().draw();
           }
         });
@@ -1002,6 +1231,7 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
+            responses.family = response;
             tables.family.clear();
             if (response.success && response.data.length > 0) {
               response.data.forEach(record => {
@@ -1017,6 +1247,7 @@ $patients = getAllPatientsWithHistory($con);
             tables.family.draw();
           },
           error: function() {
+            responses.family = { success: false, data: [] };
             toastr.error('Error loading family planning history');
           }
         });
@@ -1028,6 +1259,7 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
+            responses.deworming = response;
             tables.deworming.clear();
             if (response.success && response.data.length > 0) {
               response.data.forEach(record => {
@@ -1043,6 +1275,7 @@ $patients = getAllPatientsWithHistory($con);
             tables.deworming.draw();
           },
           error: function() {
+            responses.deworming = { success: false, data: [] };
             toastr.error('Error loading deworming history');
           }
         });
@@ -1054,6 +1287,7 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
+            responses.bp = response;
             tables.bp.clear();
             if (response.success && response.data.length > 0) {
               response.data.forEach(record => {
@@ -1071,6 +1305,7 @@ $patients = getAllPatientsWithHistory($con);
             tables.bp.draw();
           },
           error: function() {
+            responses.bp = { success: false, data: [] };
             toastr.error('Error loading BP monitoring history');
           }
         });
@@ -1082,6 +1317,7 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
+            responses.bloodSugar = response;
             tables.bloodSugar.clear();
             if (response.success && response.data.length > 0) {
               response.data.forEach(record => {
@@ -1097,6 +1333,7 @@ $patients = getAllPatientsWithHistory($con);
             tables.bloodSugar.draw();
           },
           error: function() {
+            responses.bloodSugar = { success: false, data: [] };
             toastr.error('Error loading blood sugar history');
           }
         });
@@ -1108,6 +1345,7 @@ $patients = getAllPatientsWithHistory($con);
           data: { patient_name: patientName },
           dataType: 'json',
           success: function(response) {
+            responses.tetanus = response;
             tables.tetanus.clear();
             if (response.success && response.data.length > 0) {
               response.data.forEach(record => {
@@ -1124,7 +1362,12 @@ $patients = getAllPatientsWithHistory($con);
             tables.tetanus.draw();
           },
           error: function() {
+            responses.tetanus = { success: false, data: [] };
             toastr.error('Error loading tetanus history');
+          },
+          complete: function() {
+            // After all requests are complete, check missing records
+            setTimeout(() => checkMissingRecords(responses), 500);
           }
         });
 

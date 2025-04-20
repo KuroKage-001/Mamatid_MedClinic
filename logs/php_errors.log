@@ -1,0 +1,265 @@
+[20-Apr-2025 10:27:22 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 10:27:22 Europe/Berlin] Found 1 records
+[20-Apr-2025 10:27:22 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:27:22 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 10:27:22 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 10:27:43 Europe/Berlin] Searching for patient: Osiris Baskerville
+[20-Apr-2025 10:27:43 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 10:27:43 Europe/Berlin] Found 0 records
+[20-Apr-2025 10:27:43 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:27:43 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[20-Apr-2025 10:27:43 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 10:28:09 Europe/Berlin] Searching for patient: Osiris Baskerville
+[20-Apr-2025 10:28:09 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 10:28:09 Europe/Berlin] Found 0 records
+[20-Apr-2025 10:28:09 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:28:09 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[20-Apr-2025 10:28:09 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 10:28:22 Europe/Berlin] Searching for patient: Osiris Baskerville
+[20-Apr-2025 10:28:22 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 10:28:22 Europe/Berlin] Found 0 records
+[20-Apr-2025 10:28:22 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:28:22 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[20-Apr-2025 10:28:22 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 10:33:38 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 10:33:38 Europe/Berlin] Found 1 records
+[20-Apr-2025 10:33:38 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:33:38 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 10:33:38 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 10:41:14 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 10:41:14 Europe/Berlin] Found 1 records
+[20-Apr-2025 10:41:14 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:41:14 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 10:41:14 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 10:45:13 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 10:45:13 Europe/Berlin] Found 1 records
+[20-Apr-2025 10:45:13 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:45:13 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 10:45:13 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 10:57:46 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 10:57:46 Europe/Berlin] Found 1 records
+[20-Apr-2025 10:57:46 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 10:57:46 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 10:57:46 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 11:03:38 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 11:03:38 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:03:38 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:03:38 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 11:03:38 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 11:03:59 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 11:03:59 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:03:59 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:03:59 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 11:03:59 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 11:12:52 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 11:12:52 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:12:52 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:12:52 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 11:12:52 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 11:15:26 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 11:15:26 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:15:26 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:15:26 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 11:15:26 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 11:36:39 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 11:36:40 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:36:40 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:36:40 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 11:36:40 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 11:54:44 Europe/Berlin] Searching for patient: Osiris Baskerville
+[20-Apr-2025 11:54:44 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 11:54:44 Europe/Berlin] Found 0 records
+[20-Apr-2025 11:54:44 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:54:44 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[20-Apr-2025 11:54:44 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 11:55:11 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 11:55:11 Europe/Berlin] Found 1 records
+[20-Apr-2025 11:55:11 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:55:11 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 11:55:11 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 11:55:50 Europe/Berlin] Searching for patient: Osiris Baskerville
+[20-Apr-2025 11:55:50 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 11:55:50 Europe/Berlin] Found 0 records
+[20-Apr-2025 11:55:50 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 11:55:50 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[20-Apr-2025 11:55:50 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 12:00:27 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 12:00:27 Europe/Berlin] Found 1 records
+[20-Apr-2025 12:00:27 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 12:00:27 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 12:00:27 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 12:01:01 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 12:01:01 Europe/Berlin] Found 1 records
+[20-Apr-2025 12:01:01 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 12:01:01 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 12:01:01 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 12:03:11 Europe/Berlin] Searching for patient: Hugo Le Barkerville
+[20-Apr-2025 12:03:11 Europe/Berlin] Found 1 records
+[20-Apr-2025 12:03:11 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 12:03:11 Europe/Berlin] Parameters: {"patientName":"Hugo Le Barkerville"}
+[20-Apr-2025 12:03:11 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":5,"name":"Hugo Le Barkerville","date":"04\/19\/2025","raw_date":"2025-04-19","created_at":"2025-04-19 22:09:03"}]}
+[20-Apr-2025 12:03:20 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[20-Apr-2025 12:03:20 Europe/Berlin] Found 1 records
+[20-Apr-2025 12:03:20 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 12:03:20 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[20-Apr-2025 12:03:20 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
