@@ -14,8 +14,16 @@ $patients = getAllPatientsWithHistory($con);
   <?php include './config/data_tables_css.php'; ?>
   <!-- Toastr CSS -->
   <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+  <!-- Select2 CSS -->
+  <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Logo for the tab bar -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
+  <!-- SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <!-- pdfmake -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
   <title>Patient History - Mamatid Health Center System</title>
 
   <style>
@@ -606,9 +614,21 @@ $patients = getAllPatientsWithHistory($con);
   <?php include './config/data_tables_js.php'; ?>
   <!-- Toastr -->
   <script src="plugins/toastr/toastr.min.js"></script>
+  <!-- Select2 -->
+  <script src="plugins/select2/js/select2.full.min.js"></script>
 
   <script>
     $(document).ready(function() {
+      // Define tableNames at the beginning of the script
+      const tableNames = {
+        family: 'Family Planning History',
+        deworming: 'Deworming History',
+        bp: 'BP Monitoring History',
+        bloodSugar: 'Blood Sugar History',
+        tetanus: 'Tetanus Toxoid History',
+        familyMembers: 'Family Members History'
+      };
+
       // Configure toastr options
       toastr.options = {
         "closeButton": true,
@@ -722,15 +742,6 @@ $patients = getAllPatientsWithHistory($con);
         allData.push([]);
 
         // Add data from each table
-        const tableNames = {
-          family: 'Family Planning History',
-          deworming: 'Deworming History',
-          bp: 'BP Monitoring History',
-          bloodSugar: 'Blood Sugar History',
-          tetanus: 'Tetanus Toxoid History',
-          familyMembers: 'Family Members History'
-        };
-
         Object.entries(tables).forEach(([key, table]) => {
           const data = table.data().toArray();
           if (data.length > 0) {
@@ -957,28 +968,45 @@ $patients = getAllPatientsWithHistory($con);
             <head>
               <title>Patient History - ${patientName}</title>
               <style>
+                @media print {
+                  @page { size: landscape; }
+                }
                 body { 
                   font-family: Arial, sans-serif;
                   padding: 20px;
+                  color: #333;
                 }
-                h1 { 
+                .header {
+                  text-align: center;
+                  margin-bottom: 30px;
+                }
+                .header h1 { 
                   font-size: 24px;
                   margin-bottom: 10px;
                   color: #333;
                 }
-                h2 { 
+                .patient-info {
+                  margin-bottom: 20px;
+                  padding: 15px;
+                  background: #f8f9fa;
+                  border-radius: 5px;
+                }
+                .section {
+                  margin-bottom: 30px;
+                  page-break-inside: avoid;
+                }
+                .section h2 { 
                   font-size: 18px;
                   color: #3699FF;
                   margin: 20px 0 10px;
-                }
-                .date {
-                  color: #666;
-                  margin-bottom: 30px;
+                  padding-bottom: 5px;
+                  border-bottom: 2px solid #3699FF;
                 }
                 table {
                   width: 100%;
                   border-collapse: collapse;
-                  margin-bottom: 30px;
+                  margin-bottom: 20px;
+                  font-size: 12px;
                 }
                 th, td {
                   border: 1px solid #ddd;
@@ -992,33 +1020,55 @@ $patients = getAllPatientsWithHistory($con);
                 tr:nth-child(even) {
                   background-color: #f9f9f9;
                 }
+                .footer {
+                  margin-top: 30px;
+                  text-align: center;
+                  font-size: 12px;
+                  color: #666;
+                }
+                .no-data {
+                  padding: 20px;
+                  text-align: center;
+                  color: #666;
+                  font-style: italic;
+                }
               </style>
             </head>
             <body>
+              <div class="header">
               <h1>Patient History Report</h1>
-              <h2>${patientName}</h2>
-              <div class="date">Generated on: ${new Date().toLocaleString()}</div>
+              </div>
+              <div class="patient-info">
+                <strong>Patient Name:</strong> ${patientName}<br>
+                <strong>Generated on:</strong> ${new Date().toLocaleString()}<br>
+              </div>
           `;
 
           let currentSection = '';
           let currentTable = [];
           let currentHeaders = [];
+          let hasData = false;
 
           allData.forEach((row, index) => {
             if (row.length === 1 && Object.values(tableNames).includes(row[0])) {
                 // If we have a previous table, add it
                 if (currentTable.length > 0) {
-                  printContent += '<table>';
-                  printContent += '<tr>' + currentHeaders.map(h => `<th>${h}</th>`).join('') + '</tr>';
-                  currentTable.forEach(r => {
-                    printContent += '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>';
-                  });
-                  printContent += '</table>';
+                printContent += `
+                  <div class="section">
+                    <h2>${currentSection}</h2>
+                    <table>
+                      <tr>${currentHeaders.map(h => `<th>${h}</th>`).join('')}</tr>
+                      ${currentTable.map(r => `
+                        <tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>
+                      `).join('')}
+                    </table>
+                  </div>
+                `;
+                hasData = true;
                 }
                 
                 // Start new section
                 currentSection = row[0];
-                printContent += `<h2>${currentSection}</h2>`;
                 currentTable = [];
                 currentHeaders = [];
             } else if (row.length > 1) {
@@ -1032,22 +1082,49 @@ $patients = getAllPatientsWithHistory($con);
 
           // Add the last table if exists
           if (currentTable.length > 0) {
-            printContent += '<table>';
-            printContent += '<tr>' + currentHeaders.map(h => `<th>${h}</th>`).join('') + '</tr>';
-            currentTable.forEach(r => {
-              printContent += '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>';
-            });
-            printContent += '</table>';
+            printContent += `
+              <div class="section">
+                <h2>${currentSection}</h2>
+                <table>
+                  <tr>${currentHeaders.map(h => `<th>${h}</th>`).join('')}</tr>
+                  ${currentTable.map(r => `
+                    <tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>
+                  `).join('')}
+                </table>
+              </div>
+            `;
+            hasData = true;
           }
-              
-              printContent += '</body></html>';
+
+          // Add no data message if no records found
+          if (!hasData) {
+            printContent += `
+              <div class="no-data">
+                No records found for this patient.
+              </div>
+            `;
+          }
+
+          // Add footer
+          printContent += `
+              <div class="footer">
+                <p>Mamatid Health Center System - Patient History Report</p>
+                <p>Generated on: ${new Date().toLocaleString()}</p>
+              </div>
+            </body>
+            </html>
+          `;
               
           const printWindow = window.open('', '_blank');
               printWindow.document.write(printContent);
               printWindow.document.close();
               printWindow.focus();
+
+          // Wait for resources to load before printing
+          setTimeout(() => {
               printWindow.print();
               printWindow.close();
+          }, 250);
 
           hideLoading(button, originalText);
           toastr.success('Print window opened');

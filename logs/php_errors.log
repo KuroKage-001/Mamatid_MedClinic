@@ -263,3 +263,127 @@
               ORDER BY date DESC, created_at DESC
 [20-Apr-2025 12:03:20 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
 [20-Apr-2025 12:03:20 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[20-Apr-2025 13:41:51 Europe/Berlin] Searching for patient: Pauline Oliveros
+[20-Apr-2025 13:41:51 Europe/Berlin] Found 1 records
+[20-Apr-2025 13:41:51 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 13:41:51 Europe/Berlin] Parameters: {"patientName":"Pauline Oliveros"}
+[20-Apr-2025 13:41:51 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":7,"name":"Pauline Oliveros","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 19:32:32"}]}
+[20-Apr-2025 13:42:21 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 13:42:21 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 13:42:21 Europe/Berlin] Found 0 records
+[20-Apr-2025 13:42:21 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 13:42:21 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 13:42:21 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 13:44:13 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 13:44:13 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 13:44:13 Europe/Berlin] Found 0 records
+[20-Apr-2025 13:44:13 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 13:44:13 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 13:44:13 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 13:44:31 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 13:44:31 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 13:44:31 Europe/Berlin] Found 0 records
+[20-Apr-2025 13:44:31 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 13:44:31 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 13:44:31 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 14:00:50 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 14:00:50 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 14:00:50 Europe/Berlin] Found 0 records
+[20-Apr-2025 14:00:50 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 14:00:50 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 14:00:50 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 14:01:16 Europe/Berlin] Searching for patient: Pauline Oliveros
+[20-Apr-2025 14:01:16 Europe/Berlin] Found 1 records
+[20-Apr-2025 14:01:16 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[20-Apr-2025 14:01:16 Europe/Berlin] Parameters: {"patientName":"Pauline Oliveros"}
+[20-Apr-2025 14:01:16 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":7,"name":"Pauline Oliveros","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 19:32:32"}]}
+[20-Apr-2025 14:33:14 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 14:33:14 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 14:33:14 Europe/Berlin] Found 0 records
+[20-Apr-2025 14:33:14 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 14:33:14 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 14:33:14 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 14:39:22 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 14:39:22 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 14:39:22 Europe/Berlin] Found 0 records
+[20-Apr-2025 14:39:22 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 14:39:22 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 14:39:22 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[20-Apr-2025 14:43:12 Europe/Berlin] Searching for patient: Aila Niala
+[20-Apr-2025 14:43:12 Europe/Berlin] No exact match found, trying partial match
+[20-Apr-2025 14:43:12 Europe/Berlin] Found 0 records
+[20-Apr-2025 14:43:12 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[20-Apr-2025 14:43:12 Europe/Berlin] Parameters: {"patientName":"Aila Niala"}
+[20-Apr-2025 14:43:12 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}

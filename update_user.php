@@ -126,125 +126,220 @@ if (isset($_POST['save_user'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <?php
-    include './config/site_css_links.php';
-  ?>
-
-  <!-- Logo for the tab bar -->
+  <?php include './config/site_css_links.php'; ?>
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Update User  Details - Mamatid Health Center System</title>
-  
-  <!-- Include SweetAlert2 CSS -->
-  <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
-  
-  <!-- Include jQuery and SweetAlert2 JS -->
-  <script src="plugins/jquery/jquery.min.js"></script>
-  <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
+  <title>Update User Details - Mamatid Health Center System</title>
+
+  <style>
+    :root {
+      --transition-speed: 0.3s;
+      --primary-color: #3699FF;
+      --secondary-color: #6993FF;
+      --success-color: #1BC5BD;
+      --info-color: #8950FC;
+      --warning-color: #FFA800;
+      --danger-color: #F64E60;
+      --light-color: #F3F6F9;
+      --dark-color: #1a1a2d;
+    }
+
+    /* Card Styling */
+    .card {
+      border: none;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+      border-radius: 15px;
+      margin-bottom: 30px;
+    }
+
+    .card-outline {
+      border-top: 3px solid var(--primary-color);
+    }
+
+    .card-header {
+      background: white;
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Styling */
+    .form-control {
+      height: calc(2.5rem + 2px);
+      border-radius: 8px;
+      border: 2px solid #e4e6ef;
+      padding: 0.625rem 1rem;
+      font-size: 1rem;
+      transition: all var(--transition-speed);
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: var(--dark-color);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Button Styling */
+    .btn {
+      padding: 0.65rem 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all var(--transition-speed);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger-color) 0%, #FF647C 100%);
+      border: none;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Content Header Styling */
+    .content-header {
+      padding: 20px 0;
+    }
+
+    .content-header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    /* Form Group Spacing */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .card-header {
+        padding: 1rem;
+      }
+
+      .card-body {
+        padding: 1rem;
+      }
+
+      .form-control {
+        height: calc(2.2rem + 2px);
+        padding: 0.5rem 0.75rem;
+      }
+    }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
-
-  <!-- Site wrapper -->
   <div class="wrapper">
-    <!-- Navbar -->
-    <?php
-      include './config/header.php';
-      include './config/sidebar.php';
-    ?>
-
-    <!-- Content Wrapper. Contains page content -->
+    <?php include './config/header.php'; include './config/sidebar.php'; ?>
+    
     <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
       <section class="content-header">
         <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-              <h1>USERS</h1>
+          <div class="row align-items-center mb-4">
+            <div class="col-12 col-md-6" style="padding-left: 20px;">
+              <h1>Update User</h1>
             </div>
           </div>
-        </div><!-- /.container-fluid -->
+        </div>
       </section>
 
-      <!-- Main content -->
       <section class="content">
-        <!-- Default box for updating user information -->
-        <div class="card card-outline card-primary rounded-0 shadow">
+        <div class="container-fluid">
+          <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">UPDATE USER</h3>
+              <h3 class="card-title">Update User Details</h3>
             <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
               </button>
             </div>
           </div>
 
           <div class="card-body">
-            <!-- Form for updating user details -->
             <form method="post" enctype="multipart/form-data">
               <input type="hidden" name="hidden_id" value="<?php echo $user_id;?>">
               <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Display Name</label>
-                  <input type="text" id="display_name" name="display_name" required="required"
-                    class="form-control form-control-sm rounded-0" value="<?php echo $row['display_name'];?>" />
+                  <div class="col-md-4 form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" id="display_name" name="display_name" required
+                           class="form-control" value="<?php echo $row['display_name'];?>" />
                 </div>
 
-                <br>
-                <br>
-                <br>
+                  <div class="col-md-4 form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" name="username" required
+                           class="form-control" value="<?php echo $row['user_name'];?>" />
+                </div>
 
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Username</label>
-                  <input type="text" id="username" name="username" required="required"
-                    class="form-control form-control-sm rounded-0" value="<?php echo $row['user_name'];?>" />
+                  <div class="col-md-4 form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required
+                           class="form-control" placeholder="Enter current password"/>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Current Password</label>
-                  <input type="password" id="current_password" name="current_password" required="required"
-                    class="form-control form-control-sm rounded-0"/>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>New Password</label>
+
+                  <div class="col-md-4 form-group">
+                    <label class="form-label">New Password</label>
                   <input type="password" id="password" name="password"
-                    class="form-control form-control-sm rounded-0"/>
+                           class="form-control" placeholder="Enter new password"/>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <label>Profile picture</label>
+
+                  <div class="col-md-4 form-group">
+                    <label class="form-label">Profile Picture</label>
                   <input type="file" id="profile_picture" name="profile_picture"
-                    class="form-control form-control-sm rounded-0" />
+                           class="form-control" accept="image/*"/>
+                  </div>
                 </div>
+
+                <div class="row mt-4">
+                  <div class="col-12 text-right">
+                    <button type="submit" id="save_user" name="save_user" 
+                            class="btn btn-primary">
+                      <i class="fas fa-save mr-2"></i>Update
+                    </button>
+                    <button type="button" id="delete_user" 
+                            class="btn btn-danger ml-2">
+                      <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
               </div>
-              <div class="clearfix">&nbsp;</div>
-              <div class="row">
-                <div class="col-lg-10 col-md-9 col-sm-9">&nbsp;</div>
-                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                  <button type="submit" id="save_user"
-                    name="save_user" class="btn btn-primary btn-sm btn-flat btn-block">Update</button>
                 </div>
-                <div class="col-lg-1 col-md-2 col-sm-2 col-xs-1">
-                  <button type="button" id="delete_user" class="btn btn-danger btn-sm btn-flat btn-block">Delete</button>
-                </div>
+              </form>
               </div>
-            </form>
           </div>
-          <!-- /.card-body -->
         </div>
       </section>
-
-      <?php
-      include './config/footer.php';
-
-      $message = '';
-      if(isset($_GET['message'])) {
-        $message = $_GET['message'];
-      }
-      ?>
-      <!-- /.control-sidebar -->
     </div>
-    <!-- ./wrapper -->
 
-    <?php
-      include './config/site_js_links.php';
-    ?>
+    <?php include './config/footer.php'; ?>
+  </div>
+
+  <?php include './config/site_js_links.php'; ?>
 
     <script>
       $(function() {
@@ -304,6 +399,9 @@ if (isset($_POST['save_user'])) {
           });
         });
       });
+
+    // Highlight current menu
+    showMenuSelected("#mnu_users", "");
     </script>
 </body>
 </html>

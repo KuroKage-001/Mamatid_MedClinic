@@ -37,6 +37,7 @@ if (isset($_POST['action'])) {
             $stmt = $con->prepare($query);
             $stmt->execute([':uid' => $userId, ':today' => $today, ':time_in' => $currentTime]);
             $message = 'Time In recorded successfully!';
+            $type = 'success';
         } elseif ($action == 'time_out' && $canTimeOut) {
             // Update time_logs with time out and calculate total hours
             $query = "UPDATE `time_logs` 
@@ -51,9 +52,11 @@ if (isset($_POST['action'])) {
                 ':time_out' => $currentTime
             ]);
             $message = 'Time Out recorded successfully!';
+            $type = 'success';
         } else {
             // If the conditions aren't met, provide appropriate feedback message
             $message = $action == 'time_in' ? 'You have already timed in today.' : 'No active Time In found or Time Out already recorded.';
+            $type = 'warning';
         }
 
         // Commit transaction if all queries executed successfully
@@ -62,10 +65,11 @@ if (isset($_POST['action'])) {
         // Roll back transaction in case of any error and capture error message
         $con->rollback();
         $message = 'Error: ' . $ex->getMessage();
+        $type = 'error';
     }
 
-    // Redirect back to this page with the feedback message
-    header("Location: time_tracker.php?message=" . urlencode($message));
+    // Redirect back to this page with the feedback message and type
+    header("Location: time_tracker.php?message=" . urlencode($message) . "&type=" . urlencode($type));
     exit;
 }
 
@@ -506,13 +510,6 @@ try {
                         </div>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($_GET['message'])): ?>
-                            <div class="alert alert-info alert-modern">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                <?php echo htmlspecialchars($_GET['message']); ?>
-                            </div>
-                        <?php endif; ?>
-
                         <div class="row attendance-actions">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <form method="post">
@@ -630,6 +627,31 @@ try {
 
 <script>
     $(document).ready(function() {
+        // Initialize Toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Show message if exists in URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+        const type = urlParams.get('type') || 'success';
+        
+        if (message) {
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
         // Initialize DataTable with modern styling
         $('#time_logs').DataTable({
             responsive: true,
@@ -644,9 +666,6 @@ try {
                  "<'row'<'col-sm-12'tr>>" +
                  "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
         });
-
-        // Append buttons container
-        $('#time_logs_wrapper .col-md-6:eq(0)').append($('#time_logs_buttons_container'));
 
         // Update datetime display
         function updateDateTime() {
@@ -666,10 +685,16 @@ try {
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
-        // Fade out alert after 5 seconds
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 5000);
+        // Add click handlers for Time In/Out buttons with Toast notifications
+        $('.btn-attendance').on('click', function(e) {
+            if ($(this).hasClass('disabled')) {
+                e.preventDefault();
+                Toast.fire({
+                    icon: 'warning',
+                    title: $(this).find('.status-text').text()
+                });
+            }
+        });
     });
 
     // Highlight current menu
