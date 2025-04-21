@@ -1,35 +1,92 @@
 @startuml Deworming Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
 
 start
 
-partition "Add Deworming Record" {
-  :Enter Patient Details;
-  note right
-    Required Info:
-    * Name
-    * Date
-    * Age
-    * Birthday
-  end note
-  :Submit Form;
+partition "Deworming Management" {
+  |Healthcare Staff|
+  :Access Deworming Records;
   
-  if (Validation OK?) then (yes)
-    :Format Dates;
-    :Save Record;
-    if (Save Success?) then (yes)
-      :Show Success Message;
+  if (Action?) then (Add Record)
+    :Enter Patient Details;
+    note right
+      Required:
+      - Patient Name
+      - Treatment Date
+      - Patient Age
+      - Birth Date
+    end note
+    
+    :Submit Form;
+    
+    |System|
+    :Validate Form;
+    
+    if (Valid?) then (yes)
+      :Format Data;
+      note right
+        Processing:
+        - Capitalize name
+        - Convert dates
+        - Validate formats
+      end note
+      
+      :Begin Transaction;
+      :Save Record;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        :Refresh List;
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+      
     else (no)
-      :Show Error Message;
+      :Highlight Missing Fields;
+      :Show Validation Error;
+      note right
+        Validation:
+        - Mark errors
+        - Show messages
+        - Auto-scroll
+      end note
     endif
-  else (no)
-    :Show Validation Error;
-  endif
-}
-
-partition "View Records" {
-  :Display Deworming Records;
-  if (Edit Record?) then (yes)
-    :Navigate to Update Page;
+    
+  else (View/Export)
+    |System|
+    :Load Records;
+    :Display Table;
+    note right
+      Features:
+      - Search & Sort
+      - Export Options:
+        • Copy/CSV
+        • Excel/PDF
+        • Print
+      - Column Toggle
+    end note
+    
+    |Healthcare Staff|
+    if (Export?) then (yes)
+      :Select Format;
+      |System|
+      :Generate Export;
+      :Download File;
+    else (Edit)
+      :Click Edit;
+      :Go to Update Page;
+    endif
   endif
 }
 

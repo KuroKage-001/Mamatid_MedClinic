@@ -1,71 +1,93 @@
 @startuml Users Management Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
 
-|Administrator|
+|Healthcare Staff|
+|System|
+
 start
 
-:View Users List;
-
-partition "Add New User" {
-  :Click Add New User;
-  :Enter User Details;
+partition "Users Management" {
+  |System|
+  :Load Users List;
+  :Display Users Table;
   note right
-    Required fields:
-    * Full Name
-    * Username
-    * Password
-    * Role
-    * Status
+    Table Shows:
+    - S.No
+    - Profile Picture
+    - Display Name
+    - Username
+    - Action Buttons
   end note
-  
-  :Submit Form;
-  
-  if (Validation Successful?) then (yes)
-    :Save User;
-    if (Save Success?) then (yes)
-      :Show Success Message;
-      :Refresh Users List;
-    else (no)
-      :Show Error Message;
-    endif
-  else (no)
-    :Show Validation Errors;
-  endif
-}
 
-partition "Edit User" {
-  :Click Edit User;
-  :Load User Details;
-  :Modify User Information;
-  
-  :Submit Changes;
-  
-  if (Validation Successful?) then (yes)
-    :Update User;
-    if (Update Success?) then (yes)
-      :Show Success Message;
-      :Refresh Users List;
+  |Healthcare Staff|
+  if (Action?) then (Add User)
+    :Fill User Form;
+    note right
+      Required Fields:
+      - Display Name
+      - Username
+      - Password
+      - Profile Picture
+    end note
+    
+    :Submit Form;
+    
+    |System|
+    :Check Username Availability;
+    
+    if (Username Available?) then (yes)
+      :Validate Form Data;
+      
+      if (Valid?) then (yes)
+        :Begin Transaction;
+        fork
+          :Upload Profile Picture;
+        fork again
+          :Hash Password (MD5);
+        end fork
+        
+        if (Upload Success?) then (yes)
+          :Save User Data;
+          if (Save Success?) then (yes)
+            :Commit Transaction;
+            :Show Success Toast;
+            :Refresh Users List;
+          else (no)
+            :Rollback Transaction;
+            :Show Error Toast;
+          endif
+        else (no)
+          :Show Upload Error;
+        endif
+      else (no)
+        :Show Validation Error;
+      endif
     else (no)
-      :Show Error Message;
+      :Show Username Taken Toast;
+      :Disable Save Button;
     endif
-  else (no)
-    :Show Validation Errors;
-  endif
-}
-
-partition "Delete User" {
-  :Click Delete User;
-  :Show Confirmation Dialog;
-  
-  if (Confirm Delete?) then (yes)
-    :Delete User;
-    if (Delete Success?) then (yes)
-      :Show Success Message;
-      :Refresh Users List;
+    
+  else (Edit User)
+    |Healthcare Staff|
+    :Click Edit Button;
+    note right
+      Only current user
+      can edit their
+      own profile
+    end note
+    
+    |System|
+    if (Current User?) then (yes)
+      :Navigate to Update Page;
     else (no)
-      :Show Error Message;
+      :Button Disabled;
     endif
-  else (no)
-    :Cancel Operation;
   endif
 }
 

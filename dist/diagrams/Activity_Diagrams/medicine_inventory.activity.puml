@@ -1,44 +1,106 @@
 @startuml Medicine Inventory Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
 
 start
 
-partition "Add Inventory" {
-  :Select Medicine;
-  :Enter Inventory Details;
-  note right
-    Required Info:
-    * Quantity
-    * Batch Number
-    * Expiry Date
-    * Unit Price
-  end note
-  :Submit Form;
+partition "Medicine Inventory Management" {
+  |#white|Healthcare Staff|
+  :Access Inventory Page;
   
-  if (Validation OK?) then (yes)
-    :Begin Transaction;
-    :Insert Inventory Record;
-    :Record IN Transaction;
-    if (Save Success?) then (yes)
-      :Commit Transaction;
-      :Show Success Message;
+  if (Action?) then (Add Inventory)
+    :Select Medicine;
+    :Enter Details;
+    note right
+      Required Fields:
+      - Quantity
+      - Batch Number
+      - Expiry Date
+      - Unit Price
+    end note
+    :Submit Form;
+    
+    |#white|System|
+    :Validate Input;
+    
+    if (Valid?) then (yes)
+      :Begin Transaction;
+      fork
+        :Insert Inventory Record;
+      fork again
+        :Record IN Transaction;
+        note right: Initial stock entry
+      end fork
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        :Refresh Inventory List;
+      else (no)
+        :Rollback Transaction;
+        :Log Error;
+        :Show Error Message;
+      endif
     else (no)
-      :Rollback Transaction;
-      :Show Error Message;
+      :Show Validation Error;
     endif
-  else (no)
-    :Show Validation Error;
+    
+  else (View Inventory)
+    |#white|System|
+    :Load Current Stock;
+    :Display Inventory Table;
+    note right
+      Shows:
+      - Medicine Name
+      - Packing
+      - Batch Number
+      - Current Stock
+      - Expiry Date
+      - Status:
+        • Low (≤10)
+        • Medium (≤20)
+        • Good (>20)
+      - Days to Expiry
+    end note
+    
+    |#white|Healthcare Staff|
+    :Interact with List;
+    
+    fork
+      :Use Search/Filter;
+      |#white|System|
+      :Update View;
+    fork again
+      :Export Data;
+      |#white|System|
+      :Generate Report;
+      note right
+        Formats:
+        - Copy
+        - CSV
+        - Excel
+        - PDF
+        - Print
+      end note
+    end fork
+    
+    |#white|System|
+    :Display Analytics;
+    note right
+      Fast Moving
+      Medicines Chart:
+      - Top 10 by
+        quantity out
+    end note
   endif
-}
-
-partition "View Inventory" {
-  :Display Current Stock;
-  :Show Analytics Chart;
-  note right
-    Status Colors:
-    * Green: Good
-    * Yellow: Medium
-    * Red: Low
-  end note
 }
 
 stop

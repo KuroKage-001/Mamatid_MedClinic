@@ -1,37 +1,105 @@
 @startuml Tetanus Toxoid Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
 
 start
 
-partition "Add Tetanus Record" {
-  :Enter Patient Details;
-  note right
-    Required Info:
-    * Name
-    * Date
-    * Address
-    * Age
-    * Diagnosis
-    * Remarks
-  end note
-  :Submit Form;
+partition "Tetanus Management" {
+  |Healthcare Staff|
+  :Access Tetanus Records;
   
-  if (Validation OK?) then (yes)
-    :Format Data;
-    :Save Record;
-    if (Save Success?) then (yes)
-      :Show Success Message;
+  if (Action?) then (Add Record)
+    :View Record Form;
+    note right
+      Required:
+      - Name
+      - Date (MM/DD/YYYY)
+      - Address
+      - Age
+      Optional:
+      - Diagnosis
+      - Remarks
+    end note
+    
+    :Enter Patient Details;
+    :Submit Form;
+    
+    |System|
+    :Validate Form;
+    
+    if (Valid?) then (yes)
+      :Format Data;
+      note right
+        Processing:
+        - Capitalize Name
+        - Format Address
+        - Convert Date
+      end note
+      
+      :Begin Transaction;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        note right
+          Toast:
+          - Top position
+          - Auto-dismiss
+          - Progress bar
+          - Hover pause
+        end note
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+      
     else (no)
-      :Show Error Message;
+      :Highlight Missing Fields;
+      :Show Validation Error;
     endif
-  else (no)
-    :Show Validation Error;
-  endif
-}
-
-partition "View Records" {
-  :Display Tetanus Records;
-  if (Edit Record?) then (yes)
-    :Navigate to Update Page;
+    
+  else (View Records)
+    |System|
+    :Display Records;
+    note right
+      Features:
+      - Search & Sort
+      - Responsive
+      - Export Options
+    end note
+    
+    |Healthcare Staff|
+    :Interact with Records;
+    
+    fork
+      :Select Export;
+      note right
+        Options:
+        • Copy/CSV
+        • Excel/PDF
+        • Print
+      end note
+      
+      |System|
+      :Generate Export;
+      :Download/Print;
+    fork again
+      :Click Edit;
+      |System|
+      :Go to Update Page;
+    fork again
+      :Toggle Columns;
+      |System|
+      :Update View;
+    end fork
   endif
 }
 

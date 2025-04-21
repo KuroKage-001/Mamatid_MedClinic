@@ -1,42 +1,82 @@
 @startuml Patient History Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
 
 start
 
-:Select Patient;
-:Click Search;
-
-partition "View History" {
-  :Load All Categories;
-  note right
-    Categories:
-    * Family Planning
-    * Deworming
-    * BP Monitoring
-    * Blood Sugar
-    * Tetanus Toxoid
-  end note
+partition "Patient History Management" {
+  |Healthcare Staff|
+  :Access History Page;
+  :Select Patient;
+  :Click Search;
   
-  :Display History Tabs;
+  |System|
+  :Load Patient Data;
   
-  while (Select Action) is (View Category)
-    :Switch Tab;
-    :Display Category Records;
-  endwhile (Export)
-}
-
-partition "Export History" {
-  :Select Export Format;
-  note right
-    Formats:
-    * Copy
-    * CSV
-    * Excel
-    * PDF
-    * Print
-  end note
-  
-  :Process Export;
-  :Download/Display Result;
+  if (Patient Found?) then (yes)
+    :Initialize History Tabs;
+    note right
+      Categories:
+      - Family Planning
+      - Deworming
+      - BP Monitoring
+      - Blood Sugar
+      - Tetanus Toxoid
+      - Family Members
+    end note
+    
+    |Healthcare Staff|
+    while (Select Action) is (View/Export)
+      if (Action Type?) then (View Category)
+        :Switch Tab;
+        |System|
+        :Load Category Data;
+        :Display Records Table;
+        note right
+          Table Features:
+          - Search/Filter
+          - Sort Columns
+          - Responsive View
+        end note
+      else (Export)
+        :Select Export Type;
+        |System|
+        fork
+          :Copy to Clipboard;
+        fork again
+          :Generate CSV;
+        fork again
+          :Create Excel;
+        fork again
+          :Build PDF;
+        fork again
+          :Print View;
+        end fork
+        :Process Export;
+        :Show Success Toast;
+      endif
+      
+      |System|
+      :Check Missing Records;
+      note right
+        Status Toast:
+        - Complete Records
+        - Available Categories
+        - Missing Categories
+      end note
+    endwhile (Close)
+    
+  else (no)
+    :Show No Patient Message;
+  endif
 }
 
 stop

@@ -1,34 +1,105 @@
 @startuml Client Login Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Client|
+|System|
 
 start
-:Access Client Portal;
 
-if (Remember Me Cookie Exists?) then (yes)
-  :Pre-fill Email;
-endif
+partition "Client Portal Access" {
+  |Client|
+  :Access Client Portal;
+  note right
+    Portal Features:
+    - Book/Manage Appointments
+    - Access Medical Records
+    - Health Notifications
+    - Provider Communication
+  end note
 
-:Enter Email and Password;
-:Submit Login Form;
-
-if (Credentials Valid?) then (yes)
-  :Store Client Session;
-  if (Remember Me Checked?) then (yes)
-    :Set Email Cookie;
-  else (no)
-    :Clear Email Cookie;
+  |System|
+  :Initialize Portal;
+  if (Remember Me Cookie?) then (yes)
+    :Retrieve Email from Cookie;
+    :Pre-fill Email Field;
   endif
-  :Redirect to Client Dashboard;
-else (no)
-  :Show Error Toast;
-  :Return to Login Form;
-endif
+
+  |Client|
+  :View Login Form;
+  note right
+    Form Elements:
+    - Email Address (required)
+    - Password (required)
+    - Remember Me checkbox
+    - Sign In button
+  end note
+
+  :Enter Credentials;
+  :Submit Form;
+
+  |System|
+  :Validate Form Data;
+  :Encrypt Password (MD5);
+  
+  :Query Client Database;
+  note right
+    SELECT id, full_name, email
+    FROM clients
+    WHERE email = ? 
+    AND password = ?
+  end note
+
+  if (Client Found?) then (yes)
+    :Initialize Session;
+    :Store Client Data;
+    note right
+      Session Variables:
+      - client_id
+      - client_name
+      - client_email
+    end note
+    
+    if (Remember Me Selected?) then (yes)
+      :Set Email Cookie;
+      note right
+        Cookie Duration:
+        30 days
+      end note
+    else (no)
+      :Clear Existing Cookie;
+    endif
+    
+    :Redirect to Dashboard;
+    
+  else (no)
+    :Prepare Error Message;
+    :Show Toast Notification;
+    note right
+      Toast Features:
+      - Top-end position
+      - Auto-dismiss (4s)
+      - Progress bar
+      - Close button
+      - Hover pause
+    end note
+    
+    |Client|
+    if (Create Account?) then (yes)
+      :Click Register Link;
+      :Navigate to Registration;
+    else (no)
+      :View Error Message;
+      :Retry Login;
+    endif
+  endif
+}
 
 stop
-
-note right
-  Alternative Actions:
-  * Click "Create New Account"
-  * Navigate to Registration
-end note
 
 @enduml 

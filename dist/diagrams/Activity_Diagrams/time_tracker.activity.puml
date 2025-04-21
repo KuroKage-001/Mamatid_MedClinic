@@ -1,79 +1,104 @@
- @startuml Time Tracker Activity
+@startuml Time Tracker Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
 
-|User|
+|Healthcare Staff|
+|System|
+
 start
 
-:Access Time Tracker Page;
-
-partition "Initialize" {
+partition "Time Tracker Management" {
+  |Healthcare Staff|
+  :Access Time Tracker;
+  
+  |System|
+  :Initialize Real-time Clock;
   :Check Today's Log;
-  if (Log Exists for Today?) then (yes)
+  
+  if (Log Exists?) then (yes)
     if (Time Out Recorded?) then (yes)
       :Disable Both Buttons;
+      note right: Already completed
     else (no)
       :Enable Time Out Button;
       :Disable Time In Button;
+      note right: Time In recorded
     endif
   else (no)
     :Enable Time In Button;
     :Disable Time Out Button;
+    note right: New day
   endif
-}
-
-partition "Time Actions" {
-  if (Action Selected?) then (Time In)
-    :Click Time In Button;
+  
+  |Healthcare Staff|
+  if (Action?) then (Time In)
+    :Click Time In;
+    
+    |System|
     :Get Current Time;
     :Begin Transaction;
     
     if (Can Time In?) then (yes)
-      :Insert Time In Record;
+      :Insert Time Log Record;
       :Commit Transaction;
-      :Show Success Message;
+      :Show Success Toast;
+      :Update Button States;
     else (no)
-      :Show "Already Timed In" Message;
       :Rollback Transaction;
+      :Show Warning Toast;
+      note right: Already timed in
     endif
     
   else (Time Out)
-    :Click Time Out Button;
+    |Healthcare Staff|
+    :Click Time Out;
+    
+    |System|
     :Get Current Time;
     :Begin Transaction;
     
     if (Can Time Out?) then (yes)
-      :Insert Time Out Record;
+      :Update Time Log;
+      :Calculate Total Hours;
+      note right
+        TIMESTAMPDIFF
+        (time_out - time_in)
+        rounded to 2 decimals
+      end note
       :Commit Transaction;
-      :Show Success Message;
+      :Show Success Toast;
+      :Update Button States;
     else (no)
-      :Show "No Active Time In" Message;
       :Rollback Transaction;
+      :Show Warning Toast;
+      note right: No active time in
     endif
   endif
-}
-
-partition "View History" {
+  
+  |System|
   :Display Time Log History;
   note right
-    Shows for each log:
-    * Date
-    * Time In
-    * Time Out
-    * Total Hours
+    Table Shows:
+    - Date (Y F d)
+    - Time In (h:i:s A)
+    - Time Out (h:i:s A)
+    - Total Hours
   end note
   
   :Initialize DataTable;
-  :Enable Export Options;
   note right
-    Export formats:
-    * Copy
-    * CSV
-    * Excel
-    * PDF
-    * Print
+    Features:
+    - Responsive
+    - Search/Filter
+    - Export Options
+    - Modern Styling
   end note
 }
-
-:Update Real-time Clock Display;
 
 stop
 
