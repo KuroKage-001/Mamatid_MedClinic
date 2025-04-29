@@ -117,37 +117,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <!-- Medicines Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php', 'medicine_inventory.php']) ? 'menu-open' : ''); ?>" id="mnu_medicines">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['medicines.php', 'medicine_details.php', 'medicine_inventory.php']) ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-pills"></i>
-                        <p>
-                            Inventory
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="medicines.php" class="nav-link <?php echo ($current_page == 'medicines.php' ? 'active' : ''); ?>" id="mi_medicines">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Medicine</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="medicine_details.php" class="nav-link <?php echo ($current_page == 'medicine_details.php' ? 'active' : ''); ?>" id="mi_medicine_details">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Medicine Details</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="medicine_inventory.php" class="nav-link <?php echo ($current_page == 'medicine_inventory.php' ? 'active' : ''); ?>" id="mi_medicine_inventory">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Inventory Management</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
                 <li class="nav-header">REPORTS & MANAGEMENT</li>
                 <!-- Reports Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">

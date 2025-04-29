@@ -401,3 +401,30 @@
                   ORDER BY date DESC, created_at DESC
 [23-Apr-2025 06:28:17 Europe/Berlin] Parameters: {"patientName":"Yeomra Baskerville"}
 [23-Apr-2025 06:28:17 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
+[29-Apr-2025 15:30:04 Europe/Berlin] Searching for patient: Kurokage Baskerville
+[29-Apr-2025 15:30:04 Europe/Berlin] Found 1 records
+[29-Apr-2025 15:30:04 Europe/Berlin] SQL Query: SELECT 
+                id,
+                name,
+                DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                date as raw_date,
+                created_at
+              FROM family_members 
+              WHERE name = :name
+              ORDER BY date DESC, created_at DESC
+[29-Apr-2025 15:30:04 Europe/Berlin] Parameters: {"patientName":"Kurokage Baskerville"}
+[29-Apr-2025 15:30:04 Europe/Berlin] Response: {"success":true,"message":"Family members records retrieved successfully","data":[{"sno":1,"id":6,"name":"Kurokage Baskerville","date":"04\/20\/2025","raw_date":"2025-04-20","created_at":"2025-04-20 15:55:58"}]}
+[29-Apr-2025 15:30:36 Europe/Berlin] Searching for patient: Osiris Baskerville
+[29-Apr-2025 15:30:36 Europe/Berlin] No exact match found, trying partial match
+[29-Apr-2025 15:30:36 Europe/Berlin] Found 0 records
+[29-Apr-2025 15:30:36 Europe/Berlin] SQL Query: SELECT 
+                    id,
+                    name,
+                    DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
+                    date as raw_date,
+                    created_at
+                  FROM family_members 
+                  WHERE name LIKE :name
+                  ORDER BY date DESC, created_at DESC
+[29-Apr-2025 15:30:36 Europe/Berlin] Parameters: {"patientName":"Osiris Baskerville"}
+[29-Apr-2025 15:30:36 Europe/Berlin] Response: {"success":true,"message":"No family members records found","data":[]}
