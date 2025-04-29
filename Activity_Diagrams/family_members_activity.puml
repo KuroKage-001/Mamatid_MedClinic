@@ -1,0 +1,39 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Access Family Members Page;
+
+|System|
+:Display Family Members List;
+
+|Client|
+repeat
+:Enter Member Name\nand Date;
+
+|System|
+if () then (fields filled)
+  :Format Name and Date;
+  :Save Family Member;
+  if () then (success)
+    :Show Success Message;
+    :Update Members List;
+  else (failed)
+    :Show Error Message;
+  endif
+else (empty fields)
+  :Show Required Fields Error;
+endif
+
+|Client|
+:**Try Again**;
+repeat while (add another)
+
+stop
+
+@enduml 

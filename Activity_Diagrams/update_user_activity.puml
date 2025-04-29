@@ -1,0 +1,41 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Access Update Page;
+
+|System|
+if () then (authorized)
+  :Show Current User Data;
+else (unauthorized)
+  :Show Access Denied;
+  stop
+endif
+
+|Client|
+repeat
+:Enter Current Password\nand New Details;
+
+|System|
+if () then (password correct)
+  :Update User Information;
+  if () then (success)
+    :Show Success Message;
+    stop
+  else (failed)
+    :Show Error Message;
+  endif
+else (incorrect)
+  :Show Password Error;
+endif
+
+|Client|
+:**Try Again**;
+repeat while (retry)
+
+@enduml

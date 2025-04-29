@@ -100,7 +100,9 @@ if (isset($_POST['save_user'])) {
   
   } else {
     // If required fields are missing, display a custom message
-    showCustomMessage("please fill");
+    $message = "Please fill all required fields.";
+    header("location:update_user.php?user_id=" . $user_id . "&message=" . urlencode($message) . "&type=warning");
+    exit;
   }
 
   try {

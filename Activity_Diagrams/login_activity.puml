@@ -1,0 +1,35 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+repeat
+:Enter Username and Password;
+
+|System|
+:Encrypt Password;
+:Check Credentials;
+
+if () then (valid)
+  :Store User Session Data;
+  if () then (remember me)
+    :Save Username Cookie;
+  else (no)
+    :Clear Username Cookie;
+  endif
+  :Redirect to Dashboard;
+  stop
+else (invalid)
+  :Show Error Message;
+  |Client|
+  :**Try Again**;
+endif
+repeat while () is (retry)
+->no;
+stop
+
+@enduml 

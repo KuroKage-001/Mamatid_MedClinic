@@ -1,0 +1,28 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Enter User Details;
+
+|System|
+:Process Registration;
+
+if () then (success)
+  :Display Success Message;
+  :Show Updated Users List;
+  |Client|
+  :View Users Table;
+else (failed)
+  :Show Error Message;
+  |Client|
+  :**Try Again**;
+endif
+
+stop
+
+@enduml 

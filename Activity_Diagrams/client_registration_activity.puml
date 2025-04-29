@@ -1,0 +1,44 @@
+@startuml Client Registration Activity Diagram
+
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|**Client**|
+|**System**|
+
+|Client|
+start
+:Enter Personal Information\nand Credentials;
+:**Click Submit Button**;
+
+|System|
+if () then (no)
+  :Show Password\nMismatch Error;
+  |Client|
+  :**Correct Password Fields**;
+else (yes)
+  |System|
+  if () then (yes)
+    :Show Email Already\nRegistered Error;
+    |Client|
+    :**Enter Different Email**;
+  else (no)
+    |System|
+    :Encrypt Password and\nProcess Registration;
+    :Store Client Information\nin Database;
+    if () then (yes)
+      :Display Registration\nSuccess Message;
+      :Redirect to\nLogin Page;
+      stop
+    else (no)
+      :Show Database\nError Message;
+      |Client|
+      :**Try Registration Again**;
+    endif
+  endif
+endif
+
+@enduml 
