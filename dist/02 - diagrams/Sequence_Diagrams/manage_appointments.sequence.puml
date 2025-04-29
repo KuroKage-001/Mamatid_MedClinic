@@ -1,0 +1,43 @@
+@startuml Appointment Management System
+
+actor Admin
+participant Browser
+participant "manage_appointments.php" as PHP
+database Database
+
+' View Appointments
+Admin -> Browser: Access management page
+Browser -> PHP: GET request
+PHP -> Database: SELECT all appointments\n(ordered by date and time)
+Database --> PHP: Return appointments list
+PHP --> Browser: Display appointments table
+Browser --> Admin: Show appointments list
+
+' Update Appointment Status
+Admin -> Browser: Click Update button
+Browser --> Admin: Show update modal\n(status and notes)
+
+Admin -> Browser: Submit status update\n(status, notes)
+Browser -> PHP: POST update data
+PHP -> Database: UPDATE appointment\n(status and notes)
+
+alt Update Success
+    Database --> PHP: Confirm update
+    PHP --> Browser: Return success message
+    Browser --> Admin: Show success toast\n"Status updated successfully"
+else Update Failed
+    Database --> PHP: Error
+    PHP --> Browser: Return error message
+    Browser --> Admin: Show error toast\n"Error updating status"
+end
+
+' Status Color Coding
+note right of Browser
+  Status badges are color-coded:
+  - Pending: Yellow
+  - Approved: Green
+  - Completed: Blue
+  - Cancelled: Red
+end note
+
+@enduml 

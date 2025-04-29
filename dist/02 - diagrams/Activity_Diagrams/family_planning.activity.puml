@@ -1,0 +1,95 @@
+@startuml Family Planning Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Family Planning" {
+  |Healthcare Staff|
+  :Access Records;
+  
+  if (Action?) is (Add) then
+    :Enter Patient Details;
+    note right
+      Required:
+      - Patient Name
+      - Treatment Date
+      - Patient Age
+      - Address
+    end note
+    
+    :Submit Form;
+    
+    |System|
+    :Validate Form;
+    
+    if (Valid?) then (yes)
+      :Format Data;
+      note right
+        Processing:
+        - Capitalize name
+        - Format address
+        - Convert date
+      end note
+      
+      :Begin Transaction;
+      :Save Record;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        note right
+          Toast:
+          - Auto-dismiss (3s)
+          - Progress bar
+          - Top position
+        end note
+        :Refresh List;
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+      
+    else (no)
+      :Show Required Fields;
+      :Return to Form;
+    endif
+    
+  else (View/Export)
+    |System|
+    :Load Records;
+    :Display Table;
+    note right
+      Features:
+      - Search & Sort
+      - Export Options:
+        • Copy/CSV
+        • Excel/PDF
+        • Print
+      - Column Toggle
+    end note
+    
+    |Healthcare Staff|
+    if (Export?) then (yes)
+      :Select Format;
+      |System|
+      :Generate Export;
+      :Download File;
+    else (Edit)
+      :Click Edit;
+      :Go to Update Page;
+    endif
+  endif
+}
+
+stop
+
+@enduml 

@@ -1,0 +1,36 @@
+@startuml BP Monitoring Management
+
+actor User
+participant Browser
+participant "bp_monitoring.php" as PHP
+database Database
+
+' View BP Records
+User -> Browser: Access BP monitoring page
+Browser -> PHP: GET request
+PHP -> Database: SELECT BP records
+Database --> PHP: Return records list
+PHP --> Browser: Display page with records
+
+' Add BP Record
+User -> Browser: Submit BP form\n(name, date, address, sex, bp,\nalcohol, smoke, obese, cp_number)
+Browser -> PHP: POST form data
+PHP -> PHP: Format data\n(name and address)
+PHP -> PHP: Process checkboxes\n(alcohol, smoke, obese)
+PHP -> Database: INSERT BP record
+alt Success
+    Database --> PHP: Success
+    PHP --> Browser: Redirect to success page
+else Error
+    Database --> PHP: Error
+    PHP --> Browser: Show error
+end
+
+' Edit BP Record
+User -> Browser: Click Edit button
+Browser -> PHP: GET update_bp.php
+PHP -> Database: Get record details
+Database --> PHP: Return record data
+PHP --> Browser: Show edit form
+
+@enduml 

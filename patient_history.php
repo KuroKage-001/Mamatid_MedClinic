@@ -383,9 +383,12 @@ $patients = getAllPatientsWithHistory($con);
       <section class="content">
         <div class="container-fluid">
           <!-- Search Card -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Search Patient History</h3>
+          <div class="card card-outline card-primary rounded-lg shadow-sm">
+            <div class="card-header bg-white border-bottom">
+              <h3 class="card-title d-flex align-items-center">
+                <i class="fas fa-search text-primary mr-2"></i>
+                Search Patient History
+              </h3>
               <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                   <i class="fas fa-minus"></i>
@@ -394,38 +397,66 @@ $patients = getAllPatientsWithHistory($con);
             </div>
             <div class="card-body">
               <!-- Search Form -->
-              <div class="row search-form">
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                  <select id="patient" class="form-control">
-                    <?php echo $patients; ?>
-                  </select>
-                </div>
-                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12">
-                  <button type="button" id="search" class="btn btn-primary btn-block">
-                    <i class="fas fa-search mr-2"></i>Search
-                  </button>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                  <div class="dropdown">
-                    <button class="btn btn-gradient-primary dropdown-toggle export-dropdown-btn" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-file-export mr-2"></i>Export Options
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right shadow-lg" aria-labelledby="exportDropdown">
-                      <button class="dropdown-item export-btn gradient-copy" id="btnCopyAll">
-                        <i class="fas fa-copy mr-2"></i> Copy All
+              <div class="search-container p-4 bg-light rounded-lg">
+                <div class="row g-3 align-items-center">
+                  <div class="col-lg-5 col-md-5 col-sm-12">
+                    <div class="form-group mb-0">
+                      <label for="patient" class="form-label text-muted mb-2">
+                        <i class="fas fa-user-circle mr-1"></i> Select Patient
+                      </label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text bg-white border-right-0">
+                            <i class="fas fa-search text-primary"></i>
+                          </span>
+                        </div>
+                        <select id="patient" class="form-control border-left-0 shadow-none">
+                          <?php echo $patients; ?>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="form-group mb-0">
+                      <label class="form-label text-muted mb-2">
+                        <i class="fas fa-filter mr-1"></i> Actions
+                      </label>
+                      <button type="button" id="search" class="btn btn-primary btn-block d-flex align-items-center justify-content-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Search Records
                       </button>
-                      <button class="dropdown-item export-btn gradient-csv" id="btnCSVAll">
-                        <i class="fas fa-file-csv mr-2"></i> CSV All
-                      </button>
-                      <button class="dropdown-item export-btn gradient-excel" id="btnExcelAll">
-                        <i class="fas fa-file-excel mr-2"></i> Excel All
-                      </button>
-                      <button class="dropdown-item export-btn gradient-pdf" id="btnPDFAll">
-                        <i class="fas fa-file-pdf mr-2"></i> PDF All
-                      </button>
-                      <button class="dropdown-item export-btn gradient-print" id="btnPrintAll">
-                        <i class="fas fa-print mr-2"></i> Print All
-                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="form-group mb-0">
+                      <label class="form-label text-muted mb-2">
+                        <i class="fas fa-file-export mr-1"></i> Export Options
+                      </label>
+                      <div class="dropdown">
+                        <button class="btn btn-gradient-primary btn-block dropdown-toggle d-flex align-items-center justify-content-center" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-file-export mr-2"></i>
+                          Export Records
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right shadow-lg w-100 border-0 py-2" aria-labelledby="exportDropdown">
+                          <button class="dropdown-item d-flex align-items-center py-2 px-3 export-btn gradient-copy" id="btnCopyAll">
+                            <i class="fas fa-copy mr-2"></i> Copy to Clipboard
+                          </button>
+                          <button class="dropdown-item d-flex align-items-center py-2 px-3 export-btn gradient-csv" id="btnCSVAll">
+                            <i class="fas fa-file-csv mr-2"></i> Export as CSV
+                          </button>
+                          <button class="dropdown-item d-flex align-items-center py-2 px-3 export-btn gradient-excel" id="btnExcelAll">
+                            <i class="fas fa-file-excel mr-2"></i> Export as Excel
+                          </button>
+                          <button class="dropdown-item d-flex align-items-center py-2 px-3 export-btn gradient-pdf" id="btnPDFAll">
+                            <i class="fas fa-file-pdf mr-2"></i> Export as PDF
+                          </button>
+                          <button class="dropdown-item d-flex align-items-center py-2 px-3 export-btn gradient-print" id="btnPrintAll">
+                            <i class="fas fa-print mr-2"></i> Print Records
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1036,7 +1067,7 @@ $patients = getAllPatientsWithHistory($con);
             </head>
             <body>
               <div class="header">
-              <h1>Patient History Report</h1>
+                <h1>Patient History Report</h1>
               </div>
               <div class="patient-info">
                 <strong>Patient Name:</strong> ${patientName}<br>
@@ -1051,8 +1082,8 @@ $patients = getAllPatientsWithHistory($con);
 
           allData.forEach((row, index) => {
             if (row.length === 1 && Object.values(tableNames).includes(row[0])) {
-                // If we have a previous table, add it
-                if (currentTable.length > 0) {
+              // If we have a previous table, add it
+              if (currentTable.length > 0) {
                 printContent += `
                   <div class="section">
                     <h2>${currentSection}</h2>
@@ -1065,12 +1096,12 @@ $patients = getAllPatientsWithHistory($con);
                   </div>
                 `;
                 hasData = true;
-                }
-                
-                // Start new section
-                currentSection = row[0];
-                currentTable = [];
-                currentHeaders = [];
+              }
+              
+              // Start new section
+              currentSection = row[0];
+              currentTable = [];
+              currentHeaders = [];
             } else if (row.length > 1) {
               if (currentHeaders.length === 0) {
                 currentHeaders = row;
@@ -1114,16 +1145,16 @@ $patients = getAllPatientsWithHistory($con);
             </body>
             </html>
           `;
-              
+            
           const printWindow = window.open('', '_blank');
-              printWindow.document.write(printContent);
-              printWindow.document.close();
-              printWindow.focus();
+          printWindow.document.write(printContent);
+          printWindow.document.close();
+          printWindow.focus();
 
           // Wait for resources to load before printing
           setTimeout(() => {
-              printWindow.print();
-              printWindow.close();
+            printWindow.print();
+            printWindow.close();
           }, 250);
 
           hideLoading(button, originalText);

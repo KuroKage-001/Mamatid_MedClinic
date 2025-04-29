@@ -1,0 +1,71 @@
+@startuml Reports Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Reports Management" {
+  |Healthcare Staff|
+  :Access Reports Page;
+  :Select Report Type;
+  note right
+    Available Reports:
+    - Medicine Inventory
+    - Family Planning
+    - Family Members
+    - Deworming
+    - BP Monitoring
+    - Blood Sugar
+    - Tetanus Toxoid
+  end note
+  
+  if (Report Type?) then (Medicine Inventory)
+    :Click Generate PDF;
+    |System|
+    :Generate Inventory Report;
+  else (Other Reports)
+    |Healthcare Staff|
+    :Select Date Range;
+    fork
+      :Enter From Date;
+    fork again
+      :Enter To Date;
+    end fork
+    :Click Generate PDF;
+    
+    |System|
+    :Validate Dates;
+    
+    if (Dates Valid?) then (yes)
+      :Process Report Generation;
+      if (Generation Success?) then (yes)
+        :Open PDF in New Tab;
+        note right
+          Report Features:
+          - Date Range Filter
+          - Formatted Tables
+          - PDF Layout
+          - Print Ready
+        end note
+      else (no)
+        :Show Error Toast;
+        note right: Allow popups message
+      endif
+    else (no)
+      :Show Warning Toast;
+      note right: Select both dates
+    endif
+  endif
+}
+
+stop
+
+@enduml 

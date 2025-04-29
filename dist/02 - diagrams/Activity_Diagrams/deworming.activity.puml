@@ -1,0 +1,95 @@
+@startuml Deworming Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Deworming Management" {
+  |Healthcare Staff|
+  :Access Deworming Records;
+  
+  if (Action?) then (Add Record)
+    :Enter Patient Details;
+    note right
+      Required:
+      - Patient Name
+      - Treatment Date
+      - Patient Age
+      - Birth Date
+    end note
+    
+    :Submit Form;
+    
+    |System|
+    :Validate Form;
+    
+    if (Valid?) then (yes)
+      :Format Data;
+      note right
+        Processing:
+        - Capitalize name
+        - Convert dates
+        - Validate formats
+      end note
+      
+      :Begin Transaction;
+      :Save Record;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        :Refresh List;
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+      
+    else (no)
+      :Highlight Missing Fields;
+      :Show Validation Error;
+      note right
+        Validation:
+        - Mark errors
+        - Show messages
+        - Auto-scroll
+      end note
+    endif
+    
+  else (View/Export)
+    |System|
+    :Load Records;
+    :Display Table;
+    note right
+      Features:
+      - Search & Sort
+      - Export Options:
+        • Copy/CSV
+        • Excel/PDF
+        • Print
+      - Column Toggle
+    end note
+    
+    |Healthcare Staff|
+    if (Export?) then (yes)
+      :Select Format;
+      |System|
+      :Generate Export;
+      :Download File;
+    else (Edit)
+      :Click Edit;
+      :Go to Update Page;
+    endif
+  endif
+}
+
+stop
+
+@enduml 

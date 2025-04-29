@@ -1,0 +1,73 @@
+@startuml Manage Appointments Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Staff|
+|System|
+
+start
+
+|Staff|
+:View Appointments;
+note right
+  Shows:
+  - Date/Time
+  - Patient Info
+  - Status
+  - Notes
+end note
+
+|System|
+:Load Appointments;
+:Display Table;
+note right
+  Features:
+  - Search
+  - Sort
+  - Filter
+end note
+
+|Staff|
+while (Action?) is (Update)
+  :Click Update;
+  :Open Update Form;
+  
+  |System|
+  :Show Current Details;
+  
+  |Staff|
+  :Select Status;
+  note right
+    Options:
+    - Pending
+    - Approved
+    - Completed
+    - Cancelled
+  end note
+  :Update Notes;
+  :Submit Changes;
+  
+  |System|
+  :Validate Input;
+  :Save Changes;
+  
+  if (Success?) then (yes)
+    :Show Success Toast;
+    :Refresh Table;
+  else (no)
+    :Show Error Message;
+  endif
+  
+endwhile (Done)
+
+|Staff|
+:Continue Management;
+
+stop
+
+@enduml 

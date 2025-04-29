@@ -1,0 +1,105 @@
+@startuml Time Tracker Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Time Tracker Management" {
+  |Healthcare Staff|
+  :Access Time Tracker;
+  
+  |System|
+  :Initialize Real-time Clock;
+  :Check Today's Log;
+  
+  if (Log Exists?) then (yes)
+    if (Time Out Recorded?) then (yes)
+      :Disable Both Buttons;
+      note right: Already completed
+    else (no)
+      :Enable Time Out Button;
+      :Disable Time In Button;
+      note right: Time In recorded
+    endif
+  else (no)
+    :Enable Time In Button;
+    :Disable Time Out Button;
+    note right: New day
+  endif
+  
+  |Healthcare Staff|
+  if (Action?) then (Time In)
+    :Click Time In;
+    
+    |System|
+    :Get Current Time;
+    :Begin Transaction;
+    
+    if (Can Time In?) then (yes)
+      :Insert Time Log Record;
+      :Commit Transaction;
+      :Show Success Toast;
+      :Update Button States;
+    else (no)
+      :Rollback Transaction;
+      :Show Warning Toast;
+      note right: Already timed in
+    endif
+    
+  else (Time Out)
+    |Healthcare Staff|
+    :Click Time Out;
+    
+    |System|
+    :Get Current Time;
+    :Begin Transaction;
+    
+    if (Can Time Out?) then (yes)
+      :Update Time Log;
+      :Calculate Total Hours;
+      note right
+        TIMESTAMPDIFF
+        (time_out - time_in)
+        rounded to 2 decimals
+      end note
+      :Commit Transaction;
+      :Show Success Toast;
+      :Update Button States;
+    else (no)
+      :Rollback Transaction;
+      :Show Warning Toast;
+      note right: No active time in
+    endif
+  endif
+  
+  |System|
+  :Display Time Log History;
+  note right
+    Table Shows:
+    - Date (Y F d)
+    - Time In (h:i:s A)
+    - Time Out (h:i:s A)
+    - Total Hours
+  end note
+  
+  :Initialize DataTable;
+  note right
+    Features:
+    - Responsive
+    - Search/Filter
+    - Export Options
+    - Modern Styling
+  end note
+}
+
+stop
+
+@enduml

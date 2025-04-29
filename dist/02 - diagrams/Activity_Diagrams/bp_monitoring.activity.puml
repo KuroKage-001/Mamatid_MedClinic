@@ -1,0 +1,98 @@
+@startuml BP Monitoring Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "BP Monitoring" {
+  |Healthcare Staff|
+  :Access BP Monitoring Page;
+  
+  if (Action?) then (Add Record)
+    :Enter Patient Details;
+    note right
+      Required:
+      - Full Name
+      - Date
+      - Address
+      - Sex
+      - BP Reading (120/80)
+      
+      Optional:
+      - Contact Number
+      - Risk Factors:
+        • Alcohol
+        • Smoking
+        • Obesity
+    end note
+    
+    :Submit Form;
+    
+    |System|
+    :Validate Form;
+    
+    if (Valid?) then (yes)
+      :Format Data;
+      note right
+        - Capitalize names
+        - Date to YYYY-MM-DD
+      end note
+      
+      :Begin Transaction;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        note right: Auto-dismiss after 3s
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+      
+    else (no)
+      :Highlight Missing Fields;
+      :Show Validation Error;
+    endif
+    
+  else (View Records)
+    |System|
+    :Load BP Records;
+    note right
+      Features:
+      - Search & Sort
+      - Export Options
+      - Print
+      - Column Toggle
+    end note
+    
+    |Healthcare Staff|
+    :Interact with Records;
+    
+    fork
+      :Select Export;
+      note right: PDF/Excel/CSV/Print
+      |System|
+      :Generate Export;
+    fork again
+      :Click Edit;
+      |System|
+      :Go to Update Page;
+    fork again
+      :Use Search/Filter;
+      |System|
+      :Update View;
+    end fork
+  endif
+}
+
+stop
+
+@enduml 
