@@ -1,0 +1,35 @@
+@startuml Family Planning Management
+
+actor User
+participant Browser
+participant "family_planning.php" as PHP
+database Database
+
+' View Family Planning Records
+User -> Browser: Access family planning page
+Browser -> PHP: GET request
+PHP -> Database: SELECT family planning records
+Database --> PHP: Return records list
+PHP --> Browser: Display page with records
+
+' Add Family Planning Record
+User -> Browser: Submit family planning form\n(name, date, age, address)
+Browser -> PHP: POST form data
+PHP -> PHP: Format data\n(name and address)
+PHP -> Database: INSERT family planning record
+alt Success
+    Database --> PHP: Success
+    PHP --> Browser: Redirect to success page
+else Error
+    Database --> PHP: Error
+    PHP --> Browser: Show error
+end
+
+' Edit Family Planning Record
+User -> Browser: Click Edit button
+Browser -> PHP: GET update_family.php
+PHP -> Database: Get record details
+Database --> PHP: Return record data
+PHP --> Browser: Show edit form
+
+@enduml 

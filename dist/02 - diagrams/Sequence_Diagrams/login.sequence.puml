@@ -1,0 +1,40 @@
+@startuml Login System
+
+actor User
+participant Browser
+participant "index.php" as PHP
+database Database
+participant Session
+participant Cookie
+
+' Initial Page Load
+User -> Browser: Access login page
+Browser -> PHP: GET request
+PHP -> Cookie: Check for remembered username
+Cookie --> PHP: Return remembered username
+PHP --> Browser: Display login form\n(with remembered username if exists)
+
+' Login Process
+User -> Browser: Submit login form\n(username, password, remember_me)
+Browser -> PHP: POST login data
+PHP -> PHP: Encrypt password (MD5)
+PHP -> Database: SELECT user details
+Database --> PHP: Return user data
+
+alt Valid Credentials
+    PHP -> Session: Store user data\n(id, name, username, picture)
+    
+    alt Remember Me Checked
+        PHP -> Cookie: Set username cookie\n(30 days expiration)
+    else Remember Me Unchecked
+        PHP -> Cookie: Clear username cookie
+    end
+    
+    PHP --> Browser: Redirect to dashboard
+    Browser --> User: Show dashboard
+else Invalid Credentials
+    PHP --> Browser: Show error toast\n"Incorrect username or password"
+    Browser --> User: Display error message
+end
+
+@enduml 

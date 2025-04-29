@@ -1,0 +1,47 @@
+@startuml Appointment Booking System
+
+actor Client
+participant Browser
+participant "book_appointment.php" as PHP
+participant Session
+database Database
+
+' Session Check
+Client -> Browser: Access booking page
+Browser -> PHP: GET request
+PHP -> Session: Check client session
+alt Not Logged In
+    Session --> PHP: Session not found
+    PHP --> Browser: Redirect to login page
+    Browser --> Client: Show login page
+else Logged In
+    Session --> PHP: Session valid
+    PHP --> Browser: Display booking form
+    Browser --> Client: Show appointment form
+end
+
+' Booking Process
+Client -> Browser: Submit appointment form\n(date, time, reason)
+Browser -> PHP: POST form data
+PHP -> Session: Get client ID
+Session --> PHP: Return client ID
+
+PHP -> Database: Get client details
+Database --> PHP: Return client info\n(name, phone, address, dob, gender)
+
+PHP -> Database: BEGIN Transaction
+PHP -> Database: INSERT appointment\n(client details + appointment info)
+
+alt Booking Success
+    Database --> PHP: Confirm insertion
+    PHP -> Database: COMMIT Transaction
+    PHP --> Browser: Redirect to dashboard\nwith success message
+    Browser --> Client: Show success toast
+else Booking Failed
+    Database --> PHP: Error
+    PHP -> Database: ROLLBACK Transaction
+    PHP --> Browser: Show error message
+    Browser --> Client: Display error toast
+end
+
+@enduml 

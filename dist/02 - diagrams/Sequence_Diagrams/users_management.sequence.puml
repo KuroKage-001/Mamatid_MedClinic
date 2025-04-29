@@ -1,0 +1,53 @@
+@startuml Users Management System
+
+actor Admin
+participant Browser
+participant "users.php" as PHP
+database Database
+
+' View Users List
+Admin -> Browser: Access users page
+Browser -> PHP: GET request
+PHP -> Database: SELECT all users
+Database --> PHP: Return users list
+PHP --> Browser: Display users table
+
+' Add New User
+Admin -> Browser: Submit user form\n(name, username, password, picture)
+Browser -> PHP: POST form data
+PHP -> PHP: Upload profile picture
+PHP -> PHP: Encrypt password (MD5)
+
+PHP -> Database: BEGIN Transaction
+PHP -> Database: INSERT user data
+alt Success
+    Database --> PHP: Confirm insertion
+    PHP -> Database: COMMIT Transaction
+    PHP --> Browser: Show success message
+else Error
+    Database --> PHP: Error
+    PHP -> Database: ROLLBACK Transaction
+    PHP --> Browser: Show error message
+end
+
+' Username Check
+Admin -> Browser: Enter username
+Browser -> PHP: AJAX request
+PHP -> Database: Check username exists
+alt Username Exists
+    Database --> PHP: Found
+    PHP --> Browser: Disable save button\nShow "username taken"
+else Username Available
+    Database --> PHP: Not found
+    PHP --> Browser: Enable save button
+end
+
+note right of Browser
+  User Management Rules:
+  - Only current user can edit own profile
+  - Profile picture required
+  - Username must be unique
+  - Password encrypted with MD5
+end note
+
+@enduml 

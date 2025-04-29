@@ -1,0 +1,102 @@
+@startuml Random Blood Sugar Activity
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Record Management" {
+  |Healthcare Staff|
+  :Access Random Blood Sugar Page;
+  
+  if (Action?) then (Add New Record)
+    :View Add Record Form;
+    note right
+      Required Fields:
+      * Name
+      * Date (MM/DD/YYYY)
+      * Address
+      * Age
+      * Result
+    end note
+    
+    :Enter Patient Information;
+    :Submit Form;
+    
+    |System|
+    :Validate Required Fields;
+    
+    if (All Fields Complete?) then (yes)
+      :Format Data;
+      note right
+        Data Formatting:
+        * Capitalize Name
+        * Capitalize Address
+        * Convert Date to YYYY-MM-DD
+      end note
+      
+      :Begin Database Transaction;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        note right
+          Toast Features:
+          * Position: top-end
+          * Auto-dismiss: 3s
+          * Progress bar
+          * Hover to pause
+        end note
+      else (no)
+        :Rollback Transaction;
+        :Log Error Details;
+        :Show Error Message;
+      endif
+      
+    else (no)
+      :Highlight Missing Fields;
+      :Show Validation Error;
+    endif
+    
+  else (View Records)
+    |System|
+    :Display Records Table;
+    note right
+      Table Features:
+      * Sortable columns
+      * Search functionality
+      * Responsive design
+    end note
+    
+    |Healthcare Staff|
+    :Interact with Records;
+    
+    fork
+      :Select Export Format;
+      note right
+        Export Options:
+        * Copy
+        * CSV
+        * Excel
+        * PDF
+        * Print
+      end note
+      
+      |System|
+      :Generate Selected Format;
+      :Initiate Download/Print;
+    fork again
+      :Click Edit Button;
+      |System|
+      :Navigate to Update Page;
+    fork again
+      :Toggle Column Display;
+      |System|
+      :Update Table View;
+    end fork
+  endif
+}
+
+stop
+
+@enduml 

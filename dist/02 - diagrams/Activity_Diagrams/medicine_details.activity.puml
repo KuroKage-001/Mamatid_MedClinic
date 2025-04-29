@@ -1,0 +1,79 @@
+@startuml Medicine Details Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Healthcare Staff|
+|System|
+
+start
+
+partition "Medicine Details Management" {
+  |Healthcare Staff|
+  :Access Medicine Details;
+  
+  if (Action?) then (Add Details)
+    :Select Medicine;
+    :Enter Packing Info;
+    :Submit Form;
+    
+    |System|
+    :Validate Input;
+    
+    if (Valid?) then (yes)
+      :Begin Transaction;
+      :Save Details;
+      
+      if (Save Success?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        :Refresh List;
+      else (no)
+        :Rollback & Log Error;
+        :Show Error Message;
+      endif
+    else (no)
+      :Show Validation Error;
+    endif
+    
+  else (View Details)
+    |System|
+    :Load Details List;
+    :Display Table;
+    note right
+      Shows:
+      - Medicine Name
+      - Packing
+      - Current Stock
+      - Stock Status:
+        • Low (≤10)
+        • Medium (≤20)
+        • Good (>20)
+    end note
+    
+    |Healthcare Staff|
+    :Interact with List;
+    
+    fork
+      :Click Edit;
+      |System|
+      :Go to Update Page;
+    fork again
+      :View Inventory;
+      |System|
+      :Show Inventory Page;
+    fork again
+      :Use Search/Filter;
+      |System|
+      :Update View;
+    end fork
+  endif
+}
+
+stop
+
+@enduml 

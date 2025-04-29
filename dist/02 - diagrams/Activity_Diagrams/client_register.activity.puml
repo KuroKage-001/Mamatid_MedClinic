@@ -1,0 +1,121 @@
+@startuml Client Registration Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ArrowColor black
+skinparam NoteBackgroundColor white
+skinparam NoteBorderColor black
+
+|Client|
+|System|
+
+start
+
+partition "Client Registration" {
+  |Client|
+  :Access Registration Page;
+  note right
+    Portal Benefits:
+    - Easy appointment scheduling
+    - Secure medical records
+    - Provider communication
+    - Health reminders
+    - Prescription management
+  end note
+
+  :View Registration Form;
+  note right
+    Required Fields:
+    - Full Name
+    - Email Address
+    - Password
+    - Confirm Password
+    - Phone Number
+    - Date of Birth
+    - Gender
+    - Address
+  end note
+
+  :Fill Registration Form;
+  :Submit Form;
+
+  |System|
+  :Validate Form Data;
+  
+  if (Passwords Match?) then (yes)
+    :Check Email Availability;
+    note right
+      SELECT COUNT(*) as count
+      FROM clients
+      WHERE email = ?
+    end note
+    
+    if (Email Available?) then (yes)
+      :Encrypt Password (MD5);
+      :Begin Transaction;
+      
+      :Insert Client Data;
+      note right
+        INSERT INTO clients:
+        - full_name
+        - email
+        - password (encrypted)
+        - phone_number
+        - address
+        - date_of_birth
+        - gender
+      end note
+      
+      if (Save Successful?) then (yes)
+        :Commit Transaction;
+        :Show Success Toast;
+        note right
+          Success Features:
+          - Auto-dismiss (2s)
+          - Progress bar
+          - Modern styling
+          - Auto-redirect
+        end note
+        :Redirect to Login;
+        
+      else (no)
+        :Rollback Transaction;
+        :Show Error Toast;
+        note right
+          Error Features:
+          - Top position
+          - Auto-dismiss (3s)
+          - Progress bar
+          - Hover pause
+        end note
+      endif
+      
+    else (no)
+      :Show Email Exists Toast;
+      |Client|
+      :Review Error;
+      :Modify Email;
+    endif
+    
+  else (no)
+    :Show Password Mismatch Toast;
+    |Client|
+    :Review Error;
+    :Update Passwords;
+  endif
+}
+
+|Client|
+if (Try Again?) then (yes)
+  :Update Form Data;
+else (no)
+  if (Have Account?) then (yes)
+    :Click Sign In Link;
+    :Navigate to Login;
+  endif
+endif
+
+stop
+
+@enduml
