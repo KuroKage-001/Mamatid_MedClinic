@@ -5,21 +5,25 @@ skinparam ActivityBorderThickness 2
 skinparam ActivityDiamondBackgroundColor white
 skinparam ActivityDiamondBorderThickness 2
 
-|Client|
+|Admin|
 start
-:Access Update Form;
+:Access Appointments Page;
 
 |System|
-if () then (authorized)
-  :Display Current Data;
-  |Client|
-  :Update Information;
-  |System|
-  :Process Update;
-  stop
-else (denied)
-  :Show Access Denied;
-  stop
+:Display Appointments List;
+
+|Admin|
+:Select Appointment;
+:Update Status/Notes;
+
+|System|
+if () then (valid)
+  :Save Updates;
+  :Refresh List;
+else (invalid)
+  :Show Error;
 endif
 
-@enduml
+stop
+
+@enduml 

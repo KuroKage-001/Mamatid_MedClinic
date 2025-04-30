@@ -7,14 +7,24 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Fill Registration Form;
+:Access Tetanus Page;
 
 |System|
-if () then (success)
-  :Complete Registration;
-else (failed)
-  :Show Error;
+:Display Records List;
+
+|Client|
+:Enter Patient Details;
+
+|System|
+if () then (valid input)
+  :Format Data;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
+else (invalid)
+  :Show Error Message;
 endif
+
 stop
 
 @enduml 

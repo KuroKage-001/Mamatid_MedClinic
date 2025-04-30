@@ -10,19 +10,13 @@ start
 :Enter User Details;
 
 |System|
-:Process Registration;
-
-if () then (success)
-  :Display Success Message;
-  :Show Updated Users List;
-  |Client|
-  :View Users Table;
-else (failed)
-  :Show Error Message;
-  |Client|
-  :**Try Again**;
+if () then (valid)
+  :Save User;
+  :Update Users List;
+else (invalid)
+  :Show Error;
 endif
 
 stop
 
-@enduml 
+@enduml

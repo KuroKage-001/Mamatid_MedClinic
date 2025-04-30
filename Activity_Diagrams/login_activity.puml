@@ -7,29 +7,14 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-repeat
-:Enter Username and Password;
+:Enter Login Details;
 
 |System|
-:Encrypt Password;
-:Check Credentials;
-
-if () then (valid)
-  :Store User Session Data;
-  if () then (remember me)
-    :Save Username Cookie;
-  else (no)
-    :Clear Username Cookie;
-  endif
-  :Redirect to Dashboard;
-  stop
-else (invalid)
-  :Show Error Message;
-  |Client|
-  :**Try Again**;
+if () then (success)
+  :Access Dashboard;
+else (failed)
+  :Show Error;
 endif
-repeat while () is (retry)
-->no;
 stop
 
 @enduml 

@@ -7,19 +7,27 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Access Family Members Page;
+:Access Family Planning Page;
 
 |System|
-:Display Family Members List;
+:Display Records List;
 
 |Client|
-:Enter Member Details;
+:Enter Patient Details;
+note right
+  - Name
+  - Date
+  - Age
+  - Address
+end note
 
 |System|
-if () then (valid)
-  :Save Family Member;
-  :Update Members List;
-else (invalid)
+if () then (fields complete)
+  :Format Data;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
+else (incomplete)
   :Show Error Message;
 endif
 

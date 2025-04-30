@@ -7,22 +7,30 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Access Family Members Page;
+:Access Deworming Page;
 
 |System|
-:Display Family Members List;
+:Display Records List;
 
 |Client|
-:Enter Member Details;
+:Enter Patient Details;
 
 |System|
-if () then (valid)
-  :Save Family Member;
-  :Update Members List;
+if () then (valid input)
+  :Format Dates;
+  :Format Name;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
 else (invalid)
   :Show Error Message;
+  note right
+    Validation checks:
+    - Required fields
+    - Date formats
+  end note
 endif
 
 stop
 
-@enduml 
+@enduml

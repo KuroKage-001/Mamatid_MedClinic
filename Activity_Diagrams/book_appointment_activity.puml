@@ -7,19 +7,16 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Access Update Form;
+:Fill Booking Form;
+:Submit Form;
 
 |System|
-if () then (authorized)
-  :Display Current Data;
-  |Client|
-  :Update Information;
-  |System|
-  :Process Update;
-  stop
-else (denied)
-  :Show Access Denied;
-  stop
+:Process Booking;
+if () then (success)
+  :Show Success Message;
+else (failed)
+  :Show Error Message;
 endif
+stop
 
-@enduml
+@enduml 

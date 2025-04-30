@@ -7,19 +7,24 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Access Update Form;
+:Access Time Tracker;
 
 |System|
-if () then (authorized)
-  :Display Current Data;
+:Check Time Status;
+
+if () then (no time in)
   |Client|
-  :Update Information;
+  :Time In;
+else (already timed in)
+  |Client|
+  :Time Out;
+  
   |System|
-  :Process Update;
-  stop
-else (denied)
-  :Show Access Denied;
-  stop
+  :Calculate Hours;
 endif
 
-@enduml
+:Update Time Log;
+
+stop
+
+@enduml 

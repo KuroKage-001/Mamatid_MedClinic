@@ -7,14 +7,24 @@ skinparam ActivityDiamondBorderThickness 2
 
 |Client|
 start
-:Fill Registration Form;
+:Access Blood Sugar Page;
 
 |System|
-if () then (success)
-  :Complete Registration;
-else (failed)
-  :Show Error;
+:Display Records List;
+
+|Client|
+:Enter Patient Details;
+
+|System|
+if () then (fields complete)
+  :Format Data;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
+else (incomplete)
+  :Show Error Message;
 endif
+
 stop
 
 @enduml 
