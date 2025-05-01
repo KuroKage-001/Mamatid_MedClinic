@@ -1,0 +1,42 @@
+@startuml Login Sequence Diagram
+
+actor User
+participant "Login Page" as UI
+participant "Server" as Server
+database "Database" as DB
+
+User -> UI: Enter username and password
+activate UI
+
+alt Remember Me Cookie Exists
+    UI -> UI: Auto-fill username
+end
+
+User -> UI: Click Login Button
+UI -> Server: Submit credentials
+activate Server
+
+Server -> Server: Encrypt password (MD5)
+Server -> DB: Query user credentials
+activate DB
+
+alt Valid Credentials
+    DB --> Server: Return user data
+    Server -> Server: Create session
+    alt Remember Me Checked
+        Server -> UI: Set remember_me cookie
+    end
+    Server --> UI: Redirect to dashboard
+    UI --> User: Show dashboard
+
+else Invalid Credentials
+    DB --> Server: No matching user
+    Server --> UI: Return error message
+    UI --> User: Display error toast
+end
+
+deactivate DB
+deactivate Server
+deactivate UI
+
+@enduml 
