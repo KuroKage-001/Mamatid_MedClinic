@@ -1,0 +1,35 @@
+@startuml Time Tracker
+
+skinparam DefaultFontStyle bold
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceGroupBodyBackgroundColor transparent
+skinparam ArrowThickness 2
+
+actor "<b>User</b>" as User
+participant "<b>Time Tracker</b>" as UI
+participant "<b>Server</b>" as Server
+database "<b>Database</b>" as DB
+
+== Time In/Out ==
+User -> UI: <b>Access Page</b>
+UI -> Server: <b>Check Status</b>
+Server -> DB: <b>Get Today's Log</b>
+DB --[bold]-> UI: <b>Show Available Actions</b>
+
+alt <b>Time In</b>
+    User -> UI: <b>Click Time In</b>
+    UI -> DB: <b>Save Time In</b>
+    DB --[bold]-> UI: <b>Update Display</b>
+else <b>Time Out</b>
+    User -> UI: <b>Click Time Out</b>
+    UI -> DB: <b>Save Time Out</b>
+    DB --[bold]-> UI: <b>Show Total Hours</b>
+end
+
+== View Logs ==
+User -> UI: <b>View History</b>
+UI -> DB: <b>Get Records</b>
+DB --[bold]-> UI: <b>Display Logs</b>
+
+@enduml

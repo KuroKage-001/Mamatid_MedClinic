@@ -1,0 +1,49 @@
+@startuml Tetanus Toxoid Management
+
+skinparam DefaultFontStyle bold
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceGroupBodyBackgroundColor transparent
+skinparam ArrowThickness 2
+
+actor "<b>User</b>" as User
+participant "<b>Tetanus Page</b>" as UI
+participant "<b>Server</b>" as Server
+database "<b>Database</b>" as DB
+
+== Add Record ==
+User -> UI: <b>Enter Patient Data</b>
+UI -> Server: <b>Submit Form</b>
+activate Server
+
+Server -> Server: <b>Validate Fields</b>
+alt <b>Valid Data</b>
+    Server -> Server: <b>Format Data</b>
+    Server -> DB: <b>Save Record</b>
+    activate DB
+    DB --[bold]-> Server: <b>Saved</b>
+    Server --[bold]-> UI: <b>Success Message</b>
+else <b>Invalid Data</b>
+    Server --[bold]-> UI: <b>Show Errors</b>
+end
+deactivate DB
+
+== View Records ==
+User -> UI: <b>View List</b>
+UI -> Server: <b>Get Records</b>
+Server -> DB: <b>Query Data</b>
+activate DB
+DB --[bold]-> Server: <b>Return Records</b>
+deactivate DB
+Server --[bold]-> UI: <b>Display Table</b>
+
+== Update Record ==
+User -> UI: <b>Click Edit</b>
+UI -> Server: <b>Get Record</b>
+Server -> DB: <b>Query Record</b>
+DB --[bold]-> Server: <b>Return Data</b>
+Server --[bold]-> UI: <b>Show Form</b>
+
+deactivate Server
+
+@enduml 

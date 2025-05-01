@@ -1,0 +1,57 @@
+@startuml User Management
+
+skinparam DefaultFontStyle bold
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceGroupBodyBackgroundColor transparent
+skinparam ArrowThickness 2
+
+actor "<b>Admin</b>" as Admin
+participant "<b>Users Page</b>" as UI
+participant "<b>Server</b>" as Server
+database "<b>Database</b>" as DB
+
+== Add User ==
+Admin -> UI: <b>Enter User Details</b>
+Admin -> UI: <b>Upload Profile Picture</b>
+UI -> Server: <b>Submit Form</b>
+activate Server
+
+Server -> Server: <b>Process Image</b>
+Server -> Server: <b>Encrypt Password</b>
+
+Server -> DB: <b>Save User</b>
+activate DB
+
+alt <b>Success</b>
+    DB --[bold]-> Server: <b>User Created</b>
+    Server --[bold]-> UI: <b>Success Message</b>
+else <b>Error</b>
+    DB --[bold]-> Server: <b>Error</b>
+    Server --[bold]-> UI: <b>Show Error</b>
+end
+deactivate DB
+
+== View Users ==
+Admin -> UI: <b>View List</b>
+UI -> Server: <b>Get Users</b>
+Server -> DB: <b>Query Data</b>
+activate DB
+DB --[bold]-> Server: <b>Return Users</b>
+deactivate DB
+Server --[bold]-> UI: <b>Display Table</b>
+
+== Update User ==
+Admin -> UI: <b>Select User</b>
+alt <b>Permission Check</b>
+    UI -> UI: <b>Check User Rights</b>
+    alt <b>Own Profile</b>
+        UI --[bold]-> Admin: <b>Allow Edit</b>
+    else <b>Other User</b>
+        UI --[bold]-> Admin: <b>Disable Edit</b>
+    end
+end
+
+deactivate Server
+
+@enduml 
