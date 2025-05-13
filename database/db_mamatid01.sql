@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2025 at 09:22 PM
+-- Generation Time: May 14, 2025 at 12:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,7 +54,8 @@ INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `da
 (4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
 (5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'completed', 'Done', '2025-04-14 21:07:07', '2025-04-17 16:02:26'),
 (7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54'),
-(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'approved', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-04-19 10:09:44');
+(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'approved', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-04-19 10:09:44'),
+(9, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-21', '10:59:00', 'Checkup po', 'approved', 'Noted.. punta napo kayo', '2025-04-20 11:59:31', '2025-04-20 12:00:01');
 
 -- --------------------------------------------------------
 
@@ -160,7 +161,8 @@ CREATE TABLE `family_members` (
 INSERT INTO `family_members` (`id`, `name`, `date`, `created_at`) VALUES
 (3, 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
 (4, 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05'),
-(5, 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03');
+(5, 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03'),
+(6, 'Kurokage Baskerville', '2025-04-20', '2025-04-20 07:55:58');
 
 -- --------------------------------------------------------
 
@@ -190,55 +192,6 @@ INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `medicines`
---
-
-CREATE TABLE `medicines` (
-  `id` int(11) NOT NULL,
-  `medicine_name` varchar(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `medicines`
---
-
-INSERT INTO `medicines` (`id`, `medicine_name`) VALUES
-(1, 'Amoxicillin'),
-(4, 'Antibiotic'),
-(5, 'Antihistamine'),
-(6, 'Atorvastatin'),
-(3, 'Losartan'),
-(2, 'Mefenamic'),
-(7, 'Oxymetazoline');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `medicine_details`
---
-
-CREATE TABLE `medicine_details` (
-  `id` int(11) NOT NULL,
-  `medicine_id` int(11) NOT NULL,
-  `packing` varchar(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `medicine_details`
---
-
-INSERT INTO `medicine_details` (`id`, `medicine_id`, `packing`) VALUES
-(1, 1, '50'),
-(2, 4, '50'),
-(3, 5, '50'),
-(4, 6, '25'),
-(5, 3, '80'),
-(6, 2, '100'),
-(7, 7, '25');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `medicine_inventory`
 --
 
@@ -260,60 +213,6 @@ CREATE TABLE `medicine_inventory` (
 INSERT INTO `medicine_inventory` (`id`, `medicine_details_id`, `quantity`, `batch_number`, `expiry_date`, `unit_price`, `created_at`, `updated_at`) VALUES
 (1, 2, 50, '1', '2025-04-15', 10.00, '2025-04-14 09:43:58', '2025-04-14 09:43:58'),
 (2, 7, 10, '2', '2029-11-30', 50.00, '2025-04-17 14:24:37', '2025-04-17 14:24:37');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `medicine_inventory_transactions`
---
-
-CREATE TABLE `medicine_inventory_transactions` (
-  `id` int(11) NOT NULL,
-  `medicine_inventory_id` int(11) NOT NULL,
-  `transaction_type` enum('IN','OUT') NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `transaction_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `notes` text DEFAULT NULL,
-  `reference_id` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `medicine_inventory_transactions`
---
-
-INSERT INTO `medicine_inventory_transactions` (`id`, `medicine_inventory_id`, `transaction_type`, `quantity`, `transaction_date`, `notes`, `reference_id`) VALUES
-(1, 1, 'IN', 50, '2025-04-14 09:43:58', 'Initial stock entry', NULL),
-(2, 2, 'IN', 10, '2025-04-17 14:24:37', 'Initial stock entry', NULL);
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `medicine_movement_view`
--- (See below for the actual view)
---
-CREATE TABLE `medicine_movement_view` (
-`medicine_name` varchar(60)
-,`packing` varchar(60)
-,`total_transactions` bigint(21)
-,`total_quantity_out` decimal(32,0)
-,`avg_quantity_per_transaction` decimal(14,4)
-);
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `medicine_stock_view`
--- (See below for the actual view)
---
-CREATE TABLE `medicine_stock_view` (
-`medicine_name` varchar(60)
-,`packing` varchar(60)
-,`batch_number` varchar(50)
-,`current_stock` int(11)
-,`expiry_date` date
-,`stock_status` varchar(6)
-,`days_until_expiry` int(7)
-);
 
 -- --------------------------------------------------------
 
@@ -423,7 +322,9 @@ INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `to
 (14, 6, '2025-04-17', '22:12:29', NULL, 0.00),
 (15, 6, '2025-04-19', '17:31:09', '17:31:15', 0.00),
 (17, 5, '2025-04-19', '17:43:52', '20:26:05', NULL),
-(18, 1, '2025-04-19', '20:51:57', '20:52:04', 0.00);
+(18, 1, '2025-04-19', '20:51:57', '20:52:04', 0.00),
+(20, 6, '2025-04-20', '20:03:19', '20:03:29', -999.99),
+(23, 5, '2025-04-20', '20:29:06', '20:29:10', NULL);
 
 -- --------------------------------------------------------
 
@@ -488,25 +389,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `display_name`, `user_name`, `password`, `profile_picture`) VALUES
 (1, 'Administrator', 'admin', '0192023a7bbd73250516f069df18b500', '1656551981avatar.png '),
 (5, 'Administrator01', 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', '1744879233leo.jpg'),
-(6, 'Administrator02', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', '1744879313Cat 7.jpg');
-
--- --------------------------------------------------------
-
---
--- Structure for view `medicine_movement_view`
---
-DROP TABLE IF EXISTS `medicine_movement_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_movement_view`  AS SELECT `m`.`medicine_name` AS `medicine_name`, `md`.`packing` AS `packing`, count(case when `mit`.`transaction_type` = 'OUT' then 1 end) AS `total_transactions`, sum(case when `mit`.`transaction_type` = 'OUT' then `mit`.`quantity` else 0 end) AS `total_quantity_out`, avg(case when `mit`.`transaction_type` = 'OUT' then `mit`.`quantity` else NULL end) AS `avg_quantity_per_transaction` FROM (((`medicines` `m` join `medicine_details` `md` on(`m`.`id` = `md`.`medicine_id`)) join `medicine_inventory` `mi` on(`md`.`id` = `mi`.`medicine_details_id`)) left join `medicine_inventory_transactions` `mit` on(`mi`.`id` = `mit`.`medicine_inventory_id`)) GROUP BY `m`.`medicine_name`, `md`.`packing` ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `medicine_stock_view`
---
-DROP TABLE IF EXISTS `medicine_stock_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_stock_view`  AS SELECT `m`.`medicine_name` AS `medicine_name`, `md`.`packing` AS `packing`, `mi`.`batch_number` AS `batch_number`, `mi`.`quantity` AS `current_stock`, `mi`.`expiry_date` AS `expiry_date`, CASE WHEN `mi`.`quantity` <= 10 THEN 'LOW' WHEN `mi`.`quantity` <= 20 THEN 'MEDIUM' ELSE 'GOOD' END AS `stock_status`, to_days(`mi`.`expiry_date`) - to_days(curdate()) AS `days_until_expiry` FROM ((`medicine_inventory` `mi` join `medicine_details` `md` on(`mi`.`medicine_details_id` = `md`.`id`)) join `medicines` `m` on(`md`.`medicine_id` = `m`.`id`)) ;
+(6, 'Administrator02', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', '1745150573cat1.jpg ');
 
 --
 -- Indexes for dumped tables
@@ -550,32 +433,11 @@ ALTER TABLE `family_planning`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `medicines`
---
-ALTER TABLE `medicines`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `medicine_name` (`medicine_name`);
-
---
--- Indexes for table `medicine_details`
---
-ALTER TABLE `medicine_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_medicine_details_medicine_id` (`medicine_id`);
-
---
 -- Indexes for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
   ADD PRIMARY KEY (`id`),
   ADD KEY `medicine_details_id` (`medicine_details_id`);
-
---
--- Indexes for table `medicine_inventory_transactions`
---
-ALTER TABLE `medicine_inventory_transactions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `medicine_inventory_id` (`medicine_inventory_id`);
 
 --
 -- Indexes for table `random_blood_sugar`
@@ -626,13 +488,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
 --
 ALTER TABLE `bp_monitoring`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -644,31 +506,19 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `deworming`
 --
 ALTER TABLE `deworming`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
 --
 ALTER TABLE `family_planning`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `medicines`
---
-ALTER TABLE `medicines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `medicine_details`
---
-ALTER TABLE `medicine_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `medicine_inventory`
@@ -677,22 +527,16 @@ ALTER TABLE `medicine_inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `medicine_inventory_transactions`
---
-ALTER TABLE `medicine_inventory_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `tetanus_toxoid`
 --
 ALTER TABLE `tetanus_toxoid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `time_in_logs`
@@ -704,7 +548,7 @@ ALTER TABLE `time_in_logs`
 -- AUTO_INCREMENT for table `time_logs`
 --
 ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `time_out_logs`
@@ -723,22 +567,10 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `medicine_details`
---
-ALTER TABLE `medicine_details`
-  ADD CONSTRAINT `fk_medicine_details_medicine_id` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`);
-
---
 -- Constraints for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
   ADD CONSTRAINT `fk_inventory_medicine_details` FOREIGN KEY (`medicine_details_id`) REFERENCES `medicine_details` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `medicine_inventory_transactions`
---
-ALTER TABLE `medicine_inventory_transactions`
-  ADD CONSTRAINT `fk_transactions_inventory` FOREIGN KEY (`medicine_inventory_id`) REFERENCES `medicine_inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `time_in_logs`

@@ -117,6 +117,44 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
+                <!-- Inventory Management Menu -->
+                <li class="nav-header">INVENTORY MANAGEMENT</li>
+                <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_categories.php', 'medicine_stock.php', 'medicine_dispensing.php']) ? 'menu-open' : ''); ?>" id="mnu_inventory">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['medicines.php', 'medicine_categories.php', 'medicine_stock.php', 'medicine_dispensing.php']) ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-pills"></i>
+                        <p>
+                            Medicine Inventory
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="medicine_categories.php" class="nav-link <?php echo ($current_page == 'medicine_categories.php' ? 'active' : ''); ?>" id="mi_medicine_categories">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Categories</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="medicines.php" class="nav-link <?php echo ($current_page == 'medicines.php' ? 'active' : ''); ?>" id="mi_medicines">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Medicines</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="medicine_stock.php" class="nav-link <?php echo ($current_page == 'medicine_stock.php' ? 'active' : ''); ?>" id="mi_medicine_stock">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Stock Management</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="medicine_dispensing.php" class="nav-link <?php echo ($current_page == 'medicine_dispensing.php' ? 'active' : ''); ?>" id="mi_medicine_dispensing">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Dispensing</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="nav-header">REPORTS & MANAGEMENT</li>
                 <!-- Reports Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">
