@@ -19,4 +19,4 @@ else (failed)
 endif
 stop
 
-@enduml 
+@enduml
