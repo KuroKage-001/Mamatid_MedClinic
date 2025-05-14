@@ -1,0 +1,41 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Admin|
+start
+:Access Inventory Management Page;
+
+|System|
+:Display Inventory Items List;
+
+|Admin|
+:Select Action;
+
+if () then (Add New Item)
+  :Enter Item Details;
+elseif () then (Update Stock)
+  :Select Item;
+  :Enter Quantity Change;
+elseif () then (Remove Item)
+  :Select Item for Removal;
+endif
+
+|System|
+if () then (valid)
+  :Process Inventory Change;
+  :Update Database;
+  :Refresh Inventory List;
+else (invalid)
+  :Show Error Message;
+endif
+
+|Admin|
+:Review Updated Inventory;
+
+stop
+
+@enduml 

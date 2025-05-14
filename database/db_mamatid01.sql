@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 02:16 AM
+-- Generation Time: May 14, 2025 at 03:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -245,6 +245,25 @@ CREATE TABLE `medicine_dispensing` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `medicine_dispensing_history`
+-- (See below for the actual view)
+--
+CREATE TABLE `medicine_dispensing_history` (
+`id` int(11)
+,`dispensed_date` date
+,`medicine_name` varchar(100)
+,`generic_name` varchar(100)
+,`category_name` varchar(100)
+,`batch_number` varchar(50)
+,`quantity` int(11)
+,`patient_name` varchar(100)
+,`remarks` text
+,`dispensed_by` varchar(30)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `medicine_inventory`
 --
 
@@ -296,6 +315,23 @@ CREATE TRIGGER `medicine_stock_update` BEFORE UPDATE ON `medicine_stock` FOR EAC
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `medicine_stock_summary`
+-- (See below for the actual view)
+--
+CREATE TABLE `medicine_stock_summary` (
+`medicine_id` int(11)
+,`medicine_name` varchar(100)
+,`generic_name` varchar(100)
+,`category_name` varchar(100)
+,`total_quantity` decimal(32,0)
+,`earliest_expiry` date
+,`batch_count` bigint(21)
+,`avg_purchase_price` decimal(14,6)
+);
 
 -- --------------------------------------------------------
 
@@ -493,6 +529,24 @@ INSERT INTO `users` (`id`, `display_name`, `user_name`, `password`, `profile_pic
 (1, 'Administrator', 'admin', '0192023a7bbd73250516f069df18b500', '1656551981avatar.png '),
 (5, 'Administrator01', 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', '1744879233leo.jpg'),
 (6, 'Administrator02', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', '1745150573cat1.jpg ');
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `medicine_dispensing_history`
+--
+DROP TABLE IF EXISTS `medicine_dispensing_history`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_dispensing_history`  AS SELECT `d`.`id` AS `id`, `d`.`dispensed_date` AS `dispensed_date`, `m`.`medicine_name` AS `medicine_name`, `m`.`generic_name` AS `generic_name`, `c`.`category_name` AS `category_name`, `s`.`batch_number` AS `batch_number`, `d`.`quantity` AS `quantity`, `d`.`patient_name` AS `patient_name`, `d`.`remarks` AS `remarks`, `u`.`display_name` AS `dispensed_by` FROM ((((`medicine_dispensing` `d` join `medicine_stock` `s` on(`d`.`stock_id` = `s`.`id`)) join `medicines` `m` on(`d`.`medicine_id` = `m`.`id`)) join `medicine_categories` `c` on(`m`.`category_id` = `c`.`id`)) left join `users` `u` on(`d`.`dispensed_by` = `u`.`id`)) ORDER BY `d`.`dispensed_date` DESC, `d`.`created_at` DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `medicine_stock_summary`
+--
+DROP TABLE IF EXISTS `medicine_stock_summary`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_stock_summary`  AS SELECT `m`.`id` AS `medicine_id`, `m`.`medicine_name` AS `medicine_name`, `m`.`generic_name` AS `generic_name`, `c`.`category_name` AS `category_name`, sum(`s`.`quantity`) AS `total_quantity`, min(`s`.`expiry_date`) AS `earliest_expiry`, count(distinct `s`.`batch_number`) AS `batch_count`, avg(`s`.`purchase_price`) AS `avg_purchase_price` FROM ((`medicines` `m` join `medicine_categories` `c` on(`m`.`category_id` = `c`.`id`)) left join `medicine_stock` `s` on(`m`.`id` = `s`.`medicine_id` and `s`.`quantity` > 0)) GROUP BY `m`.`id`, `m`.`medicine_name`, `m`.`generic_name`, `c`.`category_name` ;
 
 --
 -- Indexes for dumped tables
