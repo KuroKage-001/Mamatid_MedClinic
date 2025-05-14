@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 12:29 AM
+-- Generation Time: May 14, 2025 at 02:16 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -162,7 +162,8 @@ INSERT INTO `family_members` (`id`, `name`, `date`, `created_at`) VALUES
 (3, 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
 (4, 'Pomeranian Baskerville', '2025-04-17', '2025-04-17 10:02:05'),
 (5, 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03'),
-(6, 'Kurokage Baskerville', '2025-04-20', '2025-04-20 07:55:58');
+(6, 'Kurokage Baskerville', '2025-04-20', '2025-04-20 07:55:58'),
+(9, 'Ghisllain Perdium', '2025-05-14', '2025-05-13 22:47:15');
 
 -- --------------------------------------------------------
 
@@ -192,6 +193,58 @@ INSERT INTO `family_planning` (`id`, `name`, `date`, `age`, `address`, `created_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `medicines`
+--
+
+CREATE TABLE `medicines` (
+  `id` int(11) NOT NULL,
+  `medicine_name` varchar(100) NOT NULL,
+  `generic_name` varchar(100) DEFAULT NULL,
+  `category_id` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  `dosage_form` varchar(50) DEFAULT NULL,
+  `dosage_strength` varchar(50) DEFAULT NULL,
+  `unit` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `medicine_categories`
+--
+
+CREATE TABLE `medicine_categories` (
+  `id` int(11) NOT NULL,
+  `category_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `medicine_dispensing`
+--
+
+CREATE TABLE `medicine_dispensing` (
+  `id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `stock_id` int(11) NOT NULL,
+  `patient_name` varchar(100) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `dispensed_by` int(11) DEFAULT NULL,
+  `dispensed_date` date NOT NULL,
+  `remarks` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `medicine_inventory`
 --
 
@@ -217,6 +270,36 @@ INSERT INTO `medicine_inventory` (`id`, `medicine_details_id`, `quantity`, `batc
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `medicine_stock`
+--
+
+CREATE TABLE `medicine_stock` (
+  `id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `batch_number` varchar(50) DEFAULT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0,
+  `expiry_date` date DEFAULT NULL,
+  `purchase_date` date DEFAULT NULL,
+  `purchase_price` decimal(10,2) DEFAULT NULL,
+  `supplier` varchar(100) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `medicine_stock`
+--
+DELIMITER $$
+CREATE TRIGGER `medicine_stock_update` BEFORE UPDATE ON `medicine_stock` FOR EACH ROW BEGIN
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `random_blood_sugar`
 --
 
@@ -238,6 +321,26 @@ INSERT INTO `random_blood_sugar` (`id`, `name`, `date`, `address`, `age`, `resul
 (4, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', '2025-04-17 10:03:29'),
 (5, 'Yeomra Baskerville', '2025-04-20', 'Hell Main House', 500, 'None', '2025-04-19 18:35:33'),
 (6, 'Osiris Baskerville', '2025-04-20', 'Baskerville Main House 2', 70, 'None', '2025-04-19 18:35:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `stock_movement_log`
+--
+
+CREATE TABLE `stock_movement_log` (
+  `id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `stock_id` int(11) NOT NULL,
+  `movement_type` enum('IN','OUT','ADJUSTMENT') NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `previous_quantity` int(11) NOT NULL,
+  `new_quantity` int(11) NOT NULL,
+  `reference_id` int(11) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `performed_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -433,6 +536,32 @@ ALTER TABLE `family_planning`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `medicines`
+--
+ALTER TABLE `medicines`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `medicine_name` (`medicine_name`),
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `idx_category_id` (`category_id`),
+  ADD KEY `idx_medicine_name` (`medicine_name`);
+
+--
+-- Indexes for table `medicine_categories`
+--
+ALTER TABLE `medicine_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `category_name` (`category_name`);
+
+--
+-- Indexes for table `medicine_dispensing`
+--
+ALTER TABLE `medicine_dispensing`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `medicine_id` (`medicine_id`),
+  ADD KEY `stock_id` (`stock_id`),
+  ADD KEY `dispensed_by` (`dispensed_by`);
+
+--
 -- Indexes for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
@@ -440,10 +569,26 @@ ALTER TABLE `medicine_inventory`
   ADD KEY `medicine_details_id` (`medicine_details_id`);
 
 --
+-- Indexes for table `medicine_stock`
+--
+ALTER TABLE `medicine_stock`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `medicine_id` (`medicine_id`);
+
+--
 -- Indexes for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `stock_movement_log`
+--
+ALTER TABLE `stock_movement_log`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `medicine_id` (`medicine_id`),
+  ADD KEY `stock_id` (`stock_id`),
+  ADD KEY `performed_by` (`performed_by`);
 
 --
 -- Indexes for table `tetanus_toxoid`
@@ -512,7 +657,7 @@ ALTER TABLE `deworming`
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
@@ -521,16 +666,46 @@ ALTER TABLE `family_planning`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `medicines`
+--
+ALTER TABLE `medicines`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `medicine_categories`
+--
+ALTER TABLE `medicine_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `medicine_dispensing`
+--
+ALTER TABLE `medicine_dispensing`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `medicine_stock`
+--
+ALTER TABLE `medicine_stock`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `random_blood_sugar`
 --
 ALTER TABLE `random_blood_sugar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `stock_movement_log`
+--
+ALTER TABLE `stock_movement_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tetanus_toxoid`
@@ -567,10 +742,38 @@ ALTER TABLE `users`
 --
 
 --
+-- Constraints for table `medicines`
+--
+ALTER TABLE `medicines`
+  ADD CONSTRAINT `medicines_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `medicine_categories` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `medicine_dispensing`
+--
+ALTER TABLE `medicine_dispensing`
+  ADD CONSTRAINT `medicine_dispensing_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `medicine_dispensing_ibfk_2` FOREIGN KEY (`stock_id`) REFERENCES `medicine_stock` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `medicine_dispensing_ibfk_3` FOREIGN KEY (`dispensed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
 -- Constraints for table `medicine_inventory`
 --
 ALTER TABLE `medicine_inventory`
   ADD CONSTRAINT `fk_inventory_medicine_details` FOREIGN KEY (`medicine_details_id`) REFERENCES `medicine_details` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `medicine_stock`
+--
+ALTER TABLE `medicine_stock`
+  ADD CONSTRAINT `medicine_stock_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `stock_movement_log`
+--
+ALTER TABLE `stock_movement_log`
+  ADD CONSTRAINT `stock_movement_log_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `stock_movement_log_ibfk_2` FOREIGN KEY (`stock_id`) REFERENCES `medicine_stock` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `stock_movement_log_ibfk_3` FOREIGN KEY (`performed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `time_in_logs`
