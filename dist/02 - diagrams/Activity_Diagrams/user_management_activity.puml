@@ -1,22 +1,30 @@
 @startuml
+title Health Worker Management Subsystem
 skinparam defaultTextAlignment center
 skinparam ArrowThickness 2
 skinparam ActivityBorderThickness 2
 skinparam ActivityDiamondBackgroundColor white
 skinparam ActivityDiamondBorderThickness 2
 
-|Client|
+|Admin|
 start
-:Enter User Details;
-
-|System|
-if () then (valid)
-  :Save User;
-  :Update Users List;
-else (invalid)
-  :Show Error;
+:Add User Account;
+:Choose User Role;
+:Upload Required Documents;
+if (Documents Valid?) then (yes)
+  :Activate User Account;
+else (no)
+  :Request Additional Documents;
 endif
+:View Users Table;
 
+|Doctor/Health Worker|
+:Update Account;
+if (Account Status) then (active)
+  :Deactivate Account;
+else (inactive)
+  :Activate Account;
+endif
 stop
 
 @enduml

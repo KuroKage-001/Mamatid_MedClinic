@@ -5,35 +5,37 @@ skinparam ActivityBorderThickness 2
 skinparam ActivityDiamondBackgroundColor white
 skinparam ActivityDiamondBorderThickness 2
 
-|Admin|
+title Inventory Management System
+
+|Health Worker|
 start
 :Access Inventory Management Page;
 
 |System|
 :Display Inventory Items List;
 
-|Admin|
+|Health Worker|
 :Select Action;
 
-if () then (Add New Item)
+if (Action?) then (Add New Item)
   :Enter Item Details;
-elseif () then (Update Stock)
+elseif (Action?) then (Update Stock)
   :Select Item;
   :Enter Quantity Change;
-elseif () then (Remove Item)
+elseif (Action?) then (Remove Item)
   :Select Item for Removal;
 endif
 
 |System|
-if () then (valid)
+if (Validation) then (Valid)
   :Process Inventory Change;
   :Update Database;
   :Refresh Inventory List;
-else (invalid)
+else (Invalid)
   :Show Error Message;
 endif
 
-|Admin|
+|Health Worker|
 :Review Updated Inventory;
 
 stop
