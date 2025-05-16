@@ -5,37 +5,34 @@ skinparam ActivityBorderThickness 2
 skinparam ActivityDiamondBackgroundColor white
 skinparam ActivityDiamondBorderThickness 2
 
-|Admin|
+|Patient|
 start
-:Access User Management;
+:Login to Account;
 
 |System|
-:Display Users List;
+:Display Dashboard;
 
-|Admin|
-:Search User;
-
-|System|
-:Display Results;
-
-|Admin|
-:Select User;
+|Patient|
+:Select Update Account;
 
 |System|
-:Show User Details;
+:Show Account Information;
 
-|Admin|
-:Update User Account;
-:Modify User Information;
+|Patient|
+:Modify Personal Information;
 
 |System|
 if (Information Valid?) then (yes)
   :Save Changes;
-  :Show Success;
+  :Display Success Message;
 else (no)
-  :Show Error;
+  :Show Error Message;
+  :Return to Edit Form;
 endif
+
+|Patient|
+:Review Updated Information;
 
 stop
 
-@enduml
+@enduml 

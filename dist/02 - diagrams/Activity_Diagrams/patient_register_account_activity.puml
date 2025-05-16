@@ -5,30 +5,23 @@ skinparam ActivityBorderThickness 2
 skinparam ActivityDiamondBackgroundColor white
 skinparam ActivityDiamondBorderThickness 2
 
-|Admin|
+|Patient|
 start
-:Access User Management;
+:Access Registration Page;
 
 |System|
-:Display Users Table;
+:Display Registration Form;
 
-|Admin|
-:Select Active User;
+|Patient|
+:Fill Registration Details;
+:Upload Required Documents;
 
 |System|
-:Show User Details;
-
-|Admin|
-:Select Deactivate Option;
-
-|Admin|
-if (Confirm Deactivation?) then (yes)
-  |System|
-  :Deactivate User Account;
+if (Information Valid?) then (yes)
+  :Create Account;
   :Show Success Message;
 else (no)
-  |System|
-  :Cancel Operation;
+  :Show Error Message;
 endif
 
 stop

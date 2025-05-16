@@ -10,34 +10,25 @@ start
 :Access User Management;
 
 |System|
-:Display Users List;
+:Display Users Table;
 
 |Admin|
-:Search User;
-
-|System|
-:Display Results;
-
-|Admin|
-:Select Pending User;
-:Review Documents;
+:Select Inactive User;
 
 |System|
 :Show User Details;
 
 |Admin|
-if (Documents OK?) then (yes)
+:Select Activate Option;
+
+|Admin|
+if (Confirm Activation?) then (yes)
+  |System|
   :Activate User Account;
-  
-  |System|
-  :Update Status to Active;
-  :Send Notification to User;
-  :Show Success;
+  :Show Success Message;
 else (no)
-  :Request Additional Documents;
-  
   |System|
-  :Send Request to User;
+  :Cancel Operation;
 endif
 
 stop

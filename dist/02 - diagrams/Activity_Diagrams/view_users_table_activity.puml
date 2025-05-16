@@ -10,26 +10,22 @@ start
 :Access User Management;
 
 |System|
+:Process Request;
 :Display Users Table;
 
 |Admin|
-:Select Active User;
+:View Users Table;
+:Search User Account;
+
+|System|
+:Process Search Query;
+:Display Results;
+
+|Admin|
+:Select User;
 
 |System|
 :Show User Details;
-
-|Admin|
-:Select Deactivate Option;
-
-|Admin|
-if (Confirm Deactivation?) then (yes)
-  |System|
-  :Deactivate User Account;
-  :Show Success Message;
-else (no)
-  |System|
-  :Cancel Operation;
-endif
 
 stop
 

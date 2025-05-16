@@ -25,13 +25,6 @@ else (no)
   :Show Error;
 endif
 
-|Admin|
-:View Users Table;
-:Search User;
-
-|System|
-:Display Results;
-
 stop
 
 @enduml
