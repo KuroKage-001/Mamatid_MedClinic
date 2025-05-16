@@ -13,25 +13,32 @@ start
 :Display Users List;
 
 |Admin|
-:Add User Account;
-:Choose User Role;
-:Upload Documents;
-
-|System|
-if (Valid?) then (yes)
-  :Create Account;
-  :Show Success;
-else (no)
-  :Show Error;
-endif
-
-|Admin|
-:View Users Table;
 :Search User;
 
 |System|
 :Display Results;
 
+|Admin|
+:Select Active User;
+
+|System|
+:Show User Details;
+
+|Admin|
+:Deactivate User Account;
+:Provide Reason;
+
+|System|
+:Confirm Action;
+
+|Admin|
+:Confirm Deactivation;
+
+|System|
+:Update Status to Inactive;
+:Send Notification to User;
+:Show Success;
+
 stop
 
-@enduml
+@enduml 

@@ -1,0 +1,45 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Admin|
+start
+:Access User Management;
+
+|System|
+:Display Users List;
+
+|Admin|
+:Search User;
+
+|System|
+:Display Results;
+
+|Admin|
+:Select Pending User;
+:Review Documents;
+
+|System|
+:Show User Details;
+
+|Admin|
+if (Documents OK?) then (yes)
+  :Activate User Account;
+  
+  |System|
+  :Update Status to Active;
+  :Send Notification to User;
+  :Show Success;
+else (no)
+  :Request Additional Documents;
+  
+  |System|
+  :Send Request to User;
+endif
+
+stop
+
+@enduml 
