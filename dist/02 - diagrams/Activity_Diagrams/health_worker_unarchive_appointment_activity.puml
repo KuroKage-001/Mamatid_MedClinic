@@ -1,0 +1,31 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Login to System;
+
+|System|
+:Display Appointment Dashboard;
+
+|Health Worker|
+:Select Unarchive Appointment Option;
+
+|System|
+:Show Archived Appointments;
+
+|Health Worker|
+:Select Appointment to Unarchive;
+:Confirm Unarchive;
+
+|System|
+:Unarchive Appointment;
+:Show Unarchive Confirmation;
+
+stop
+
+@enduml 

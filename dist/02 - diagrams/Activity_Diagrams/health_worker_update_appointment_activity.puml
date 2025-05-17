@@ -1,0 +1,39 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Login to System;
+
+|System|
+:Display Appointment Dashboard;
+
+|Health Worker|
+:Select Update Appointment;
+
+|System|
+:Show Appointments;
+
+|Health Worker|
+:Select Appointment to Update;
+:Edit Appointment Details;
+:Submit Changes;
+
+|System|
+if (Update Valid?) then (yes)
+  :Update Appointment;
+  :Show Confirmation Message;
+else (no)
+  :Show Error Message;
+  |Health Worker|
+  :Edit Appointment Details;
+  :Resubmit Changes;
+endif
+
+stop
+
+@enduml 

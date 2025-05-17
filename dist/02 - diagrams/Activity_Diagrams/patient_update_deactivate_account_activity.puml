@@ -13,20 +13,21 @@ start
 :Display Account Options;
 
 |Patient|
-if (Action?) then (Update)
+:Choose Action;
+
+if (Update Information?) then (yes)
   :Edit Personal Information;
-  
-  |System|
   :Save Changes;
+  |System|
+  :Process Update;
   :Show Success Message;
+  stop
 else (Deactivate)
   :Select Deactivate Option;
   :Confirm Deactivation;
-  
   |System|
-  :Deactivate Account;
+  :Process Deactivation;
+  stop
 endif
 
-stop
-
-@enduml 
+@enduml

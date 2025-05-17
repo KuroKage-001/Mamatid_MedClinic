@@ -1,0 +1,32 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Login to System;
+
+|System|
+:Display Appointment Dashboard;
+
+|Health Worker|
+:Select View Online Request Appointment;
+
+|System|
+:Display Online Request Appointments;
+
+' <<extend>> Search Appointment
+if (Search?) then (yes)
+  |Health Worker|
+  :Enter Search Criteria;
+  |System|
+  :Search Appointment;
+  :Display Search Results;
+endif
+
+stop
+
+@enduml 

@@ -1,0 +1,33 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Login to System;
+
+|System|
+:Display Attendance Dashboard;
+
+|Health Worker|
+:Select View Own Attendance Log;
+
+|System|
+:Retrieve Attendance Log;
+:Display Attendance Log;
+
+' <<extend>> Search Attendance Records
+if (Search Records?) then (yes)
+  |Health Worker|
+  :Enter Search Criteria;
+  |System|
+  :Search Attendance Records;
+  :Display Search Results;
+endif
+
+stop
+
+@enduml 

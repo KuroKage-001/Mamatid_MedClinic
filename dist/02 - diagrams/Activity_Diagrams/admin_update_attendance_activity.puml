@@ -1,0 +1,37 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Admin|
+start
+:Login to System;
+
+|System|
+:Display Attendance Dashboard;
+
+|Admin|
+:Select Update Attendance;
+
+|System|
+:Show Attendance Records;
+
+|Admin|
+:Select Record to Update;
+
+|System|
+:Display Update Form;
+
+|Admin|
+:Edit Attendance Information;
+:Submit Changes;
+
+|System|
+:Update Attendance Information;
+:Show Success Message;
+
+stop
+
+@enduml 
