@@ -23,8 +23,14 @@ start
 :Confirm Unarchive;
 
 |System|
-:Unarchive Appointment;
-:Show Unarchive Confirmation;
+if (Unarchive Verified?) then (yes)
+  :Unarchive Appointment;
+  :Show Unarchive Confirmation;
+else (no)
+  :Show Error Message;
+  |Health Worker|
+  :Cancel or Retry Unarchive;
+endif
 
 stop
 

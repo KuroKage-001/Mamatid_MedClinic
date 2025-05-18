@@ -23,8 +23,13 @@ start
 :Submit Attendance;
 
 |System|
-:Save Attendance Record;
-:Show Confirmation Message;
+:Validate Attendance Details;
+if (Valid?) then (yes)
+  :Save Attendance Record;
+  :Show Confirmation Message;
+else (no)
+  :Show Error Message;
+endif
 
 stop
 

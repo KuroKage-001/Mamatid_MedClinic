@@ -1,0 +1,19 @@
+@startuml
+|Patient|
+start
+:Login;
+:Select "View Appointment List";
+:View List of Appointments;
+split
+  :Search Appointment;
+  :Enter Search Criteria;
+  |System|
+  :Display Search Results;
+split again
+  :Track Appointment Status;
+  :Select Appointment;
+  |System|
+  :Show Appointment Status;
+endsplit
+stop
+@enduml 

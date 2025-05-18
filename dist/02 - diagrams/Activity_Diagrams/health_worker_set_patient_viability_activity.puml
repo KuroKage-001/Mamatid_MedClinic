@@ -1,0 +1,27 @@
+@startuml
+|Health Worker|
+start
+:Login;
+:Select "Set Patient Viability";
+:View Patient Records;
+:Select Patient;
+:Change Viability Status;
+:Submit Viability Change;
+|System|
+:Validate Change;
+if (Valid?) then (yes)
+  :Update Viability Status in Database;
+  :Show Success Notification;
+  |Health Worker|
+  :Optionally Archive or Unarchive Patient Record;
+  if (Archive/Unarchive?) then (yes)
+    |System|
+    :Archive or Unarchive Patient Record;
+    :Show Archive/Unarchive Notification;
+    |Health Worker|
+  endif
+else (no)
+  :Show Error Message;
+endif
+stop
+@enduml 

@@ -23,8 +23,14 @@ start
 :Confirm Archive;
 
 |System|
-:Archive Appointment;
-:Show Archive Confirmation;
+if (Archive Verified?) then (yes)
+  :Archive Appointment;
+  :Show Archive Confirmation;
+else (no)
+  :Show Error Message;
+  |Health Worker|
+  :Cancel or Retry Archive;
+endif
 
 stop
 
