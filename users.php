@@ -1,6 +1,15 @@
 <?php
-// Include the database connection
+// Include the database connection (connection.php already calls session_start())
 include './config/connection.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("location:index.php");
+    exit;
+}
+require_once './common_service/role_functions.php';
+
+// Check if user is admin
+requireAdmin();
 
 $message = '';
 
@@ -10,54 +19,62 @@ if (isset($_POST['save_user'])) {
     $displayName = $_POST['display_name'];
     $userName    = $_POST['user_name'];
     $password    = $_POST['password'];
+    $email       = $_POST['email'] ?? '';
+    $phone       = $_POST['phone'] ?? '';
+    $role        = $_POST['role'];
+    $status      = $_POST['status'];
     
-    // Encrypt password using MD5 (Consider using password_hash for better security)
-    $encryptedPassword = md5($password);
+    // Hash password using password_hash
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Handle file upload for profile picture
-    $baseName   = basename($_FILES["profile_picture"]["name"]);
-    $targetFile = time() . $baseName;
-    $status     = move_uploaded_file($_FILES["profile_picture"]["tmp_name"], 'user_images/' . $targetFile);
+    $targetFile = 'default_profile.jpg'; // Default profile picture
+    if (isset($_FILES["profile_picture"]) && $_FILES["profile_picture"]["error"] == 0) {
+        $baseName   = basename($_FILES["profile_picture"]["name"]);
+        $targetFile = time() . '_' . $baseName;
+        $status_upload = move_uploaded_file($_FILES["profile_picture"]["tmp_name"], 'user_images/' . $targetFile);
+        
+        if (!$status_upload) {
+            $targetFile = 'default_profile.jpg';
+        }
+    }
 
-    if ($status) {
-        try {
-            // Begin transaction for atomicity
-            $con->beginTransaction();
-
-            // Insert new user record
-            $query = "INSERT INTO `users`(`display_name`, `user_name`, `password`, `profile_picture`)
-                      VALUES('$displayName', '$userName', '$encryptedPassword', '$targetFile');";
-            $stmtUser = $con->prepare($query);
-            $stmtUser->execute();
-
-            // Commit transaction
-            $con->commit();
+    try {
+        // Insert new user record
+        $query = "INSERT INTO `users`(`display_name`, `user_name`, `password`, `profile_picture`, `email`, `phone`, `role`, `status`)
+                  VALUES(:display_name, :user_name, :password, :profile_picture, :email, :phone, :role, :status)";
+        $stmtUser = $con->prepare($query);
+        $stmtUser->bindParam(':display_name', $displayName);
+        $stmtUser->bindParam(':user_name', $userName);
+        $stmtUser->bindParam(':password', $hashedPassword);
+        $stmtUser->bindParam(':profile_picture', $targetFile);
+        $stmtUser->bindParam(':email', $email);
+        $stmtUser->bindParam(':phone', $phone);
+        $stmtUser->bindParam(':role', $role);
+        $stmtUser->bindParam(':status', $status);
+        
+        if ($stmtUser->execute()) {
             $message = 'User registered successfully';
-            
-            // Redirect with success message
             header("location:users.php?message=" . urlencode($message));
             exit;
-        } catch (PDOException $ex) {
-            // Rollback transaction on error and output debug info (not recommended for production)
-            $con->rollback();
-            echo $ex->getTraceAsString();
-            echo $ex->getMessage();
-            exit;
+        } else {
+            throw new Exception('Failed to insert user');
         }
-    } else {
-        $message = 'A problem occurred in image uploading.';
+    } catch (Exception $ex) {
+        $message = 'Error: ' . $ex->getMessage();
         header("location:users.php?message=" . urlencode($message) . "&type=error");
         exit;
     }
 }
 
 // Query to get all users ordered by display name
-$queryUsers = "SELECT `id`, `display_name`, `user_name`, `profile_picture` 
+$queryUsers = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status`, `email`, `phone` 
                FROM `users` 
-               ORDER BY `display_name` ASC;";
+               ORDER BY `display_name` ASC";
 try {
     $stmtUsers = $con->prepare($queryUsers);
     $stmtUsers->execute();
+    $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
     echo $ex->getTraceAsString();
     echo $ex->getMessage();
@@ -236,6 +253,34 @@ try {
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
     }
 
+    /* Badge Styling */
+    .badge {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 6px;
+    }
+
+    .badge-danger {
+      background-color: var(--danger-color);
+    }
+
+    .badge-primary {
+      background-color: var(--primary-color);
+    }
+
+    .badge-info {
+      background-color: var(--info-color);
+    }
+
+    .badge-success {
+      background-color: var(--success-color);
+    }
+
+    .badge-secondary {
+      background-color: #6c757d;
+    }
+
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       .card-header {
@@ -304,15 +349,41 @@ try {
                            class="form-control" placeholder="Enter password" />
                   </div>
                   <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
-                    <label for="profile_picture" class="form-label">Profile Picture</label>
-                    <input type="file" id="profile_picture" name="profile_picture" required 
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" 
+                           class="form-control" placeholder="Enter email" />
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" id="phone" name="phone" 
+                           class="form-control" placeholder="Enter phone number" />
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
+                    <label for="role" class="form-label">Role</label>
+                    <select id="role" name="role" required class="form-control">
+                      <option value="">Select Role</option>
+                      <option value="admin">Administrator</option>
+                      <option value="health_worker">Health Worker</option>
+                      <option value="doctor">Doctor</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" required class="form-control">
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
+                    <label for="profile_picture" class="form-label">Profile Picture (Optional)</label>
+                    <input type="file" id="profile_picture" name="profile_picture" 
                            class="form-control" accept="image/*" />
                   </div>
-                  <div class="col-lg-2 col-md-2 col-sm-12">
+                  <div class="col-lg-4 col-md-4 col-sm-12 mb-3">
                     <label class="d-none d-sm-block">&nbsp;</label>
                     <button type="submit" id="save_user" name="save_user" 
                             class="btn btn-primary w-100">
-                      <i class="fas fa-save mr-2"></i>Save
+                      <i class="fas fa-save mr-2"></i>Save User
                     </button>
                   </div>
                 </div>
@@ -339,33 +410,69 @@ try {
                       <th class="text-center">Picture</th>
                       <th>Display Name</th>
                       <th>Username</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Role</th>
+                      <th>Status</th>
                       <th class="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php 
                     $serial = 0;
-                    while ($row = $stmtUsers->fetch(PDO::FETCH_ASSOC)) {
+                    foreach ($users as $row) {
                         $serial++;
+                        $roleClass = '';
+                        $statusClass = '';
+                        
+                        // Role badge colors
+                        switch($row['role']) {
+                            case 'admin':
+                                $roleClass = 'badge-danger';
+                                break;
+                            case 'doctor':
+                                $roleClass = 'badge-primary';
+                                break;
+                            case 'health_worker':
+                                $roleClass = 'badge-info';
+                                break;
+                        }
+                        
+                        // Status badge colors
+                        $statusClass = ($row['status'] == 'active') ? 'badge-success' : 'badge-secondary';
                     ?>
                     <tr>
                       <td class="text-center"><?php echo $serial; ?></td>
                       <td class="text-center">
                         <img class="user-img" src="user_images/<?php echo $row['profile_picture']; ?>" 
-                             alt="User Picture">
+                             alt="User Picture" onerror="this.src='user_images/default_profile.jpg'">
                       </td>
                       <td><?php echo $row['display_name']; ?></td>
                       <td><?php echo $row['user_name']; ?></td>
+                      <td><?php echo $row['email'] ?: '-'; ?></td>
+                      <td><?php echo $row['phone'] ?: '-'; ?></td>
+                      <td>
+                        <span class="badge <?php echo $roleClass; ?>">
+                          <?php echo getRoleDisplayName($row['role']); ?>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge <?php echo $statusClass; ?>">
+                          <?php echo ucfirst($row['status']); ?>
+                        </span>
+                      </td>
                       <td class="text-center">
-                        <?php 
-                          $buttonClass = ($_SESSION['user_id'] == $row['id']) ? 'btn-success' : 'btn-danger';
-                          $isDisabled = ($_SESSION['user_id'] != $row['id']) ? 'disabled' : '';
-                        ?>
                         <a href="update_user.php?user_id=<?php echo $row['id']; ?>" 
-                           class="btn <?php echo $buttonClass; ?> btn-sm" 
-                           <?php echo $isDisabled; ?>>
+                           class="btn btn-primary btn-sm" title="Edit">
                           <i class="fa fa-edit"></i>
                         </a>
+                        <?php if ($row['id'] != $_SESSION['user_id']): ?>
+                        <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
+                                onclick="toggleUserStatus(<?php echo $row['id']; ?>, '<?php echo $row['status']; ?>')"
+                                title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
+                          <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
+                        </button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                     <?php } ?>
@@ -426,41 +533,104 @@ try {
         });
       }
 
-      // Username availability check
-      $("#user_name").blur(function() {
-        var userName = $(this).val().trim();
-        $(this).val(userName);
-        if (userName !== '') {
-          $.ajax({
-            url: "ajax/check_user_name.php",
-            type: 'GET',
-            data: { 'user_name': userName },
-            cache: false,
-            async: false,
-            success: function (count, status, xhr) {
-              if (count > 0) {
+      // Function to toggle user status
+      window.toggleUserStatus = function(userId, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        const action = currentStatus === 'active' ? 'deactivate' : 'activate';
+        
+        Swal.fire({
+          title: 'Are you sure?',
+          text: `Do you want to ${action} this user?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: `Yes, ${action}!`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: 'ajax/toggle_user_status.php',
+              type: 'POST',
+              data: { 
+                user_id: userId,
+                status: newStatus
+              },
+              success: function(response) {
+                if (response.success) {
+                  Toast.fire({
+                    icon: 'success',
+                    title: `User ${action}d successfully`
+                  });
+                  setTimeout(() => location.reload(), 1500);
+                } else {
+                  Toast.fire({
+                    icon: 'error',
+                    title: response.message || 'Error updating user status'
+                  });
+                }
+              },
+              error: function() {
                 Toast.fire({
                   icon: 'error',
-                  title: 'This username is already taken'
+                  title: 'Error updating user status'
                 });
-                $("#save_user").attr("disabled", "disabled");
+              }
+            });
+          }
+        });
+      };
+    });
+
+    // Function to toggle user status
+    window.toggleUserStatus = function(userId, currentStatus) {
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      const action = currentStatus === 'active' ? 'deactivate' : 'activate';
+      
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to ${action} this user?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: `Yes, ${action}!`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: 'ajax/toggle_user_status.php',
+            type: 'POST',
+            data: { 
+              user_id: userId,
+              status: newStatus
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.success) {
+                Toast.fire({
+                  icon: 'success',
+                  title: `User ${action}d successfully`
+                });
+                setTimeout(() => location.reload(), 1500);
               } else {
-                $("#save_user").removeAttr("disabled");
+                Toast.fire({
+                  icon: 'error',
+                  title: response.message || 'Error updating user status'
+                });
               }
             },
-            error: function (jqXhr, textStatus, errorMessage) {
+            error: function() {
               Toast.fire({
                 icon: 'error',
-                title: errorMessage
+                title: 'Error updating user status'
               });
             }
           });
         }
       });
-    });
+    };
 
     // Highlight current menu
-    showMenuSelected("#mnu_users", "");
+    showMenuSelected("#mnu_user_management", "#mi_users");
   </script>
 </body>
 </html>

@@ -5,8 +5,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Include role functions
+require_once './common_service/role_functions.php';
+
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Get user role
+$user_role = getUserRole();
+$role_display_name = getRoleDisplayName($user_role);
 ?>
 <!-- Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -30,7 +37,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- User Info -->
                 <div class="user-info">
                     <a href="#" class="d-block user-display-name"><?php echo $_SESSION['display_name']; ?></a>
-                    <span class="user-role">Administrator</span>
+                    <span class="user-role"><?php echo getRoleDisplayName($_SESSION['role'] ?? 'admin'); ?></span>
                 </div>
             </div>
         </div>
@@ -47,6 +54,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
 
+                <?php if (canAccess('patient_management')): ?>
                 <!-- General Menu (Patients & Prescriptions) -->
                 <li class="nav-header">PATIENT MANAGEMENT</li>
                 <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
@@ -96,7 +104,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
+                <?php if (canAccess('appointments_management')): ?>
                 <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
@@ -116,7 +126,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
+                <?php if (canAccess('inventory_management') || canAccess('inventory_view')): ?>
                 <!-- Inventory Management Menu -->
                 <li class="nav-header">INVENTORY MANAGEMENT</li>
                 <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_categories.php', 'medicine_stock.php', 'medicine_dispensing.php']) ? 'menu-open' : ''); ?>" id="mnu_inventory">
@@ -154,7 +166,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
+                <?php if (canAccess('reports_full') || canAccess('reports_limited')): ?>
                 <li class="nav-header">REPORTS & MANAGEMENT</li>
                 <!-- Reports Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">
@@ -180,7 +194,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
+                <?php if (isAdmin()): ?>
                 <!-- Users Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'active' : ''); ?>">
@@ -205,6 +221,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
+
+                <!-- Account Settings -->
+                <?php if (canAccess('account_settings')): ?>
+                <li class="nav-item <?php echo ($current_page == 'account_settings.php' ? 'menu-open' : ''); ?>" id="mnu_account">
+                    <a href="account_settings.php" class="nav-link <?php echo ($current_page == 'account_settings.php' ? 'active' : ''); ?>">
+                        <i class="nav-icon fa fa-user-cog"></i>
+                        <p>Account Settings</p>
+                    </a>
+                </li>
+                <?php endif; ?>
 
                 <!-- Logout -->
                 <li class="nav-item mt-3">

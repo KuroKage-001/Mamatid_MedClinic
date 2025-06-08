@@ -14,8 +14,8 @@ if (isset($_POST['login'])) {
     // Encrypt password with MD5 (note: MD5 is not recommended for production use)
     $encryptedPassword = md5($password);
 
-    // Prepare query to fetch user details
-    $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`
+    // Prepare query to fetch user details with role and status
+    $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status`
               FROM `users`
               WHERE `user_name` = '$userName'
                 AND `password` = '$encryptedPassword';";
@@ -31,24 +31,30 @@ if (isset($_POST['login'])) {
             // Fetch user data
             $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
 
-            // Store user data in session
-            $_SESSION['user_id']         = $row['id'];
-            $_SESSION['display_name']    = $row['display_name'];
-            $_SESSION['user_name']       = $row['user_name'];
-            $_SESSION['profile_picture'] = $row['profile_picture'];
-
-            // Handle "Remember Me" functionality
-            if (isset($_POST['remember_me'])) {
-                // Set cookie to remember the username for 30 days
-                setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
+            // Check if user account is active
+            if ($row['status'] !== 'active') {
+                $message = 'Your account has been deactivated. Please contact the administrator.';
             } else {
-                // Clear the cookie if "Remember Me" is unchecked
-                setcookie("remembered_username", "", time() - 3600, "/");
-            }
+                // Store user data in session
+                $_SESSION['user_id']         = $row['id'];
+                $_SESSION['display_name']    = $row['display_name'];
+                $_SESSION['user_name']       = $row['user_name'];
+                $_SESSION['profile_picture'] = $row['profile_picture'];
+                $_SESSION['role']            = $row['role'];
 
-            // Redirect to dashboard
-            header("location:dashboard.php");
-            exit;
+                // Handle "Remember Me" functionality
+                if (isset($_POST['remember_me'])) {
+                    // Set cookie to remember the username for 30 days
+                    setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
+                } else {
+                    // Clear the cookie if "Remember Me" is unchecked
+                    setcookie("remembered_username", "", time() - 3600, "/");
+                }
+
+                // Redirect to dashboard
+                header("location:dashboard.php");
+                exit;
+            }
         } else {
             // Invalid credentials
             $message = 'Incorrect username or password.';
