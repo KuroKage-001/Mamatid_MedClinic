@@ -1,0 +1,32 @@
+@startuml Client Registration
+
+skinparam DefaultFontStyle bold
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceGroupBodyBackgroundColor transparent
+skinparam ArrowThickness 2
+
+actor "<b>Client</b>" as Client
+participant "<b>Register Page</b>" as UI
+participant "<b>Server</b>" as Server
+database "<b>Database</b>" as DB
+
+== Registration ==
+Client -> UI: <b>Fill Registration Form</b>
+UI -> Server: <b>Submit Details</b>
+
+Server -> Server: <b>Validate Passwords</b>
+Server -> DB: <b>Check Email</b>
+
+alt <b>Email Available</b>
+    DB --[bold]-> Server: <b>Email Free</b>
+    Server -> Server: <b>Encrypt Password</b>
+    Server -> DB: <b>Save Client</b>
+    DB --[bold]-> Server: <b>Success</b>
+    Server --[bold]-> UI: <b>Redirect to Login</b>
+else <b>Email Exists</b>
+    DB --[bold]-> Server: <b>Email Taken</b>
+    Server --[bold]-> UI: <b>Show Error</b>
+end
+
+@enduml 

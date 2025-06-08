@@ -1,0 +1,28 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Access Family Members Page;
+
+|System|
+:Display Family Members List;
+
+|Client|
+:Enter Member Details;
+
+|System|
+if () then (valid)
+  :Save Family Member;
+  :Update Members List;
+else (invalid)
+  :Show Error Message;
+endif
+
+stop
+
+@enduml 

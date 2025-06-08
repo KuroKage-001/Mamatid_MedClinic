@@ -1,0 +1,41 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Admin|
+start
+:Access User Management;
+
+|System|
+:Display Users List;
+
+|Admin|
+:Search User;
+
+|System|
+:Display Results;
+
+|Admin|
+:Select User;
+
+|System|
+:Show User Details;
+
+|Admin|
+:Update User Account;
+:Modify User Information;
+
+|System|
+if (Information Valid?) then (yes)
+  :Save Changes;
+  :Show Success;
+else (no)
+  :Show Error;
+endif
+
+stop
+
+@enduml

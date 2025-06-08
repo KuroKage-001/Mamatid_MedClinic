@@ -1,0 +1,26 @@
+@startuml
+|Health Worker|
+start
+:Login;
+:Select "Edit Patient Record";
+:View Patient Records;
+:Optionally Search Patient Records;
+if (Search?) then (yes)
+  :Enter Search Criteria;
+  |System|
+  :Display Search Results;
+endif
+:Select Patient Record to Edit;
+:Edit Patient Information;
+:Submit Changes;
+|System|
+:Validate Updated Information;
+if (Valid?) then (yes)
+  :Update Patient Record in Database;
+  :Show Success Notification;
+else (no)
+  :Show Error Message;
+endif
+|Health Worker|
+stop
+@enduml 

@@ -1,0 +1,51 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+title Health Worker Attendance Management Subsystem
+
+|Doctor/Health Worker|
+start
+:Access Time Tracker;
+
+|System|
+:Check Time Status;
+
+if () then (no time in)
+  |Doctor/Health Worker|
+  :Record Time In;
+else (already timed in)
+  |Doctor/Health Worker|
+  :Record Time Out;
+  
+  |System|
+  :Calculate Hours;
+endif
+
+:Update Attendance;
+:View Own Attendance Log;
+
+|System|
+fork
+  :Search/Filter Attendance Records;
+fork again
+  :Delete Attendance Record;
+end fork
+
+|Admin|
+:View All Attendance;
+
+fork
+  :Generate Attendance Report;
+fork again
+  :Search/Filter Attendance Records;
+fork again
+  :Delete Attendance Record;
+end fork
+
+stop
+
+@enduml 

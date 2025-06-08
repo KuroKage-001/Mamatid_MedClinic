@@ -1,0 +1,32 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Admin|
+start
+:Access User Management;
+
+|System|
+:Process Request;
+:Display Users Table;
+
+|Admin|
+:View Users Table;
+:Search User Account;
+
+|System|
+:Process Search Query;
+:Display Results;
+
+|Admin|
+:Select User;
+
+|System|
+:Show User Details;
+
+stop
+
+@enduml 

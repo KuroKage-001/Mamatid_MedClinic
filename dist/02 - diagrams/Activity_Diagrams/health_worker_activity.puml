@@ -1,0 +1,37 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Access Account;
+
+|System|
+:Display Settings;
+
+|Health Worker|
+:Update Information;
+
+|System|
+if (Valid?) then (yes)
+  :Save Changes;
+  :Show Success;
+else (no)
+  :Show Error;
+endif
+
+|Health Worker|
+if (Action?) then (deactivate)
+  :Request Deactivation;
+  
+  |System|
+  :Deactivate Account;
+else (no action)
+endif
+
+stop
+
+@enduml 

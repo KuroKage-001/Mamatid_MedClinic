@@ -1,0 +1,36 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Access Deworming Page;
+
+|System|
+:Display Records List;
+
+|Client|
+:Enter Patient Details;
+
+|System|
+if () then (valid input)
+  :Format Dates;
+  :Format Name;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
+else (invalid)
+  :Show Error Message;
+  note right
+    Validation checks:
+    - Required fields
+    - Date formats
+  end note
+endif
+
+stop
+
+@enduml

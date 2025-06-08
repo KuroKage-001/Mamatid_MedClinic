@@ -1,0 +1,30 @@
+@startuml
+|Health Worker|
+start
+:Login;
+:Select "Update Medicine";
+:View Medicine List;
+:Select Medicine;
+split
+  :Edit Medicine Details;
+  :Submit Update;
+  |System|
+  :Validate Update;
+  if (Valid?) then (yes)
+    :Save Update;
+    :Edit Stock Details;
+    :Submit Stock Update;
+    :Save Stock Update;
+    :Show Update Confirmation;
+  else (no)
+    :Show Error Message;
+  endif
+split again
+  :Request Deletion;
+  |System|
+  :Process Deletion;
+  :Show Deletion Confirmation;
+endsplit
+|Health Worker|
+stop
+@enduml 

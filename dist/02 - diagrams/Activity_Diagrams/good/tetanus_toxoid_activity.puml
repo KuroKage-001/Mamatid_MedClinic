@@ -1,0 +1,30 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Client|
+start
+:Access Tetanus Page;
+
+|System|
+:Display Records List;
+
+|Client|
+:Enter Patient Details;
+
+|System|
+if () then (valid input)
+  :Format Data;
+  :Save Record;
+  :Update List;
+  :Show Success Message;
+else (invalid)
+  :Show Error Message;
+endif
+
+stop
+
+@enduml 

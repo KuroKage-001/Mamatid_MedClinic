@@ -1,0 +1,36 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 2
+skinparam ActivityBorderThickness 2
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderThickness 2
+
+|Health Worker|
+start
+:Login to System;
+
+|System|
+:Display Attendance Dashboard;
+
+|Health Worker|
+:Select Record Time In/Out;
+
+|System|
+:Show Time In/Out Form;
+
+|Health Worker|
+:Enter Time In/Out Details;
+:Submit Attendance;
+
+|System|
+:Validate Attendance Details;
+if (Valid?) then (yes)
+  :Save Attendance Record;
+  :Show Confirmation Message;
+else (no)
+  :Show Error Message;
+endif
+
+stop
+
+@enduml 
