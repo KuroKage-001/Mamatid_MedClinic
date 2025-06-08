@@ -396,7 +396,7 @@ if (isset($_POST['save_user'])) {
             cancelButtonText: 'No, keep it'
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = 'delete_user.php?user_id=<?php echo $user_id; ?>';
+              window.location.href = 'actions/delete_user.php?user_id=<?php echo $user_id; ?>';
             }
           });
         });

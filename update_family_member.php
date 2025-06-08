@@ -375,7 +375,7 @@ try {
             confirmButtonText: 'Yes, delete it!'
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = 'delete_family_member.php?id=<?php echo $id; ?>';
+              window.location.href = 'actions/delete_family_member.php?id=<?php echo $id; ?>';
             }
           });
         });

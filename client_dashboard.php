@@ -622,7 +622,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     buttonsStyling: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = `delete_appointment.php?id=${id}`;
+                        window.location.href = `actions/delete_appointment.php?id=${id}`;
                     }
                 });
             });
