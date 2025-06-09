@@ -1,12 +1,18 @@
 <?php
+// Start output buffering to prevent header issues
+ob_start();
+
 // Redirect to login page if the session is not set
 if (!isset($_SESSION['user_id'])) {
+    ob_end_clean(); // Clear any output
     header("location:index.php");
     exit;
 }
 
 // Include role functions
 require_once './common_service/role_functions.php';
+// Include session fix to prevent undefined variable errors
+require_once './config/session_fix.php';
 
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -223,23 +229,6 @@ $role_display_name = getRoleDisplayName($user_role);
                 </li>
                 <?php endif; ?>
 
-                <!-- Account Settings -->
-                <?php if (canAccess('account_settings')): ?>
-                <li class="nav-item <?php echo ($current_page == 'account_settings.php' ? 'menu-open' : ''); ?>" id="mnu_account">
-                    <a href="account_settings.php" class="nav-link <?php echo ($current_page == 'account_settings.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fa fa-user-cog"></i>
-                        <p>Account Settings</p>
-                    </a>
-                </li>
-                <?php endif; ?>
-
-                <!-- Logout -->
-                <li class="nav-item mt-3">
-                    <a href="logout.php" class="nav-link logout-link">
-                        <i class="nav-icon fa fa-sign-out-alt"></i>
-                        <p>Logout</p>
-                    </a>
-                </li>
                 <br>
             </ul>
         </nav>
@@ -392,18 +381,7 @@ $role_display_name = getRoleDisplayName($user_role);
     background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Logout Link */
-.logout-link {
-    margin-top: 2rem !important;
-    background-color: rgba(255, 87, 87, 0.1);
-    color: #FF5757 !important;
-    transition: all var(--transition-speed);
-}
 
-.logout-link:hover {
-    background-color: #FF5757 !important;
-    color: #fff !important;
-}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {

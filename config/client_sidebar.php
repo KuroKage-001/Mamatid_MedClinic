@@ -34,12 +34,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <p>Book Appointment</p>
                     </a>
                 </li>
-                <li class="nav-item mt-auto">
-                    <a href="client_logout.php" class="nav-link text-danger">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>Logout</p>
-                    </a>
-                </li>
             </ul>
         </nav>
     </div>

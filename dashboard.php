@@ -1,8 +1,13 @@
 <?php
+// Start output buffering to prevent header issues
+ob_start();
+
 // Ensure the correct timezone is set
 date_default_timezone_set('Asia/Manila');
 
 include './config/connection.php';
+// Include session fix to prevent undefined variable errors
+require_once './config/session_fix.php';
 
 // Set current date components used throughout the queries
 $date  = date('Y-m-d');
@@ -11,39 +16,39 @@ $month = date('m');
 
 // Query for today's total visits (combining all services)
 $queryToday = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE DATE(date) = :date) +
-    (SELECT COUNT(*) FROM family_planning WHERE DATE(date) = :date) +
-    (SELECT COUNT(*) FROM tetanus_toxoid WHERE DATE(date) = :date) +
-    (SELECT COUNT(*) FROM random_blood_sugar WHERE DATE(date) = :date) +
-    (SELECT COUNT(*) FROM deworming WHERE DATE(date) = :date) +
-    (SELECT COUNT(*) FROM family_members WHERE DATE(date) = :date) as today";
+    (SELECT COUNT(*) FROM bp_monitoring WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM family_planning WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM tetanus_toxoid WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM random_blood_sugar WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM deworming WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM family_members WHERE DATE(date) = ?) as today";
 
 // Query for current week visits
 $queryWeek = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) +
-    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) +
-    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) +
-    (SELECT COUNT(*) FROM deworming WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) +
-    (SELECT COUNT(*) FROM family_members WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)) as week";
+    (SELECT COUNT(*) FROM bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM deworming WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM family_members WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) as week";
 
 // Query for current month visits
 $queryMonth = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = :year AND MONTH(date) = :month) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = :year AND MONTH(date) = :month) +
-    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = :year AND MONTH(date) = :month) +
-    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = :year AND MONTH(date) = :month) +
-    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = :year AND MONTH(date) = :month) +
-    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = :year AND MONTH(date) = :month) as month";
+    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = ? AND MONTH(date) = ?) as month";
 
 // Query for current year visits
 $queryYear = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = :year) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = :year) +
-    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = :year) +
-    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = :year) +
-    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = :year) +
-    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = :year) as year";
+    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = ?) as year";
 
 // Initialize counts to default values
 $todaysCount = 0;
@@ -54,30 +59,25 @@ $currentYearCount = 0;
 try {
     // Execute query for today's count
     $stmtToday = $con->prepare($queryToday);
-    $stmtToday->bindParam(':date', $date);
-    $stmtToday->execute();
+    $stmtToday->execute([$date, $date, $date, $date, $date, $date]);
     $r = $stmtToday->fetch(PDO::FETCH_ASSOC);
     $todaysCount = $r['today'];
 
     // Execute query for current week's count
     $stmtWeek = $con->prepare($queryWeek);
-    $stmtWeek->bindParam(':date', $date);
-    $stmtWeek->execute();
+    $stmtWeek->execute([$date, $date, $date, $date, $date, $date]);
     $r = $stmtWeek->fetch(PDO::FETCH_ASSOC);
     $currentWeekCount = $r['week'];
 
     // Execute query for current month's count
     $stmtMonth = $con->prepare($queryMonth);
-    $stmtMonth->bindParam(':year', $year);
-    $stmtMonth->bindParam(':month', $month);
-    $stmtMonth->execute();
+    $stmtMonth->execute([$year, $month, $year, $month, $year, $month, $year, $month, $year, $month, $year, $month]);
     $r = $stmtMonth->fetch(PDO::FETCH_ASSOC);
     $currentMonthCount = $r['month'];
 
     // Execute query for current year's count
     $stmtYear = $con->prepare($queryYear);
-    $stmtYear->bindParam(':year', $year);
-    $stmtYear->execute();
+    $stmtYear->execute([$year, $year, $year, $year, $year, $year]);
     $r = $stmtYear->fetch(PDO::FETCH_ASSOC);
     $currentYearCount = $r['year'];
 
@@ -88,6 +88,165 @@ try {
     exit;
 }
 
+/* NEW ANALYTICS DATA */
+
+// SERVICE DISTRIBUTION ANALYTICS
+$serviceDistribution = [];
+try {
+    // Get counts for each service type
+    $services = [
+        'BP Monitoring' => 'bp_monitoring',
+        'Family Planning' => 'family_planning', 
+        'Tetanus Toxoid' => 'tetanus_toxoid',
+        'Blood Sugar' => 'random_blood_sugar',
+        'Deworming' => 'deworming',
+        'Family Members' => 'family_members'
+    ];
+    
+    foreach ($services as $serviceName => $tableName) {
+        $query = "SELECT COUNT(*) as count FROM $tableName WHERE MONTH(date) = ? AND YEAR(date) = ?";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$month, $year]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $serviceDistribution[$serviceName] = $result['count'];
+    }
+} catch(PDOException $ex) {
+    error_log("Service distribution error: " . $ex->getMessage());
+}
+
+// DEMOGRAPHICS ANALYTICS
+$demographicsData = [];
+try {
+    // Gender distribution from appointments
+    $genderQuery = "SELECT gender, COUNT(*) as count FROM appointments GROUP BY gender";
+    $genderStmt = $con->prepare($genderQuery);
+    $genderStmt->execute();
+    $genderData = $genderStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $demographicsData['gender'] = [];
+    foreach ($genderData as $row) {
+        $demographicsData['gender'][$row['gender']] = $row['count'];
+    }
+    
+    // Age groups from appointments (calculate age from date_of_birth)
+    $ageQuery = "SELECT 
+        CASE 
+            WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 18 THEN 'Under 18'
+            WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 18 AND 35 THEN '18-35'
+            WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) BETWEEN 36 AND 60 THEN '36-60'
+            ELSE 'Over 60'
+        END as age_group,
+        COUNT(*) as count
+        FROM appointments 
+        GROUP BY age_group";
+    $ageStmt = $con->prepare($ageQuery);
+    $ageStmt->execute();
+    $ageData = $ageStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $demographicsData['age'] = [];
+    foreach ($ageData as $row) {
+        $demographicsData['age'][$row['age_group']] = $row['count'];
+    }
+    
+} catch(PDOException $ex) {
+    error_log("Demographics error: " . $ex->getMessage());
+}
+
+// APPOINTMENT STATUS ANALYTICS
+$appointmentStats = [];
+try {
+    $statusQuery = "SELECT status, COUNT(*) as count FROM appointments GROUP BY status";
+    $statusStmt = $con->prepare($statusQuery);
+    $statusStmt->execute();
+    $statusData = $statusStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($statusData as $row) {
+        $appointmentStats[$row['status']] = $row['count'];
+    }
+    
+    // Calculate completion rate
+    $totalAppointments = array_sum($appointmentStats);
+    $completedAppointments = isset($appointmentStats['completed']) ? $appointmentStats['completed'] : 0;
+    $appointmentStats['completion_rate'] = $totalAppointments > 0 ? round(($completedAppointments / $totalAppointments) * 100, 1) : 0;
+    
+} catch(PDOException $ex) {
+    error_log("Appointment stats error: " . $ex->getMessage());
+}
+
+// HEALTH METRICS TRENDS
+$healthTrends = [];
+try {
+    // Average BP trend over last 30 days
+    $bpTrendQuery = "SELECT 
+        DATE(date) as trend_date,
+        AVG(CAST(SUBSTRING_INDEX(bp, '/', 1) AS UNSIGNED)) as avg_systolic
+        FROM bp_monitoring 
+        WHERE date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY DATE(date)
+        ORDER BY trend_date ASC";
+    $bpStmt = $con->prepare($bpTrendQuery);
+    $bpStmt->execute();
+    $bpTrendData = $bpStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $healthTrends['bp_dates'] = [];
+    $healthTrends['bp_values'] = [];
+    foreach ($bpTrendData as $row) {
+        $healthTrends['bp_dates'][] = date('M j', strtotime($row['trend_date']));
+        $healthTrends['bp_values'][] = round($row['avg_systolic'], 1);
+    }
+    
+    // Blood sugar trends
+    $sugarTrendQuery = "SELECT 
+        DATE(date) as trend_date,
+        COUNT(*) as test_count
+        FROM random_blood_sugar 
+        WHERE date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY DATE(date)
+        ORDER BY trend_date ASC";
+    $sugarStmt = $con->prepare($sugarTrendQuery);
+    $sugarStmt->execute();
+    $sugarTrendData = $sugarStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $healthTrends['sugar_dates'] = [];
+    $healthTrends['sugar_values'] = [];
+    foreach ($sugarTrendData as $row) {
+        $healthTrends['sugar_dates'][] = date('M j', strtotime($row['trend_date']));
+        $healthTrends['sugar_values'][] = $row['test_count'];
+    }
+    
+} catch(PDOException $ex) {
+    error_log("Health trends error: " . $ex->getMessage());
+}
+
+// TOP AREAS ANALYTICS
+$topAreas = [];
+try {
+    $areaQuery = "SELECT 
+        TRIM(address) as area,
+        COUNT(*) as patient_count
+        FROM (
+            SELECT address FROM appointments
+            UNION ALL
+            SELECT address FROM bp_monitoring
+            UNION ALL
+            SELECT address FROM family_planning
+            UNION ALL
+            SELECT address FROM tetanus_toxoid
+            UNION ALL
+            SELECT address FROM random_blood_sugar
+        ) as combined_areas
+        WHERE address != '' AND address IS NOT NULL
+        GROUP BY TRIM(address)
+        ORDER BY patient_count DESC
+        LIMIT 5";
+    $areaStmt = $con->prepare($areaQuery);
+    $areaStmt->execute();
+    $topAreas = $areaStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+} catch(PDOException $ex) {
+    error_log("Top areas error: " . $ex->getMessage());
+}
+
 /* Dynamic Data for Chart */
 
 // WEEKLY DATA: Count all visits for the current week grouped by day
@@ -96,24 +255,23 @@ $queryWeekly = "SELECT
     MIN(date) as first_date,
     COUNT(*) as count
 FROM (
-    SELECT date FROM bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
     UNION ALL
-    SELECT date FROM family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
     UNION ALL
-    SELECT date FROM tetanus_toxoid WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM tetanus_toxoid WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
     UNION ALL
-    SELECT date FROM random_blood_sugar WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM random_blood_sugar WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
     UNION ALL
-    SELECT date FROM deworming WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM deworming WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
     UNION ALL
-    SELECT date FROM family_members WHERE YEARWEEK(date, 1) = YEARWEEK(:date, 1)
+    SELECT date FROM family_members WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)
 ) as combined_data
 GROUP BY DAYNAME(date)
 ORDER BY FIELD(DAYNAME(date), 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
 
 $stmtWeekly = $con->prepare($queryWeekly);
-$stmtWeekly->bindParam(':date', $date);
-$stmtWeekly->execute();
+$stmtWeekly->execute([$date, $date, $date, $date, $date, $date]);
 $weeklyLabels = [];
 $weeklyData = [];
 while($row = $stmtWeekly->fetch(PDO::FETCH_ASSOC)) {
@@ -129,25 +287,23 @@ $queryMonthly = "SELECT
     WEEK(date, 1) - WEEK(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), 1) + 1 as week_in_month,
     COUNT(*) as count
 FROM (
-    SELECT date FROM bp_monitoring WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?
     UNION ALL
-    SELECT date FROM family_planning WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?
     UNION ALL
-    SELECT date FROM tetanus_toxoid WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM tetanus_toxoid WHERE YEAR(date) = ? AND MONTH(date) = ?
     UNION ALL
-    SELECT date FROM random_blood_sugar WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM random_blood_sugar WHERE YEAR(date) = ? AND MONTH(date) = ?
     UNION ALL
-    SELECT date FROM deworming WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM deworming WHERE YEAR(date) = ? AND MONTH(date) = ?
     UNION ALL
-    SELECT date FROM family_members WHERE YEAR(date) = :year AND MONTH(date) = :month
+    SELECT date FROM family_members WHERE YEAR(date) = ? AND MONTH(date) = ?
 ) as combined_data
 GROUP BY date
 ORDER BY date ASC";
 
 $stmtMonthly = $con->prepare($queryMonthly);
-$stmtMonthly->bindParam(':year', $year);
-$stmtMonthly->bindParam(':month', $month);
-$stmtMonthly->execute();
+$stmtMonthly->execute([$year, $month, $year, $month, $year, $month, $year, $month, $year, $month, $year, $month]);
 $monthlyLabels = [];
 $monthlyData = [];
 while($row = $stmtMonthly->fetch(PDO::FETCH_ASSOC)) {
@@ -161,24 +317,23 @@ $queryYearly = "SELECT
     MONTH(date) as month,
     COUNT(*) as count
 FROM (
-    SELECT date FROM bp_monitoring WHERE YEAR(date) = :year
+    SELECT date FROM bp_monitoring WHERE YEAR(date) = ?
     UNION ALL
-    SELECT date FROM family_planning WHERE YEAR(date) = :year
+    SELECT date FROM family_planning WHERE YEAR(date) = ?
     UNION ALL
-    SELECT date FROM tetanus_toxoid WHERE YEAR(date) = :year
+    SELECT date FROM tetanus_toxoid WHERE YEAR(date) = ?
     UNION ALL
-    SELECT date FROM random_blood_sugar WHERE YEAR(date) = :year
+    SELECT date FROM random_blood_sugar WHERE YEAR(date) = ?
     UNION ALL
-    SELECT date FROM deworming WHERE YEAR(date) = :year
+    SELECT date FROM deworming WHERE YEAR(date) = ?
     UNION ALL
-    SELECT date FROM family_members WHERE YEAR(date) = :year
+    SELECT date FROM family_members WHERE YEAR(date) = ?
 ) as combined_data
 GROUP BY MONTH(date)
 ORDER BY month ASC";
 
 $stmtYearly = $con->prepare($queryYearly);
-$stmtYearly->bindParam(':year', $year);
-$stmtYearly->execute();
+$stmtYearly->execute([$year, $year, $year, $year, $year, $year]);
 $yearlyLabels = [];
 $yearlyData = [];
 while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
@@ -420,7 +575,146 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
             </div>
           </div>
 
-      <!-- History Analytics Section -->
+                <!-- New Analytics Sections -->
+          
+          <!-- Service Distribution Analytics -->
+          <div class="analytics-section mt-4">
+            <div class="row">
+              <div class="col-lg-6 col-md-12 mb-4">
+                <div class="chart-container">
+                  <div class="row mb-3 align-items-center">
+                    <div class="col-md-8">
+                      <h4 class="analytics-title">
+                        <i class="fas fa-chart-pie mr-2"></i>
+                        Service Distribution (This Month)
+                      </h4>
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrapper">
+                    <canvas id="serviceChart" style="max-height: 300px;"></canvas>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-6 col-md-12 mb-4">
+                <div class="chart-container">
+                  <div class="row mb-3 align-items-center">
+                    <div class="col-md-8">
+                      <h4 class="analytics-title">
+                        <i class="fas fa-users mr-2"></i>
+                        Patient Demographics
+                      </h4>
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrapper">
+                    <canvas id="demographicsChart" style="max-height: 300px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health Metrics and Appointment Analytics -->
+          <div class="analytics-section mt-4">
+            <div class="row">
+              <div class="col-lg-8 col-md-12 mb-4">
+                <div class="chart-container">
+                  <div class="row mb-3 align-items-center">
+                    <div class="col-md-8">
+                      <h4 class="analytics-title">
+                        <i class="fas fa-heartbeat mr-2"></i>
+                        Health Metrics Trends (30 Days)
+                      </h4>
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrapper">
+                    <canvas id="healthTrendsChart" style="max-height: 300px;"></canvas>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-12 mb-4">
+                <div class="chart-container">
+                  <div class="row mb-3 align-items-center">
+                    <div class="col-md-8">
+                      <h4 class="analytics-title">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        Appointments Status
+                      </h4>
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrapper">
+                    <canvas id="appointmentsChart" style="max-height: 300px;"></canvas>
+                  </div>
+                  <div class="chart-footer mt-3">
+                    <div class="text-center">
+                      <span class="badge badge-success" style="font-size: 1rem; padding: 8px 12px;">
+                        Completion Rate: <?php echo $appointmentStats['completion_rate']; ?>%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Areas Analytics -->
+          <div class="analytics-section mt-4">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="chart-container">
+                  <div class="row mb-3 align-items-center">
+                    <div class="col-md-8">
+                      <h4 class="analytics-title">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        Top Service Areas
+                      </h4>
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrapper">
+                    <div class="row">
+                      <?php foreach ($topAreas as $index => $area): ?>
+                      <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="area-card">
+                          <div class="area-rank">#<?php echo $index + 1; ?></div>
+                          <div class="area-name"><?php echo htmlspecialchars($area['area']); ?></div>
+                          <div class="area-count"><?php echo $area['patient_count']; ?> patients</div>
+                        </div>
+                      </div>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- History Analytics Section -->
           <div class="history-analytics-container chart-container mt-4">
             <div class="row mb-4">
               <div class="col-md-6">
@@ -1406,6 +1700,250 @@ while($row = $stmtYearly->fetch(PDO::FETCH_ASSOC)) {
         if (selectedType) {
             console.log('Manually refreshing history chart...');
             updateHistoryChart(selectedType, selectedDays);
+        }
+    });
+
+    // NEW ANALYTICS CHARTS INITIALIZATION
+    
+    // Service Distribution Pie Chart
+    const serviceData = <?php echo json_encode($serviceDistribution); ?>;
+    const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+    
+    const serviceChart = new Chart(serviceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(serviceData),
+            datasets: [{
+                data: Object.values(serviceData),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB', 
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Demographics Chart
+    const demographicsData = <?php echo json_encode($demographicsData); ?>;
+    const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
+    
+    const demographicsChart = new Chart(demographicsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Gender Distribution', 'Age Groups'],
+            datasets: [
+                {
+                    label: 'Male',
+                    data: [demographicsData.gender?.Male || 0, 0],
+                    backgroundColor: '#36A2EB',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Female', 
+                    data: [demographicsData.gender?.Female || 0, 0],
+                    backgroundColor: '#FF6384',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Under 18',
+                    data: [0, demographicsData.age?.['Under 18'] || 0],
+                    backgroundColor: '#FFCE56',
+                    borderRadius: 8
+                },
+                {
+                    label: '18-35',
+                    data: [0, demographicsData.age?.['18-35'] || 0],
+                    backgroundColor: '#4BC0C0',
+                    borderRadius: 8
+                },
+                {
+                    label: '36-60',
+                    data: [0, demographicsData.age?.['36-60'] || 0],
+                    backgroundColor: '#9966FF',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Over 60',
+                    data: [0, demographicsData.age?.['Over 60'] || 0],
+                    backgroundColor: '#FF9F40',
+                    borderRadius: 8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Health Trends Chart
+    const healthTrends = <?php echo json_encode($healthTrends); ?>;
+    const healthTrendsCtx = document.getElementById('healthTrendsChart').getContext('2d');
+    
+    const healthTrendsChart = new Chart(healthTrendsCtx, {
+        type: 'line',
+        data: {
+            labels: healthTrends.bp_dates,
+            datasets: [
+                {
+                    label: 'Average Blood Pressure (Systolic)',
+                    data: healthTrends.bp_values,
+                    borderColor: '#FF6384',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Blood Sugar Tests Count',
+                    data: healthTrends.sugar_values,
+                    borderColor: '#36A2EB',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Blood Pressure (mmHg)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Test Count'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Appointments Status Chart
+    const appointmentStats = <?php echo json_encode($appointmentStats); ?>;
+    const appointmentsCtx = document.getElementById('appointmentsChart').getContext('2d');
+    
+    // Remove completion_rate from data for chart
+    const appointmentChartData = {...appointmentStats};
+    delete appointmentChartData.completion_rate;
+    
+    const appointmentsChart = new Chart(appointmentsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(appointmentChartData).map(key => 
+                key.charAt(0).toUpperCase() + key.slice(1)
+            ),
+            datasets: [{
+                data: Object.values(appointmentChartData),
+                backgroundColor: [
+                    '#28a745', // completed - green
+                    '#17a2b8', // approved - blue  
+                    '#ffc107', // pending - yellow
+                    '#dc3545'  // cancelled - red
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
         }
     });
   </script>

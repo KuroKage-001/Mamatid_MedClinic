@@ -548,3 +548,190 @@
   color: #64748b;
   pointer-events: none;
 } 
+
+/* NEW ANALYTICS STYLES */
+
+.analytics-section {
+  margin-bottom: 2rem;
+}
+
+.analytics-title {
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.analytics-title i {
+  color: #6366f1;
+  font-size: 1.1rem;
+}
+
+/* Area Cards */
+.area-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.area-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8B5CF6, #3B82F6, #10B981);
+  opacity: 0.7;
+}
+
+.area-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.area-rank {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 0.5rem;
+}
+
+.area-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.area-count {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Enhanced Chart Containers for Analytics */
+.analytics-section .chart-container {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-section .chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8B5CF6, #3B82F6, #10B981);
+  opacity: 0.7;
+}
+
+.analytics-section .chart-wrapper {
+  position: relative;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Badge Enhancements */
+.badge-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%)!important;
+  color: white!important;
+  border: none!important;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Responsive Adjustments for Analytics */
+@media (max-width: 768px) {
+  .analytics-title {
+    font-size: 1.1rem;
+  }
+  
+  .area-card {
+    padding: 1rem 0.75rem;
+  }
+  
+  .area-rank {
+    font-size: 1.25rem;
+  }
+  
+  .area-name {
+    font-size: 0.85rem;
+    min-height: 2rem;
+  }
+  
+  .area-count {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .analytics-section .chart-container {
+    padding: 1rem;
+  }
+  
+  .analytics-section .chart-wrapper {
+    padding: 0.75rem;
+  }
+}
+
+/* Chart Animation Effects */
+@keyframes chartSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.analytics-section .chart-wrapper canvas {
+  animation: chartSlideIn 0.6s ease-out;
+}
+
+/* Enhanced Collapse Button for Analytics */
+.analytics-section .btn-tool {
+  padding: 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 0.5rem;
+  color: #6366f1;
+  transition: all 0.2s ease;
+}
+
+.analytics-section .btn-tool:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #4338ca;
+  transform: scale(1.05);
+}
+
+.analytics-section .btn-tool:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}

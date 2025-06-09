@@ -24,8 +24,8 @@ if (isset($_POST['save_user'])) {
     $role        = $_POST['role'];
     $status      = $_POST['status'];
     
-    // Hash password using password_hash
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    // Hash password using MD5 (to match existing system)
+    $hashedPassword = md5($password);
 
     // Handle file upload for profile picture
     $targetFile = 'default_profile.jpg'; // Default profile picture
@@ -67,12 +67,14 @@ if (isset($_POST['save_user'])) {
     }
 }
 
-// Query to get all users ordered by display name
+// Query to get all users except the current logged-in user, ordered by display name
 $queryUsers = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status`, `email`, `phone` 
                FROM `users` 
+               WHERE `id` != :current_user_id
                ORDER BY `display_name` ASC";
 try {
     $stmtUsers = $con->prepare($queryUsers);
+    $stmtUsers->bindParam(':current_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmtUsers->execute();
     $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {

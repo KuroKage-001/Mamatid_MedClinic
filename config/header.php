@@ -1,3 +1,9 @@
+<?php
+// Include role functions for access control
+require_once './common_service/role_functions.php';
+// Include session fix to prevent undefined variable errors
+require_once './config/session_fix.php';
+?>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark fixed-top">
     <!-- Left navbar links -->
@@ -23,7 +29,25 @@
             <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                 <img src="user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-image" alt="User Image">
                 <span class="d-none d-md-inline">Hello, <?php echo $_SESSION['display_name']; ?>!</span>
-            </a>       
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
+                <div class="dropdown-header">
+                    <strong><?php echo $_SESSION['display_name']; ?></strong>
+                    <small class="text-muted d-block"><?php echo $_SESSION['user_name']; ?></small>
+                </div>
+                <div class="dropdown-divider"></div>
+                <?php if (canAccess('account_settings')): ?>
+                <a href="account_settings.php" class="dropdown-item">
+                    <i class="fas fa-user-cog mr-2"></i>
+                    Account Settings
+                </a>
+                <div class="dropdown-divider"></div>
+                <?php endif; ?>
+                <a href="logout.php" class="dropdown-item text-danger">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Logout
+                </a>
+            </div>       
         </li>
     </ul>
 </nav>

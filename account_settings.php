@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($user && password_verify($current_password, $user['password'])) {
-                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            if ($user && md5($current_password) === $user['password']) {
+                $hashed_password = md5($new_password);
                 $sql = "UPDATE users SET password = :password WHERE id = :user_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':password', $hashed_password);

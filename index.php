@@ -17,12 +17,15 @@ if (isset($_POST['login'])) {
     // Prepare query to fetch user details with role and status
     $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status`
               FROM `users`
-              WHERE `user_name` = '$userName'
-                AND `password` = '$encryptedPassword';";
+              WHERE `user_name` = :user_name
+                AND `password` = :password
+                AND `status` = 'active'";
 
     try {
         // Execute the query
         $stmtLogin = $con->prepare($query);
+        $stmtLogin->bindParam(':user_name', $userName, PDO::PARAM_STR);
+        $stmtLogin->bindParam(':password', $encryptedPassword, PDO::PARAM_STR);
         $stmtLogin->execute();
 
         // Check if exactly one user was found
@@ -31,33 +34,28 @@ if (isset($_POST['login'])) {
             // Fetch user data
             $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
 
-            // Check if user account is active
-            if ($row['status'] !== 'active') {
-                $message = 'Your account has been deactivated. Please contact the administrator.';
+            // Store user data in session
+            $_SESSION['user_id']         = $row['id'];
+            $_SESSION['display_name']    = $row['display_name'];
+            $_SESSION['user_name']       = $row['user_name'];
+            $_SESSION['profile_picture'] = $row['profile_picture'];
+            $_SESSION['role']            = $row['role'];
+
+            // Handle "Remember Me" functionality
+            if (isset($_POST['remember_me'])) {
+                // Set cookie to remember the username for 30 days
+                setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
             } else {
-                // Store user data in session
-                $_SESSION['user_id']         = $row['id'];
-                $_SESSION['display_name']    = $row['display_name'];
-                $_SESSION['user_name']       = $row['user_name'];
-                $_SESSION['profile_picture'] = $row['profile_picture'];
-                $_SESSION['role']            = $row['role'];
-
-                // Handle "Remember Me" functionality
-                if (isset($_POST['remember_me'])) {
-                    // Set cookie to remember the username for 30 days
-                    setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
-                } else {
-                    // Clear the cookie if "Remember Me" is unchecked
-                    setcookie("remembered_username", "", time() - 3600, "/");
-                }
-
-                // Redirect to dashboard
-                header("location:dashboard.php");
-                exit;
+                // Clear the cookie if "Remember Me" is unchecked
+                setcookie("remembered_username", "", time() - 3600, "/");
             }
+
+            // Redirect to dashboard
+            header("location:dashboard.php");
+            exit;
         } else {
-            // Invalid credentials
-            $message = 'Incorrect username or password.';
+            // Invalid credentials or inactive account
+            $message = 'Incorrect username or password, or account is inactive.';
         }
     } catch (PDOException $ex) {
         // On query error, display debugging info (not recommended in production)
