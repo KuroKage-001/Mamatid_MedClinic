@@ -291,11 +291,11 @@ try {
                 </div>
               </div>
               <div class="col-md-2 text-right">
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                </div>
+              <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
               </div>
             </div>
 
@@ -400,7 +400,7 @@ try {
                       <div class="chart-actions">
                         <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
                           <i class="fas fa-copy"></i> Copy
-                        </button>
+                        </button> 
                         <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
                           <i class="fas fa-file-csv"></i> CSV
                         </button>
@@ -429,6 +429,8 @@ try {
   <!-- Local Chart.js and jsPDF libraries -->
   <script src="dist/libs/chart.min.js"></script>
   <script src="dist/libs/jspdf.min.js"></script>
+  <!-- Enhanced Export Functions -->
+  <script src="dist/js/export-functions.js"></script>
   <script>
     // Highlight the active menu item on page load
     $(function(){
@@ -472,7 +474,7 @@ try {
     // Debug chart data
     console.log('Chart Data:', chartData);
 
-    let currentChart;
+    window.currentChart = null; // Make currentChart globally accessible
     const ctx = document.getElementById('patientChart').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -638,8 +640,8 @@ try {
         try {
           console.log('Rendering chart for type:', type);
           
-          if (currentChart) {
-            currentChart.destroy();
+          if (window.currentChart) {
+            window.currentChart.destroy();
           }
           
           if (!chartData[type] || !chartData[type].labels || !chartData[type].data) {
@@ -652,7 +654,7 @@ try {
           // Update statistics before rendering chart
           updateStatistics(type, chartData[type].data);
           
-          currentChart = new Chart(ctx, {
+          window.currentChart = new Chart(ctx, {
           type: 'bar',
           data: {
             labels: chartData[type].labels,
@@ -769,95 +771,7 @@ try {
       });
     });
 
-    // Add this to your existing JavaScript, after the chart initialization
-    document.addEventListener('DOMContentLoaded', function() {
-      // Function to export chart data as CSV
-      function exportToCSV() {
-        const labels = currentChart.data.labels;
-        const data = currentChart.data.datasets[0].data;
-        let csvContent = "data:text/csv;charset=utf-8,";
-        
-        // Add headers
-        csvContent += "Date,Patients\n";
-        
-        // Add data rows
-        labels.forEach((label, index) => {
-          csvContent += `${label},${data[index]}\n`;
-        });
-        
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "patient_statistics.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
 
-      // Function to copy data to clipboard
-      function copyToClipboard() {
-        const labels = currentChart.data.labels;
-        const data = currentChart.data.datasets[0].data;
-        let text = "Date\tPatients\n";
-        
-        labels.forEach((label, index) => {
-          text += `${label}\t${data[index]}\n`;
-        });
-        
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Data copied to clipboard!');
-        });
-      }
-
-      // Function to export to Excel
-      function exportToExcel() {
-        const labels = currentChart.data.labels;
-        const data = currentChart.data.datasets[0].data;
-        let csvContent = "data:application/vnd.ms-excel,";
-        
-        // Add headers
-        csvContent += "Date\tPatients\n";
-        
-        // Add data rows
-        labels.forEach((label, index) => {
-          csvContent += `${label}\t${data[index]}\n`;
-        });
-        
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "patient_statistics.xls");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      // Function to export to PDF
-      function exportToPDF() {
-        const canvas = document.getElementById('patientChart');
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('l', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('patient_statistics.pdf');
-      }
-
-      // Function to print chart
-      function printChart() {
-        const canvas = document.getElementById('patientChart');
-        const win = window.open('');
-        win.document.write(`<img src="${canvas.toDataURL()}" onload="window.print();window.close()" />`);
-      }
-
-      // Add event listeners to buttons
-      document.getElementById('btnCopy').addEventListener('click', copyToClipboard);
-      document.getElementById('btnCSV').addEventListener('click', exportToCSV);
-      document.getElementById('btnExcel').addEventListener('click', exportToExcel);
-      document.getElementById('btnPDF').addEventListener('click', exportToPDF);
-      document.getElementById('btnPrint').addEventListener('click', printChart);
-    });
   </script>
 </body>
 </html>
