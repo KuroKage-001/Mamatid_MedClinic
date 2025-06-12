@@ -147,8 +147,8 @@ if (isset($_POST['update_user'])) {
                 echo json_encode(['success' => true, 'message' => 'User updated successfully']);
                 exit;
             } else {
-                header("location:users.php?message=" . urlencode("User updated successfully"));
-                exit;
+            header("location:users.php?message=" . urlencode("User updated successfully"));
+            exit;
             }
         } else {
             throw new Exception("Failed to update user");
@@ -163,8 +163,8 @@ if (isset($_POST['update_user'])) {
             echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
             exit;
         } else {
-            $message = $ex->getMessage();
-            $messageType = 'error';
+        $message = $ex->getMessage();
+        $messageType = 'error';
         }
     }
 }
@@ -188,7 +188,7 @@ if (isset($_POST['update_user'])) {
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-md-6" style="padding-left: 20px;">
                             <h1>Update User</h1>
-                        </div>            
+                        </div>
                     </div>
                 </div>
             </section>
@@ -210,9 +210,9 @@ if (isset($_POST['update_user'])) {
                                     <span class="info-separator">•</span>
                                     <span class="role-text"><?php echo ucfirst(str_replace('_', ' ', $user['role'])); ?></span>
                                     <span class="info-separator">•</span>
-                                    <span class="badge badge-<?php echo $user['status'] == 'active' ? 'success' : 'danger'; ?>">
-                                        <?php echo ucfirst($user['status']); ?>
-                                    </span>
+                                   <span class="badge badge-<?php echo $user['status'] == 'active' ? 'success' : 'danger'; ?>">
+                                       <?php echo ucfirst($user['status']); ?>
+                                   </span>
                                 </div>
                                 <div class="member-since">Member since: <?php echo date('F j, Y', strtotime($user['created_at'])); ?></div>
                             </div>
@@ -314,11 +314,11 @@ if (isset($_POST['update_user'])) {
 
                                 <div class="form-actions">
                                     <a href="users.php" class="btn btn-secondary">
-                                        <i class="fas fa-times mr-2"></i>Cancel
-                                    </a>
-                                    <button type="submit" name="update_user" class="btn btn-primary">
-                                        <i class="fas fa-save mr-2"></i>Update User
-                                    </button>
+                                            <i class="fas fa-times mr-2"></i>Cancel
+                                        </a>
+                                        <button type="submit" name="update_user" class="btn btn-primary">
+                                            <i class="fas fa-save mr-2"></i>Update User
+                                        </button>
                                 </div>
                             </form>
                         </div>
@@ -411,11 +411,11 @@ if (isset($_POST['update_user'])) {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Show loading state
+                // Show loading state
                         const submitBtn = $(form).find('button[type="submit"]');
                         submitBtn.prop('disabled', true).html(
-                            '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...'
-                        );
+                    '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...'
+                );
 
                         // Submit the form using AJAX
                         $.ajax({

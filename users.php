@@ -136,7 +136,7 @@ try {
                   <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
                     <label for="password" class="form-label">Password</label>
                     <div class="password-input-wrapper">
-                      <input type="password" id="password" name="password" required 
+                    <input type="password" id="password" name="password" required 
                              class="form-control password-field" placeholder="Enter password" />
                       <span class="password-toggle-btn" 
                             onclick="togglePassword('password')" 
@@ -266,11 +266,11 @@ try {
                         </a>
                         <?php if ($row['id'] != $_SESSION['user_id']): ?>
                           <?php if ($row['role'] != 'admin'): ?>
-                            <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
-                                    onclick="toggleUserStatus(<?php echo $row['id']; ?>, '<?php echo $row['status']; ?>')"
-                                    title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
-                              <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
-                            </button>
+                        <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
+                                onclick="toggleUserStatus(<?php echo $row['id']; ?>, '<?php echo $row['status']; ?>')"
+                                title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
+                          <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
+                        </button>
                           <?php else: ?>
                             <button type="button" class="btn btn-sm btn-secondary" disabled
                                     title="Cannot deactivate administrator accounts">
@@ -358,13 +358,13 @@ try {
         eyeIcon.classList.add('fa-eye-slash');
         toggleBtn.classList.add('password-visible');
         toggleBtn.setAttribute('title', 'Hide password');
-      } else {
+                } else {
         passwordField.type = 'password';
         eyeIcon.classList.remove('fa-eye-slash');
         eyeIcon.classList.add('fa-eye');
         toggleBtn.classList.remove('password-visible');
         toggleBtn.setAttribute('title', 'Show password');
-      }
+              }
     };
 
     // Function to toggle user status
