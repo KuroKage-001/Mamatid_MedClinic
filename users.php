@@ -142,7 +142,7 @@ try {
                             onclick="togglePassword('password')" 
                             title="Show password"
                             aria-label="Toggle password visibility">
-                        <i class="fas fa-eye" id="password-eye"></i>
+                        <span id="password-eye" class="password-toggle-text">Show</span>
                       </span>
                     </div>
                   </div>
@@ -349,22 +349,19 @@ try {
     // Password toggle function
     window.togglePassword = function(fieldId) {
       const passwordField = document.getElementById(fieldId);
-      const eyeIcon = document.getElementById(fieldId + '-eye');
-      const toggleBtn = eyeIcon.closest('.password-toggle-btn');
-      
+      const toggleText = document.getElementById(fieldId + '-eye');
+      const toggleBtn = toggleText.closest('.password-toggle-btn');
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        eyeIcon.classList.remove('fa-eye');
-        eyeIcon.classList.add('fa-eye-slash');
+        toggleText.textContent = 'Hide';
         toggleBtn.classList.add('password-visible');
         toggleBtn.setAttribute('title', 'Hide password');
-                } else {
+      } else {
         passwordField.type = 'password';
-        eyeIcon.classList.remove('fa-eye-slash');
-        eyeIcon.classList.add('fa-eye');
+        toggleText.textContent = 'Show';
         toggleBtn.classList.remove('password-visible');
         toggleBtn.setAttribute('title', 'Show password');
-              }
+      }
     };
 
     // Function to toggle user status
@@ -384,7 +381,8 @@ try {
           confirmButton: 'btn btn-primary',
           cancelButton: 'btn btn-secondary'
         },
-        buttonsStyling: false
+        buttonsStyling: false,
+        reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
           // Initialize Toast for this function

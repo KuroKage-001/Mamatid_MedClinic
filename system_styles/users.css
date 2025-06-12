@@ -465,6 +465,20 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   color: white !important;
 }
 
+body .swal2-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 32px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body .swal2-actions .swal2-styled {
+  margin: 0 !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
 /* Toast Notification Styling */
 .swal2-toast {
   border-radius: 12px !important;
@@ -585,12 +599,13 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
 }
 
 .password-field {
-  padding-right: 44px;
+  padding-right: 85px !important;
+  transition: all 0.3s ease;
 }
 
 .password-toggle-btn {
   position: absolute;
-  right: 14px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -598,80 +613,110 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   align-items: center;
   justify-content: center;
   z-index: 10;
-  background: transparent;
-  border: none;
-  padding: 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  padding: 0 12px;
   margin: 0;
-  width: 22px;
-  height: 22px;
-  transition: all 0.3s ease;
+  height: calc(100% - 16px);
+  min-width: 60px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
-.password-toggle-btn i {
-  font-size: 18px;
-  color: #94a3b8;
-  transition: all 0.3s ease;
-}
-
-.password-toggle-btn:hover i {
+.password-toggle-btn:hover {
   color: var(--primary-color);
-  transform: scale(1.1);
-}
-
-.password-toggle-btn.password-visible i {
-  color: var(--primary-color);
-}
-
-/* Password field focus state */
-.password-input-wrapper .form-control:focus {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  box-shadow: 0 4px 8px rgba(54, 153, 255, 0.15);
+  transform: translateY(-50%) translateX(-2px);
 }
 
-.password-input-wrapper .form-control:focus + .password-toggle-btn i {
+.password-toggle-btn:focus {
+  outline: none;
   color: var(--primary-color);
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.2);
 }
 
-/* Animation for icon toggle */
-@keyframes iconFlip {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.8);
-  }
-  100% {
-    transform: scale(1);
-  }
+.password-toggle-btn:active {
+  transform: translateY(-50%) translateX(0);
+  box-shadow: 0 2px 4px rgba(54, 153, 255, 0.1);
 }
 
-.password-toggle-btn i {
-  animation: iconFlip 0.3s ease-out;
+.password-toggle-btn.password-visible {
+  color: var(--primary-color);
+  background: linear-gradient(135deg, #e6f0ff 0%, #f0f7ff 100%);
+  border-color: var(--primary-color);
+  box-shadow: inset 0 2px 4px rgba(54, 153, 255, 0.1);
 }
 
-/* Responsive adjustments */
+.password-toggle-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.75px;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+  padding: 2px 4px;
+}
+
+.password-toggle-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.password-toggle-btn:hover .password-toggle-text::after {
+  transform: scaleX(1);
+}
+
 @media (max-width: 768px) {
-  .password-toggle-btn {
-    right: 10px;
-    width: 18px;
-    height: 18px;
+  .password-field {
+    padding-right: 75px !important;
   }
-  .password-toggle-btn i {
-    font-size: 15px;
+  
+  .password-toggle-btn {
+    min-width: 50px;
+    height: calc(100% - 12px);
+    font-size: 0.85rem;
+    padding: 0 8px;
+  }
+  
+  .password-toggle-text {
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 576px) {
   .password-field {
-    padding-right: 36px;
+    padding-right: 65px !important;
   }
+  
   .password-toggle-btn {
-    right: 7px;
-    width: 16px;
-    height: 16px;
+    min-width: 45px;
+    height: calc(100% - 10px);
+    font-size: 0.8rem;
+    padding: 0 6px;
+    right: 6px;
   }
-  .password-toggle-btn i {
-    font-size: 13px;
+  
+  .password-toggle-text {
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
   }
 }
 
