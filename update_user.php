@@ -140,16 +140,32 @@ if (isset($_POST['update_user'])) {
         
         if ($updateStmt->execute()) {
             $con->commit();
-            header("location:users.php?message=" . urlencode("User updated successfully"));
-            exit;
+            
+            // Check if it's an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => 'User updated successfully']);
+                exit;
+            } else {
+                header("location:users.php?message=" . urlencode("User updated successfully"));
+                exit;
+            }
         } else {
             throw new Exception("Failed to update user");
         }
         
     } catch (Exception $ex) {
         $con->rollback();
-        $message = $ex->getMessage();
-        $messageType = 'error';
+        
+        // Check if it's an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
+            exit;
+        } else {
+            $message = $ex->getMessage();
+            $messageType = 'error';
+        }
     }
 }
 ?>
@@ -158,167 +174,11 @@ if (isset($_POST['update_user'])) {
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
+    <link rel="stylesheet" href="system_styles/update_user.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <title>Update User - Mamatid Health Center System</title>
-
-    <style>
-        :root {
-            --transition-speed: 0.3s;
-            --primary-color: #3699FF;
-            --secondary-color: #6993FF;
-            --success-color: #1BC5BD;
-            --info-color: #8950FC;
-            --warning-color: #FFA800;
-            --danger-color: #F64E60;
-            --light-color: #F3F6F9;
-            --dark-color: #1a1a2d;
-        }
-
-        /* Card Styling */
-        .card {
-            border: none;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-
-        .card-outline {
-            border-top: 3px solid var(--primary-color);
-        }
-
-        .card-header {
-            background: white;
-            padding: 1.5rem;
-            border-bottom: 1px solid #eee;
-        }
-
-        .card-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Form Styling */
-        .form-control {
-            height: calc(2.5rem + 2px);
-            border-radius: 8px;
-            border: 2px solid #e4e6ef;
-            padding: 0.625rem 1rem;
-            font-size: 1rem;
-            transition: all var(--transition-speed);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Select Styling */
-        select.form-control {
-            appearance: none;
-            background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
-            background-size: 8px 10px;
-            padding-right: 2rem;
-        }
-
-        /* Button Styling */
-        .btn {
-            padding: 0.65rem 1rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all var(--transition-speed);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
-            border: none;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
-            color: white;
-        }
-
-        /* Profile Picture Preview */
-        .profile-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 2px solid #e4e6ef;
-            margin-bottom: 1rem;
-        }
-
-        /* Content Header Styling */
-        .content-header {
-            padding: 20px 0;
-        }
-
-        .content-header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0;
-        }
-
-        /* Info Box Styling */
-        .info-box {
-            background: var(--light-color);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .info-box .text-muted {
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .card-header {
-                padding: 1rem;
-            }
-
-            .card-body {
-                padding: 1rem;
-            }
-
-            .form-control {
-                height: calc(2.2rem + 2px);
-                padding: 0.5rem 0.75rem;
-            }
-
-            .btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-        }
-    </style>
 </head>
-<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
+<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed update-user-page">
     <div class="wrapper">
         <?php include './config/header.php'; include './config/sidebar.php'; ?>
         
@@ -328,12 +188,7 @@ if (isset($_POST['update_user'])) {
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-md-6" style="padding-left: 20px;">
                             <h1>Update User</h1>
-                        </div>
-                        <div class="col-12 col-md-6 text-right">
-                            <a href="users.php" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left mr-2"></i>Back to Users
-                            </a>
-                        </div>
+                        </div>            
                     </div>
                 </div>
             </section>
@@ -342,20 +197,24 @@ if (isset($_POST['update_user'])) {
                 <div class="container-fluid">
                     <!-- User Info Box -->
                     <div class="info-box">
-                        <div class="row align-items-center">
-                            <div class="col-md-2 text-center">
+                        <div class="d-flex align-items-center">
+                            <div class="profile-section">
                                 <img src="user_images/<?php echo $user['profile_picture']; ?>" 
-                                     alt="Profile Picture" class="profile-preview">
+                                     alt="Profile Picture" class="profile-preview"
+                                     onerror="this.src='user_images/default_profile.jpg'">
                             </div>
-                            <div class="col-md-10">
-                                <h5 class="mb-1"><?php echo htmlspecialchars($user['display_name']); ?></h5>
-                                <p class="text-muted mb-1">@<?php echo htmlspecialchars($user['user_name']); ?> • 
-                                   <?php echo ucfirst(str_replace('_', ' ', $user['role'])); ?> • 
-                                   <span class="badge badge-<?php echo $user['status'] == 'active' ? 'success' : 'danger'; ?>">
-                                       <?php echo ucfirst($user['status']); ?>
-                                   </span>
-                                </p>
-                                <small class="text-muted">Member since: <?php echo date('F j, Y', strtotime($user['created_at'])); ?></small>
+                            <div class="info-section">
+                                <h5><?php echo htmlspecialchars($user['display_name']); ?></h5>
+                                <div class="user-meta">
+                                    <span class="username">@<?php echo htmlspecialchars($user['user_name']); ?></span>
+                                    <span class="info-separator">•</span>
+                                    <span class="role-text"><?php echo ucfirst(str_replace('_', ' ', $user['role'])); ?></span>
+                                    <span class="info-separator">•</span>
+                                    <span class="badge badge-<?php echo $user['status'] == 'active' ? 'success' : 'danger'; ?>">
+                                        <?php echo ucfirst($user['status']); ?>
+                                    </span>
+                                </div>
+                                <div class="member-since">Member since: <?php echo date('F j, Y', strtotime($user['created_at'])); ?></div>
                             </div>
                         </div>
                     </div>
@@ -453,15 +312,13 @@ if (isset($_POST['update_user'])) {
                                     </div>
                                 </div>
 
-                                <div class="row mt-4">
-                                    <div class="col-12 text-right">
-                                        <a href="users.php" class="btn btn-secondary mr-2">
-                                            <i class="fas fa-times mr-2"></i>Cancel
-                                        </a>
-                                        <button type="submit" name="update_user" class="btn btn-primary">
-                                            <i class="fas fa-save mr-2"></i>Update User
-                                        </button>
-                                    </div>
+                                <div class="form-actions">
+                                    <a href="users.php" class="btn btn-secondary">
+                                        <i class="fas fa-times mr-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" name="update_user" class="btn btn-primary">
+                                        <i class="fas fa-save mr-2"></i>Update User
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -498,15 +355,19 @@ if (isset($_POST['update_user'])) {
             });
             <?php endif; ?>
 
-            // Form validation
+            // Form submission with SweetAlert confirmation
             $('form').on('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                
+                const form = this;
+                const formData = new FormData(form);
                 const displayName = $('input[name="display_name"]').val().trim();
                 const userName = $('input[name="user_name"]').val().trim();
                 const role = $('select[name="role"]').val();
                 const status = $('select[name="status"]').val();
 
+                // Validation
                 if (!displayName || !userName || !role || !status) {
-                    e.preventDefault();
                     Toast.fire({
                         icon: 'warning',
                         title: 'Please fill all required fields'
@@ -516,7 +377,6 @@ if (isset($_POST['update_user'])) {
 
                 // Username validation
                 if (userName.length < 3) {
-                    e.preventDefault();
                     Toast.fire({
                         icon: 'warning',
                         title: 'Username must be at least 3 characters long'
@@ -524,10 +384,73 @@ if (isset($_POST['update_user'])) {
                     return false;
                 }
 
-                // Show loading state
-                $(this).find('button[type="submit"]').prop('disabled', true).html(
-                    '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...'
-                );
+                // SweetAlert confirmation
+                Swal.fire({
+                    title: 'Update User?',
+                    text: `Are you sure you want to update ${displayName}'s information?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3699FF',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-save mr-2"></i>Yes, Update User',
+                    cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-primary',
+                        cancelButton: 'btn btn-secondary',
+                        actions: 'swal2-actions-custom'
+                    },
+                    buttonsStyling: false,
+                    didOpen: () => {
+                        // Add custom spacing to buttons
+                        const actions = document.querySelector('.swal2-actions');
+                        if (actions) {
+                            actions.style.gap = '3rem';
+                            actions.style.justifyContent = 'center';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading state
+                        const submitBtn = $(form).find('button[type="submit"]');
+                        submitBtn.prop('disabled', true).html(
+                            '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...'
+                        );
+
+                        // Submit the form using AJAX
+                        $.ajax({
+                            url: window.location.href,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                // Show success toast
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'User updated successfully!'
+                                });
+                                
+                                // Redirect to users.php after a short delay
+                                setTimeout(function() {
+                                    window.location.href = 'users.php?message=' + encodeURIComponent('User updated successfully');
+                                }, 1500);
+                            },
+                            error: function(xhr, status, error) {
+                                // Re-enable button
+                                submitBtn.prop('disabled', false).html(
+                                    '<i class="fas fa-save mr-2"></i>Update User'
+                                );
+                                
+                                // Show error toast
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Error updating user. Please try again.'
+                                });
+                            }
+                        });
+                    }
+                });
             });
 
             // File upload preview
@@ -539,6 +462,13 @@ if (isset($_POST['update_user'])) {
                     }
                     reader.readAsDataURL(e.target.files[0]);
                 }
+            });
+
+            // Enhanced form field animations
+            $('.form-control').on('focus', function() {
+                $(this).closest('.form-group').addClass('focused');
+            }).on('blur', function() {
+                $(this).closest('.form-group').removeClass('focused');
             });
         });
 

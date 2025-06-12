@@ -89,223 +89,11 @@ try {
 <head>
   <?php include './config/site_css_links.php'; ?>
   <?php include './config/data_tables_css.php'; ?>
+  <link rel="stylesheet" href="system_styles/users.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Users - Mamatid Health Center System</title>
-
-  <style>
-    :root {
-      --transition-speed: 0.3s;
-      --primary-color: #3699FF;
-      --secondary-color: #6993FF;
-      --success-color: #1BC5BD;
-      --info-color: #8950FC;
-      --warning-color: #FFA800;
-      --danger-color: #F64E60;
-      --light-color: #F3F6F9;
-      --dark-color: #1a1a2d;
-    }
-
-    /* Card Styling */
-    .card {
-      border: none;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-      border-radius: 15px;
-      margin-bottom: 30px;
-    }
-
-    .card-outline {
-      border-top: 3px solid var(--primary-color);
-    }
-
-    .card-header {
-      background: white;
-      padding: 1.5rem;
-      border-bottom: 1px solid #eee;
-    }
-
-    .card-header h3 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--dark-color);
-    }
-
-    .card-body {
-      padding: 1.5rem;
-    }
-
-    /* Form Styling */
-    .form-control {
-      height: calc(2.5rem + 2px);
-      border-radius: 8px;
-      border: 2px solid #e4e6ef;
-      padding: 0.625rem 1rem;
-      font-size: 1rem;
-      transition: all var(--transition-speed);
-    }
-
-    .form-control:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-    }
-
-    .form-label {
-      font-weight: 500;
-      color: var(--dark-color);
-      margin-bottom: 0.5rem;
-    }
-
-    /* Button Styling */
-    .btn {
-      padding: 0.65rem 1rem;
-      font-weight: 500;
-      border-radius: 8px;
-      transition: all var(--transition-speed);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-      border: none;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, var(--success-color) 0%, #26C6DA 100%);
-      border: none;
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, var(--danger-color) 0%, #FF647C 100%);
-      border: none;
-    }
-
-    .btn-success:hover, .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Table Styling */
-    .table {
-      margin-bottom: 0;
-    }
-
-    .table thead tr {
-      background: var(--light-color);
-    }
-
-    .table thead th {
-      border-bottom: none;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      padding: 1rem;
-      vertical-align: middle;
-      color: var(--dark-color);
-    }
-
-    .table tbody td {
-      padding: 1rem;
-      vertical-align: middle;
-      border-color: #eee;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-      background-color: rgba(243, 246, 249, 0.5);
-    }
-
-    .table-hover tbody tr:hover {
-      background-color: rgba(54, 153, 255, 0.05);
-    }
-
-    /* User Image Styling */
-    .user-img {
-      width: 3em;
-      height: 3em;
-      object-fit: cover;
-      object-position: center;
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-      transition: transform var(--transition-speed);
-    }
-
-    .user-img:hover {
-      transform: scale(1.1);
-    }
-
-    /* Content Header Styling */
-    .content-header {
-      padding: 20px 0;
-    }
-
-    .content-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin: 0;
-    }
-
-    /* Toast Styling */
-    .swal2-toast {
-      background: white !important;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    /* Badge Styling */
-    .badge {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border-radius: 6px;
-    }
-
-    .badge-danger {
-      background-color: var(--danger-color);
-    }
-
-    .badge-primary {
-      background-color: var(--primary-color);
-    }
-
-    .badge-info {
-      background-color: var(--info-color);
-    }
-
-    .badge-success {
-      background-color: var(--success-color);
-    }
-
-    .badge-secondary {
-      background-color: #6c757d;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-      .card-header {
-        padding: 1rem;
-      }
-
-      .card-body {
-        padding: 1rem;
-      }
-
-      .table thead th,
-      .table tbody td {
-        padding: 0.75rem;
-      }
-
-      .form-control {
-        height: calc(2.2rem + 2px);
-        padding: 0.5rem 0.75rem;
-      }
-    }
-  </style>
 </head>
-<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
+<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed users-page">
   <div class="wrapper">
     <?php include './config/header.php'; include './config/sidebar.php'; ?>
     
@@ -347,8 +135,16 @@ try {
                   </div>
                   <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" required 
-                           class="form-control" placeholder="Enter password" />
+                    <div class="password-input-wrapper">
+                      <input type="password" id="password" name="password" required 
+                             class="form-control password-field" placeholder="Enter password" />
+                      <span class="password-toggle-btn" 
+                            onclick="togglePassword('password')" 
+                            title="Show password"
+                            aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="password-eye"></i>
+                      </span>
+                    </div>
                   </div>
                   <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -372,7 +168,7 @@ try {
                   <div class="col-lg-4 col-md-4 col-sm-6 mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select id="status" name="status" required class="form-control">
-                      <option value="active">Active</option>
+                      <option value="active" selected>Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
                   </div>
@@ -469,11 +265,18 @@ try {
                           <i class="fa fa-edit"></i>
                         </a>
                         <?php if ($row['id'] != $_SESSION['user_id']): ?>
-                        <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
-                                onclick="toggleUserStatus(<?php echo $row['id']; ?>, '<?php echo $row['status']; ?>')"
-                                title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
-                          <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
-                        </button>
+                          <?php if ($row['role'] != 'admin'): ?>
+                            <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
+                                    onclick="toggleUserStatus(<?php echo $row['id']; ?>, '<?php echo $row['status']; ?>')"
+                                    title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
+                              <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
+                            </button>
+                          <?php else: ?>
+                            <button type="button" class="btn btn-sm btn-secondary" disabled
+                                    title="Cannot deactivate administrator accounts">
+                              <i class="fa fa-shield-alt"></i>
+                            </button>
+                          <?php endif; ?>
                         <?php endif; ?>
                       </td>
                     </tr>
@@ -535,53 +338,34 @@ try {
         });
       }
 
-      // Function to toggle user status
-      window.toggleUserStatus = function(userId, currentStatus) {
-        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-        const action = currentStatus === 'active' ? 'deactivate' : 'activate';
-        
-        Swal.fire({
-          title: 'Are you sure?',
-          text: `Do you want to ${action} this user?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: `Yes, ${action}!`
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $.ajax({
-              url: 'ajax/toggle_user_status.php',
-              type: 'POST',
-              data: { 
-                user_id: userId,
-                status: newStatus
-              },
-              success: function(response) {
-                if (response.success) {
-                  Toast.fire({
-                    icon: 'success',
-                    title: `User ${action}d successfully`
-                  });
-                  setTimeout(() => location.reload(), 1500);
-                } else {
-                  Toast.fire({
-                    icon: 'error',
-                    title: response.message || 'Error updating user status'
-                  });
-                }
-              },
-              error: function() {
-                Toast.fire({
-                  icon: 'error',
-                  title: 'Error updating user status'
-                });
-              }
-            });
-          }
-        });
-      };
+      // Enhanced form field animations
+      $('.form-control').on('focus', function() {
+        $(this).closest('.form-group, .mb-3').addClass('focused');
+      }).on('blur', function() {
+        $(this).closest('.form-group, .mb-3').removeClass('focused');
+      });
     });
+
+    // Password toggle function
+    window.togglePassword = function(fieldId) {
+      const passwordField = document.getElementById(fieldId);
+      const eyeIcon = document.getElementById(fieldId + '-eye');
+      const toggleBtn = eyeIcon.closest('.password-toggle-btn');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+        toggleBtn.classList.add('password-visible');
+        toggleBtn.setAttribute('title', 'Hide password');
+      } else {
+        passwordField.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+        toggleBtn.classList.remove('password-visible');
+        toggleBtn.setAttribute('title', 'Show password');
+      }
+    };
 
     // Function to toggle user status
     window.toggleUserStatus = function(userId, currentStatus) {
@@ -595,9 +379,23 @@ try {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: `Yes, ${action}!`
+        confirmButtonText: `Yes, ${action}!`,
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false
       }).then((result) => {
         if (result.isConfirmed) {
+          // Initialize Toast for this function
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
+
           $.ajax({
             url: 'ajax/toggle_user_status.php',
             type: 'POST',
@@ -630,6 +428,13 @@ try {
         }
       });
     };
+
+    // Enhanced form field animations
+    $('.form-control').on('focus', function() {
+      $(this).closest('.form-group, .mb-3').addClass('focused');
+    }).on('blur', function() {
+      $(this).closest('.form-group, .mb-3').removeClass('focused');
+    });
 
     // Highlight current menu
     showMenuSelected("#mnu_user_management", "#mi_users");

@@ -26,9 +26,21 @@ if ($user_id == $_SESSION['user_id']) {
     exit;
 }
 
+// Check if target user is an admin - don't allow deactivating other admins
+$checkSql = "SELECT role FROM users WHERE id = :id";
+$checkStmt = $con->prepare($checkSql);
+$checkStmt->bindParam(':id', $user_id);
+$checkStmt->execute();
+$targetUser = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+if ($targetUser && $targetUser['role'] === 'admin') {
+    echo json_encode(['success' => false, 'message' => 'Cannot deactivate administrator accounts']);
+    exit;
+}
+
 try {
     // Update user status
-    $sql = "UPDATE tbl_users SET status = :status WHERE id = :id";
+    $sql = "UPDATE users SET status = :status WHERE id = :id";
     $stmt = $con->prepare($sql);
     $stmt->bindParam(':status', $status);
     $stmt->bindParam(':id', $user_id);
