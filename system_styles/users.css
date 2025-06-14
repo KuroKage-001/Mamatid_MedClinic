@@ -13,6 +13,30 @@
   --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
   --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.12);
+  
+  /* EXPORT BUTTON CUSTOM PROPERTIES - Matching User's Image Requirements */
+  --export-btn-padding: 8px 16px;
+  --export-btn-padding-mobile: 6px 12px;
+  --export-btn-font-size: 0.875rem;
+  --export-btn-font-size-mobile: 0.8125rem;
+  --export-btn-border-radius: 8px;
+  --export-btn-gap: 8px;
+  --export-btn-gap-mobile: 6px;
+  --export-btn-transition: all 0.3s ease;
+  --export-btn-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --export-btn-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  /* Export Button Colors - Exact Match to User's Image */
+  --copy-btn-color: #6366F1;
+  --copy-btn-hover: #4F46E5;
+  --csv-btn-color: #10B981;
+  --csv-btn-hover: #059669;
+  --excel-btn-color: #22C55E;
+  --excel-btn-hover: #16A34A;
+  --pdf-btn-color: #EF4444;
+  --pdf-btn-hover: #DC2626;
+  --print-btn-color: #8B5CF6;
+  --print-btn-hover: #7C3AED;
 }
 
 /* Page Layout */
@@ -253,12 +277,35 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   background: linear-gradient(135deg, var(--danger-color) 0%, #FF647C 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-danger:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(246, 78, 96, 0.4);
   color: white;
+  background: linear-gradient(135deg, #e53e3e 0%, #fc8181 100%);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
+}
+
+.btn-danger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-danger:hover::before {
+  left: 100%;
 }
 
 .btn-warning {
@@ -409,6 +456,174 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   margin: 0 0.25rem;
 }
 
+/* Enhanced Delete Button Styling */
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger-color) 0%, #FF647C 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(246, 78, 96, 0.4);
+  color: white;
+  background: linear-gradient(135deg, #e53e3e 0%, #fc8181 100%);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
+}
+
+.btn-danger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-danger:hover::before {
+  left: 100%;
+}
+
+/* Action Button Container */
+.text-center .btn {
+  margin: 0 0.125rem;
+  transition: all var(--transition-speed);
+}
+
+/* Enhanced Action Button Hover Effects */
+.btn-sm:hover {
+  z-index: 2;
+  position: relative;
+}
+
+/* Delete Button Icon Animation */
+.btn-danger i {
+  transition: all var(--transition-speed);
+}
+
+.btn-danger:hover i {
+  transform: scale(1.2) rotate(5deg);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: scale(1.2) rotate(5deg); }
+  25% { transform: scale(1.2) rotate(-5deg); }
+  50% { transform: scale(1.2) rotate(5deg); }
+  75% { transform: scale(1.2) rotate(-5deg); }
+}
+
+/* Warning State for Delete Button */
+.btn-danger.btn-warning-state {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  animation: pulse-warning 2s infinite;
+}
+
+@keyframes pulse-warning {
+  0% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+  50% { box-shadow: 0 4px 20px rgba(255, 107, 53, 0.6); }
+  100% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+}
+
+/* Action Button Spacing Enhancement */
+td.text-center {
+  white-space: nowrap;
+  padding: 1.25rem 0.5rem;
+}
+
+td.text-center .btn {
+  margin: 0 0.1rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Enhanced Button Group Styling */
+.btn-group-actions {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Disabled Button Enhancement for Admin Protection */
+.btn-secondary:disabled {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
+  color: white !important;
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-secondary:disabled::after {
+  content: '🛡️';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.75rem;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Responsive Action Buttons */
+@media (max-width: 768px) {
+  .btn-sm {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    margin: 0 0.1rem;
+  }
+  
+  td.text-center .btn {
+    min-width: 2rem;
+    height: 2rem;
+  }
+  
+  .btn-secondary:disabled::after {
+    width: 14px;
+    height: 14px;
+    font-size: 0.6rem;
+    top: -6px;
+    right: -6px;
+  }
+}
+
+@media (max-width: 576px) {
+  td.text-center {
+    padding: 0.75rem 0.25rem;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.7rem;
+    margin: 0 0.05rem;
+  }
+  
+  td.text-center .btn {
+    min-width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {
@@ -513,71 +728,6 @@ body .swal2-actions .swal2-styled {
 .card-tools .btn-tool:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.1);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .content-header {
-    padding: 1.5rem 0 1rem;
-  }
-  
-  .content-header h1 {
-    font-size: 1.75rem;
-  }
-  
-  .card-header {
-    padding: 1.25rem 1.5rem;
-  }
-  
-  .card-body {
-    padding: 1.5rem;
-  }
-  
-  .table thead th,
-  .table tbody td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.875rem;
-  }
-  
-  .form-control {
-    height: calc(2.75rem + 2px);
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-  }
-  
-  .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
-  }
-  
-  .user-img {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-  
-  .badge {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .content-header h1 {
-    font-size: 1.5rem;
-  }
-  
-  .card-header h3 {
-    font-size: 1.25rem;
-  }
-  
-  .table-responsive {
-    font-size: 0.8rem;
-  }
-  
-  .btn-sm {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.75rem;
-  }
 }
 
 /* Loading States */
@@ -720,16 +870,266 @@ body .swal2-actions .swal2-styled {
   }
 }
 
-/* Disabled button styling for admin protection */
-.btn-secondary:disabled {
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
-  color: white !important;
-  opacity: 0.8;
-  cursor: not-allowed;
-  transform: none !important;
+/* Export Actions Styling - Matching Dashboard Design */
+.export-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.btn-secondary:disabled:hover {
-  transform: none !important;
-  box-shadow: none !important;
+.export-label {
+  font-weight: 600;
+  color: var(--dark-color);
+  font-size: 0.95rem;
+}
+
+.export-description {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Chart Actions - Using Custom Properties with Unique Classes */
+.chart-actions {
+  display: flex;
+  gap: var(--export-btn-gap);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Unique Export Button Base Class - High Specificity */
+.export-action-btn {
+  padding: var(--export-btn-padding) !important;
+  font-size: var(--export-btn-font-size) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--export-btn-gap) !important;
+  border-radius: var(--export-btn-border-radius) !important;
+  transition: var(--export-btn-transition) !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: var(--export-btn-shadow) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  position: relative !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  line-height: 1.5 !important;
+}
+
+/* Legacy support for existing classes */
+.chart-actions .btn-gradient,
+.chart-actions .btn.btn-gradient,
+.chart-actions button {
+  padding: var(--export-btn-padding) !important;
+  font-size: var(--export-btn-font-size) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--export-btn-gap) !important;
+  border-radius: var(--export-btn-border-radius) !important;
+  transition: var(--export-btn-transition) !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: var(--export-btn-shadow) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  position: relative !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+}
+
+/* Unique Export Button Hover States */
+.export-action-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--export-btn-shadow-hover) !important;
+  text-decoration: none !important;
+}
+
+.export-action-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: var(--export-btn-shadow) !important;
+}
+
+.export-action-btn i {
+  font-size: var(--export-btn-font-size) !important;
+  transition: transform 0.2s ease !important;
+  margin-right: 0 !important;
+}
+
+.export-action-btn:hover i {
+  transform: scale(1.1) !important;
+}
+
+.export-action-btn::before {
+  display: none !important;
+}
+
+/* Legacy support hover states */
+.chart-actions .btn-gradient:hover,
+.chart-actions .btn.btn-gradient:hover,
+.chart-actions button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--export-btn-shadow-hover) !important;
+}
+
+.chart-actions .btn-gradient:active,
+.chart-actions .btn.btn-gradient:active,
+.chart-actions button:active {
+  transform: translateY(0) !important;
+  box-shadow: var(--export-btn-shadow) !important;
+}
+
+.chart-actions .btn-gradient i,
+.chart-actions .btn.btn-gradient i,
+.chart-actions button i {
+  font-size: var(--export-btn-font-size) !important;
+  transition: transform 0.2s ease !important;
+  margin-right: 0 !important;
+}
+
+.chart-actions .btn-gradient:hover i,
+.chart-actions .btn.btn-gradient:hover i,
+.chart-actions button:hover i {
+  transform: scale(1.1) !important;
+}
+
+/* Override general button ::before pseudo-element for chart actions */
+.chart-actions .btn-gradient::before,
+.chart-actions .btn.btn-gradient::before,
+.chart-actions button::before {
+  display: none !important;
+}
+
+/* Unique Export Button Color Classes - Maximum Specificity */
+.export-copy-btn {
+  background: var(--copy-btn-color) !important;
+}
+
+.export-copy-btn:hover {
+  background: var(--copy-btn-hover) !important;
+}
+
+.export-csv-btn {
+  background: var(--csv-btn-color) !important;
+}
+
+.export-csv-btn:hover {
+  background: var(--csv-btn-hover) !important;
+}
+
+.export-excel-btn {
+  background: var(--excel-btn-color) !important;
+}
+
+.export-excel-btn:hover {
+  background: var(--excel-btn-hover) !important;
+}
+
+.export-pdf-btn {
+  background: var(--pdf-btn-color) !important;
+}
+
+.export-pdf-btn:hover {
+  background: var(--pdf-btn-hover) !important;
+}
+
+.export-print-btn {
+  background: var(--print-btn-color) !important;
+}
+
+.export-print-btn:hover {
+  background: var(--print-btn-hover) !important;
+}
+
+/* Legacy support - Specific colors using custom properties */
+.chart-actions #usersBtnCopy,
+.chart-actions .btn#usersBtnCopy {
+  background: var(--copy-btn-color) !important;
+}
+
+.chart-actions #usersBtnCopy:hover,
+.chart-actions .btn#usersBtnCopy:hover {
+  background: var(--copy-btn-hover) !important;
+}
+
+.chart-actions #usersBtnCSV,
+.chart-actions .btn#usersBtnCSV {
+  background: var(--csv-btn-color) !important;
+}
+
+.chart-actions #usersBtnCSV:hover,
+.chart-actions .btn#usersBtnCSV:hover {
+  background: var(--csv-btn-hover) !important;
+}
+
+.chart-actions #usersBtnExcel,
+.chart-actions .btn#usersBtnExcel {
+  background: var(--excel-btn-color) !important;
+}
+
+.chart-actions #usersBtnExcel:hover,
+.chart-actions .btn#usersBtnExcel:hover {
+  background: var(--excel-btn-hover) !important;
+}
+
+.chart-actions #usersBtnPDF,
+.chart-actions .btn#usersBtnPDF {
+  background: var(--pdf-btn-color) !important;
+}
+
+.chart-actions #usersBtnPDF:hover,
+.chart-actions .btn#usersBtnPDF:hover {
+  background: var(--pdf-btn-hover) !important;
+}
+
+.chart-actions #usersBtnPrint,
+.chart-actions .btn#usersBtnPrint {
+  background: var(--print-btn-color) !important;
+}
+
+.chart-actions #usersBtnPrint:hover,
+.chart-actions .btn#usersBtnPrint:hover {
+  background: var(--print-btn-hover) !important;
+}
+
+/* Responsive adjustments using custom properties */
+@media (max-width: 768px) {
+  .chart-actions {
+    flex-wrap: wrap;
+    gap: var(--export-btn-gap-mobile);
+  }
+
+  .export-action-btn {
+    padding: var(--export-btn-padding-mobile) !important;
+    font-size: var(--export-btn-font-size-mobile) !important;
+  }
+
+  .chart-actions .btn-gradient,
+  .chart-actions .btn.btn-gradient,
+  .chart-actions button {
+    padding: var(--export-btn-padding-mobile) !important;
+    font-size: var(--export-btn-font-size-mobile) !important;
+  }
+  
+  .export-info {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .export-info {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .export-label {
+    font-size: 0.875rem;
+  }
+  
+  .export-description {
+    font-size: 0.8rem;
+  }
 } 

@@ -199,7 +199,39 @@ try {
                 </button>
               </div>
             </div>
-            <div class="card-body">
+            
+            <!-- Export Actions -->
+            <div class="card-body pb-2">
+              <div class="row align-items-center mb-3">
+                <div class="col-md-6">
+                  <div class="export-info">
+                    <span class="export-label">Export Options:</span>
+                    <span class="export-description">Download user data in various formats</span>
+                  </div>
+                </div>
+                <div class="col-md-6 text-right">
+                  <div class="chart-actions">
+                    <button class="export-action-btn export-copy-btn" id="usersBtnCopy" title="Copy to Clipboard">
+                      <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button class="export-action-btn export-csv-btn" id="usersBtnCSV" title="Export as CSV">
+                      <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button class="export-action-btn export-excel-btn" id="usersBtnExcel" title="Export as Excel">
+                      <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                    <button class="export-action-btn export-pdf-btn" id="usersBtnPDF" title="Export as PDF">
+                      <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="export-action-btn export-print-btn" id="usersBtnPrint" title="Print">
+                      <i class="fas fa-print"></i> Print
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-body pt-0">
               <div class="table-responsive">
                 <table id="all_users" class="table table-striped table-hover">
                   <thead>
@@ -271,9 +303,14 @@ try {
                                 title="<?php echo ($row['status'] == 'active') ? 'Deactivate' : 'Activate'; ?>">
                           <i class="fa fa-<?php echo ($row['status'] == 'active') ? 'ban' : 'check'; ?>"></i>
                         </button>
+                        <button type="button" class="btn btn-sm btn-danger"
+                                onclick="deleteUser(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['display_name'], ENT_QUOTES); ?>')"
+                                title="Delete User">
+                          <i class="fa fa-trash"></i>
+                        </button>
                           <?php else: ?>
                             <button type="button" class="btn btn-sm btn-secondary" disabled
-                                    title="Cannot deactivate administrator accounts">
+                                    title="Cannot modify administrator accounts">
                               <i class="fa fa-shield-alt"></i>
                             </button>
                           <?php endif; ?>
@@ -295,54 +332,405 @@ try {
 
   <?php include './config/site_js_links.php'; ?>
   <?php include './config/data_tables_js.php'; ?>
+  
+  <!-- 
+    EXPORT BUTTONS STYLING - INLINE CSS
+    Added to ensure proper styling with maximum specificity
+  -->
+  <style>
+    /* Export Actions Container */
+    .chart-actions {
+      display: flex !important;
+      gap: 8px !important;
+      justify-content: flex-end !important;
+      flex-wrap: wrap !important;
+    }
 
-  <script>
-    $(document).ready(function() {
-      // Initialize DataTable with modern styling
-      $('#all_users').DataTable({
-        responsive: true,
-        lengthChange: false,
-        autoWidth: false,
-        buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
-        language: {
-          search: "",
-          searchPlaceholder: "Search users..."
-        },
-        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-             "<'row'<'col-sm-12'tr>>" +
-             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-      });
+    /* Unique Export Button Base Class - Maximum Specificity */
+    .export-action-btn {
+      padding: 8px 16px !important;
+      font-size: 0.875rem !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+      font-weight: 500 !important;
+      color: #ffffff !important;
+      border: none !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+      text-transform: none !important;
+      letter-spacing: normal !important;
+      position: relative !important;
+      overflow: visible !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      line-height: 1.5 !important;
+    }
 
-      // Initialize Toast
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      });
+    /* Remove any pseudo-elements that might interfere */
+    .export-action-btn::before {
+      display: none !important;
+    }
 
-      // Show message if redirected with message parameter
-      const urlParams = new URLSearchParams(window.location.search);
-      const message = urlParams.get('message');
-      const type = urlParams.get('type') || 'success';
-      
-      if (message) {
-        Toast.fire({
-          icon: type,
-          title: message
-        });
+    /* Hover Effects */
+    .export-action-btn:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      text-decoration: none !important;
+    }
+
+    /* Active State */
+    .export-action-btn:active {
+      transform: translateY(0) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Icon Styling */
+    .export-action-btn i {
+      font-size: 0.875rem !important;
+      transition: transform 0.2s ease !important;
+      margin-right: 0 !important;
+    }
+
+    /* Icon Hover Effect */
+    .export-action-btn:hover i {
+      transform: scale(1.1) !important;
+    }
+
+    /* SPECIFIC BUTTON COLORS - Matching User's Image Requirements */
+    
+    /* Copy Button - Purple */
+    .export-copy-btn {
+      background: #6366F1 !important;
+    }
+    .export-copy-btn:hover {
+      background: #4F46E5 !important;
+    }
+
+    /* CSV Button - Green */
+    .export-csv-btn {
+      background: #10B981 !important;
+    }
+    .export-csv-btn:hover {
+      background: #059669 !important;
+    }
+
+    /* Excel Button - Light Green */
+    .export-excel-btn {
+      background: #22C55E !important;
+    }
+    .export-excel-btn:hover {
+      background: #16A34A !important;
+    }
+
+    /* PDF Button - Red */
+    .export-pdf-btn {
+      background: #EF4444 !important;
+    }
+    .export-pdf-btn:hover {
+      background: #DC2626 !important;
+    }
+
+    /* Print Button - Purple */
+    .export-print-btn {
+      background: #8B5CF6 !important;
+    }
+    .export-print-btn:hover {
+      background: #7C3AED !important;
+    }
+
+    /* RESPONSIVE DESIGN - Mobile Optimization */
+    @media (max-width: 768px) {
+      .chart-actions {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-content: center !important;
       }
 
-      // Enhanced form field animations
-      $('.form-control').on('focus', function() {
-        $(this).closest('.form-group, .mb-3').addClass('focused');
-      }).on('blur', function() {
-        $(this).closest('.form-group, .mb-3').removeClass('focused');
+      .export-action-btn {
+        padding: 6px 12px !important;
+        font-size: 0.8125rem !important;
+      }
+      
+      .export-info {
+        text-align: center !important;
+        margin-bottom: 1rem !important;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .export-action-btn {
+        padding: 5px 10px !important;
+        font-size: 0.75rem !important;
+        gap: 6px !important;
+      }
+      
+      .export-info {
+        text-align: center !important;
+        margin-bottom: 1rem !important;
+      }
+      
+      .export-label {
+        font-size: 0.875rem !important;
+      }
+      
+      .export-description {
+        font-size: 0.8rem !important;
+      }
+    }
+  </style>
+
+  <script>
+    // Simple toast functions matching dashboard style
+    function showSuccessMessage(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        z-index: 9999;
+        font-size: 14px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          toast.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+
+    function showErrorMessage(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #dc3545;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        z-index: 9999;
+        font-size: 14px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          toast.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+
+    function showInfoMessage(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #17a2b8;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        z-index: 9999;
+        font-size: 14px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          toast.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+
+    // Add CSS animations for toast notifications
+    function addToastStyles() {
+      if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+
+    // Safe text extraction function to avoid jQuery selector issues with special characters
+    function safeExtractText(htmlContent) {
+      if (typeof htmlContent === 'string') {
+        // Create a temporary div to parse HTML safely
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        return tempDiv.textContent || tempDiv.innerText || htmlContent;
+      }
+      return htmlContent;
+    }
+
+    function safeExtractBadgeText(htmlContent) {
+      if (typeof htmlContent === 'string') {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const badge = tempDiv.querySelector('.badge');
+        return badge ? badge.textContent || badge.innerText : tempDiv.textContent || tempDiv.innerText || htmlContent;
+      }
+      return htmlContent;
+    }
+
+    // Initialize toast styles and export functions
+    $(document).ready(function() {
+      // Add toast styles
+      addToastStyles();
+
+      // Re-bind export functions with dashboard-style toast notifications
+      $('#usersBtnCopy').off('click').on('click', function() {
+        const data = $('#all_users').DataTable().data().toArray();
+        const headers = ['S.No', 'Display Name', 'Username', 'Email', 'Phone', 'Role', 'Status'];
+        let csvContent = headers.join('\t') + '\n';
+        
+        data.forEach((row, index) => {
+          const rowData = [
+            index + 1,
+            safeExtractText(row[2]), // Display Name
+            safeExtractText(row[3]), // Username  
+            safeExtractText(row[4]), // Email
+            safeExtractText(row[5]), // Phone
+            safeExtractBadgeText(row[6]), // Role
+            safeExtractBadgeText(row[7])  // Status
+          ];
+          csvContent += rowData.join('\t') + '\n';
+        });
+        
+        navigator.clipboard.writeText(csvContent).then(() => {
+          showSuccessMessage('Data copied to clipboard!');
+        }).catch(() => {
+          showErrorMessage('Failed to copy data');
+        });
+      });
+
+      // Re-bind CSV export with dashboard-style toast notifications
+      $('#usersBtnCSV').off('click').on('click', function() {
+        const data = $('#all_users').DataTable().data().toArray();
+        const headers = ['S.No', 'Display Name', 'Username', 'Email', 'Phone', 'Role', 'Status'];
+        let csvContent = headers.join(',') + '\n';
+        
+        data.forEach((row, index) => {
+          const rowData = [
+            index + 1,
+            `"${safeExtractText(row[2])}"`, // Display Name
+            `"${safeExtractText(row[3])}"`, // Username  
+            `"${safeExtractText(row[4])}"`, // Email
+            `"${safeExtractText(row[5])}"`, // Phone
+            `"${safeExtractBadgeText(row[6])}"`, // Role
+            `"${safeExtractBadgeText(row[7])}"` // Status
+          ];
+          csvContent += rowData.join(',') + '\n';
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `users_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showSuccessMessage('CSV file downloaded successfully!');
+      });
+
+      // Excel export
+      $('#usersBtnExcel').off('click').on('click', function() {
+        showInfoMessage('Excel export feature coming soon!');
+      });
+
+      // PDF export
+      $('#usersBtnPDF').off('click').on('click', function() {
+        showInfoMessage('PDF export feature coming soon!');
+      });
+
+      // Print function
+      $('#usersBtnPrint').off('click').on('click', function() {
+        const printWindow = window.open('', '_blank');
+        const tableHtml = document.querySelector('#all_users').outerHTML;
+        
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Users List - Mamatid Health Center</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              h1 { color: #333; text-align: center; margin-bottom: 30px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f2f2f2; font-weight: bold; }
+              tr:nth-child(even) { background-color: #f9f9f9; }
+              .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+              .badge-danger { background-color: #dc3545; color: white; }
+              .badge-primary { background-color: #007bff; color: white; }
+              .badge-info { background-color: #17a2b8; color: white; }
+              .badge-success { background-color: #28a745; color: white; }
+              .badge-secondary { background-color: #6c757d; color: white; }
+              .user-img { width: 40px; height: 40px; border-radius: 50%; }
+              .text-center { text-align: center; }
+              @media print {
+                .btn { display: none; }
+                .action-column { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Users List - Mamatid Health Center System</h1>
+            <p>Generated on: ${new Date().toLocaleDateString()}</p>
+            ${tableHtml.replace(/onclick="[^"]*"/g, '').replace(/<button[^>]*>.*?<\/button>/g, '')}
+          </body>
+          </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+          printWindow.close();
+        }, 250);
+        
+        showSuccessMessage('Print dialog opened!');
       });
     });
 
@@ -427,6 +815,81 @@ try {
       });
     };
 
+    // Function to delete user
+    window.deleteUser = function(userId, displayName) {
+      Swal.fire({
+        title: 'Are you sure?',
+        html: `Do you want to <strong>permanently delete</strong> the user "<strong>${displayName}</strong>"?<br><br><span style="color: #dc3545; font-weight: 600;">⚠️ This action cannot be undone!</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Delete User!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false,
+        reverseButtons: true,
+        focusCancel: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Initialize Toast for this function
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+          });
+
+          // Show loading state
+          Swal.fire({
+            title: 'Deleting User...',
+            text: 'Please wait while we delete the user.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
+          $.ajax({
+            url: 'actions/delete_user.php',
+            type: 'POST',
+            data: { 
+              user_id: userId
+            },
+            dataType: 'json',
+            success: function(response) {
+              Swal.close();
+              if (response.success) {
+                Toast.fire({
+                  icon: 'success',
+                  title: response.message || 'User deleted successfully'
+                });
+                setTimeout(() => location.reload(), 2000);
+              } else {
+                Toast.fire({
+                  icon: 'error',
+                  title: response.message || 'Error deleting user'
+                });
+              }
+            },
+            error: function() {
+              Swal.close();
+              Toast.fire({
+                icon: 'error',
+                title: 'Error deleting user. Please try again.'
+              });
+            }
+          });
+        }
+      });
+    };
+
     // Enhanced form field animations
     $('.form-control').on('focus', function() {
       $(this).closest('.form-group, .mb-3').addClass('focused');
@@ -436,6 +899,12 @@ try {
 
     // Highlight current menu
     showMenuSelected("#mnu_user_management", "#mi_users");
+
+    // Prevent export-functions.js conflicts by overriding its initialization
+    if (window.exportFunctionsInitialized) {
+      console.log('Export functions already initialized, skipping duplicate initialization');
+    }
+    window.exportFunctionsInitialized = true;
   </script>
 </body>
 </html>
