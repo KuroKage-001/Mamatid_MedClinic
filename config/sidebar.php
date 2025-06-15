@@ -222,9 +222,10 @@ $role_display_name = getRoleDisplayName($user_role);
                         <li class="nav-item">
                             <a href="time_tracker.php" class="nav-link <?php echo ($current_page == 'time_tracker.php' ? 'active' : ''); ?>" id="mi_time_tracker">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Time In|Time Out</p>
+                                <p>Attendance</p>
                             </a>
                         </li>
+                        
                     </ul>
                 </li>
                 <?php endif; ?>

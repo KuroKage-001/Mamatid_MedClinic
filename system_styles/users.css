@@ -456,41 +456,7 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   margin: 0 0.25rem;
 }
 
-/* Enhanced Delete Button Styling */
-.btn-danger {
-  background: linear-gradient(135deg, var(--danger-color) 0%, #FF647C 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-danger:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(246, 78, 96, 0.4);
-  color: white;
-  background: linear-gradient(135deg, #e53e3e 0%, #fc8181 100%);
-}
-
-.btn-danger:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 15px rgba(246, 78, 96, 0.3);
-}
-
-.btn-danger::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn-danger:hover::before {
-  left: 100%;
-}
+/* Enhanced Delete Button Styling - Removed duplicate */
 
 /* Action Button Container */
 .text-center .btn {
@@ -521,17 +487,7 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   75% { transform: scale(1.2) rotate(-5deg); }
 }
 
-/* Warning State for Delete Button */
-.btn-danger.btn-warning-state {
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-  animation: pulse-warning 2s infinite;
-}
-
-@keyframes pulse-warning {
-  0% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
-  50% { box-shadow: 0 4px 20px rgba(255, 107, 53, 0.6); }
-  100% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
-}
+/* Removed unused .btn-warning-state and pulse-warning animation */
 
 /* Action Button Spacing Enhancement */
 td.text-center {
@@ -548,20 +504,32 @@ td.text-center .btn {
   justify-content: center;
 }
 
-/* Enhanced Button Group Styling */
-.btn-group-actions {
-  display: inline-flex;
-  gap: 0.25rem;
-  align-items: center;
+/* Admin Protection Styling - When only shield button is shown */
+td.text-center .btn-secondary:disabled:only-child {
+  margin: 0 auto;
+  position: relative;
 }
+
+/* Ensure proper spacing when edit button is hidden for admins */
+td.text-center .btn:first-child {
+  margin-left: 0;
+}
+
+td.text-center .btn:last-child {
+  margin-right: 0;
+}
+
+/* Removed unused .btn-group-actions */
 
 /* Disabled Button Enhancement for Admin Protection */
 .btn-secondary:disabled {
   background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
   color: white !important;
-  opacity: 0.8;
+  opacity: 0.9;
   cursor: not-allowed;
   transform: none !important;
+  position: relative;
+  border: 2px solid #e2e8f0 !important;
 }
 
 .btn-secondary:disabled::after {
@@ -578,11 +546,29 @@ td.text-center .btn {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: pulse-shield 2s infinite;
 }
 
 .btn-secondary:disabled:hover {
   transform: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  opacity: 1 !important;
+}
+
+/* Shield pulse animation for admin protection */
+@keyframes pulse-shield {
+  0% { 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    transform: scale(1.05);
+  }
+  100% { 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+  }
 }
 
 /* Responsive Action Buttons */
@@ -918,27 +904,7 @@ body .swal2-actions .swal2-styled {
   line-height: 1.5 !important;
 }
 
-/* Legacy support for existing classes */
-.chart-actions .btn-gradient,
-.chart-actions .btn.btn-gradient,
-.chart-actions button {
-  padding: var(--export-btn-padding) !important;
-  font-size: var(--export-btn-font-size) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: var(--export-btn-gap) !important;
-  border-radius: var(--export-btn-border-radius) !important;
-  transition: var(--export-btn-transition) !important;
-  font-weight: 500 !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: var(--export-btn-shadow) !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  position: relative !important;
-  overflow: visible !important;
-  cursor: pointer !important;
-}
+/* Removed legacy support for .btn-gradient classes */
 
 /* Unique Export Button Hover States */
 .export-action-btn:hover {
@@ -966,41 +932,7 @@ body .swal2-actions .swal2-styled {
   display: none !important;
 }
 
-/* Legacy support hover states */
-.chart-actions .btn-gradient:hover,
-.chart-actions .btn.btn-gradient:hover,
-.chart-actions button:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: var(--export-btn-shadow-hover) !important;
-}
-
-.chart-actions .btn-gradient:active,
-.chart-actions .btn.btn-gradient:active,
-.chart-actions button:active {
-  transform: translateY(0) !important;
-  box-shadow: var(--export-btn-shadow) !important;
-}
-
-.chart-actions .btn-gradient i,
-.chart-actions .btn.btn-gradient i,
-.chart-actions button i {
-  font-size: var(--export-btn-font-size) !important;
-  transition: transform 0.2s ease !important;
-  margin-right: 0 !important;
-}
-
-.chart-actions .btn-gradient:hover i,
-.chart-actions .btn.btn-gradient:hover i,
-.chart-actions button:hover i {
-  transform: scale(1.1) !important;
-}
-
-/* Override general button ::before pseudo-element for chart actions */
-.chart-actions .btn-gradient::before,
-.chart-actions .btn.btn-gradient::before,
-.chart-actions button::before {
-  display: none !important;
-}
+/* Removed legacy support hover states */
 
 /* Unique Export Button Color Classes - Maximum Specificity */
 .export-copy-btn {
@@ -1043,56 +975,7 @@ body .swal2-actions .swal2-styled {
   background: var(--print-btn-hover) !important;
 }
 
-/* Legacy support - Specific colors using custom properties */
-.chart-actions #usersBtnCopy,
-.chart-actions .btn#usersBtnCopy {
-  background: var(--copy-btn-color) !important;
-}
-
-.chart-actions #usersBtnCopy:hover,
-.chart-actions .btn#usersBtnCopy:hover {
-  background: var(--copy-btn-hover) !important;
-}
-
-.chart-actions #usersBtnCSV,
-.chart-actions .btn#usersBtnCSV {
-  background: var(--csv-btn-color) !important;
-}
-
-.chart-actions #usersBtnCSV:hover,
-.chart-actions .btn#usersBtnCSV:hover {
-  background: var(--csv-btn-hover) !important;
-}
-
-.chart-actions #usersBtnExcel,
-.chart-actions .btn#usersBtnExcel {
-  background: var(--excel-btn-color) !important;
-}
-
-.chart-actions #usersBtnExcel:hover,
-.chart-actions .btn#usersBtnExcel:hover {
-  background: var(--excel-btn-hover) !important;
-}
-
-.chart-actions #usersBtnPDF,
-.chart-actions .btn#usersBtnPDF {
-  background: var(--pdf-btn-color) !important;
-}
-
-.chart-actions #usersBtnPDF:hover,
-.chart-actions .btn#usersBtnPDF:hover {
-  background: var(--pdf-btn-hover) !important;
-}
-
-.chart-actions #usersBtnPrint,
-.chart-actions .btn#usersBtnPrint {
-  background: var(--print-btn-color) !important;
-}
-
-.chart-actions #usersBtnPrint:hover,
-.chart-actions .btn#usersBtnPrint:hover {
-  background: var(--print-btn-hover) !important;
-}
+/* Removed legacy support for specific button IDs */
 
 /* Responsive adjustments using custom properties */
 @media (max-width: 768px) {
@@ -1106,12 +989,7 @@ body .swal2-actions .swal2-styled {
     font-size: var(--export-btn-font-size-mobile) !important;
   }
 
-  .chart-actions .btn-gradient,
-  .chart-actions .btn.btn-gradient,
-  .chart-actions button {
-    padding: var(--export-btn-padding-mobile) !important;
-    font-size: var(--export-btn-font-size-mobile) !important;
-  }
+  /* Removed legacy mobile support */
   
   .export-info {
     text-align: center;

@@ -266,6 +266,9 @@ try {
                             case 'health_worker':
                                 $roleClass = 'badge-info';
                                 break;
+                            default:
+                                $roleClass = 'badge-secondary'; // Default for unknown roles
+                                break;
                         }
                         
                         // Status badge colors
@@ -283,7 +286,33 @@ try {
                       <td><?php echo $row['phone'] ?: '-'; ?></td>
                       <td>
                         <span class="badge <?php echo $roleClass; ?>">
-                          <?php echo getRoleDisplayName($row['role']); ?>
+                          <?php 
+                          // Clean and normalize the role value
+                          $cleanRole = trim(strtolower($row['role']));
+                          
+                          // Role display mapping with robust handling
+                          $roleNames = [
+                              'admin' => 'Administrator',
+                              'administrator' => 'Administrator',
+                              'health_worker' => 'Health Worker',
+                              'healthworker' => 'Health Worker',
+                              'health worker' => 'Health Worker',
+                              'doctor' => 'Doctor',
+                              'dr' => 'Doctor'
+                          ];
+                          
+                          // Get role display name
+                          if (function_exists('getRoleDisplayName') && !empty(getRoleDisplayName($row['role'])) && getRoleDisplayName($row['role']) !== 'Unknown') {
+                              $roleDisplay = getRoleDisplayName($row['role']);
+                          } elseif (isset($roleNames[$cleanRole])) {
+                              $roleDisplay = $roleNames[$cleanRole];
+                          } else {
+                              // Last fallback - format the raw role nicely
+                              $roleDisplay = ucwords(str_replace(['_', '-'], ' ', $row['role']));
+                          }
+                          
+                          echo $roleDisplay;
+                          ?>
                         </span>
                       </td>
                       <td>
@@ -292,10 +321,12 @@ try {
                         </span>
                       </td>
                       <td class="text-center">
+                        <?php if ($row['role'] != 'admin'): ?>
                         <a href="update_user.php?user_id=<?php echo $row['id']; ?>" 
                            class="btn btn-primary btn-sm" title="Edit">
                           <i class="fa fa-edit"></i>
                         </a>
+                        <?php endif; ?>
                         <?php if ($row['id'] != $_SESSION['user_id']): ?>
                           <?php if ($row['role'] != 'admin'): ?>
                         <button type="button" class="btn btn-sm <?php echo ($row['status'] == 'active') ? 'btn-warning' : 'btn-success'; ?>"
@@ -310,7 +341,7 @@ try {
                         </button>
                           <?php else: ?>
                             <button type="button" class="btn btn-sm btn-secondary" disabled
-                                    title="Cannot modify administrator accounts">
+                                    title="Administrator accounts are protected">
                               <i class="fa fa-shield-alt"></i>
                             </button>
                           <?php endif; ?>
@@ -613,7 +644,16 @@ try {
       return htmlContent;
     }
 
-    // Initialize toast styles and export functions
+    // Consolidated Toast utility
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+
+    // Initialize export functions
     $(document).ready(function() {
       // Add toast styles
       addToastStyles();
@@ -773,14 +813,7 @@ try {
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          // Initialize Toast for this function
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-          });
+          // Use consolidated Toast utility
 
           $.ajax({
             url: 'ajax/toggle_user_status.php',
@@ -835,14 +868,7 @@ try {
         focusCancel: true
       }).then((result) => {
         if (result.isConfirmed) {
-          // Initialize Toast for this function
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true
-          });
+          // Use consolidated Toast utility
 
           // Show loading state
           Swal.fire({
@@ -900,11 +926,7 @@ try {
     // Highlight current menu
     showMenuSelected("#mnu_user_management", "#mi_users");
 
-    // Prevent export-functions.js conflicts by overriding its initialization
-    if (window.exportFunctionsInitialized) {
-      console.log('Export functions already initialized, skipping duplicate initialization');
-    }
-    window.exportFunctionsInitialized = true;
+    // Removed redundant export functions conflict prevention
   </script>
 </body>
 </html>
