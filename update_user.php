@@ -15,12 +15,12 @@ $message = '';
 $messageType = 'success';
 
 // Get and validate user ID
-if (!isset($_GET['user_id']) || !is_numeric($_GET['user_id'])) {
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("location:users.php?message=" . urlencode("Invalid user ID") . "&type=error");
     exit;
 }
 
-$user_id = intval($_GET['user_id']);
+$user_id = intval($_GET['id']);
 
 // Prevent editing own account (should use account settings)
 if ($_SESSION['user_id'] == $user_id) {
