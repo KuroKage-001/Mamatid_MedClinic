@@ -14,17 +14,7 @@
   --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.12);
   
-  /* EXPORT BUTTON CUSTOM PROPERTIES - Matching User's Image Requirements */
-  --export-btn-padding: 8px 16px;
-  --export-btn-padding-mobile: 6px 12px;
-  --export-btn-font-size: 0.875rem;
-  --export-btn-font-size-mobile: 0.8125rem;
-  --export-btn-border-radius: 8px;
-  --export-btn-gap: 8px;
-  --export-btn-gap-mobile: 6px;
-  --export-btn-transition: all 0.3s ease;
-  --export-btn-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --export-btn-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Export Button Colors - Exact Match to User's Requirements */
   
   /* Export Button Colors - Exact Match to User's Image */
   --copy-btn-color: #6366F1;
@@ -378,16 +368,220 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   border-color: rgba(0, 0, 0, 0.05);
   font-weight: 500;
   color: var(--dark-color);
+  position: relative;
 }
 
+/* Fix badge positioning in table cells */
+.table tbody td .badge {
+  position: static !important;
+  display: inline-block !important;
+  transform: none !important;
+  transition: none !important;
+  float: none !important;
+  clear: none !important;
+  margin: 0 !important;
+}
+
+/* DataTables specific badge fixes */
+table.dataTable tbody td .badge,
+#all_users tbody td .badge {
+  position: static !important;
+  display: inline-block !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  will-change: auto !important;
+  backface-visibility: visible !important;
+}
+
+/* Ensure table cells containing badges have proper overflow */
+.table tbody td:has(.badge) {
+  overflow: visible;
+  position: relative;
+}
+
+/* Alternative selector for browsers that don't support :has() */
+.table tbody td[data-badge-cell] {
+  overflow: visible;
+  position: relative;
+}
+
+/* Override any external CSS that might affect badges */
+.users-page .badge,
+.users-page table .badge,
+.users-page .table .badge,
+.users-page #all_users .badge,
+table#all_users .badge,
+#all_users tbody .badge,
+.dataTable .badge {
+  position: static !important;
+  display: inline-block !important;
+  float: none !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+  animation: none !important;
+  transition: box-shadow 0.3s ease !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1 !important;
+}
+
+/* Ensure badges don't move on any interaction */
+.users-page .badge:hover,
+.users-page .badge:focus,
+.users-page .badge:active {
+  position: static !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* CRITICAL: Force badge visibility and colors */
+.users-page .badge-primary,
+#all_users .badge-primary,
+.dataTable .badge-primary,
+table.dataTable .badge-primary {
+  background: linear-gradient(135deg, #3699FF, #6993FF) !important;
+  color: white !important;
+  box-shadow: 0 2px 10px rgba(54, 153, 255, 0.3) !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.users-page .badge-danger,
+#all_users .badge-danger,
+.dataTable .badge-danger,
+table.dataTable .badge-danger {
+  background: linear-gradient(135deg, #F64E60, #FF647C) !important;
+  color: white !important;
+  box-shadow: 0 2px 10px rgba(246, 78, 96, 0.3) !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.users-page .badge-info,
+#all_users .badge-info,
+.dataTable .badge-info,
+table.dataTable .badge-info {
+  background: linear-gradient(135deg, #8950FC, #A855F7) !important;
+  color: white !important;
+  box-shadow: 0 2px 10px rgba(137, 80, 252, 0.3) !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.users-page .badge-success,
+#all_users .badge-success,
+.dataTable .badge-success,
+table.dataTable .badge-success {
+  background: linear-gradient(135deg, #1BC5BD, #26C6DA) !important;
+  color: white !important;
+  box-shadow: 0 2px 10px rgba(27, 197, 189, 0.3) !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.users-page .badge-secondary,
+#all_users .badge-secondary,
+.dataTable .badge-secondary,
+table.dataTable .badge-secondary {
+  background: linear-gradient(135deg, #6c757d, #868e96) !important;
+  color: white !important;
+  box-shadow: 0 2px 10px rgba(108, 117, 125, 0.3) !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ABSOLUTE OVERRIDE: Ensure all badges are visible regardless of any other CSS */
+.badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 1 !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Force role column badges to be visible */
+td:nth-child(7) .badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #3699FF !important;
+  color: white !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Specific role badge colors for 7th column (Role column) */
+td:nth-child(7) .badge-primary {
+  background: linear-gradient(135deg, #3699FF, #6993FF) !important;
+}
+
+td:nth-child(7) .badge-danger {
+  background: linear-gradient(135deg, #F64E60, #FF647C) !important;
+}
+
+td:nth-child(7) .badge-info {
+  background: linear-gradient(135deg, #8950FC, #A855F7) !important;
+}
+
+td:nth-child(7) .badge-success {
+  background: linear-gradient(135deg, #1BC5BD, #26C6DA) !important;
+}
+
+td:nth-child(7) .badge-secondary {
+  background: linear-gradient(135deg, #6c757d, #868e96) !important;
+}
+
+/* Table striped styling */
 .table-striped tbody tr:nth-of-type(odd) {
   background: linear-gradient(135deg, rgba(243, 246, 249, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 
+/* Table hover styling */
 .table-hover tbody tr:hover {
   background: linear-gradient(135deg, rgba(54, 153, 255, 0.05) 0%, rgba(105, 147, 255, 0.03) 100%);
   transform: scale(1.01);
   transition: all var(--transition-speed);
+}
+
+/* Prevent badge movement on row hover */
+.table-hover tbody tr:hover .badge {
+  transform: none !important;
+  position: static !important;
+  animation: none !important;
+}
+
+/* Ensure badges are not affected by any global transforms */
+.badge:hover {
+  transform: none !important;
+  position: static !important;
+  animation: none !important;
 }
 
 /* User Image Styling */
@@ -416,6 +610,16 @@ input[type="file"].form-control::-webkit-file-upload-button:hover {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block !important;
+  position: static !important;
+  white-space: nowrap;
+  vertical-align: middle;
+  z-index: 1;
+  float: none !important;
+  clear: none !important;
+  margin: 0 !important;
+  transform: none !important;
+  transition: box-shadow 0.3s ease !important;
 }
 
 .badge-danger {
@@ -856,140 +1060,186 @@ body .swal2-actions .swal2-styled {
   }
 }
 
-/* Export Actions Styling - Matching Dashboard Design */
+/* Enhanced Export Info Section */
 .export-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(54, 153, 255, 0.05), rgba(105, 147, 255, 0.02));
+  border-radius: 12px;
+  border: 1px solid rgba(54, 153, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .export-label {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--dark-color);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.export-label::before {
+  content: '📊';
+  font-size: 1.1rem;
 }
 
 .export-description {
   color: #64748b;
   font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
-/* Chart Actions - Using Custom Properties with Unique Classes */
+/* Modern Export Actions Container */
 .chart-actions {
   display: flex;
-  gap: var(--export-btn-gap);
+  gap: 12px;
   justify-content: flex-end;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-/* Unique Export Button Base Class - High Specificity */
+/* Elegant Export Options - Non-Button Design */
 .export-action-btn {
-  padding: var(--export-btn-padding) !important;
-  font-size: var(--export-btn-font-size) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: var(--export-btn-gap) !important;
-  border-radius: var(--export-btn-border-radius) !important;
-  transition: var(--export-btn-transition) !important;
-  font-weight: 500 !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: var(--export-btn-shadow) !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  position: relative !important;
-  overflow: visible !important;
+  gap: 10px !important;
+  padding: 12px 18px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   cursor: pointer !important;
-  text-decoration: none !important;
-  line-height: 1.5 !important;
-}
-
-/* Removed legacy support for .btn-gradient classes */
-
-/* Unique Export Button Hover States */
-.export-action-btn:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: var(--export-btn-shadow-hover) !important;
-  text-decoration: none !important;
-}
-
-.export-action-btn:active {
-  transform: translateY(0) !important;
-  box-shadow: var(--export-btn-shadow) !important;
-}
-
-.export-action-btn i {
-  font-size: var(--export-btn-font-size) !important;
-  transition: transform 0.2s ease !important;
-  margin-right: 0 !important;
-}
-
-.export-action-btn:hover i {
-  transform: scale(1.1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 2px solid transparent !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
 }
 
 .export-action-btn::before {
-  display: none !important;
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+  transition: left 0.6s ease !important;
 }
 
-/* Removed legacy support hover states */
+.export-action-btn:hover::before {
+  left: 100% !important;
+}
 
-/* Unique Export Button Color Classes - Maximum Specificity */
+.export-action-btn:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+  border-color: currentColor !important;
+}
+
+.export-action-btn:active {
+  transform: translateY(-1px) scale(1.01) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.export-action-btn i {
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  opacity: 0.9 !important;
+  flex-shrink: 0 !important;
+}
+
+.export-action-btn:hover i {
+  transform: scale(1.15) rotate(5deg) !important;
+  opacity: 1 !important;
+}
+
+/* Sophisticated Color Schemes for Each Export Type */
 .export-copy-btn {
-  background: var(--copy-btn-color) !important;
+  color: #6366F1 !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
 }
 
 .export-copy-btn:hover {
-  background: var(--copy-btn-hover) !important;
+  color: #4F46E5 !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
 }
 
 .export-csv-btn {
-  background: var(--csv-btn-color) !important;
+  color: #10B981 !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
 }
 
 .export-csv-btn:hover {
-  background: var(--csv-btn-hover) !important;
+  color: #059669 !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
 }
 
 .export-excel-btn {
-  background: var(--excel-btn-color) !important;
+  color: #22C55E !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
 }
 
 .export-excel-btn:hover {
-  background: var(--excel-btn-hover) !important;
+  color: #16A34A !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
 }
 
 .export-pdf-btn {
-  background: var(--pdf-btn-color) !important;
+  color: #EF4444 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
 }
 
 .export-pdf-btn:hover {
-  background: var(--pdf-btn-hover) !important;
+  color: #DC2626 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
+  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
 }
 
 .export-print-btn {
-  background: var(--print-btn-color) !important;
+  color: #8B5CF6 !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
 }
 
 .export-print-btn:hover {
-  background: var(--print-btn-hover) !important;
+  color: #7C3AED !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
 }
 
 /* Removed legacy support for specific button IDs */
 
-/* Responsive adjustments using custom properties */
+/* Responsive Design for Modern Export Options */
 @media (max-width: 768px) {
   .chart-actions {
     flex-wrap: wrap;
-    gap: var(--export-btn-gap-mobile);
+    gap: 8px;
+    justify-content: center;
   }
 
   .export-action-btn {
-    padding: var(--export-btn-padding-mobile) !important;
-    font-size: var(--export-btn-font-size-mobile) !important;
+    padding: 10px 14px !important;
+    font-size: 0.8125rem !important;
+    gap: 8px !important;
+    border-radius: 10px !important;
   }
 
-  /* Removed legacy mobile support */
+  .export-action-btn i {
+    font-size: 0.9rem !important;
+  }
   
   .export-info {
     text-align: center;
@@ -998,6 +1248,28 @@ body .swal2-actions .swal2-styled {
 }
 
 @media (max-width: 576px) {
+  .chart-actions {
+    gap: 6px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .export-action-btn {
+    padding: 8px 12px !important;
+    font-size: 0.75rem !important;
+    gap: 6px !important;
+    border-radius: 8px !important;
+    justify-content: center !important;
+  }
+
+  .export-action-btn i {
+    font-size: 0.85rem !important;
+  }
+
+  .export-action-btn:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+  }
+  
   .export-info {
     text-align: center;
     margin-bottom: 1rem;
@@ -1010,4 +1282,88 @@ body .swal2-actions .swal2-styled {
   .export-description {
     font-size: 0.8rem;
   }
+}
+/* CRITICAL BADGE VISIBILITY FIX - MUST BE AT END TO OVERRIDE ALL OTHER CSS */
+.badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 1 !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Force role column badges to be visible - 7th column is Role */
+td:nth-child(7) .badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #3699FF !important;
+  color: white !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Specific role badge colors for Role column */
+td:nth-child(7) .badge-primary {
+  background: linear-gradient(135deg, #3699FF, #6993FF) !important;
+}
+
+td:nth-child(7) .badge-danger {
+  background: linear-gradient(135deg, #F64E60, #FF647C) !important;
+}
+
+td:nth-child(7) .badge-info {
+  background: linear-gradient(135deg, #8950FC, #A855F7) !important;
+}
+
+td:nth-child(7) .badge-success {
+  background: linear-gradient(135deg, #1BC5BD, #26C6DA) !important;
+}
+
+td:nth-child(7) .badge-secondary {
+  background: linear-gradient(135deg, #6c757d, #868e96) !important;
+}
+
+/* DataTables specific overrides */
+table.dataTable tbody td .badge,
+#all_users tbody td .badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  transform: none !important;
+}
+
+/* Final override for any hidden badges */
+.users-page .badge,
+.users-page table .badge,
+.users-page .dataTable .badge {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+  animation: none !important;
+  transition: box-shadow 0.3s ease !important;
+  z-index: 1 !important;
 } 

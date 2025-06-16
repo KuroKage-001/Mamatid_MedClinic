@@ -197,6 +197,179 @@ try {
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <link rel="stylesheet" href="system_styles/dashboard.css">
   <title>Dashboard - Mamatid Health Center System</title>
+  
+  <!-- Modern Export Actions Inline CSS -->
+  <style>
+    /* Modern Export Actions Container */
+    .chart-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Elegant Export Options - Non-Button Design */
+    .export-action-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      padding: 12px 18px !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border-radius: 12px !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: pointer !important;
+      position: relative !important;
+      overflow: hidden !important;
+      border: 2px solid transparent !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+      text-transform: none !important;
+      letter-spacing: 0.3px !important;
+    }
+
+    .export-action-btn::before {
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: -100% !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+      transition: left 0.6s ease !important;
+    }
+
+    .export-action-btn:hover::before {
+      left: 100% !important;
+    }
+
+    .export-action-btn:hover {
+      transform: translateY(-3px) scale(1.02) !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+      border-color: currentColor !important;
+    }
+
+    .export-action-btn:active {
+      transform: translateY(-1px) scale(1.01) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .export-action-btn i {
+      font-size: 1rem !important;
+      transition: all 0.3s ease !important;
+      opacity: 0.9 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .export-action-btn:hover i {
+      transform: scale(1.15) rotate(5deg) !important;
+      opacity: 1 !important;
+    }
+
+    /* Sophisticated Color Schemes for Each Export Type */
+    .export-copy-btn {
+      color: #6366F1 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
+    }
+
+    .export-copy-btn:hover {
+      color: #4F46E5 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
+    }
+
+    .export-csv-btn {
+      color: #10B981 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
+    }
+
+    .export-csv-btn:hover {
+      color: #059669 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
+    }
+
+    .export-excel-btn {
+      color: #22C55E !important;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
+    }
+
+    .export-excel-btn:hover {
+      color: #16A34A !important;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
+    }
+
+    .export-pdf-btn {
+      color: #EF4444 !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
+    }
+
+    .export-pdf-btn:hover {
+      color: #DC2626 !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
+    }
+
+    .export-print-btn {
+      color: #8B5CF6 !important;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+    }
+
+    .export-print-btn:hover {
+      color: #7C3AED !important;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
+    }
+
+    /* Responsive Design for Modern Export Options */
+    @media (max-width: 768px) {
+      .chart-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .export-action-btn {
+        padding: 10px 14px !important;
+        font-size: 0.8125rem !important;
+        gap: 8px !important;
+        border-radius: 10px !important;
+      }
+
+      .export-action-btn i {
+        font-size: 0.9rem !important;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .chart-actions {
+        gap: 6px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .export-action-btn {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+        gap: 6px !important;
+        border-radius: 8px !important;
+        justify-content: center !important;
+      }
+
+      .export-action-btn i {
+        font-size: 0.85rem !important;
+      }
+
+      .export-action-btn:hover {
+        transform: translateY(-2px) scale(1.01) !important;
+      }
+    }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
@@ -398,21 +571,26 @@ try {
           </div>
                     <div class="col-md-6 text-right">
                       <div class="chart-actions">
-                        <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
-                          <i class="fas fa-copy"></i> Copy
-                        </button> 
-                        <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
-                          <i class="fas fa-file-csv"></i> CSV
-                        </button>
-                        <button class="btn btn-gradient btn-sm export-btn" id="btnExcel">
-                          <i class="fas fa-file-excel"></i> Excel
-                        </button>
-                        <button class="btn btn-gradient btn-sm export-btn" id="btnPDF">
-                          <i class="fas fa-file-pdf"></i> PDF
-                        </button>
-                        <button class="btn btn-gradient btn-sm export-btn" id="btnPrint">
-                          <i class="fas fa-print"></i> Print
-                        </button>
+                        <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                          <i class="fas fa-copy"></i>
+                          <span>Copy</span>
+                        </a>
+                        <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                          <i class="fas fa-file-csv"></i>
+                          <span>CSV</span>
+                        </a>
+                        <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                          <i class="fas fa-file-excel"></i>
+                          <span>Excel</span>
+                        </a>
+                        <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                          <i class="fas fa-file-pdf"></i>
+                          <span>PDF</span>
+                        </a>
+                        <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                          <i class="fas fa-print"></i>
+                          <span>Print</span>
+                        </a>
                       </div>                     
                     </div>
                   </div>

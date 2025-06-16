@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 08, 2025 at 08:24 PM
+-- Generation Time: Jun 15, 2025 at 09:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,7 +54,7 @@ INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `da
 (4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
 (5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'completed', 'Done', '2025-04-14 21:07:07', '2025-04-17 16:02:26'),
 (7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54'),
-(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'approved', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-04-19 10:09:44'),
+(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'completed', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-06-09 15:48:17'),
 (9, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-21', '10:59:00', 'Checkup po', 'approved', 'Noted.. punta napo kayo', '2025-04-20 11:59:31', '2025-04-20 12:00:01'),
 (10, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-05-22', '15:44:00', 'note23', 'approved', 'okay', '2025-05-21 16:44:23', '2025-05-21 16:45:02');
 
@@ -162,7 +162,8 @@ CREATE TABLE `family_members` (
 INSERT INTO `family_members` (`id`, `name`, `date`, `created_at`) VALUES
 (3, 'Vikir Baskerville', '2025-04-17', '2025-04-17 10:01:46'),
 (5, 'Hugo Le Barkerville', '2025-04-19', '2025-04-19 14:09:03'),
-(9, 'Ghisllain Perdium', '2025-05-14', '2025-05-13 22:47:15');
+(9, 'Ghisllain Perdium', '2025-05-14', '2025-05-13 22:47:15'),
+(10, 'Seth Marlon', '2025-06-09', '2025-06-09 11:20:21');
 
 -- --------------------------------------------------------
 
@@ -532,8 +533,12 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `display_name`, `email`, `phone`, `user_name`, `password`, `role`, `status`, `profile_picture`, `created_at`, `updated_at`) VALUES
 (1, 'Administrator', NULL, NULL, 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1656551981avatar.png ', '2025-06-08 16:35:40', '2025-06-08 16:35:40'),
-(5, 'Administrator01', NULL, NULL, 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1744879233leo.jpg', '2025-06-08 16:35:40', '2025-06-08 16:35:40'),
-(6, 'Administrator02', NULL, NULL, 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1745150573cat1.jpg ', '2025-06-08 16:35:40', '2025-06-08 16:35:40');
+(5, 'Administrator01', NULL, NULL, 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1744879233leo.jpg', '2025-06-08 16:35:40', '2025-06-12 15:59:32'),
+(6, 'Administrator02', 'admin02@gmail.com', '09918719610', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1745150573cat1.jpg ', '2025-06-08 16:35:40', '2025-06-08 18:42:25'),
+(13, 'Leo01', 'leo001@gmail.com', '09878887678', 'leo01', '9f9974d013e8c0b3b51fc70c01db38ab', 'health_worker', 'active', '1749462447_ChiefTechnologyOfficer.jpg', '2025-06-09 09:47:27', '2025-06-09 09:47:27'),
+(14, 'Leo02', 'leow01@gmail.com', '09888767675', 'Leow01', '06fd0e7ac68caca3851d0dd8da204a55', 'health_worker', 'active', '1749741784_AidanReturn.jpg', '2025-06-12 15:23:04', '2025-06-12 15:41:12'),
+(15, 'Vikir', 'vikirbaskerville01@gmail.com', '09898787786', 'vikir01', '3a667b3b4453775d5b52d795fdb05721', 'doctor', 'active', '1749934446_vikir.png', '2025-06-14 20:54:06', '2025-06-14 20:54:06'),
+(16, 'Pomeranian', 'pome01@gmail.com', '09887765456', 'Pome01', '01731ac63a4570a7fda8f7de0f92b151', 'doctor', 'active', '1750013496_ShikimoriWallpaper.jpg', '2025-06-15 18:51:36', '2025-06-15 18:51:36');
 
 -- --------------------------------------------------------
 
@@ -719,7 +724,7 @@ ALTER TABLE `deworming`
 -- AUTO_INCREMENT for table `family_members`
 --
 ALTER TABLE `family_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `family_planning`
@@ -797,7 +802,7 @@ ALTER TABLE `time_out_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Constraints for dumped tables
