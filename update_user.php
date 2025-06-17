@@ -177,6 +177,181 @@ if (isset($_POST['update_user'])) {
     <link rel="stylesheet" href="system_styles/update_user.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <title>Update User - Mamatid Health Center System</title>
+    <style>
+        :root {
+          --transition-speed: 0.3s;
+          --primary-color: #3699FF;
+          --secondary-color: #6993FF;
+          --success-color: #1BC5BD;
+          --info-color: #8950FC;
+          --warning-color: #FFA800;
+          --danger-color: #F64E60;
+          --light-color: #F3F6F9;
+          --dark-color: #1a1a2d;
+        }
+        
+        /* User Info Card Styling */
+        .user-info-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .profile-section {
+            position: relative;
+        }
+        
+        .profile-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-section {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7E8299;
+            font-size: 0.9rem;
+        }
+        
+        .username {
+            font-weight: 500;
+        }
+        
+        .info-separator {
+            color: #B5B5C3;
+        }
+        
+        .role-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .role-admin {
+            background-color: rgba(137, 80, 252, 0.1);
+            color: var(--info-color);
+        }
+        
+        .role-doctor {
+            background-color: rgba(255, 168, 0, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .role-health_worker {
+            background-color: rgba(54, 153, 255, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .user-status-info {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #7E8299;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+        }
+        
+        .status-active {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(27, 197, 189, 0.2);
+        }
+        
+        .status-inactive {
+            background-color: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(246, 78, 96, 0.2);
+        }
+        
+        .status-text {
+            font-weight: 500;
+        }
+        
+        .member-since {
+            color: #7E8299;
+            font-size: 0.9rem;
+        }
+        
+        .edit-badge {
+            background: linear-gradient(135deg, rgba(54, 153, 255, 0.1), rgba(105, 147, 255, 0.1));
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Bootstrap 5 compatibility for spacing utilities */
+        .me-4 {
+            margin-right: 1.5rem !important;
+        }
+        
+        .mb-1 {
+            margin-bottom: 0.25rem !important;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem !important;
+        }
+        
+        .p-3 {
+            padding: 1rem !important;
+        }
+        
+        .p-0 {
+            padding: 0 !important;
+        }
+        
+        .me-3 {
+            margin-right: 1rem !important;
+        }
+        
+        .me-1 {
+            margin-right: 0.25rem !important;
+        }
+        
+        .ms-auto {
+            margin-left: auto !important;
+        }
+        
+        .text-end {
+            text-align: right !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed update-user-page">
     <div class="wrapper">
@@ -196,25 +371,38 @@ if (isset($_POST['update_user'])) {
             <section class="content">
                 <div class="container-fluid">
                     <!-- User Info Box -->
-                    <div class="info-box">
-                        <div class="d-flex align-items-center">
-                            <div class="profile-section">
-                                <img src="user_images/<?php echo $user['profile_picture']; ?>" 
-                                     alt="Profile Picture" class="profile-preview"
-                                     onerror="this.src='user_images/default_profile.jpg'">
-                            </div>
-                            <div class="info-section">
-                                <h5><?php echo htmlspecialchars($user['display_name']); ?></h5>
-                                <div class="user-meta">
-                                    <span class="username">@<?php echo htmlspecialchars($user['user_name']); ?></span>
-                                    <span class="info-separator">•</span>
-                                    <span class="role-text"><?php echo ucfirst(str_replace('_', ' ', $user['role'])); ?></span>
-                                    <span class="info-separator">•</span>
-                                   <span class="badge badge-<?php echo $user['status'] == 'active' ? 'success' : 'danger'; ?>">
-                                       <?php echo ucfirst($user['status']); ?>
-                                   </span>
+                    <div class="card card-outline card-primary user-info-card mb-4">
+                        <div class="card-body p-0">
+                            <div class="d-flex align-items-center p-3">
+                                <div class="profile-section me-4">
+                                    <img src="user_images/<?php echo $user['profile_picture']; ?>" 
+                                         alt="Profile Picture" class="profile-preview"
+                                         onerror="this.src='user_images/default_profile.jpg'">
                                 </div>
-                                <div class="member-since">Member since: <?php echo date('F j, Y', strtotime($user['created_at'])); ?></div>
+                                <div class="info-section">
+                                    <h4 class="user-name mb-1"><?php echo htmlspecialchars($user['display_name']); ?></h4>
+                                    <div class="user-meta mb-2">
+                                        <span class="username">@<?php echo htmlspecialchars($user['user_name']); ?></span>
+                                        <span class="info-separator">•</span>
+                                        <span class="role-badge role-<?php echo $user['role']; ?>"><?php echo getRoleDisplayName($user['role']); ?></span>
+                                    </div>
+                                    <div class="user-status-info d-flex align-items-center">
+                                        <div class="status-indicator me-3">
+                                            <span class="status-dot <?php echo $user['status'] == 'active' ? 'status-active' : 'status-inactive'; ?>"></span>
+                                            <span class="status-text"><?php echo ucfirst($user['status']); ?></span>
+                                        </div>
+                                        <div class="member-since">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            Member since <?php echo date('M d, Y', strtotime($user['created_at'])); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="ms-auto text-end">
+                                    <div class="edit-badge">
+                                        <i class="fas fa-pen"></i> Editing User
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

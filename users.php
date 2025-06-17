@@ -684,8 +684,15 @@ try {
                 <div class="col-lg-4 col-md-6">
                   <div class="form-group">
                     <label class="form-label">Password <span class="text-danger">*</span></label>
-                    <input type="password" id="password" name="password" required
-                           class="form-control" placeholder="Enter password"/>
+                    <div class="input-group">
+                      <input type="password" id="password" name="password" required
+                             class="form-control" placeholder="Enter password"/>
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </div>
                     <small class="text-muted">Minimum 6 characters</small>
                   </div>
                 </div>
@@ -754,28 +761,6 @@ try {
             </div>
           </div>
           <div class="card-body">
-            <div class="export-container" id="exportContainer">
-              <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
-                <i class="fas fa-copy"></i>
-                <span>Copy</span>
-              </a>
-              <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
-                <i class="fas fa-file-csv"></i>
-                <span>CSV</span>
-              </a>
-              <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
-                <i class="fas fa-file-excel"></i>
-                <span>Excel</span>
-              </a>
-              <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
-                <i class="fas fa-file-pdf"></i>
-                <span>PDF</span>
-              </a>
-              <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
-                <i class="fas fa-print"></i>
-                <span>Print</span>
-              </a>
-            </div>
             <div class="table-responsive">
               <table id="all_users" class="table table-striped table-hover">
                 <thead>
@@ -851,6 +836,29 @@ try {
                 </tbody>
               </table>
             </div>
+            
+            <div class="export-container mt-4" id="exportContainer">
+              <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                <i class="fas fa-copy"></i>
+                <span>Copy</span>
+              </a>
+              <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                <i class="fas fa-file-csv"></i>
+                <span>CSV</span>
+              </a>
+              <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                <i class="fas fa-file-excel"></i>
+                <span>Excel</span>
+              </a>
+              <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                <i class="fas fa-file-pdf"></i>
+                <span>PDF</span>
+              </a>
+              <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                <i class="fas fa-print"></i>
+                <span>Print</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -868,13 +876,19 @@ try {
         responsive: true,
         lengthChange: false,
         autoWidth: false,
+        pageLength: 5,
+        pagingType: "simple_numbers",
         dom: 'Bfrtip',
         buttons: [
           'copy', 'csv', 'excel', 'pdf', 'print'
         ],
         language: {
           search: "",
-          searchPlaceholder: "Search users..."
+          searchPlaceholder: "Search users...",
+          paginate: {
+            previous: "<i class='fas fa-chevron-left'></i>",
+            next: "<i class='fas fa-chevron-right'></i>"
+          }
         }
       });
 
@@ -1079,6 +1093,20 @@ try {
 
       // Show menu
       showMenuSelected("#mnu_user_management", "#mi_users");
+      
+      // Toggle password visibility
+      $(document).on('click', '#togglePassword', function() {
+        const passwordField = $('#password');
+        const icon = $(this).find('i');
+        
+        if (passwordField.attr('type') === 'password') {
+          passwordField.attr('type', 'text');
+          icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+          passwordField.attr('type', 'password');
+          icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+      });
     });
   </script>
 </body>
