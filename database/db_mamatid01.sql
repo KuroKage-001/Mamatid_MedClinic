@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 15, 2025 at 09:45 PM
+-- Generation Time: Jun 17, 2025 at 03:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -532,13 +532,15 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `display_name`, `email`, `phone`, `user_name`, `password`, `role`, `status`, `profile_picture`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', NULL, NULL, 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1656551981avatar.png ', '2025-06-08 16:35:40', '2025-06-08 16:35:40'),
-(5, 'Administrator01', NULL, NULL, 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1744879233leo.jpg', '2025-06-08 16:35:40', '2025-06-12 15:59:32'),
+(1, 'Administrator', 'admin@gmail.com', '09876777656', 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1656551981avatar.png ', '2025-06-08 16:35:40', '2025-06-15 23:33:01'),
+(5, 'Administrator01', 'admin01@gmail.com', '09876765654', 'admin01', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1744879233leo.jpg', '2025-06-08 16:35:40', '2025-06-15 23:31:23'),
 (6, 'Administrator02', 'admin02@gmail.com', '09918719610', 'admin02', '7488e331b8b64e5794da3fa4eb10ad5d', 'admin', 'active', '1745150573cat1.jpg ', '2025-06-08 16:35:40', '2025-06-08 18:42:25'),
-(13, 'Leo01', 'leo001@gmail.com', '09878887678', 'leo01', '9f9974d013e8c0b3b51fc70c01db38ab', 'health_worker', 'active', '1749462447_ChiefTechnologyOfficer.jpg', '2025-06-09 09:47:27', '2025-06-09 09:47:27'),
+(13, 'Leo01', 'leo001@gmail.com', '09878887678', 'leo01', '9f9974d013e8c0b3b51fc70c01db38ab', 'health_worker', 'active', '1749462447_ChiefTechnologyOfficer.jpg', '2025-06-09 09:47:27', '2025-06-16 12:41:14'),
 (14, 'Leo02', 'leow01@gmail.com', '09888767675', 'Leow01', '06fd0e7ac68caca3851d0dd8da204a55', 'health_worker', 'active', '1749741784_AidanReturn.jpg', '2025-06-12 15:23:04', '2025-06-12 15:41:12'),
-(15, 'Vikir', 'vikirbaskerville01@gmail.com', '09898787786', 'vikir01', '3a667b3b4453775d5b52d795fdb05721', 'doctor', 'active', '1749934446_vikir.png', '2025-06-14 20:54:06', '2025-06-14 20:54:06'),
-(16, 'Pomeranian', 'pome01@gmail.com', '09887765456', 'Pome01', '01731ac63a4570a7fda8f7de0f92b151', 'doctor', 'active', '1750013496_ShikimoriWallpaper.jpg', '2025-06-15 18:51:36', '2025-06-15 18:51:36');
+(16, 'Pomeranian', 'pome01@gmail.com', '09887765456', 'Pome01', '01731ac63a4570a7fda8f7de0f92b151', 'doctor', 'active', '1750013496_ShikimoriWallpaper.jpg', '2025-06-15 18:51:36', '2025-06-16 15:47:41'),
+(19, 'Vikir', 'vikir12345@gmail.com', '09765654321', 'vikir01', '3a667b3b4453775d5b52d795fdb05721', 'doctor', 'active', 'default_profile.jpg', '2025-06-16 12:42:24', '2025-06-16 15:47:43'),
+(20, 'Maria01', 'maria12345@gmail.com', '09878854323', 'maria01', '76eb1cfbe718656c4e028d05e456db5d', 'admin', 'active', 'default_profile.jpg', '2025-06-16 16:39:52', '2025-06-16 16:39:52'),
+(21, 'Jasper01', 'jasper12345@gmail.com', '09756453611', 'jasper01', 'e82ee392520546e944542c8c0ed9ac33', 'health_worker', 'active', 'default_profile.jpg', '2025-06-16 16:41:05', '2025-06-16 16:41:05');
 
 -- --------------------------------------------------------
 
@@ -802,7 +804,7 @@ ALTER TABLE `time_out_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
