@@ -206,6 +206,16 @@ $role_display_name = getRoleDisplayName($user_role);
                 </li>
                 <?php endif; ?>
 
+                <?php if (isHealthWorker() || isDoctor()): ?>
+                <!-- Attendance Menu for Health Workers and Doctors -->
+                <li class="nav-item" id="mnu_attendance">
+                    <a href="time_tracker.php" class="nav-link <?php echo ($current_page == 'time_tracker.php' ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-clock"></i>
+                        <p>My Attendance</p>
+                    </a>
+                </li>
+                <?php endif; ?>
+
                 <?php if (isAdmin()): ?>
                 <!-- Users Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">

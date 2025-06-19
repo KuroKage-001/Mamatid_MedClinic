@@ -88,14 +88,16 @@ function canAccess($feature) {
             'appointments_management',
             'inventory_view',
             'reports_limited',
-            'account_settings'
+            'account_settings',
+            'time_tracking'
         ],
         'doctor' => [
             'patient_management',
             'appointments_management',
             'inventory_management',
             'reports_full',
-            'account_settings'
+            'account_settings',
+            'time_tracking'
         ]
     ];
     
