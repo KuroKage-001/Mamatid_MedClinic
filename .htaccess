@@ -12,11 +12,23 @@ RewriteRule ^(.*)$ $1.html
 
 RewriteCond %{REQUEST_FILENAME} !favicon.ico
 
+# Redirect access_denied.php to its new location in system/security
+RewriteRule ^access_denied\.php$ system/security/access_denied.php [L,QSA,R=301]
+
 # Security: Block access to sensitive files
 RewriteRule ^config/ - [F,L]
 RewriteRule ^logs/ - [F,L]
 RewriteRule \.log$ - [F,L]
 RewriteRule ^\.env$ - [F,L]
+
+# Redirect protected pages to unauthorized_access.php if not logged in
+# This is a fallback - PHP authentication should catch this first
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_FILENAME} \.php$
+RewriteCond %{REQUEST_FILENAME} !(index|client_login|client_register|client_logout)\.php
+RewriteCond %{REQUEST_FILENAME} !system/security/unauthorized_access\.php
+RewriteCond %{HTTP_COOKIE} !PHPSESSID
+RewriteRule ^(.*)$ system/security/unauthorized_access.php?page=$1 [L,QSA]
 
 </IfModule>
 

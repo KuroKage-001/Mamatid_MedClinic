@@ -2,6 +2,16 @@
 // Include the database connection and common functions
 include './config/connection.php';
 include './common_service/common_functions.php';
+require_once './common_service/role_functions.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("location:index.php");
+    exit;
+}
+
+// Check permission
+requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
 // Retrieve patients list as HTML <option> elements using the getAllPatientsWithHistory() function

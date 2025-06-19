@@ -44,7 +44,7 @@ function requireRole($roles) {
     }
     
     if (!isLoggedIn() || !hasAnyRole($roles)) {
-        header("Location: access_denied.php");
+        header("Location: system/security/access_denied.php");
         exit();
     }
 }

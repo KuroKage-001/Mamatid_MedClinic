@@ -1,29 +1,14 @@
 <?php
-// Session fix to prevent undefined variable errors
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+/**
+ * Session Fix Bridge File
+ * This file maintains backward compatibility with existing code
+ * while moving the actual session fix logic to system/security/session_fix.php
+ * 
+ * @package    Mamatid Health Center System
+ * @subpackage Config
+ * @version    1.0
+ */
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("location:index.php");
-    exit;
-}
-
-// Set default session variables if not set
-if (!isset($_SESSION['user_name'])) {
-    $_SESSION['user_name'] = 'Unknown User';
-}
-
-if (!isset($_SESSION['display_name'])) {
-    $_SESSION['display_name'] = $_SESSION['user_name'];
-}
-
-if (!isset($_SESSION['role'])) {
-    $_SESSION['role'] = 'user';
-}
-
-if (!isset($_SESSION['profile_picture'])) {
-    $_SESSION['profile_picture'] = 'default_profile.jpg';
-}
+// Include the actual session fix file from the new location
+require_once __DIR__ . '/../system/security/session_fix.php';
 ?> 

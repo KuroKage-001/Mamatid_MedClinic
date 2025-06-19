@@ -1,18 +1,18 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header("location:index.php");
+    header("location:../../index.php");
     exit;
 }
 
-require_once './common_service/role_functions.php';
+require_once '../../common_service/role_functions.php';
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Access Denied | MHC</title>
-    <?php include './config/site_css_links.php'; ?>
+    <?php include '../../config/site_css_links.php'; ?>
     <style>
         .error-page {
             padding: 70px 0;
@@ -90,7 +90,7 @@ require_once './common_service/role_functions.php';
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include './config/header.php'; include './config/sidebar.php'; ?>
+<?php include '../../config/header.php'; include '../../config/sidebar.php'; ?>
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -110,7 +110,7 @@ require_once './common_service/role_functions.php';
                 <p class="text-muted">
                     Your current role: <strong><?php echo getRoleDisplayName(getUserRole()); ?></strong>
                 </p>
-                <a href="dashboard.php" class="btn-back">
+                <a href="../../dashboard.php" class="btn-back">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
                 </a>
             </div>
@@ -118,10 +118,10 @@ require_once './common_service/role_functions.php';
     </section>
 </div>
 
-<?php include './config/footer.php'; ?>
+<?php include '../../config/footer.php'; ?>
 </div>
 
-<?php include './config/site_js_links.php'; ?>
+<?php include '../../config/site_js_links.php'; ?>
 
 </body>
 </html> 

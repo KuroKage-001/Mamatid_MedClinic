@@ -5,6 +5,9 @@ ob_start();
 // Ensure the correct timezone is set
 date_default_timezone_set('Asia/Manila');
 
+// Include authentication check
+require_once './config/check_auth.php';
+
 include './config/connection.php';
 // Include session fix to prevent undefined variable errors
 require_once './config/session_fix.php';
