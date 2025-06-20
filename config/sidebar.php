@@ -242,6 +242,24 @@ $role_display_name = getRoleDisplayName($user_role);
                     </ul>
                 </li>
                 <?php endif; ?>
+
+                <?php if (isAdmin() || isHealthWorker()) { ?>
+                <li class="nav-item">
+                    <a href="doctor_schedule_approval.php" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-check"></i>
+                        <p>Doctor Schedule Approval</p>
+                    </a>
+                </li>
+                <?php } ?>
+
+                <?php if (isDoctor()) { ?>
+                <li class="nav-item">
+                    <a href="doctor_schedule.php" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>My Schedule</p>
+                    </a>
+                </li>
+                <?php } ?>
             </ul>
         </nav>
     </div>

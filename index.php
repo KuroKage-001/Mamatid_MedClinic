@@ -40,6 +40,7 @@ if (isset($_POST['login'])) {
             $_SESSION['user_name']       = $row['user_name'];
             $_SESSION['profile_picture'] = $row['profile_picture'];
             $_SESSION['role']            = $row['role'];
+            $_SESSION['admin_last_activity'] = time(); // Set admin activity timestamp
 
             // Handle "Remember Me" functionality
             if (isset($_POST['remember_me'])) {

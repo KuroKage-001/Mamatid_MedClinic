@@ -16,23 +16,17 @@ $user_name = $_SESSION['user_name'] ?? 'unknown';
 // Log the logout action (optional - for audit trail)
 error_log("User logout: ID=$user_id, Username=$user_name, Session=$session_id, Time=" . date('Y-m-d H:i:s'));
 
-// Unset all session variables for this user
-$_SESSION = array();
-
-// Delete the session cookie if it exists
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
+// Only unset admin/staff session variables instead of clearing the entire session
+// This preserves any client session that might be active
+$admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role'];
+foreach ($admin_session_vars as $var) {
+    if (isset($_SESSION[$var])) {
+        unset($_SESSION[$var]);
+    }
 }
 
-// Destroy the session
-session_destroy();
-
-// Regenerate session ID for security (start fresh session)
-session_start();
+// No need to destroy the entire session or delete cookies
+// Just regenerate the session ID for security
 session_regenerate_id(true);
 
 // Redirect to login page with logout message

@@ -12,6 +12,15 @@ if (!isset($_SESSION['user_id'])) {
 requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
+$error = '';
+
+// Get message/error from URL if redirected
+if (isset($_GET['message'])) {
+    $message = $_GET['message'];
+}
+if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+}
 
 // Handle appointment status updates
 if (isset($_POST['update_status'])) {
@@ -25,7 +34,23 @@ if (isset($_POST['update_status'])) {
         $stmt->execute([$newStatus, $notes, $appointmentId]);
         $message = "Appointment status updated successfully!";
     } catch (PDOException $ex) {
-        $message = "Error updating appointment: " . $ex->getMessage();
+        $error = "Error updating appointment: " . $ex->getMessage();
+    }
+}
+
+// Handle doctor schedule approval (for admin and health workers only)
+if (isset($_POST['approve_schedule']) && (isAdmin() || isHealthWorker())) {
+    $scheduleId = $_POST['schedule_id'];
+    $isApproved = isset($_POST['is_approved']) ? 1 : 0;
+    $approvalNotes = $_POST['approval_notes'];
+    
+    try {
+        $query = "UPDATE doctor_schedules SET is_approved = ?, approval_notes = ? WHERE id = ?";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$isApproved, $approvalNotes, $scheduleId]);
+        $message = "Doctor schedule " . ($isApproved ? "approved" : "rejected") . " successfully!";
+    } catch (PDOException $ex) {
+        $error = "Error updating schedule: " . $ex->getMessage();
     }
 }
 
@@ -33,6 +58,18 @@ if (isset($_POST['update_status'])) {
 $query = "SELECT * FROM appointments ORDER BY appointment_date ASC, appointment_time ASC";
 $stmt = $con->prepare($query);
 $stmt->execute();
+
+// Fetch all doctor schedules (for admin and health workers)
+$doctorSchedules = [];
+if (isAdmin() || isHealthWorker()) {
+    $scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
+                     FROM doctor_schedules ds
+                     JOIN users u ON ds.doctor_id = u.id
+                     ORDER BY ds.schedule_date ASC, ds.start_time ASC";
+    $scheduleStmt = $con->prepare($scheduleQuery);
+    $scheduleStmt->execute();
+    $doctorSchedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -253,6 +290,24 @@ $stmt->execute();
             text-transform: capitalize;
         }
 
+        /* Custom Switch */
+        .custom-switch .custom-control-label::before {
+            height: 1.5rem;
+            width: 2.75rem;
+            border-radius: 3rem;
+        }
+
+        .custom-switch .custom-control-label::after {
+            width: calc(1.5rem - 4px);
+            height: calc(1.5rem - 4px);
+            border-radius: 50%;
+        }
+
+        .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .card-header {
@@ -312,6 +367,147 @@ $stmt->execute();
                     <i class="fas fa-info-circle mr-2"></i>
                     <?php echo $message; ?>
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                <?php endif; ?>
+                
+                <?php if ($error): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <?php echo $error; ?>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                <?php endif; ?>
+
+                <?php if (isAdmin() || isHealthWorker()): ?>
+                <!-- Doctor Schedules Card -->
+                <div class="card card-outline card-info mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            Doctor Schedules
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="doctorSchedules" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Time Slot</th>
+                                        <th>Max Patients</th>
+                                        <th>Status</th>
+                                        <th>Notes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($doctorSchedules as $schedule): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($schedule['doctor_name']); ?></td>
+                                        <td><?php echo date('M d, Y (D)', strtotime($schedule['schedule_date'])); ?></td>
+                                        <td>
+                                            <?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . 
+                                                     date('h:i A', strtotime($schedule['end_time'])); ?>
+                                        </td>
+                                        <td><?php echo $schedule['time_slot_minutes']; ?> minutes</td>
+                                        <td><?php echo $schedule['max_patients']; ?></td>
+                                        <td>
+                                            <?php if (isset($schedule['is_approved'])): ?>
+                                                <span class="badge badge-<?php echo $schedule['is_approved'] ? 'success' : 'warning'; ?>">
+                                                    <?php echo $schedule['is_approved'] ? 'Approved' : 'Pending'; ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge badge-warning">Pending</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($schedule['notes'] ?? ''); ?></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-info" 
+                                                    data-toggle="modal" 
+                                                    data-target="#scheduleModal<?php echo $schedule['id']; ?>">
+                                                <i class="fas fa-check-circle mr-1"></i> Manage
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Schedule Management Modal -->
+                                    <div class="modal fade" id="scheduleModal<?php echo $schedule['id']; ?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">
+                                                        <i class="fas fa-calendar-check mr-2"></i>
+                                                        Manage Doctor Schedule
+                                                    </h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <form method="post">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Doctor</label>
+                                                            <input type="text" class="form-control" 
+                                                                   value="<?php echo htmlspecialchars($schedule['doctor_name']); ?>" readonly>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Date</label>
+                                                            <input type="text" class="form-control" 
+                                                                   value="<?php echo date('F d, Y (l)', strtotime($schedule['schedule_date'])); ?>" readonly>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Time</label>
+                                                            <input type="text" class="form-control" 
+                                                                   value="<?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . 
+                                                                                date('h:i A', strtotime($schedule['end_time'])); ?>" readonly>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Approve Schedule</label>
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input" 
+                                                                       id="approveSwitch<?php echo $schedule['id']; ?>" 
+                                                                       name="is_approved" 
+                                                                       <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'checked' : ''; ?>>
+                                                                <label class="custom-control-label" 
+                                                                       for="approveSwitch<?php echo $schedule['id']; ?>">
+                                                                    <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Approved' : 'Not Approved'; ?>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Notes</label>
+                                                            <textarea name="approval_notes" class="form-control" rows="3" 
+                                                                      placeholder="Add notes about this schedule"><?php echo htmlspecialchars($schedule['approval_notes'] ?? ''); ?></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                            <i class="fas fa-times mr-2"></i>Close
+                                                        </button>
+                                                        <button type="submit" name="approve_schedule" class="btn btn-primary">
+                                                            <i class="fas fa-save mr-2"></i>Save Changes
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <?php endif; ?>
 
@@ -439,7 +635,7 @@ $stmt->execute();
     
     <script>
         $(document).ready(function() {
-            // Initialize DataTable
+            // Initialize DataTable for Appointments
             $("#appointments").DataTable({
                 responsive: true,
                 lengthChange: false,
@@ -453,6 +649,20 @@ $stmt->execute();
                      "<'row'<'col-sm-12'tr>>" +
                      "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
             }).buttons().container().appendTo('#appointments_wrapper .col-md-6:eq(0)');
+
+            <?php if (isAdmin() || isHealthWorker()): ?>
+            // Initialize DataTable for Doctor Schedules
+            $("#doctorSchedules").DataTable({
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search schedules..."
+                }
+            }).buttons().container().appendTo('#doctorSchedules_wrapper .col-md-6:eq(0)');
+            <?php endif; ?>
 
             // Initialize Toast
             const Toast = Swal.mixin({
@@ -472,10 +682,28 @@ $stmt->execute();
                 });
             }
 
+            // Show error if exists
+            var error = '<?php echo $error;?>';
+            if(error !== '') {
+                Toast.fire({
+                    icon: 'error',
+                    title: error
+                });
+            }
+
             // Auto hide alerts after 5 seconds
             setTimeout(function() {
                 $('.alert').alert('close');
             }, 5000);
+            
+            // Toggle switch label text
+            $('.custom-switch .custom-control-input').change(function() {
+                if($(this).is(':checked')) {
+                    $(this).next('label').text('Approved');
+                } else {
+                    $(this).next('label').text('Not Approved');
+                }
+            });
         });
 
         // Highlight current menu

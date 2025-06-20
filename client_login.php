@@ -39,6 +39,7 @@ if (isset($_POST['login'])) {
             $_SESSION['client_id'] = $row['id'];
             $_SESSION['client_name'] = $row['full_name'];
             $_SESSION['client_email'] = $row['email'];
+            $_SESSION['client_last_activity'] = time(); // Set client activity timestamp
 
             // Handle "Remember Me" functionality
             if (isset($_POST['remember_me'])) {

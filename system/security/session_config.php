@@ -43,17 +43,40 @@ if (session_status() === PHP_SESSION_NONE) {
 function checkSessionTimeout() {
     $timeout = 1800; // 30 minutes
     
-    if (isset($_SESSION['user_id']) || isset($_SESSION['client_id'])) {
-        if (isset($_SESSION['last_activity'])) {
-            if (time() - $_SESSION['last_activity'] > $timeout) {
-                // Session has expired
-                session_unset();
-                session_destroy();
+    // Check admin/staff session timeout
+    if (isset($_SESSION['user_id'])) {
+        if (isset($_SESSION['admin_last_activity'])) {
+            if (time() - $_SESSION['admin_last_activity'] > $timeout) {
+                // Admin session has expired - only clear admin session variables
+                $admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role', 'admin_last_activity'];
+                foreach ($admin_session_vars as $var) {
+                    if (isset($_SESSION[$var])) {
+                        unset($_SESSION[$var]);
+                    }
+                }
                 return false;
             }
         }
-        $_SESSION['last_activity'] = time();
+        $_SESSION['admin_last_activity'] = time();
     }
+    
+    // Check client session timeout
+    if (isset($_SESSION['client_id'])) {
+        if (isset($_SESSION['client_last_activity'])) {
+            if (time() - $_SESSION['client_last_activity'] > $timeout) {
+                // Client session has expired - only clear client session variables
+                $client_session_vars = ['client_id', 'client_name', 'client_email', 'client_last_activity'];
+                foreach ($client_session_vars as $var) {
+                    if (isset($_SESSION[$var])) {
+                        unset($_SESSION[$var]);
+                    }
+                }
+                return false;
+            }
+        }
+        $_SESSION['client_last_activity'] = time();
+    }
+    
     return true;
 }
 
@@ -61,12 +84,15 @@ function checkSessionTimeout() {
  * Check if session has expired and redirect appropriately
  */
 function handleSessionExpiry() {
-    if (!checkSessionTimeout()) {
-        if (isset($_SESSION['client_id'])) {
-            header("location: ../../client_login.php?message=session_expired");
-        } else {
-            header("location: ../../index.php?message=session_expired");
-        }
+    // Check admin session expiry
+    if (isset($_SESSION['user_id']) && !checkSessionTimeout()) {
+        header("location: ../../index.php?message=session_expired");
+        exit;
+    }
+    
+    // Check client session expiry
+    if (isset($_SESSION['client_id']) && !checkSessionTimeout()) {
+        header("location: ../../client_login.php?message=session_expired");
         exit;
     }
 }
@@ -82,32 +108,32 @@ function safeLogout($userType = 'admin') {
         $user_id = $_SESSION['client_id'] ?? 'unknown';
         $user_name = $_SESSION['client_name'] ?? 'unknown';
         $redirect_url = '../../client_login.php?message=logged_out';
+        
+        // Only unset client session variables
+        $client_session_vars = ['client_id', 'client_name', 'client_email'];
+        foreach ($client_session_vars as $var) {
+            if (isset($_SESSION[$var])) {
+                unset($_SESSION[$var]);
+            }
+        }
     } else {
         $user_id = $_SESSION['user_id'] ?? 'unknown';
         $user_name = $_SESSION['user_name'] ?? 'unknown';
         $redirect_url = '../../index.php?message=logged_out';
+        
+        // Only unset admin/staff session variables
+        $admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role'];
+        foreach ($admin_session_vars as $var) {
+            if (isset($_SESSION[$var])) {
+                unset($_SESSION[$var]);
+            }
+        }
     }
     
     // Log the logout action
     error_log("$userType logout: ID=$user_id, Name=$user_name, Session=$session_id, Time=" . date('Y-m-d H:i:s'));
     
-    // Clear all session data
-    $_SESSION = array();
-    
-    // Delete session cookie
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
-    }
-    
-    // Destroy session
-    session_destroy();
-    
-    // Start fresh session for security
-    session_start();
+    // Regenerate session ID for security
     session_regenerate_id(true);
     
     // Redirect

@@ -524,7 +524,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                                                 <td>
                                                     <?php if ($appointment['status'] == 'pending'): ?>
                                                     <div class="btn-group">
-                                                        <a href="edit_appointment.php?id=<?php echo $appointment['id']; ?>" 
+                                                        <a href="update_appointment.php?id=<?php echo $appointment['id']; ?>" 
                                                            class="btn btn-primary btn-sm">
                                                             <i class="fas fa-edit"></i> Edit
                                                         </a>

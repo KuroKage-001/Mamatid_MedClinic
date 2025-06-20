@@ -188,4 +188,33 @@ function getPatientHistory($con, $patientName) {
     
     return $result;
 }
+
+/**
+ * Check if a user is concurrently logged in as both admin/staff and client
+ * 
+ * @return bool True if both admin/staff and client sessions are active
+ */
+function isConcurrentLogin() {
+    $isAdminLoggedIn = isset($_SESSION['user_id']);
+    $isClientLoggedIn = isset($_SESSION['client_id']);
+    
+    return ($isAdminLoggedIn && $isClientLoggedIn);
+}
+
+/**
+ * Get the current user type (admin/staff or client)
+ * 
+ * @return string 'admin', 'staff', 'client', or 'guest'
+ */
+function getCurrentUserType() {
+    if (isset($_SESSION['user_id'])) {
+        if (isset($_SESSION['role'])) {
+            return $_SESSION['role']; // 'admin', 'health_worker', or 'doctor'
+        }
+        return 'staff';
+    } elseif (isset($_SESSION['client_id'])) {
+        return 'client';
+    }
+    return 'guest';
+}
 ?>

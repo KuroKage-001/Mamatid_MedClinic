@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 17, 2025 at 03:26 PM
+-- Generation Time: Jun 20, 2025 at 09:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -422,9 +422,7 @@ CREATE TABLE `time_in_logs` (
 --
 
 INSERT INTO `time_in_logs` (`id`, `user_id`, `log_date`, `time_in`) VALUES
-(5, 6, '2025-04-17', '22:12:29'),
-(6, 6, '2025-04-19', '17:31:09'),
-(7, 1, '2025-04-19', '20:51:57');
+(8, 14, '2025-06-19', '14:32:08');
 
 --
 -- Triggers `time_in_logs`
@@ -458,12 +456,7 @@ CREATE TABLE `time_logs` (
 --
 
 INSERT INTO `time_logs` (`id`, `user_id`, `log_date`, `time_in`, `time_out`, `total_hours`) VALUES
-(14, 6, '2025-04-17', '22:12:29', NULL, 0.00),
-(15, 6, '2025-04-19', '17:31:09', '17:31:15', 0.00),
-(17, 5, '2025-04-19', '17:43:52', '20:26:05', NULL),
-(18, 1, '2025-04-19', '20:51:57', '20:52:04', 0.00),
-(20, 6, '2025-04-20', '20:03:19', '20:03:29', -999.99),
-(23, 5, '2025-04-20', '20:29:06', '20:29:10', NULL);
+(27, 14, '2025-06-19', '14:32:08', '14:32:16', 0.00);
 
 -- --------------------------------------------------------
 
@@ -483,8 +476,7 @@ CREATE TABLE `time_out_logs` (
 --
 
 INSERT INTO `time_out_logs` (`id`, `user_id`, `log_date`, `time_out`) VALUES
-(3, 6, '2025-04-19', '17:31:15'),
-(4, 1, '2025-04-19', '20:52:04');
+(5, 14, '2025-06-19', '14:32:16');
 
 --
 -- Triggers `time_out_logs`
@@ -786,19 +778,19 @@ ALTER TABLE `tetanus_toxoid`
 -- AUTO_INCREMENT for table `time_in_logs`
 --
 ALTER TABLE `time_in_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `time_logs`
 --
 ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `time_out_logs`
 --
 ALTER TABLE `time_out_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`

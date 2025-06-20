@@ -69,7 +69,7 @@ if (isset($_POST['update_appointment'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Appointment - Mamatid Health Center</title>
+    <title>Update Appointment - Mamatid Health Center</title>
     <?php include './config/site_css_links.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
 
@@ -150,7 +150,7 @@ if (isset($_POST['update_appointment'])) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Edit Appointment</h1>
+                            <h1 class="m-0">Update Appointment</h1>
                         </div>
                     </div>
                 </div>

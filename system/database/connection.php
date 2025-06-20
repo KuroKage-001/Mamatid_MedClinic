@@ -62,27 +62,51 @@ try {
 function checkSessionTimeout($session) {
     $timeout = 1800; // 30 minutes
     
-    if (isset($session['user_id']) || isset($session['client_id'])) {
-        if (isset($session['last_activity'])) {
-            if (time() - $session['last_activity'] > $timeout) {
-                // Session has expired - clear only this session
-                $_SESSION = array();
-                session_destroy();
+    // Check admin/staff session timeout
+    if (isset($session['user_id'])) {
+        if (isset($session['admin_last_activity'])) {
+            if (time() - $session['admin_last_activity'] > $timeout) {
+                // Admin session has expired - only clear admin session variables
+                $admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role', 'admin_last_activity'];
+                foreach ($admin_session_vars as $var) {
+                    if (isset($_SESSION[$var])) {
+                        unset($_SESSION[$var]);
+                    }
+                }
                 return false;
             }
         }
-        $_SESSION['last_activity'] = time();
+        $_SESSION['admin_last_activity'] = time();
     }
+    
+    // Check client session timeout
+    if (isset($session['client_id'])) {
+        if (isset($session['client_last_activity'])) {
+            if (time() - $session['client_last_activity'] > $timeout) {
+                // Client session has expired - only clear client session variables
+                $client_session_vars = ['client_id', 'client_name', 'client_email', 'client_last_activity'];
+                foreach ($client_session_vars as $var) {
+                    if (isset($_SESSION[$var])) {
+                        unset($_SESSION[$var]);
+                    }
+                }
+                return false;
+            }
+        }
+        $_SESSION['client_last_activity'] = time();
+    }
+    
     return true;
 }
 
 // Check session timeout only if user is logged in
-if ((isset($_SESSION['user_id']) || isset($_SESSION['client_id'])) && !checkSessionTimeout($_SESSION)) {
-    if (isset($_SESSION['client_id'])) {
-        header("location: ../../client_login.php?message=session_expired");
-    } else {
-        header("location: ../../index.php?message=session_expired");
-    }
+if (isset($_SESSION['user_id']) && !checkSessionTimeout($_SESSION)) {
+    header("location: ../../index.php?message=session_expired");
+    exit;
+}
+
+if (isset($_SESSION['client_id']) && !checkSessionTimeout($_SESSION)) {
+    header("location: ../../client_login.php?message=session_expired");
     exit;
 }
 ?> 
