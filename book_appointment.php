@@ -23,11 +23,12 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
-// Get all doctor schedules
+// Get all approved doctor schedules
 $scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
                 FROM doctor_schedules ds
                 JOIN users u ON ds.doctor_id = u.id
-                WHERE ds.schedule_date >= CURDATE()
+                WHERE ds.schedule_date >= CURDATE() 
+                AND ds.is_approved = 1
                 ORDER BY ds.schedule_date ASC, ds.start_time ASC";
 $scheduleStmt = $con->prepare($scheduleQuery);
 $scheduleStmt->execute();
@@ -129,6 +130,11 @@ foreach ($doctorSchedules as $schedule) {
         ]
     ];
 }
+
+// Set a message if no schedules are available
+if (empty($calendarEvents)) {
+    $message = 'No approved doctor schedules are currently available. Please check back later.';
+}
 ?>
 
 <!DOCTYPE html>
@@ -141,7 +147,7 @@ foreach ($doctorSchedules as $schedule) {
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     
     <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -496,7 +502,7 @@ foreach ($doctorSchedules as $schedule) {
     <?php include './config/site_js_links.php'; ?>
     
     <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="plugins/fullcalendar/main.min.js"></script>
     
     <script>
         $(function() {

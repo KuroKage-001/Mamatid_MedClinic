@@ -243,14 +243,7 @@ $role_display_name = getRoleDisplayName($user_role);
                 </li>
                 <?php endif; ?>
 
-                <?php if (isAdmin() || isHealthWorker()) { ?>
-                <li class="nav-item">
-                    <a href="doctor_schedule_approval.php" class="nav-link">
-                        <i class="nav-icon fas fa-calendar-check"></i>
-                        <p>Doctor Schedule Approval</p>
-                    </a>
-                </li>
-                <?php } ?>
+                <?php /* Doctor Schedule Approval functionality is now integrated into the Manage Appointments page */ ?>
 
                 <?php if (isDoctor()) { ?>
                 <li class="nav-item">

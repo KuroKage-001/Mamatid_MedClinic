@@ -1,4 +1,14 @@
 <?php
+/**
+ * Manage Appointments & Doctor Schedules
+ * 
+ * This file handles both appointment management and doctor schedule approvals.
+ * The doctor schedule approval functionality was consolidated here from the separate
+ * doctor_schedule_approval.php file to avoid duplication.
+ * 
+ * Only admins and health workers can approve doctor schedules.
+ */
+
 include './config/connection.php';
 require_once './common_service/role_functions.php';
 
@@ -78,7 +88,7 @@ if (isAdmin() || isHealthWorker()) {
     <?php include './config/site_css_links.php'; ?>
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
-    <title>Manage Appointments - Mamatid Health Center System</title>
+    <title>Manage Appointments & Doctor Schedules - Mamatid Health Center System</title>
     <style>
         :root {
             --transition-speed: 0.3s;
@@ -353,7 +363,7 @@ if (isAdmin() || isHealthWorker()) {
                 <div class="container-fluid">
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-md-6" style="padding-left: 20px;">
-                            <h1>Manage Appointments</h1>
+                            <h1>Manage Appointments & Doctor Schedules</h1>
                         </div>
                     </div>
                 </div>
