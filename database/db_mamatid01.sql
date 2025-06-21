@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 20, 2025 at 09:41 AM
+-- Generation Time: Jun 21, 2025 at 07:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,8 @@ CREATE TABLE `appointments` (
   `reason` varchar(255) NOT NULL,
   `status` enum('pending','approved','cancelled','completed') NOT NULL DEFAULT 'pending',
   `notes` text DEFAULT NULL,
+  `schedule_id` int(11) DEFAULT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -47,16 +49,23 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 'Vikir Baskerville', '09918719610', 'Mamatid', '2025-02-10', 'Male', '2025-04-15', '15:00:00', 'kkkkk', 'completed', 'Done', '2025-04-14 08:14:37', '2025-04-14 20:58:53'),
-(2, 'Tess Maldove', '09918719610', 'Mamatid 01', '2025-04-14', 'Female', '2025-04-15', '12:00:00', 'checkup', 'completed', 'Done', '2025-04-14 08:16:53', '2025-04-14 20:59:22'),
-(3, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-15', '22:15:00', 'Checkup', 'completed', 'Okay!', '2025-04-14 09:09:42', '2025-04-14 09:28:31'),
-(4, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-20', '05:30:00', 'None', 'completed', 'Done\r\n', '2025-04-14 18:19:35', '2025-04-14 20:59:37'),
-(5, 'admin', '09918719610', 'admin', '2002-09-23', 'Male', '2025-04-17', '10:11:00', 'Checkup', 'completed', 'Done', '2025-04-14 21:07:07', '2025-04-17 16:02:26'),
-(7, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-18', '10:50:00', 'None', 'completed', 'Good', '2025-04-17 14:47:24', '2025-04-17 14:47:54'),
-(8, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-20', '10:13:00', 'Checkup01', 'completed', 'Punta napo kayo ', '2025-04-19 10:08:39', '2025-06-09 15:48:17'),
-(9, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-04-21', '10:59:00', 'Checkup po', 'approved', 'Noted.. punta napo kayo', '2025-04-20 11:59:31', '2025-04-20 12:00:01'),
-(10, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-05-22', '15:44:00', 'note23', 'approved', 'okay', '2025-05-21 16:44:23', '2025-05-21 16:45:02');
+INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`) VALUES
+(15, 'admin01', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-24', '10:00:00', 'Note 1', 'pending', NULL, 2, 19, '2025-06-21 16:46:30', NULL),
+(16, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-06-24', '10:00:00', 'note 2', 'pending', NULL, 2, 19, '2025-06-21 17:08:26', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `appointment_slots`
+--
+
+CREATE TABLE `appointment_slots` (
+  `id` int(11) NOT NULL,
+  `schedule_id` int(11) NOT NULL,
+  `slot_time` time NOT NULL,
+  `is_booked` tinyint(1) NOT NULL DEFAULT 0,
+  `appointment_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -141,6 +150,35 @@ INSERT INTO `deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) 
 (4, 'Pomeranian Baskerville', '2025-04-17', 20, '2010-12-15', '2025-04-17 10:05:32'),
 (5, 'Yeomra Baskerville', '2025-04-20', 20, '2025-04-20', '2025-04-19 18:04:07'),
 (6, 'Osiris Baskerville', '2025-04-20', 90, '2025-04-20', '2025-04-19 18:04:27');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `doctor_schedules`
+--
+
+CREATE TABLE `doctor_schedules` (
+  `id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
+  `max_patients` int(11) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_approved` tinyint(1) NOT NULL DEFAULT 0,
+  `approval_notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `doctor_schedules`
+--
+
+INSERT INTO `doctor_schedules` (`id`, `doctor_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`, `approval_notes`) VALUES
+(1, 19, '2025-06-23', '10:00:00', '17:00:00', 30, 20, 'available', '2025-06-20 10:11:04', '2025-06-20 10:12:15', 1, ''),
+(2, 19, '2025-06-24', '10:00:00', '17:00:00', 30, 20, 'available', '2025-06-20 10:11:04', '2025-06-21 14:41:21', 1, '');
 
 -- --------------------------------------------------------
 
@@ -560,7 +598,17 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_schedule_id` (`schedule_id`),
+  ADD KEY `idx_doctor_id` (`doctor_id`);
+
+--
+-- Indexes for table `appointment_slots`
+--
+ALTER TABLE `appointment_slots`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `schedule_id` (`schedule_id`),
+  ADD KEY `appointment_id` (`appointment_id`);
 
 --
 -- Indexes for table `bp_monitoring`
@@ -580,6 +628,14 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `deworming`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `doctor_id` (`doctor_id`),
+  ADD KEY `schedule_date` (`schedule_date`);
 
 --
 -- Indexes for table `family_members`
@@ -694,7 +750,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `appointment_slots`
+--
+ALTER TABLE `appointment_slots`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
@@ -713,6 +775,12 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `deworming`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `family_members`
@@ -801,6 +869,19 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `appointment_slots`
+--
+ALTER TABLE `appointment_slots`
+  ADD CONSTRAINT `appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `doctor_schedules` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `appointment_slots_ibfk_2` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `medicines`

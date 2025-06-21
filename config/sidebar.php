@@ -119,8 +119,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <?php if (canAccess('appointments_management')): ?>
                 <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>
                             Appointments
@@ -134,6 +134,14 @@ $role_display_name = getRoleDisplayName($user_role);
                                 <p>Manage Appointments</p>
                             </a>
                         </li>
+                        <?php if (isDoctor()): ?>
+                        <li class="nav-item">
+                            <a href="doctor_schedule.php" class="nav-link <?php echo ($current_page == 'doctor_schedule.php' ? 'active' : ''); ?>" id="mi_doctor_schedule">
+                                <i class="nav-icon-sm fas fa-clock"></i>
+                                <p>My Schedule</p>
+                            </a>
+                        </li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <?php endif; ?>
@@ -245,6 +253,7 @@ $role_display_name = getRoleDisplayName($user_role);
 
                 <?php /* Doctor Schedule Approval functionality is now integrated into the Manage Appointments page */ ?>
 
+                <?php /* Moved doctor schedule to appointments menu
                 <?php if (isDoctor()) { ?>
                 <li class="nav-item">
                     <a href="doctor_schedule.php" class="nav-link">
@@ -253,6 +262,7 @@ $role_display_name = getRoleDisplayName($user_role);
                     </a>
                 </li>
                 <?php } ?>
+                */ ?>
             </ul>
         </nav>
     </div>

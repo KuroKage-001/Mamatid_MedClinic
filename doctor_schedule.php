@@ -100,6 +100,15 @@ $stmt = $con->prepare($query);
 $stmt->execute([$doctorId]);
 $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Get booked appointments for this doctor
+$appointmentsQuery = "SELECT a.*, ds.time_slot_minutes 
+                     FROM appointments a 
+                     JOIN doctor_schedules ds ON a.schedule_id = ds.id 
+                     WHERE a.doctor_id = ? AND a.status != 'cancelled'";
+$appointmentsStmt = $con->prepare($appointmentsQuery);
+$appointmentsStmt->execute([$doctorId]);
+$appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
+
 // Format schedules for calendar
 $calendarEvents = [];
 foreach ($schedules as $schedule) {
@@ -107,7 +116,7 @@ foreach ($schedules as $schedule) {
     $color = $schedule['is_approved'] ? '#1BC5BD' : '#FFA800';
     
     $calendarEvents[] = [
-        'id' => $schedule['id'],
+        'id' => 'schedule_' . $schedule['id'],
         'title' => $doctorName . ' (' . $status . ')',
         'start' => $schedule['schedule_date'] . 'T' . $schedule['start_time'],
         'end' => $schedule['schedule_date'] . 'T' . $schedule['end_time'],
@@ -118,7 +127,29 @@ foreach ($schedules as $schedule) {
             'time_slot' => $schedule['time_slot_minutes'],
             'notes' => $schedule['notes'],
             'is_approved' => $schedule['is_approved'],
-            'approval_notes' => $schedule['approval_notes']
+            'approval_notes' => $schedule['approval_notes'],
+            'type' => 'schedule'
+        ]
+    ];
+}
+
+// Add booked appointments to calendar
+foreach ($appointments as $appointment) {
+    $appointmentTime = strtotime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
+    $endTime = $appointmentTime + ($appointment['time_slot_minutes'] * 60);
+    
+    $calendarEvents[] = [
+        'id' => 'appointment_' . $appointment['id'],
+        'title' => 'Booked: ' . $appointment['patient_name'],
+        'start' => date('Y-m-d\TH:i:s', $appointmentTime),
+        'end' => date('Y-m-d\TH:i:s', $endTime),
+        'backgroundColor' => '#F64E60',
+        'borderColor' => '#F64E60',
+        'extendedProps' => [
+            'patient_name' => $appointment['patient_name'],
+            'reason' => $appointment['reason'],
+            'status' => $appointment['status'],
+            'type' => 'appointment'
         ]
     ];
 }
@@ -130,7 +161,7 @@ foreach ($schedules as $schedule) {
     <?php include './config/site_css_links.php'; ?>
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
     <title>Doctor Schedule - Mamatid Health Center System</title>
     <style>
         :root {
@@ -521,7 +552,7 @@ foreach ($schedules as $schedule) {
     
     <?php include './config/site_js_links.php'; ?>
     <?php include './config/data_tables_js.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="plugins/fullcalendar/main.min.js"></script>
     
     <script>
         $(function() {
@@ -546,10 +577,21 @@ foreach ($schedules as $schedule) {
                 eventClick: function(info) {
                     var event = info.event;
                     var props = event.extendedProps;
+                    var content = '';
+                    var title = '';
+                    var iconClass = '';
+                    var toastClass = '';
+                    
+                    if (props.type === 'schedule') {
+                        // Schedule event
                     var status = props.is_approved ? 'Approved' : 'Pending';
                     var statusClass = props.is_approved ? 'success' : 'warning';
                     
-                    var content = '<div class="p-3">' +
+                        title = 'Schedule Information';
+                        iconClass = 'fas fa-calendar-alt fa-lg';
+                        toastClass = 'bg-light';
+                        
+                        content = '<div class="p-3">' +
                         '<h5 class="mb-3">Schedule Details</h5>' +
                         '<p><strong>Date:</strong> ' + event.start.toLocaleDateString() + '</p>' +
                         '<p><strong>Time:</strong> ' + event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' - ' + 
@@ -564,17 +606,35 @@ foreach ($schedules as $schedule) {
                     
                     if (props.approval_notes) {
                         content += '<p><strong>Admin Notes:</strong> ' + props.approval_notes + '</p>';
+                        }
+                    } else {
+                        // Appointment event
+                        title = 'Appointment Information';
+                        iconClass = 'fas fa-user-clock fa-lg';
+                        toastClass = 'bg-danger text-white';
+                        
+                        content = '<div class="p-3">' +
+                            '<h5 class="mb-3">Appointment Details</h5>' +
+                            '<p><strong>Patient:</strong> ' + props.patient_name + '</p>' +
+                            '<p><strong>Date & Time:</strong> ' + event.start.toLocaleDateString() + ' ' + 
+                                event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + '</p>' +
+                            '<p><strong>Status:</strong> <span class="badge badge-light">' + 
+                                props.status.charAt(0).toUpperCase() + props.status.slice(1) + '</span></p>';
+                        
+                        if (props.reason) {
+                            content += '<p><strong>Reason:</strong> ' + props.reason + '</p>';
+                        }
                     }
                     
                     content += '</div>';
                     
                     $(document).Toasts('create', {
-                        title: 'Schedule Information',
+                        title: title,
                         body: content,
                         autohide: true,
                         delay: 5000,
-                        class: 'bg-light',
-                        icon: 'fas fa-calendar-alt fa-lg',
+                        class: toastClass,
+                        icon: iconClass,
                         close: true
                     });
                 }

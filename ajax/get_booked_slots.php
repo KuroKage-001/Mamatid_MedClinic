@@ -1,5 +1,6 @@
 <?php
 include '../config/connection.php';
+include '../actions/manage_appointment_slots.php';
 
 // Check if schedule_id is provided
 if (!isset($_POST['schedule_id'])) {
@@ -10,20 +11,27 @@ if (!isset($_POST['schedule_id'])) {
 $scheduleId = $_POST['schedule_id'];
 
 try {
-    // Get booked slots for this schedule
-    $query = "SELECT appointment_time, COUNT(*) as slot_count 
-              FROM appointments 
-              WHERE schedule_id = ? AND status != 'cancelled'
-              GROUP BY appointment_time";
-    $stmt = $con->prepare($query);
-    $stmt->execute([$scheduleId]);
+    // First get the schedule details including max_patients
+    $scheduleQuery = "SELECT max_patients FROM doctor_schedules WHERE id = ?";
+    $scheduleStmt = $con->prepare($scheduleQuery);
+    $scheduleStmt->execute([$scheduleId]);
+    $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
     
-    $bookedSlots = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $bookedSlots[$row['appointment_time']] = $row['slot_count'];
+    if (!$schedule) {
+        echo json_encode(['error' => 'Invalid schedule ID']);
+        exit;
     }
     
-    echo json_encode($bookedSlots);
+    $maxPatients = $schedule['max_patients'];
+    
+    // Get booked slots using the new function
+    $bookedSlots = getBookedSlots($scheduleId);
+    
+    // Return both booked slots and max_patients
+    echo json_encode([
+        'booked_slots' => $bookedSlots,
+        'max_patients' => $maxPatients
+    ]);
 } catch(PDOException $ex) {
     echo json_encode(['error' => $ex->getMessage()]);
 }
