@@ -1,55 +1,45 @@
 <?php
-session_start();
-include '../config/connection.php';
-include '../actions/manage_appointment_slots.php';
+include './config/connection.php';
 
-// Check if user is logged in
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if client is logged in
 if (!isset($_SESSION['client_id'])) {
-    header('location: ../login.php');
+    header("location:client_login.php");
     exit;
 }
 
-// Check if appointment ID is provided
-if (!isset($_GET['id'])) {
-    header('location: ../client_dashboard.php?error=Invalid request');
-    exit;
-}
-
-$appointmentId = $_GET['id'];
-$clientId = $_SESSION['client_id'];
+$message = '';
+$appointmentId = isset($_GET['id']) ? $_GET['id'] : 0;
 
 try {
-    // Start transaction
-    $con->beginTransaction();
+    // Check if appointment exists and belongs to the client
+    $query = "SELECT id FROM appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients WHERE id = ?)";
+    $stmt = $con->prepare($query);
+    $stmt->execute([$appointmentId, $_SESSION['client_id']]);
     
-    // Verify that the appointment belongs to the logged-in client
-    $verifyQuery = "SELECT a.id, a.schedule_id, a.appointment_time FROM appointments a
-                   JOIN clients c ON a.patient_name = c.full_name
-                   WHERE a.id = ? AND c.id = ?";
-    $verifyStmt = $con->prepare($verifyQuery);
-    $verifyStmt->execute([$appointmentId, $clientId]);
-    $appointment = $verifyStmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$appointment) {
-        $con->rollback();
-        header('location: ../client_dashboard.php?error=You are not authorized to cancel this appointment');
-        exit;
+    if ($stmt->rowCount() > 0) {
+        $con->beginTransaction();
+        
+        // Delete the appointment
+        $query = "DELETE FROM appointments WHERE id = ?";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$appointmentId]);
+        
+        $con->commit();
+        $message = "Appointment deleted successfully!";
+    } else {
+        $message = "Invalid appointment or unauthorized access.";
     }
-    
-    // Update appointment status to cancelled
-    $updateQuery = "UPDATE appointments SET status = 'cancelled' WHERE id = ?";
-    $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->execute([$appointmentId]);
-    
-    // Free up the appointment slot in the appointment_slots table
-    cancelAppointmentSlot($appointmentId);
-    
-    $con->commit();
-    header('location: ../client_dashboard.php?message=Appointment cancelled successfully');
-} catch (PDOException $e) {
-    if ($con->inTransaction()) {
-        $con->rollback();
-    }
-    header('location: ../client_dashboard.php?error=' . urlencode($e->getMessage()));
+} catch(PDOException $ex) {
+    $con->rollback();
+    $message = "An error occurred while deleting the appointment.";
 }
+
+// Redirect back to dashboard with message
+header("location:client_dashboard.php?message=" . urlencode($message));
+exit;
 ?> 

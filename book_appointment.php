@@ -56,14 +56,23 @@ if (isset($_POST['book_appointment'])) {
     if (!$schedule) {
         $error = "Invalid schedule selected.";
     } else {
-    // Include appointment slots manager
-    include_once 'actions/manage_appointment_slots.php';
-    
     try {
         $con->beginTransaction();
 
-            // Check if the selected time slot is available using the new function
-            if (!isSlotAvailable($scheduleId, $appointmentTime)) {
+            // Check if the selected time slot is available
+            $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
+                        WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled'";
+            $slotStmt = $con->prepare($slotQuery);
+            $slotStmt->execute([$scheduleId, $appointmentTime]);
+            $slotCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['slot_count'];
+
+            // Double check with a lock to prevent race conditions
+            $lockQuery = "SELECT max_patients FROM doctor_schedules WHERE id = ? FOR UPDATE";
+            $lockStmt = $con->prepare($lockQuery);
+            $lockStmt->execute([$scheduleId]);
+            $maxPatients = $lockStmt->fetch(PDO::FETCH_ASSOC)['max_patients'];
+
+            if ($slotCount >= $maxPatients) {
                 $con->rollback();
                 $error = "This time slot is already fully booked. Please select another time.";
                 header("location:book_appointment.php?error=" . urlencode($error));
@@ -88,15 +97,6 @@ if (isset($_POST['book_appointment'])) {
                     $scheduleId,
                     $schedule['doctor_id']
         ]);
-        
-        // Get the appointment ID
-        $appointmentId = $con->lastInsertId();
-        
-        // Update the appointment_slots table
-        if (!bookAppointmentSlot($scheduleId, $appointmentTime, $appointmentId)) {
-            // If booking the slot fails, still allow the appointment but log it
-            error_log("Failed to update appointment slot for appointment ID: $appointmentId");
-        }
 
         $con->commit();
         $message = 'Appointment booked successfully!';

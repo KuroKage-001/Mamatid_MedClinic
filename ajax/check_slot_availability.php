@@ -1,6 +1,5 @@
 <?php
 include '../config/connection.php';
-include '../actions/manage_appointment_slots.php';
 
 // Check if required parameters are provided
 if (!isset($_POST['schedule_id']) || !isset($_POST['appointment_time'])) {
@@ -25,16 +24,14 @@ try {
     
     $maxPatients = $schedule['max_patients'];
     
-    // Check slot availability using the new function
-    $isAvailable = isSlotAvailable($scheduleId, $appointmentTime);
-    
-    // Get current booking count
+    // Check current booking count for this time slot
     $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
                 WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled'";
     $slotStmt = $con->prepare($slotQuery);
     $slotStmt->execute([$scheduleId, $appointmentTime]);
     $slotCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['slot_count'];
     
+    $isAvailable = $slotCount < $maxPatients;
     $remainingSlots = $maxPatients - $slotCount;
     
     echo json_encode([
