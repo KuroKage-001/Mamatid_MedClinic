@@ -55,7 +55,7 @@ if (isset($_POST['save_Patient'])) {
         }
     }
     // Redirect to congratulation page with a message and go back to patients list
-    header("Location:congratulation.php?goto_page=patients.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=patients.php&message=$message");
     exit;
 }
 

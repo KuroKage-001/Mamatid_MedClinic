@@ -58,7 +58,7 @@ if (isset($_POST['save_bp'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:congratulation.php?goto_page=bp_monitoring.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=bp_monitoring.php&message=$message");
     exit;
 }
 

@@ -52,7 +52,7 @@ if (isset($_POST['save_blood_sugar'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:congratulation.php?goto_page=random_blood_sugar.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=random_blood_sugar.php&message=$message");
     exit;
 }
 

@@ -42,7 +42,7 @@ if (isset($_POST['submit'])) {
         exit;
     }
     // Redirect to the congratulation page with a success message
-    header("location:congratulation.php?goto_page=medicine_details.php&message=$message");
+    header("location:system/utilities/congratulation.php?goto_page=medicine_details.php&message=$message");
     exit;
 }
 

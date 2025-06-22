@@ -35,7 +35,7 @@ if (isset($_POST['save_medicine'])) {
         }
     }
     // Redirect to congratulation page with feedback message
-    header("Location:congratulation.php?goto_page=medicines.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=medicines.php&message=$message");
     exit;
 }
 

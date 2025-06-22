@@ -51,7 +51,7 @@ if (isset($_POST['save_family'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:congratulation.php?goto_page=family_planning.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=family_planning.php&message=$message");
     exit;
 }
 

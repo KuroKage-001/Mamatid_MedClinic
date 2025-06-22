@@ -12,18 +12,18 @@
 chdir('../../');
 
 // List of files that should not have authentication check
-$exclude_files = [
+$excludeFiles = [
     'index.php',
     'client_login.php',
     'client_register.php',
     'client_logout.php',
-    'congratulation.php',
+    'system/utilities/congratulation.php',
     'system/security/unauthorized_access.php',
     'system/utilities/add_auth_check.php'
 ];
 
 // List of directories to exclude
-$exclude_dirs = [
+$excludeDirs = [
     'config',
     'common_service',
     'ajax',
@@ -35,17 +35,17 @@ $exclude_dirs = [
 ];
 
 // Function to check if a file should be processed
-function should_process_file($file, $exclude_files, $exclude_dirs) {
+function should_process_file($file, $excludeFiles, $excludeDirs) {
     // Get the filename without path
     $filename = basename($file);
     
     // Check if file is in exclude list
-    if (in_array($file, $exclude_files)) {
+    if (in_array($file, $excludeFiles)) {
         return false;
     }
     
     // Check if file is in excluded directory
-    foreach ($exclude_dirs as $dir) {
+    foreach ($excludeDirs as $dir) {
         if (strpos($file, "/$dir/") !== false || strpos($file, "\\$dir\\") !== false) {
             return false;
         }
@@ -73,10 +73,10 @@ function add_auth_check($file) {
     }
     
     // Add authentication check after the opening PHP tag
-    $new_content = substr($content, 0, $pos + 5) . "\n// Include authentication check\nrequire_once './config/check_auth.php';\n" . substr($content, $pos + 5);
+    $newContent = substr($content, 0, $pos + 5) . "\n// Include authentication check\nrequire_once './config/check_auth.php';\n" . substr($content, $pos + 5);
     
     // Write updated content back to file
-    file_put_contents($file, $new_content);
+    file_put_contents($file, $newContent);
     echo "Added authentication check to $file\n";
 }
 
@@ -96,7 +96,7 @@ foreach ($files as $file) {
     $file_path = $file[0];
     
     // Skip files that should not be processed
-    if (!should_process_file($file_path, $exclude_files, $exclude_dirs)) {
+    if (!should_process_file($file_path, $excludeFiles, $excludeDirs)) {
         echo "Skipping file: $file_path\n";
         $skipped_count++;
         continue;
