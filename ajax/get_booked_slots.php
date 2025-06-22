@@ -48,19 +48,21 @@ try {
     }
     
     // Get booked slots for this schedule with a lock to prevent race conditions
-    $query = "SELECT appointment_time, COUNT(*) as slot_count 
+    $query = "SELECT appointment_time, COUNT(*) as slot_count, 
+              CASE WHEN DATE(CONCAT(?, ' ', appointment_time)) < CURDATE() THEN 1 ELSE 0 END as is_past
               FROM appointments 
               WHERE schedule_id = ? AND status != 'cancelled'
-              GROUP BY appointment_time
+              GROUP BY appointment_time, is_past
               FOR UPDATE";
     $stmt = $con->prepare($query);
-    $stmt->execute([$scheduleId]);
+    $stmt->execute([$schedule['schedule_date'], $scheduleId]);
     
     $bookedSlots = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $bookedSlots[$row['appointment_time']] = [
             'count' => $row['slot_count'],
-            'is_full' => ($row['slot_count'] >= 1) // Consider slot full if there's at least one appointment
+            'is_full' => ($row['slot_count'] >= 1), // Consider slot full if there's at least one appointment
+            'is_past' => ($row['is_past'] == 1)
         ];
     }
     
@@ -117,6 +119,10 @@ try {
         $isBooked = 0;
         $appointmentId = null;
         
+        // Check if this time slot is in the past (for today's date)
+        $slotDateTime = strtotime($schedule['schedule_date'] . ' ' . $timeSlot);
+        $isPast = $slotDateTime < time();
+        
         // Check if this slot exists in the appointment_slots table
         $checkSlotQuery = "SELECT id, is_booked, appointment_id FROM appointment_slots 
                          WHERE schedule_id = ? AND slot_time = ?";
@@ -159,8 +165,14 @@ try {
         if (!isset($bookedSlots[$timeSlot])) {
             $bookedSlots[$timeSlot] = [
                 'count' => 0,
-                'is_full' => false
+                'is_full' => false,
+                'is_past' => $isPast
             ];
+        } else {
+            // Add is_past flag if it doesn't exist
+            if (!isset($bookedSlots[$timeSlot]['is_past'])) {
+                $bookedSlots[$timeSlot]['is_past'] = $isPast;
+            }
         }
     }
     

@@ -14,6 +14,33 @@ try {
     // Start a transaction to ensure consistency
     $con->beginTransaction();
     
+    // Get schedule details to check if it's in the past
+    $scheduleQuery = "SELECT schedule_date FROM doctor_schedules WHERE id = ? FOR UPDATE";
+    $scheduleStmt = $con->prepare($scheduleQuery);
+    $scheduleStmt->execute([$scheduleId]);
+    $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$schedule) {
+        $con->rollBack();
+        echo json_encode([
+            'is_available' => false,
+            'error' => 'Invalid schedule ID.'
+        ]);
+        exit;
+    }
+    
+    // Check if the schedule date is in the past
+    $scheduleDateTime = strtotime($schedule['schedule_date'] . ' ' . $appointmentTime);
+    $currentDateTime = time();
+    if ($scheduleDateTime < $currentDateTime) {
+        $con->rollBack();
+        echo json_encode([
+            'is_available' => false,
+            'error' => 'Cannot book appointments for past dates or times.'
+        ]);
+        exit;
+    }
+    
     // First check if this slot exists in appointment_slots table and if it's marked as booked
     $slotExistsQuery = "SELECT id, is_booked, appointment_id FROM appointment_slots 
                       WHERE schedule_id = ? AND slot_time = ? 

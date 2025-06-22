@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 22, 2025 at 01:29 AM
+-- Generation Time: Jun 22, 2025 at 08:55 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -130,7 +130,7 @@ CREATE TABLE `appointment_slots` (
 --
 
 INSERT INTO `appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
-(1, 8, '10:30:00', 0, 23),
+(1, 8, '10:30:00', 1, 23),
 (6, 8, '11:00:00', 0, NULL),
 (8, 8, '11:30:00', 0, NULL),
 (10, 8, '12:00:00', 0, NULL),
@@ -255,7 +255,7 @@ CREATE TABLE `doctor_schedules` (
 --
 
 INSERT INTO `doctor_schedules` (`id`, `doctor_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`, `approval_notes`) VALUES
-(8, 19, '2025-06-24', '10:30:00', '17:30:00', 30, 10, 'checkup 02', '2025-06-21 19:35:16', '2025-06-21 19:35:51', 1, '');
+(8, 19, '2025-06-24', '10:30:00', '17:30:00', 30, 1, 'checkup 02', '2025-06-21 19:35:16', '2025-06-21 23:44:42', 1, '');
 
 -- --------------------------------------------------------
 
@@ -677,6 +677,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_patient_appointment` (`patient_name`,`schedule_id`,`appointment_time`,`status`),
+  ADD UNIQUE KEY `unique_active_appointment` (`schedule_id`,`appointment_time`,`status`),
   ADD KEY `idx_schedule_id` (`schedule_id`),
   ADD KEY `idx_doctor_id` (`doctor_id`);
 

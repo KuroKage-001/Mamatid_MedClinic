@@ -24,6 +24,56 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
+// Automatically update past appointments to completed status
+try {
+    $con->beginTransaction();
+    
+    // Update past appointments to completed status
+    $updateQuery = "UPDATE appointments 
+                  SET status = 'completed', updated_at = NOW() 
+                  WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
+                  AND status = 'approved'
+                  AND doctor_id = ?";
+    $updateStmt = $con->prepare($updateQuery);
+    $updateStmt->execute([$doctorId]);
+    $updatedCount = $updateStmt->rowCount();
+    
+    if ($updatedCount > 0) {
+        $message = $updatedCount . " past appointments were automatically marked as completed.";
+    }
+    
+    $con->commit();
+} catch(PDOException $ex) {
+    if ($con->inTransaction()) {
+        $con->rollBack();
+    }
+    $error = "Error updating past appointments: " . $ex->getMessage();
+}
+try {
+    $con->beginTransaction();
+    
+    // Update past appointments to completed status
+    $updateQuery = "UPDATE appointments 
+                  SET status = 'completed', updated_at = NOW() 
+                  WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
+                  AND status = 'approved'
+                  AND doctor_id = ?";
+    $updateStmt = $con->prepare($updateQuery);
+    $updateStmt->execute([$doctorId]);
+    $updatedCount = $updateStmt->rowCount();
+    
+    if ($updatedCount > 0) {
+        $message = $updatedCount . " past appointments were automatically marked as completed.";
+    }
+    
+    $con->commit();
+} catch(PDOException $ex) {
+    if ($con->inTransaction()) {
+        $con->rollBack();
+    }
+    $error = "Error updating past appointments: " . $ex->getMessage();
+}
+
 // Handle schedule submission
 if (isset($_POST['submit_schedule'])) {
     try {
@@ -112,12 +162,13 @@ $appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 // Format schedules for calendar
 $calendarEvents = [];
 foreach ($schedules as $schedule) {
+    $isPast = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
     $status = $schedule['is_approved'] ? 'Approved' : 'Pending';
-    $color = $schedule['is_approved'] ? '#1BC5BD' : '#FFA800';
+    $color = $isPast ? '#A0A0A0' : ($schedule['is_approved'] ? '#1BC5BD' : '#FFA800');
     
     $calendarEvents[] = [
         'id' => 'schedule_' . $schedule['id'],
-        'title' => $doctorName . ' (' . $status . ')',
+        'title' => $doctorName . ' (' . $status . ')' . ($isPast ? ' [Past]' : ''),
         'start' => $schedule['schedule_date'] . 'T' . $schedule['start_time'],
         'end' => $schedule['schedule_date'] . 'T' . $schedule['end_time'],
         'backgroundColor' => $color,
@@ -128,7 +179,8 @@ foreach ($schedules as $schedule) {
             'notes' => $schedule['notes'],
             'is_approved' => $schedule['is_approved'],
             'approval_notes' => $schedule['approval_notes'],
-            'type' => 'schedule'
+            'type' => 'schedule',
+            'is_past' => $isPast
         ]
     ];
 }
@@ -137,19 +189,31 @@ foreach ($schedules as $schedule) {
 foreach ($appointments as $appointment) {
     $appointmentTime = strtotime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
     $endTime = $appointmentTime + ($appointment['time_slot_minutes'] * 60);
+    $isPast = $appointmentTime < time();
+    
+    // Set color based on status and whether it's past
+    $color = '#F64E60'; // Default red for active appointments
+    if ($isPast) {
+        if ($appointment['status'] == 'completed') {
+            $color = '#28a745'; // Green for completed
+        } else {
+            $color = '#6c757d'; // Gray for past but not completed
+        }
+    }
     
     $calendarEvents[] = [
         'id' => 'appointment_' . $appointment['id'],
-        'title' => 'Booked: ' . $appointment['patient_name'],
+        'title' => 'Booked: ' . $appointment['patient_name'] . ($isPast ? ' [Past]' : ''),
         'start' => date('Y-m-d\TH:i:s', $appointmentTime),
         'end' => date('Y-m-d\TH:i:s', $endTime),
-        'backgroundColor' => '#F64E60',
-        'borderColor' => '#F64E60',
+        'backgroundColor' => $color,
+        'borderColor' => $color,
         'extendedProps' => [
             'patient_name' => $appointment['patient_name'],
             'reason' => $appointment['reason'],
             'status' => $appointment['status'],
-            'type' => 'appointment'
+            'type' => 'appointment',
+            'is_past' => $isPast
         ]
     ];
 }
@@ -370,23 +434,21 @@ foreach ($appointments as $appointment) {
 
             <div class="content">
                 <div class="container-fluid">
-                    <?php if (!empty($message)) { ?>
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <?= $message ?>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <?php if ($message): ?>
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <?php echo $message; ?>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
                         </div>
-                    <?php } ?>
+                    <?php endif; ?>
                     
-                    <?php if (!empty($error)) { ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <?= $error ?>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <?php echo $error; ?>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
                         </div>
-                    <?php } ?>
+                    <?php endif; ?>
 
                     <div class="row">
                         <div class="col-lg-5">
@@ -480,6 +542,39 @@ foreach ($appointments as $appointment) {
                                 </div>
                                 <div class="card-body">
                                     <div id="calendar"></div>
+                                    <div class="mt-3">
+                                        <div class="d-flex flex-wrap justify-content-center">
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #1BC5BD; width: 20px; height: 20px;"></span>
+                                                <small>Approved Schedules</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #FFA800; width: 20px; height: 20px;"></span>
+                                                <small>Pending Schedules</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #A0A0A0; width: 20px; height: 20px;"></span>
+                                                <small>Past Schedules</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #F64E60; width: 20px; height: 20px;"></span>
+                                                <small>Active Appointments</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #28a745; width: 20px; height: 20px;"></span>
+                                                <small>Completed Appointments</small>
+                                            </div>
+                                            <div class="mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #6c757d; width: 20px; height: 20px;"></span>
+                                                <small>Past Appointments</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="alert alert-info p-2">
+                                            <small><i class="fas fa-info-circle mr-1"></i> Past appointments are automatically marked as completed. You can view all past and upcoming schedules in this calendar.</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -566,6 +661,50 @@ foreach ($appointments as $appointment) {
                 "order": [[0, "asc"]]
             });
             
+            // Function to automatically update past appointments to completed status
+            function updatePastAppointments() {
+                $.ajax({
+                    url: 'ajax/update_past_appointments.php',
+                    type: 'POST',
+                    data: {
+                        doctor_id: <?= $doctorId ?>
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.updated > 0) {
+                            console.log('Updated ' + response.updated + ' past appointments to completed status');
+                            // Reload page to refresh the calendar with updated status
+                            location.reload();
+                        }
+                    }
+                });
+            }
+            
+            // Call the update function when the page loads
+            updatePastAppointments();
+            
+            // Function to automatically update past appointments to completed status
+            function updatePastAppointments() {
+                $.ajax({
+                    url: 'ajax/update_past_appointments.php',
+                    type: 'POST',
+                    data: {
+                        doctor_id: <?= $doctorId ?>
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.updated > 0) {
+                            console.log('Updated ' + response.updated + ' past appointments to completed status');
+                            // Optionally refresh the calendar if needed
+                            // calendar.refetchEvents();
+                        }
+                    }
+                });
+            }
+            
+            // Call the update function when the page loads
+            updatePastAppointments();
+            
             // Initialize Calendar
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -576,6 +715,17 @@ foreach ($appointments as $appointment) {
                     right: 'dayGridMonth,timeGridWeek'
                 },
                 events: <?= json_encode($calendarEvents) ?>,
+                eventDidMount: function(info) {
+                    // Add tooltip for past events
+                    if (info.event.extendedProps.is_past) {
+                        $(info.el).tooltip({
+                            title: 'Past ' + info.event.extendedProps.type.charAt(0).toUpperCase() + info.event.extendedProps.type.slice(1),
+                            placement: 'top',
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }
+                },
                 eventClick: function(info) {
                     var event = info.event;
                     var props = event.extendedProps;
@@ -613,7 +763,17 @@ foreach ($appointments as $appointment) {
                         // Appointment event
                         title = 'Appointment Information';
                         iconClass = 'fas fa-user-clock fa-lg';
-                        toastClass = 'bg-danger text-white';
+                        
+                        // Set toast class based on appointment status and whether it's past
+                        if (props.is_past) {
+                            if (props.status == 'completed') {
+                                toastClass = 'bg-success text-white';
+                            } else {
+                                toastClass = 'bg-secondary text-white';
+                            }
+                        } else {
+                            toastClass = 'bg-danger text-white';
+                        }
                         
                         content = '<div class="p-3">' +
                             '<h5 class="mb-3">Appointment Details</h5>' +
@@ -621,7 +781,8 @@ foreach ($appointments as $appointment) {
                             '<p><strong>Date & Time:</strong> ' + event.start.toLocaleDateString() + ' ' + 
                                 event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + '</p>' +
                             '<p><strong>Status:</strong> <span class="badge badge-light">' + 
-                                props.status.charAt(0).toUpperCase() + props.status.slice(1) + '</span></p>';
+                                props.status.charAt(0).toUpperCase() + props.status.slice(1) + 
+                                (props.is_past ? ' (Past)' : '') + '</span></p>';
                         
                         if (props.reason) {
                             content += '<p><strong>Reason:</strong> ' + props.reason + '</p>';

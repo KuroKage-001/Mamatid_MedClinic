@@ -1,19 +1,19 @@
 <?php
 include './config/connection.php';
+require_once './common_service/role_functions.php';
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if client is logged in
-if (!isset($_SESSION['client_id'])) {
-    header("location:client_login.php");
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("location:index.php");
     exit;
 }
 
+// Check permission - only clients can access this page
+requireRole(['client']);
+
 $message = '';
 $error = '';
+$clientId = $_SESSION['user_id'];
 
 // Get message/error from URL if redirected
 if (isset($_GET['message'])) {
@@ -23,7 +23,7 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
-// Get all approved doctor schedules
+// Get all approved doctor schedules - ONLY FUTURE DATES
 $scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
                 FROM doctor_schedules ds
                 JOIN users u ON ds.doctor_id = u.id
@@ -182,6 +182,11 @@ foreach ($doctorSchedules as $schedule) {
     $timeSlotMinutes = $schedule['time_slot_minutes'];
     $doctorName = $schedule['doctor_name'];
     $scheduleDate = $schedule['schedule_date'];
+    
+    // Skip past schedules for client view
+    if (strtotime($scheduleDate) < strtotime(date('Y-m-d'))) {
+        continue;
+    }
     
     // Format for calendar
     $calendarEvents[] = [
@@ -939,6 +944,11 @@ if (empty($calendarEvents)) {
                         </div>
                         <div class="card-body">
                                     <div id="calendar"></div>
+                                    <div class="mt-3">
+                                        <div class="alert alert-info p-2">
+                                            <small><i class="fas fa-info-circle mr-1"></i> Only future dates are available for booking. Past appointments are automatically removed from view.</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1094,6 +1104,20 @@ if (empty($calendarEvents)) {
                     const timeSlot = props.time_slot;
                     const maxPatients = props.max_patients;
                     
+                    // Check if the selected date is in the past
+                    const eventDate = event.start;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Reset time part for date comparison
+                    
+                    if (eventDate < today) {
+                        // Show error message for past dates
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Cannot book appointments for past dates'
+                        });
+                        return;
+                    }
+                    
                     // Set form values
                     $('#selectedDoctor').val(doctorName);
                     $('#scheduleId').val(scheduleId);
@@ -1204,19 +1228,38 @@ if (empty($calendarEvents)) {
                                 minute: '2-digit'
                             });
                             
+                            // Check if this time slot is in the past (current day but earlier time)
+                            var slotDateTime = new Date(start);
+                            slotDateTime.setHours(currentTime.getHours(), currentTime.getMinutes());
+                            var isPastTime = slotDateTime < new Date();
+                            
+                            // Skip if the slot is in the past
+                            if (isPastTime) {
+                                currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
+                                continue;
+                            }
+                            
                             // Check if this slot is fully booked
                             var slotCount = 0;
                             var isBooked = false;
+                            var isPast = false;
                             
                             // First check the appointment_slots table status
                             if (slotStatuses && slotStatuses[timeString + ':00']) {
                                 isBooked = slotStatuses[timeString + ':00'].is_booked === 1;
                             }
                             
-                            // Then check the actual appointments count
+                            // Then check the actual appointments count and if it's past
                             if (bookedSlots && bookedSlots[timeString + ':00']) {
                                 slotCount = parseInt(bookedSlots[timeString + ':00'].count);
                                 isBooked = bookedSlots[timeString + ':00'].is_full;
+                                isPast = bookedSlots[timeString + ':00'].is_past || false;
+                            }
+                            
+                            // Skip if the slot is in the past
+                            if (isPast) {
+                                currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
+                                continue;
                             }
                             
                             // Check if client already has an appointment at this time
