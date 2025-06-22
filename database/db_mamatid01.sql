@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 21, 2025 at 07:18 PM
+-- Generation Time: Jun 22, 2025 at 01:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,8 +50,66 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`) VALUES
-(15, 'admin01', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-24', '10:00:00', 'Note 1', 'pending', NULL, 2, 19, '2025-06-21 16:46:30', NULL),
-(16, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-06-24', '10:00:00', 'note 2', 'pending', NULL, 2, 19, '2025-06-21 17:08:26', NULL);
+(23, 'admin04', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', '2025-06-24', '10:30:00', 'note 01', 'pending', NULL, 8, 19, '2025-06-21 21:41:49', NULL);
+
+--
+-- Triggers `appointments`
+--
+DELIMITER $$
+CREATE TRIGGER `after_appointment_delete` AFTER DELETE ON `appointments` FOR EACH ROW BEGIN
+    -- Update the slot when an appointment is deleted
+    UPDATE appointment_slots
+    SET is_booked = 0, appointment_id = NULL
+    WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_appointment_insert` AFTER INSERT ON `appointments` FOR EACH ROW BEGIN
+    DECLARE slot_id INT;
+    
+    -- Check if slot exists
+    SELECT id INTO slot_id FROM appointment_slots 
+    WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time
+    LIMIT 1;
+    
+    IF slot_id IS NULL THEN
+        -- Create slot if it doesn't exist
+        INSERT INTO appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
+        VALUES (NEW.schedule_id, NEW.appointment_time, 1, NEW.id);
+    ELSE
+        -- Update existing slot
+        UPDATE appointment_slots 
+        SET is_booked = 1, appointment_id = NEW.id
+        WHERE id = slot_id;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_appointment_update` AFTER UPDATE ON `appointments` FOR EACH ROW BEGIN
+    -- If status changed to cancelled, update the slot
+    IF NEW.status = 'cancelled' AND OLD.status != 'cancelled' THEN
+        UPDATE appointment_slots
+        SET is_booked = 0, appointment_id = NULL
+        WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+    END IF;
+    
+    -- If time slot changed, update both old and new slots
+    IF NEW.appointment_time != OLD.appointment_time THEN
+        -- Update old slot
+        UPDATE appointment_slots
+        SET is_booked = 0, appointment_id = NULL
+        WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+        
+        -- Update new slot
+        UPDATE appointment_slots
+        SET is_booked = 1, appointment_id = NEW.id
+        WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -66,6 +124,26 @@ CREATE TABLE `appointment_slots` (
   `is_booked` tinyint(1) NOT NULL DEFAULT 0,
   `appointment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `appointment_slots`
+--
+
+INSERT INTO `appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
+(1, 8, '10:30:00', 0, 23),
+(6, 8, '11:00:00', 0, NULL),
+(8, 8, '11:30:00', 0, NULL),
+(10, 8, '12:00:00', 0, NULL),
+(12, 8, '12:30:00', 0, NULL),
+(14, 8, '13:00:00', 0, NULL),
+(16, 8, '13:30:00', 0, NULL),
+(18, 8, '14:00:00', 0, NULL),
+(20, 8, '14:30:00', 0, NULL),
+(22, 8, '15:00:00', 0, NULL),
+(24, 8, '15:30:00', 0, NULL),
+(26, 8, '16:00:00', 0, NULL),
+(28, 8, '16:30:00', 0, NULL),
+(29, 8, '17:00:00', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -177,8 +255,7 @@ CREATE TABLE `doctor_schedules` (
 --
 
 INSERT INTO `doctor_schedules` (`id`, `doctor_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`, `approval_notes`) VALUES
-(1, 19, '2025-06-23', '10:00:00', '17:00:00', 30, 20, 'available', '2025-06-20 10:11:04', '2025-06-20 10:12:15', 1, ''),
-(2, 19, '2025-06-24', '10:00:00', '17:00:00', 30, 20, 'available', '2025-06-20 10:11:04', '2025-06-21 14:41:21', 1, '');
+(8, 19, '2025-06-24', '10:30:00', '17:30:00', 30, 10, 'checkup 02', '2025-06-21 19:35:16', '2025-06-21 19:35:51', 1, '');
 
 -- --------------------------------------------------------
 
@@ -568,7 +645,7 @@ INSERT INTO `users` (`id`, `display_name`, `email`, `phone`, `user_name`, `passw
 (13, 'Leo01', 'leo001@gmail.com', '09878887678', 'leo01', '9f9974d013e8c0b3b51fc70c01db38ab', 'health_worker', 'active', '1749462447_ChiefTechnologyOfficer.jpg', '2025-06-09 09:47:27', '2025-06-16 12:41:14'),
 (14, 'Leo02', 'leow01@gmail.com', '09888767675', 'Leow01', '06fd0e7ac68caca3851d0dd8da204a55', 'health_worker', 'active', '1749741784_AidanReturn.jpg', '2025-06-12 15:23:04', '2025-06-12 15:41:12'),
 (16, 'Pomeranian', 'pome01@gmail.com', '09887765456', 'Pome01', '01731ac63a4570a7fda8f7de0f92b151', 'doctor', 'active', '1750013496_ShikimoriWallpaper.jpg', '2025-06-15 18:51:36', '2025-06-16 15:47:41'),
-(19, 'Vikir', 'vikir12345@gmail.com', '09765654321', 'vikir01', '3a667b3b4453775d5b52d795fdb05721', 'doctor', 'active', 'default_profile.jpg', '2025-06-16 12:42:24', '2025-06-16 15:47:43'),
+(19, 'Doctor Vikir', 'vikir12345@gmail.com', '09765654321', 'vikir01', '3a667b3b4453775d5b52d795fdb05721', 'doctor', 'active', 'default_profile.jpg', '2025-06-16 12:42:24', '2025-06-21 19:00:15'),
 (20, 'Maria01', 'maria12345@gmail.com', '09878854323', 'maria01', '76eb1cfbe718656c4e028d05e456db5d', 'admin', 'active', 'default_profile.jpg', '2025-06-16 16:39:52', '2025-06-16 16:39:52'),
 (21, 'Jasper01', 'jasper12345@gmail.com', '09756453611', 'jasper01', 'e82ee392520546e944542c8c0ed9ac33', 'health_worker', 'active', 'default_profile.jpg', '2025-06-16 16:41:05', '2025-06-16 16:41:05');
 
@@ -599,6 +676,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_patient_appointment` (`patient_name`,`schedule_id`,`appointment_time`,`status`),
   ADD KEY `idx_schedule_id` (`schedule_id`),
   ADD KEY `idx_doctor_id` (`doctor_id`);
 
@@ -607,8 +685,13 @@ ALTER TABLE `appointments`
 --
 ALTER TABLE `appointment_slots`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_schedule_slot` (`schedule_id`,`slot_time`),
   ADD KEY `schedule_id` (`schedule_id`),
-  ADD KEY `appointment_id` (`appointment_id`);
+  ADD KEY `appointment_id` (`appointment_id`),
+  ADD KEY `idx_schedule_id` (`schedule_id`),
+  ADD KEY `idx_slot_time` (`slot_time`),
+  ADD KEY `idx_is_booked` (`is_booked`),
+  ADD KEY `idx_appointment_id` (`appointment_id`);
 
 --
 -- Indexes for table `bp_monitoring`
@@ -750,13 +833,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `appointment_slots`
 --
 ALTER TABLE `appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
@@ -780,7 +863,7 @@ ALTER TABLE `deworming`
 -- AUTO_INCREMENT for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `family_members`

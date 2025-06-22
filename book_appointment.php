@@ -47,42 +47,89 @@ if (isset($_POST['book_appointment'])) {
     $stmt->execute([$clientId]);
     $client = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Get schedule details
-    $scheduleQuery = "SELECT * FROM doctor_schedules WHERE id = ?";
-    $scheduleStmt = $con->prepare($scheduleQuery);
-    $scheduleStmt->execute([$scheduleId]);
-    $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$client) {
+        $error = "Invalid client information.";
+        header("location:book_appointment.php?error=" . urlencode($error));
+        exit;
+    }
 
-    if (!$schedule) {
-        $error = "Invalid schedule selected.";
-    } else {
     try {
+        // Start transaction
         $con->beginTransaction();
+        
+        // Get schedule details with a lock
+        $scheduleQuery = "SELECT * FROM doctor_schedules WHERE id = ? FOR UPDATE";
+        $scheduleStmt = $con->prepare($scheduleQuery);
+        $scheduleStmt->execute([$scheduleId]);
+        $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
 
-            // Check if the selected time slot is available
-            $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
-                        WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled'";
-            $slotStmt = $con->prepare($slotQuery);
-            $slotStmt->execute([$scheduleId, $appointmentTime]);
-            $slotCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['slot_count'];
+        if (!$schedule) {
+            $con->rollBack();
+            $error = "Invalid schedule selected.";
+            header("location:book_appointment.php?error=" . urlencode($error));
+            exit;
+        }
+        
+        $maxPatients = $schedule['max_patients'];
+        
+        // Check if the selected time slot is available with a lock
+        $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
+                    WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled' 
+                    FOR UPDATE";
+        $slotStmt = $con->prepare($slotQuery);
+        $slotStmt->execute([$scheduleId, $appointmentTime]);
+        $slotCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['slot_count'];
 
-            // Double check with a lock to prevent race conditions
-            $lockQuery = "SELECT max_patients FROM doctor_schedules WHERE id = ? FOR UPDATE";
-            $lockStmt = $con->prepare($lockQuery);
-            $lockStmt->execute([$scheduleId]);
-            $maxPatients = $lockStmt->fetch(PDO::FETCH_ASSOC)['max_patients'];
+        if ($slotCount > 0) {
+            $con->rollBack();
+            $error = "This time slot is already booked. Please select another time.";
+            header("location:book_appointment.php?error=" . urlencode($error));
+            exit;
+        }
+        
+        // Check if this client already has an appointment at this time slot
+        $existingQuery = "SELECT COUNT(*) as existing_count FROM appointments 
+                        WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled' 
+                        AND patient_name = ? FOR UPDATE";
+        $existingStmt = $con->prepare($existingQuery);
+        $existingStmt->execute([$scheduleId, $appointmentTime, $client['full_name']]);
+        $existingCount = $existingStmt->fetch(PDO::FETCH_ASSOC)['existing_count'];
+        
+        if ($existingCount > 0) {
+            $con->rollBack();
+            $error = "You already have an appointment booked for this time slot.";
+            header("location:book_appointment.php?error=" . urlencode($error));
+            exit;
+        }
 
-            if ($slotCount >= $maxPatients) {
-                $con->rollback();
-                $error = "This time slot is already fully booked. Please select another time.";
-                header("location:book_appointment.php?error=" . urlencode($error));
-                exit;
-            } else {
+        // Check or create the appointment slot record
+        $slotExistsQuery = "SELECT id, is_booked FROM appointment_slots 
+                          WHERE schedule_id = ? AND slot_time = ? 
+                          FOR UPDATE";
+        $slotExistsStmt = $con->prepare($slotExistsQuery);
+        $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
+        $slotExists = $slotExistsStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$slotExists) {
+            // Create the slot if it doesn't exist
+            $createSlotQuery = "INSERT INTO appointment_slots 
+                              (schedule_id, slot_time, is_booked) 
+                              VALUES (?, ?, 0)";
+            $createSlotStmt = $con->prepare($createSlotQuery);
+            $createSlotStmt->execute([$scheduleId, $appointmentTime]);
+            
+            // Get the newly created slot ID
+            $slotId = $con->lastInsertId();
+        } else {
+            $slotId = $slotExists['id'];
+        }
+
+        // Insert the appointment
         $query = "INSERT INTO appointments (
                     patient_name, phone_number, address, date_of_birth,
-                            gender, appointment_date, appointment_time, reason, status,
-                            schedule_id, doctor_id
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)";
+                    gender, appointment_date, appointment_time, reason, status,
+                    schedule_id, doctor_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)";
 
         $stmt = $con->prepare($query);
         $stmt->execute([
@@ -91,24 +138,38 @@ if (isset($_POST['book_appointment'])) {
             $client['address'],
             $client['date_of_birth'],
             $client['gender'],
-                    $schedule['schedule_date'],
+            $schedule['schedule_date'],
             $appointmentTime,
-                    $reason,
-                    $scheduleId,
-                    $schedule['doctor_id']
+            $reason,
+            $scheduleId,
+            $schedule['doctor_id']
         ]);
+        
+        // Get the newly created appointment ID
+        $appointmentId = $con->lastInsertId();
+        
+        // Update the appointment_slots table
+        $updateSlotQuery = "UPDATE appointment_slots 
+                          SET is_booked = 1, appointment_id = ? 
+                          WHERE id = ?";
+        $updateSlotStmt = $con->prepare($updateSlotQuery);
+        $updateSlotStmt->execute([$appointmentId, $slotId]);
 
+        // Commit the transaction
         $con->commit();
         $message = 'Appointment booked successfully!';
         
         // Redirect to dashboard
         header("location:client_dashboard.php?message=" . urlencode($message));
         exit;
-            }
     } catch(PDOException $ex) {
-        $con->rollback();
-            $error = 'An error occurred: ' . $ex->getMessage();
+        // Rollback the transaction in case of error
+        if ($con->inTransaction()) {
+            $con->rollBack();
         }
+        $error = 'An error occurred: ' . $ex->getMessage();
+        header("location:book_appointment.php?error=" . urlencode($error));
+        exit;
     }
 }
 
@@ -168,6 +229,16 @@ if (empty($calendarEvents)) {
             --danger-color: #F64E60;
             --light-color: #F3F6F9;
             --dark-color: #1a1a2d;
+        }
+
+        /* Fix for SweetAlert2 font loading issue */
+        .swal2-popup {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+        }
+        
+        /* Override SweetAlert2 icons to use FontAwesome instead of built-in icons */
+        .swal2-icon {
+            font-family: 'Font Awesome 5 Free' !important;
         }
 
         /* Modern Card Styles */
@@ -262,10 +333,10 @@ if (empty($calendarEvents)) {
             z-index: 2;
         }
         
-                 .time-slot.booked .badge {
-             background-color: #F64E60;
-             color: white;
-         }
+        .time-slot.booked .badge {
+            background-color: #F64E60;
+            color: white;
+        }
          
          /* Legend Styling */
          .time-slot-legend {
@@ -748,6 +819,70 @@ if (empty($calendarEvents)) {
                 padding: 8px 15px;
             }
         }
+
+        /* Lock overlay for booked slots */
+        .time-slot.locked {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(246, 78, 96, 0.1);
+            color: #F64E60;
+            padding: 5px;
+            border-radius: 0 8px 0 8px;
+            font-size: 0.8rem;
+            z-index: 3;
+        }
+        
+        .time-slot.locked:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.03);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .time-slot.locked .time-label,
+        .time-slot.locked .slot-details {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Shake animation for locked slots when clicked */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .time-slot.locked.shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* Lock icon for booked slots */
+        .time-slot.booked .time-label i.fa-ban {
+            color: #F64E60;
+        }
+        
+        .time-slot.booked .time-label i.fa-lock {
+            color: #F64E60;
+            margin-left: 5px;
+            animation: pulse-lock 1.5s infinite;
+        }
+        
+        @keyframes pulse-lock {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 
@@ -821,6 +956,10 @@ if (empty($calendarEvents)) {
                                     
                                     <div class="mt-4">
                                         <h5 class="mb-3">Available Time Slots</h5>
+                                        <div class="alert alert-info mb-3">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            Each time slot can only be booked by one patient.
+                                        </div>
                                         <div class="time-slot-legend mb-3">
                                             <div class="legend-item available active" data-filter="available">
                                                 <div class="legend-color available"></div>
@@ -834,7 +973,7 @@ if (empty($calendarEvents)) {
                                             </div>
                                             <div class="legend-item booked active" data-filter="booked">
                                                 <div class="legend-color booked"></div>
-                                                <span>Fully Booked</span>
+                                                <span>Booked</span>
                                                 <span class="count" id="booked-count">0</span>
                                             </div>
                                         </div>
@@ -982,7 +1121,7 @@ if (empty($calendarEvents)) {
                     var scheduleDate = start.toISOString().split('T')[0];
                     
                     // Show loading indicator
-                    timeSlotContainer.html('<p class="text-info">Loading available time slots...</p>');
+                    timeSlotContainer.html('<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="ml-2 text-info">Loading available time slots...</p></div>');
                     
                     // Fetch schedule details
                     $.ajax({
@@ -994,7 +1133,7 @@ if (empty($calendarEvents)) {
                         dataType: 'json',
                         success: function(response) {
                             if (response.error) {
-                                timeSlotContainer.html('<p class="text-danger">' + response.error + '</p>');
+                                timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' + response.error + '</div>');
                                 return;
                             }
                             
@@ -1012,7 +1151,7 @@ if (empty($calendarEvents)) {
                             );
                         },
                         error: function() {
-                            timeSlotContainer.html('<p class="text-danger">Error loading schedule details. Please try again.</p>');
+                            timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading schedule details. Please try again.</div>');
                         }
                     });
                     return;
@@ -1023,7 +1162,8 @@ if (empty($calendarEvents)) {
                     url: 'ajax/get_booked_slots.php',
                     type: 'POST',
                     data: {
-                        schedule_id: scheduleId
+                        schedule_id: scheduleId,
+                        client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -1032,13 +1172,15 @@ if (empty($calendarEvents)) {
                         
                         // Check for error in response
                         if (response.error) {
-                            timeSlotContainer.html('<p class="text-danger">' + response.error + '</p>');
+                            timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' + response.error + '</div>');
                             $('#bookBtn').prop('disabled', true);
                             return;
                         }
                         
                         var bookedSlots = response.booked_slots;
+                        var slotStatuses = response.slot_statuses || {};
                         var serverMaxPatients = response.max_patients;
+                        var clientAppointments = response.client_appointments || [];
                         
                         // Use server-provided max_patients if available
                         if (serverMaxPatients) {
@@ -1049,6 +1191,11 @@ if (empty($calendarEvents)) {
                         var currentTime = new Date(start);
                         var endTime = new Date(end);
                         var hasAvailableSlots = false;
+                        
+                        // Create a container for all time slots with a loading overlay
+                        const slotsContainer = $('<div class="position-relative"></div>');
+                        const loadingOverlay = $('<div class="position-absolute w-100 h-100 d-none" style="background: rgba(255,255,255,0.8); z-index: 10; display: flex; align-items: center; justify-content: center;"><div class="spinner-border text-primary" role="status"></div><span class="ml-2">Checking availability...</span></div>');
+                        slotsContainer.append(loadingOverlay);
                         
                         while (currentTime < endTime) {
                             var timeString = currentTime.toTimeString().substring(0, 5);
@@ -1061,21 +1208,30 @@ if (empty($calendarEvents)) {
                             var slotCount = 0;
                             var isBooked = false;
                             
-                            if (bookedSlots && bookedSlots[timeString]) {
-                                slotCount = parseInt(bookedSlots[timeString].count);
-                                isBooked = bookedSlots[timeString].is_full;
+                            // First check the appointment_slots table status
+                            if (slotStatuses && slotStatuses[timeString + ':00']) {
+                                isBooked = slotStatuses[timeString + ':00'].is_booked === 1;
                             }
+                            
+                            // Then check the actual appointments count
+                            if (bookedSlots && bookedSlots[timeString + ':00']) {
+                                slotCount = parseInt(bookedSlots[timeString + ':00'].count);
+                                isBooked = bookedSlots[timeString + ':00'].is_full;
+                            }
+                            
+                            // Check if client already has an appointment at this time
+                            var clientHasAppointment = clientAppointments.includes(timeString + ':00');
                             
                             var remainingSlots = maxPatients - slotCount;
                             
-                            if (!isBooked) {
+                            if (!isBooked && !clientHasAppointment) {
                                 hasAvailableSlots = true;
                                 
                                 // Create progress bar for booking status
                                 const percentBooked = Math.round((slotCount / maxPatients) * 100);
                                 const progressBarColor = percentBooked > 75 ? 'warning' : 'success';
                                 
-                                const slotElement = $('<div class="time-slot" data-time="' + timeString + '">' +
+                                const slotElement = $('<div class="time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '">' +
                                     '<div class="time-label"><i class="far fa-clock"></i>' + formattedTime + '</div>' +
                                     '<div class="slot-details">' +
                                     '<span class="badge badge-info">' + remainingSlots + ' of ' + maxPatients + ' available</span>' +
@@ -1089,49 +1245,56 @@ if (empty($calendarEvents)) {
                                     '</div>' +
                                     '</div>');
                                 
-                                timeSlotContainer.append(slotElement);
-                            } else {
-                                const slotElement = $('<div class="time-slot booked">' +
-                                    '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + '</div>' +
+                                slotsContainer.append(slotElement);
+                            } else if (clientHasAppointment) {
+                                // Client already has an appointment at this time
+                                const slotElement = $('<div class="time-slot booked locked">' +
+                                    '<div class="time-label"><i class="fas fa-calendar-check"></i>' + formattedTime + 
+                                    '<span class="ml-2"><i class="fas fa-lock" data-toggle="tooltip" title="You already have an appointment at this time"></i></span></div>' +
                                     '<div class="slot-details">' +
-                                    '<span class="badge">Fully booked</span>' +
+                                    '<span class="badge badge-primary">Your appointment</span>' +
+                                    '<div class="booking-progress mt-2">' +
+                                    '<div class="progress">' +
+                                    '<div class="progress-bar bg-primary" role="progressbar" style="width: 100%"' +
+                                    ' aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>' +
+                                    '</div>' +
+                                    '<small class="text-primary">You have already booked this slot</small>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>');
+                                
+                                slotsContainer.append(slotElement);
+                            } else {
+                                const slotElement = $('<div class="time-slot booked locked">' +
+                                    '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + 
+                                    '<span class="ml-2"><i class="fas fa-lock" data-toggle="tooltip" title="This slot is already booked"></i></span></div>' +
+                                    '<div class="slot-details">' +
+                                    '<span class="badge badge-danger">Booked</span>' +
                                     '<div class="booking-progress mt-2">' +
                                     '<div class="progress">' +
                                     '<div class="progress-bar bg-danger" role="progressbar" style="width: 100%"' +
                                     ' aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>' +
                                     '</div>' +
-                                    '<small class="text-danger">' + maxPatients + ' of ' + maxPatients + ' booked</small>' +
+                                    '<small class="text-danger">This slot is already taken</small>' +
                                     '</div>' +
                                     '</div>' +
                                     '</div>');
                                 
-                                timeSlotContainer.append(slotElement);
+                                slotsContainer.append(slotElement);
                             }
                             
                             // Add minutes to current time
                             currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
                         }
                         
+                        // Add the slots container to the main container
+                        timeSlotContainer.append(slotsContainer);
+                        
                         if (!hasAvailableSlots) {
-                            timeSlotContainer.prepend('<p class="text-danger">No available time slots for this schedule.</p>');
+                            timeSlotContainer.prepend('<div class="alert alert-warning"><i class="fas fa-exclamation-triangle mr-2"></i>No available time slots for this schedule.</div>');
                             $('#bookBtn').prop('disabled', true);
                         } else {
                             // Initialize tooltips
-                            $('.time-slot').each(function() {
-                                const $slot = $(this);
-                                const isBooked = $slot.hasClass('booked');
-                                const time = $slot.data('time');
-                                
-                                let tooltipTitle = isBooked ? 
-                                    'This time slot is fully booked' : 
-                                    'Click to select this time slot';
-                                
-                                $slot.attr('data-toggle', 'tooltip')
-                                     .attr('data-placement', 'top')
-                                     .attr('title', tooltipTitle);
-                            });
-                            
-                            // Initialize Bootstrap tooltips
                             $('[data-toggle="tooltip"]').tooltip();
                             
                             // Handle time slot selection
@@ -1150,6 +1313,9 @@ if (empty($calendarEvents)) {
                                 updateLegendCounts();
                             });
                             
+                            // Add lock effect to booked slots
+                            $('.time-slot.locked').append('<div class="lock-overlay"><i class="fas fa-lock"></i></div>');
+                            
                             // Update legend counts initially
                             updateLegendCounts();
                             
@@ -1163,7 +1329,7 @@ if (empty($calendarEvents)) {
                     error: function(xhr, status, error) {
                         console.log('AJAX error:', status, error);
                         console.log('Response:', xhr.responseText);
-                        timeSlotContainer.html('<p class="text-danger">Error loading time slots. Please try again.</p>');
+                        timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading time slots. Please try again.</div>');
                         $('#bookBtn').prop('disabled', true);
                     }
                 });
@@ -1331,6 +1497,15 @@ if (empty($calendarEvents)) {
                     return false;
                 }
                 
+                // Show loading indicator using FontAwesome instead of built-in icons
+                Swal.fire({
+                    title: 'Checking availability',
+                    html: '<i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Please wait while we verify this time slot is still available...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false
+                });
+                
                 // Check real-time availability before submitting
                 e.preventDefault();
                 console.log('Checking availability...');
@@ -1342,11 +1517,15 @@ if (empty($calendarEvents)) {
                     type: 'POST',
                     data: {
                         schedule_id: $('#scheduleId').val(),
-                        appointment_time: $('#appointmentTime').val()
+                        appointment_time: $('#appointmentTime').val(),
+                        client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
                     },
                     dataType: 'json',
                     success: function(response) {
                         console.log('Availability response:', response);
+                        
+                        // Close loading indicator
+                        Swal.close();
                         
                         if (response.error) {
                             Toast.fire({
@@ -1358,77 +1537,99 @@ if (empty($calendarEvents)) {
                         }
                         
                         if (!response.is_available) {
-                            Toast.fire({
+                            Swal.fire({
                                 icon: 'error',
-                                title: 'This time slot is no longer available. Please select another time.'
+                                html: '<i class="fas fa-exclamation-circle text-danger fa-2x mb-3"></i><br><strong>Time slot no longer available</strong><br>' + 
+                                      (response.client_has_appointment ? 
+                                       'You already have an appointment booked for this time slot.' : 
+                                       'This time slot has been booked by someone else. Please select another time.'),
+                                confirmButtonText: 'Select another time'
                             });
                             console.log('Slot not available');
                             
                             // Refresh the time slots
-                            // Get the original event date from calendar
-                            // Find the event by ID
                             var scheduleId = $('#scheduleId').val();
                             var events = calendar.getEvents();
                             var originalEvent = events.find(function(event) {
                                 return event.extendedProps.schedule_id == scheduleId;
                             });
-                            if (originalEvent) {
-                                console.log('Original event found:', originalEvent);
-                                generateTimeSlots(
-                                    originalEvent.start,
-                                    originalEvent.end,
-                                    30,
-                                    $('#scheduleId').val(),
-                                    response.max_patients
-                                );
-                            } else {
-                                console.log('Original event not found, using fallback');
-                                // Fallback if event not found
-                                generateTimeSlots(
-                                    null,
-                                    null,
-                                    30,
-                                    $('#scheduleId').val(),
-                                    response.max_patients
-                                );
-                            }
+                            
+                            // Refresh the time slots with a slight delay to allow the user to see the message
+                            setTimeout(function() {
+                                if (originalEvent) {
+                                    console.log('Original event found:', originalEvent);
+                                    generateTimeSlots(
+                                        originalEvent.start,
+                                        originalEvent.end,
+                                        30,
+                                        $('#scheduleId').val(),
+                                        response.max_patients
+                                    );
+                                } else {
+                                    console.log('Original event not found, using fallback');
+                                    // Fallback if event not found
+                                    generateTimeSlots(
+                                        null,
+                                        null,
+                                        30,
+                                        $('#scheduleId').val(),
+                                        response.max_patients
+                                    );
+                                }
+                            }, 500);
                             return;
                         }
                         
-                        // If available, submit the form
-                        console.log('Slot available, submitting form');
-                        
-                        // Use the original form but ensure it has the correct values
-                        $('#scheduleId').val($('#scheduleId').val());
-                        $('#appointmentTime').val($('#appointmentTime').val());
-                        
-                        // Add a hidden input for the book_appointment flag if it doesn't exist
-                        if ($('input[name="book_appointment"]').length === 0) {
-                            $('#appointmentForm').append(
-                                $('<input>').attr({
-                                    type: 'hidden',
-                                    name: 'book_appointment',
-                                    value: '1'
-                                })
-                            );
-                        }
-                        
-                        // Submit the original form
-                        $('#appointmentForm').off('submit').submit();
+                        // If available, show confirmation and submit
+                        Swal.fire({
+                            html: '<i class="fas fa-question-circle text-primary fa-2x mb-3"></i><br><strong>Confirm Booking</strong><br>Would you like to book this appointment?',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, book it!',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#3699FF',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Show loading indicator during form submission
+                                Swal.fire({
+                                    html: '<i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br><strong>Booking appointment</strong><br>Please wait...',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    showConfirmButton: false
+                                });
+                                
+                                // Use the original form but ensure it has the correct values
+                                $('#scheduleId').val($('#scheduleId').val());
+                                $('#appointmentTime').val($('#appointmentTime').val());
+                                
+                                // Add a hidden input for the book_appointment flag if it doesn't exist
+                                if ($('input[name="book_appointment"]').length === 0) {
+                                    $('#appointmentForm').append(
+                                        $('<input>').attr({
+                                            type: 'hidden',
+                                            name: 'book_appointment',
+                                            value: '1'
+                                        })
+                                    );
+                                }
+                                
+                                // Submit the original form
+                                $('#appointmentForm').off('submit').submit();
+                            }
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.log('AJAX error:', status, error);
                         console.log('Response:', xhr.responseText);
                         
-                        // If AJAX fails, try direct form submission as fallback
-                        Toast.fire({
-                            icon: 'warning',
-                            title: 'Checking availability failed. Trying direct submission...'
-                        });
+                        // Close loading indicator
+                        Swal.close();
                         
-                        setTimeout(function() {
-                            $('#appointmentForm')[0].submit();
-                        }, 1000);
+                        // Show error message
+                        Swal.fire({
+                            html: '<i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i><br><strong>Connection Error</strong><br>Could not verify slot availability. Please try again.',
+                            confirmButtonText: 'Try Again'
+                        });
                     }
                 });
                 return false;
@@ -1496,6 +1697,27 @@ if (empty($calendarEvents)) {
                     summaryEl.css('opacity', '1');
                 }, 100);
             }
+
+            // Add click handler for locked slots to show a message
+            $(document).on('click', '.time-slot.locked', function() {
+                // Add shake animation
+                $(this).addClass('shake');
+                
+                // Remove shake class after animation completes
+                setTimeout(() => {
+                    $(this).removeClass('shake');
+                }, 500);
+                
+                // Show message
+                const isClientSlot = $(this).find('.badge-primary').length > 0;
+                
+                Toast.fire({
+                    icon: isClientSlot ? 'info' : 'error',
+                    title: isClientSlot ? 
+                        'You already have an appointment booked for this time slot.' : 
+                        'This time slot is fully booked and cannot be selected.'
+                });
+            });
         });
     </script>
 </body>

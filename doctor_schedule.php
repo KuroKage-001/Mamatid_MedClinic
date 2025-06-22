@@ -441,7 +441,9 @@ foreach ($appointments as $appointment) {
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="max_patients">Max Patients per Slot</label>
-                                                    <input type="number" class="form-control" id="max_patients" name="max_patients" min="1" value="1" required>
+                                                    <input type="hidden" id="max_patients" name="max_patients" value="1">
+                                                    <input type="text" class="form-control" value="1" readonly disabled>
+                                                    <small class="form-text text-muted">Each time slot can only accept one appointment</small>
                                                 </div>
                                             </div>
                                         </div>
