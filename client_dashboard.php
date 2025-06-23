@@ -285,8 +285,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/client_header.php'; ?>
-        <?php include './config/client_sidebar.php'; ?>
+        <?php include './config/client_ui/header.php'; ?>
+        <?php include './config/client_ui/sidebar.php'; ?>
 
         <div class="content-wrapper">
             <section class="content-header">
@@ -550,7 +550,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             </section>
         </div>
 
-        <?php include './config/client_footer.php'; ?>
+        <?php include './config/client_ui/footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

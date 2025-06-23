@@ -323,3 +323,61 @@ Your system is ready for concurrent users when:
 3. One user's logout doesn't affect others ✅
 4. Database handles concurrent connections ✅
 5. Sessions are properly secured ✅ 
+
+## Path Handling and Directory Structure
+
+The system includes special handling for path references to ensure files can be included from different directory levels.
+
+### Path Fixes Implementation
+
+1. **Relative Path Detection**
+   - Added path detection logic in header.php, sidebar.php, site_css_links.php, and site_js_links.php
+   - These files now automatically detect if they're included from a subdirectory and adjust paths accordingly
+
+2. **Client Authentication**
+   - Updated book_appointment.php to use client authentication
+   - Added role checks in role_functions.php to properly handle client permissions
+   - Created check_client_auth.php for client-specific pages
+
+3. **Fixed access_denied.php**
+   - Simplified the file to work from subdirectories
+   - Removed dependencies on header/sidebar includes
+   - Added inline CSS and JS references with proper paths
+
+### Authentication Usage
+
+#### For Staff Pages
+```php
+<?php
+include './config/connection.php';
+require_once './common_service/role_functions.php';
+
+// Restrict this page to specific roles
+requireRole(['admin', 'doctor']);
+
+// OR use convenience functions
+requireAdmin(); // For admin-only pages
+requireHealthStaff(); // For health workers and doctors
+```
+
+#### For Client Pages
+```php
+<?php
+include './config/connection.php';
+require_once './common_service/role_functions.php';
+
+// Restrict this page to clients
+requireClient();
+```
+
+### Troubleshooting Path Issues
+
+If you encounter path issues:
+1. Check that the base_path calculation is correct
+2. Use browser developer tools to check for 404 errors on resources
+3. Clear browser cache and cookies
+
+For authentication issues:
+1. Check session variables using test_client_auth.php
+2. Verify role assignments in the database
+3. Check for permission conflicts in role_functions.php 

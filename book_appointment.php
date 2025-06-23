@@ -2,18 +2,12 @@
 include './config/connection.php';
 require_once './common_service/role_functions.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("location:index.php");
-    exit;
-}
-
-// Check permission - only clients can access this page
-requireRole(['client']);
+// Restrict this page to clients only
+requireClient();
 
 $message = '';
 $error = '';
-$clientId = $_SESSION['user_id'];
+$clientId = $_SESSION['client_id'];
 
 // Get message/error from URL if redirected
 if (isset($_GET['message'])) {
@@ -893,8 +887,8 @@ if (empty($calendarEvents)) {
 
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/client_header.php'; ?>
-        <?php include './config/client_sidebar.php'; ?>
+        <?php include './config/client_ui/header.php'; ?>
+        <?php include './config/client_ui/sidebar.php'; ?>
 
         <div class="content-wrapper">
             <section class="content-header">
@@ -1025,9 +1019,9 @@ if (empty($calendarEvents)) {
             </section>
         </div>
 
-        <?php include './config/client_footer.php'; ?>
+        <?php include './config/client_ui/footer.php'; ?>
     </div>
-
+    <!-- ./wrapper -->
     <?php include './config/site_js_links.php'; ?>
     
     <!-- FullCalendar JS -->

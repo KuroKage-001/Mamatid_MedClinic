@@ -1,8 +1,12 @@
 <?php
+// Determine if we're in a subdirectory by checking the script path
+$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
+$base_path = $in_subdirectory ? '../..' : '.';
+
 // Include role functions for access control
-require_once './common_service/role_functions.php';
+require_once $base_path . '/common_service/role_functions.php';
 // Include session fix to prevent undefined variable errors
-require_once './config/session_fix.php';
+require_once $base_path . '/config/session_fix.php';
 ?>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark fixed-top">
@@ -16,8 +20,8 @@ require_once './config/session_fix.php';
     </ul>
 
     <!-- Brand -->
-    <a href="dashboard.php" class="navbar-brand">
-        <img src="dist/img/logo01.png" alt="MHC Logo" class="brand-image">
+    <a href="<?php echo $base_path; ?>/dashboard.php" class="navbar-brand">
+        <img src="<?php echo $base_path; ?>/dist/img/logo01.png" alt="MHC Logo" class="brand-image">
         <span class="brand-text">Mamatid Health Center</span>
     </a>
 
@@ -28,7 +32,7 @@ require_once './config/session_fix.php';
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
                 <div class="user-avatar">
-                    <img src="user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-image" alt="User Image" onerror="this.src='user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
                     <span class="status-indicator <?php echo isset($_SESSION['status']) && $_SESSION['status'] == 'active' ? 'status-online' : 'status-offline'; ?>"></span>
                 </div>
                 <div class="user-info d-none d-md-block">
@@ -39,7 +43,7 @@ require_once './config/session_fix.php';
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="user_images/<?php echo $_SESSION['profile_picture']; ?>" class="profile-img" alt="User Image" onerror="this.src='user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
                     <div class="user-details">
                         <h6><?php echo $_SESSION['display_name']; ?></h6>
                         <span class="username">@<?php echo $_SESSION['user_name']; ?></span>
@@ -49,25 +53,25 @@ require_once './config/session_fix.php';
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
                     <?php if (canAccess('account_settings')): ?>
-                    <a href="account_settings.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/account_settings.php" class="dropdown-item">
                         <i class="fas fa-user-cog mr-2"></i>
                         <span>Account Settings</span>
                     </a>
                     <?php endif; ?>
                     <?php if (isAdmin()): ?>
-                    <a href="users.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/users.php" class="dropdown-item">
                         <i class="fas fa-users mr-2"></i>
                         <span>Manage Users</span>
                     </a>
                     <?php endif; ?>
-                    <a href="dashboard.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/dashboard.php" class="dropdown-item">
                         <i class="fas fa-tachometer-alt mr-2"></i>
                         <span>Dashboard</span>
                     </a>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-footer">
-                    <a href="logout.php" class="btn btn-danger btn-block">
+                    <a href="<?php echo $base_path; ?>/logout.php" class="btn btn-danger btn-block">
                         <i class="fas fa-sign-out-alt mr-2"></i>
                         <span>Logout</span>
                     </a>

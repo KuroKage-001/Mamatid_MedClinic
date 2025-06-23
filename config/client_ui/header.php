@@ -1,3 +1,8 @@
+<?php
+// Determine if we're in a subdirectory by checking the script path
+$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
+$base_path = $in_subdirectory ? '../..' : '.';
+?>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark navbar-light fixed-top">
     <!-- Left navbar links -->
@@ -26,7 +31,7 @@
                     <small class="text-muted d-block">Client Portal</small>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a href="client_logout.php" class="dropdown-item text-danger">
+                <a href="<?php echo $base_path; ?>/client_logout.php" class="dropdown-item text-danger">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     Logout
                 </a>
@@ -95,4 +100,4 @@
 .dropdown-item.text-danger:hover {
     background: rgba(246, 78, 96, 0.1);
 }
-</style>
+</style> 

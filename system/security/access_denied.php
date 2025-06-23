@@ -1,18 +1,42 @@
 <?php
 session_start();
+
+// Path adjustments for files in subdirectories
+$base_path = '../..';
+$common_service_path = "$base_path/common_service";
+
+// Include role functions using adjusted path
+require_once "$common_service_path/role_functions.php";
+
+// Redirect to login if not authenticated
 if (!isset($_SESSION['user_id'])) {
-    header("location:../../index.php");
+    header("location:$base_path/index.php");
     exit;
 }
 
-require_once '../../common_service/role_functions.php';
+// Get the required role from URL parameter if available
+$required_role = isset($_GET['required_role']) ? $_GET['required_role'] : 'appropriate';
+
+// Get the current user's role
+$current_role = getUserRole();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Access Denied | MHC</title>
-    <?php include '../../config/site_css_links.php'; ?>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="<?php echo $base_path; ?>/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="<?php echo $base_path; ?>/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="<?php echo $base_path; ?>/dist/js/jquery_confirm/jquery-confirm.css">
+    <link rel="stylesheet" href="<?php echo $base_path; ?>/dist/css/default.css" />
+
     <style>
         .error-page {
             padding: 70px 0;
@@ -90,10 +114,8 @@ require_once '../../common_service/role_functions.php';
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include '../../config/header.php'; include '../../config/sidebar.php'; ?>
-
-<!-- Content Wrapper -->
-<div class="content-wrapper">
+<!-- Content Wrapper (without including header/sidebar) -->
+<div class="content-wrapper" style="margin-left: 0; min-height: 100vh;">
     <section class="error-page">
         <div class="container">
             <div class="error-content">
@@ -104,13 +126,13 @@ require_once '../../common_service/role_functions.php';
                 <h2>Access Denied</h2>
                 <p>
                     Sorry, you don't have permission to access this page. 
-                    You need <strong><?php echo isset($_GET['required_role']) ? getRoleDisplayName($_GET['required_role']) : 'appropriate'; ?></strong> 
+                    You need <strong><?php echo getRoleDisplayName($required_role); ?></strong> 
                     privileges to view this content.
                 </p>
                 <p class="text-muted">
-                    Your current role: <strong><?php echo getRoleDisplayName(getUserRole()); ?></strong>
+                    Your current role: <strong><?php echo getRoleDisplayName($current_role); ?></strong>
                 </p>
-                <a href="../../dashboard.php" class="btn-back">
+                <a href="<?php echo $base_path; ?>/dashboard.php" class="btn-back">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
                 </a>
             </div>
@@ -118,10 +140,16 @@ require_once '../../common_service/role_functions.php';
     </section>
 </div>
 
-<?php include '../../config/footer.php'; ?>
 </div>
 
-<?php include '../../config/site_js_links.php'; ?>
+<!-- jQuery -->
+<script src="<?php echo $base_path; ?>/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="<?php echo $base_path; ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="<?php echo $base_path; ?>/dist/js/adminlte.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="<?php echo $base_path; ?>/plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
 </body>
 </html> 
