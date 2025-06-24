@@ -32,19 +32,33 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
-// Handle appointment status updates
-if (isset($_POST['update_status'])) {
+// Handle appointment notes updates
+if (isset($_POST['update_notes'])) {
     $appointmentId = $_POST['appointment_id'];
-    $newStatus = $_POST['status'];
     $notes = $_POST['notes'];
 
     try {
-        $query = "UPDATE appointments SET status = ?, notes = ? WHERE id = ?";
+        $query = "UPDATE appointments SET notes = ? WHERE id = ?";
         $stmt = $con->prepare($query);
-        $stmt->execute([$newStatus, $notes, $appointmentId]);
-        $message = "Appointment status updated successfully!";
+        $stmt->execute([$notes, $appointmentId]);
+        $message = "Appointment notes updated successfully!";
     } catch (PDOException $ex) {
-        $error = "Error updating appointment: " . $ex->getMessage();
+        $error = "Error updating appointment notes: " . $ex->getMessage();
+    }
+}
+
+// Handle appointment archive/unarchive
+if (isset($_POST['toggle_archive'])) {
+    $appointmentId = $_POST['appointment_id'];
+    $isArchived = $_POST['is_archived'] ? 1 : 0;
+
+    try {
+        $query = "UPDATE appointments SET is_archived = ?, updated_at = NOW() WHERE id = ?";
+        $stmt = $con->prepare($query);
+        $stmt->execute([$isArchived, $appointmentId]);
+        $message = $isArchived ? "Appointment archived successfully!" : "Appointment unarchived successfully!";
+    } catch (PDOException $ex) {
+        $error = "Error updating archive status: " . $ex->getMessage();
     }
 }
 
@@ -64,10 +78,13 @@ if (isset($_POST['approve_schedule']) && (isAdmin() || isHealthWorker())) {
     }
 }
 
+// Handle archive filter
+$showArchived = isset($_GET['archived']) ? (int)$_GET['archived'] : 0;
+
 // Fetch all appointments
-$query = "SELECT * FROM appointments ORDER BY appointment_date ASC, appointment_time ASC";
+$query = "SELECT * FROM appointments WHERE is_archived = ? ORDER BY appointment_date DESC, appointment_time DESC";
 $stmt = $con->prepare($query);
-$stmt->execute();
+$stmt->execute([$showArchived]);
 
 // Fetch all doctor schedules (for admin and health workers)
 $doctorSchedules = [];
@@ -80,6 +97,17 @@ if (isAdmin() || isHealthWorker()) {
     $scheduleStmt->execute();
     $doctorSchedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+// Count total archived and active appointments for the filter
+$countQuery = "SELECT 
+                SUM(CASE WHEN is_archived = 0 THEN 1 ELSE 0 END) as active_count,
+                SUM(CASE WHEN is_archived = 1 THEN 1 ELSE 0 END) as archived_count
+               FROM appointments";
+$countStmt = $con->prepare($countQuery);
+$countStmt->execute();
+$countResult = $countStmt->fetch(PDO::FETCH_ASSOC);
+$activeCount = $countResult['active_count'] ?? 0;
+$archivedCount = $countResult['archived_count'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -246,6 +274,11 @@ if (isAdmin() || isHealthWorker()) {
             color: var(--info-color);
         }
 
+        .badge-secondary {
+            background-color: rgba(128, 128, 128, 0.1);
+            color: #808080;
+        }
+
         /* Alert Styling */
         .alert {
             border: none;
@@ -316,6 +349,65 @@ if (isAdmin() || isHealthWorker()) {
         .custom-control-input:checked ~ .custom-control-label::before {
             background-color: var(--success-color);
             border-color: var(--success-color);
+        }
+
+        /* Filter buttons */
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            transition: all var(--transition-speed);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn:not(.active) {
+            background-color: white;
+            color: var(--dark-color);
+            border-color: #e4e6ef;
+        }
+
+        .filter-btn .badge {
+            margin-left: 5px;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .filter-btn.active .badge {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .filter-btn:not(.active) .badge {
+            background-color: #e4e6ef;
+            color: var(--dark-color);
+        }
+
+        /* Archived appointment styling */
+        tr.archived-row {
+            opacity: 0.7;
+        }
+
+        tr.archived-row:hover {
+            opacity: 1;
+        }
+
+        .archived-tag {
+            display: inline-block;
+            padding: 2px 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-left: 5px;
         }
 
         /* Responsive Adjustments */
@@ -532,6 +624,16 @@ if (isAdmin() || isHealthWorker()) {
                         </div>
                     </div>
                     <div class="card-body">
+                        <!-- Filter Buttons -->
+                        <div class="mb-4">
+                            <a href="?archived=0" class="btn filter-btn <?php echo $showArchived ? '' : 'active'; ?>">
+                                Active <span class="badge"><?php echo $activeCount; ?></span>
+                            </a>
+                            <a href="?archived=1" class="btn filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
+                                Archived <span class="badge"><?php echo $archivedCount; ?></span>
+                            </a>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table id="appointments" class="table table-striped table-hover">
                                 <thead>
@@ -541,22 +643,25 @@ if (isAdmin() || isHealthWorker()) {
                                         <th>Patient Name</th>
                                         <th>Phone</th>
                                         <th>Gender</th>
-                                        <th>Address</th>
                                         <th>Reason</th>
                                         <th>Status</th>
                                         <th>Notes</th>
-                                        <th>Action</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-                                    <tr>
+                                    <tr class="<?php echo $row['is_archived'] ? 'archived-row' : ''; ?>">
                                         <td><?php echo date('M d, Y', strtotime($row['appointment_date'])); ?></td>
                                         <td><?php echo date('h:i A', strtotime($row['appointment_time'])); ?></td>
-                                        <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                        <td>
+                                            <?php echo htmlspecialchars($row['patient_name']); ?>
+                                            <?php if ($row['is_archived']): ?>
+                                                <span class="archived-tag"><i class="fas fa-archive fa-xs"></i> Archived</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
                                         <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['address']); ?></td>
                                         <td><?php echo htmlspecialchars($row['reason']); ?></td>
                                         <td>
                                             <span class="badge badge-<?php 
@@ -569,22 +674,31 @@ if (isAdmin() || isHealthWorker()) {
                                         </td>
                                         <td><?php echo htmlspecialchars($row['notes'] ?? ''); ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-primary" 
-                                                    data-toggle="modal" 
-                                                    data-target="#updateModal<?php echo $row['id']; ?>">
-                                                <i class="fas fa-edit mr-2"></i>Update
-                                            </button>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-primary" 
+                                                        data-toggle="modal" 
+                                                        data-target="#updateModal<?php echo $row['id']; ?>">
+                                                    <i class="fas fa-edit"></i> Notes
+                                                </button>
+                                                
+                                                <button type="button" class="btn btn-sm <?php echo $row['is_archived'] ? 'btn-success' : 'btn-secondary'; ?>"
+                                                        data-toggle="modal" 
+                                                        data-target="#archiveModal<?php echo $row['id']; ?>">
+                                                    <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?>"></i>
+                                                    <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
 
-                                    <!-- Update Modal for each appointment -->
+                                    <!-- Update Notes Modal -->
                                     <div class="modal fade" id="updateModal<?php echo $row['id']; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h4 class="modal-title">
                                                         <i class="fas fa-calendar-check mr-2"></i>
-                                                        Update Appointment Status
+                                                        Update Appointment Notes
                                                     </h4>
                                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                 </div>
@@ -593,21 +707,9 @@ if (isAdmin() || isHealthWorker()) {
                                                         <input type="hidden" name="appointment_id" value="<?php echo $row['id']; ?>">
                                                         
                                                         <div class="form-group">
-                                                            <label class="form-label">Status</label>
-                                                            <select name="status" class="form-control" required>
-                                                                <option value="pending" <?php echo $row['status'] == 'pending' ? 'selected' : ''; ?>>
-                                                                    Pending
-                                                                </option>
-                                                                <option value="approved" <?php echo $row['status'] == 'approved' ? 'selected' : ''; ?>>
-                                                                    Approved
-                                                                </option>
-                                                                <option value="completed" <?php echo $row['status'] == 'completed' ? 'selected' : ''; ?>>
-                                                                    Completed
-                                                                </option>
-                                                                <option value="cancelled" <?php echo $row['status'] == 'cancelled' ? 'selected' : ''; ?>>
-                                                                    Cancelled
-                                                                </option>
-                                                            </select>
+                                                            <label class="form-label">Current Status</label>
+                                                            <input type="text" class="form-control" value="<?php echo ucfirst($row['status']); ?>" readonly>
+                                                            <small class="text-muted">Appointments are automatically approved when booked by patients</small>
                                                         </div>
                                                         
                                                         <div class="form-group">
@@ -620,8 +722,54 @@ if (isAdmin() || isHealthWorker()) {
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                                             <i class="fas fa-times mr-2"></i>Close
                                                         </button>
-                                                        <button type="submit" name="update_status" class="btn btn-primary">
-                                                            <i class="fas fa-save mr-2"></i>Update
+                                                        <button type="submit" name="update_notes" class="btn btn-primary">
+                                                            <i class="fas fa-save mr-2"></i>Update Notes
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Archive Modal -->
+                                    <div class="modal fade" id="archiveModal<?php echo $row['id']; ?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">
+                                                        <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?> mr-2"></i>
+                                                        <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?> Appointment
+                                                    </h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <form method="post">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="appointment_id" value="<?php echo $row['id']; ?>">
+                                                        <input type="hidden" name="is_archived" value="<?php echo $row['is_archived'] ? '0' : '1'; ?>">
+                                                        
+                                                        <div class="text-center mb-4">
+                                                            <?php if ($row['is_archived']): ?>
+                                                                <i class="fas fa-box-open fa-4x text-success mb-3"></i>
+                                                                <p>Are you sure you want to unarchive this appointment? It will appear in the active appointments list.</p>
+                                                            <?php else: ?>
+                                                                <i class="fas fa-archive fa-4x text-secondary mb-3"></i>
+                                                                <p>Are you sure you want to archive this appointment? Archived appointments are stored for record-keeping but won't appear in the active list.</p>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        
+                                                        <div class="alert alert-info">
+                                                            <strong>Patient:</strong> <?php echo htmlspecialchars($row['patient_name']); ?><br>
+                                                            <strong>Date & Time:</strong> <?php echo date('M d, Y', strtotime($row['appointment_date'])) . ' at ' . date('h:i A', strtotime($row['appointment_time'])); ?><br>
+                                                            <strong>Status:</strong> <?php echo ucfirst($row['status']); ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                            <i class="fas fa-times mr-2"></i>Cancel
+                                                        </button>
+                                                        <button type="submit" name="toggle_archive" class="btn <?php echo $row['is_archived'] ? 'btn-success' : 'btn-secondary'; ?>">
+                                                            <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?> mr-2"></i>
+                                                            <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?> Appointment
                                                         </button>
                                                     </div>
                                                 </form>

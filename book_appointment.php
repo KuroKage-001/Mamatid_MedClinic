@@ -123,7 +123,7 @@ if (isset($_POST['book_appointment'])) {
                     patient_name, phone_number, address, date_of_birth,
                     gender, appointment_date, appointment_time, reason, status,
                     schedule_id, doctor_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)";
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?)";
 
         $stmt = $con->prepare($query);
         $stmt->execute([
@@ -152,6 +152,64 @@ if (isset($_POST['book_appointment'])) {
         // Commit the transaction
         $con->commit();
         $message = 'Appointment booked successfully!';
+        
+        // Send confirmation email to client
+        try {
+            // Include mailer utility
+            require_once './system/phpmailer/system/mailer.php';
+            
+            // Get client email and ensure it exists
+            $clientEmail = $client['email'] ?? '';
+            if (empty($clientEmail)) {
+                error_log("No email address found for client ID: {$clientId}");
+                throw new Exception("Client email address not found");
+            }
+            
+            $clientName = $client['full_name'];
+            
+            // Get doctor name
+            $doctorQuery = "SELECT u.display_name FROM users u WHERE u.id = ?";
+            $doctorStmt = $con->prepare($doctorQuery);
+            $doctorStmt->execute([$schedule['doctor_id']]);
+            $doctor = $doctorStmt->fetch(PDO::FETCH_ASSOC);
+            $doctorName = $doctor ? $doctor['display_name'] : 'Your Doctor';
+            
+            // Prepare appointment details
+            $appointmentDetails = [
+                'patient_name' => $clientName,
+                'doctor_name' => $doctorName,
+                'appointment_date' => $schedule['schedule_date'],
+                'appointment_time' => $appointmentTime,
+                'reason' => $reason
+            ];
+            
+            // Generate email body
+            $emailBody = generateAppointmentConfirmationEmail($appointmentDetails);
+            
+            // Send email
+            $emailResult = sendEmail(
+                $clientEmail,
+                'Your Appointment Confirmation - Mamatid Health Center',
+                $emailBody,
+                $clientName
+            );
+            
+            // Log email result (could be stored in a database table in the future)
+            error_log("Email sending result: " . ($emailResult['success'] ? 'Success' : $emailResult['message']));
+            
+            // Add a note to the appointment record that email was sent
+            if ($emailResult['success']) {
+                $updateEmailSentQuery = "UPDATE appointments SET email_sent = 1 WHERE id = ?";
+                $updateEmailStmt = $con->prepare($updateEmailSentQuery);
+                $updateEmailStmt->execute([$appointmentId]);
+            }
+        } catch (Exception $ex) {
+            // Log email error but don't prevent successful appointment booking
+            error_log("Failed to send confirmation email: " . $ex->getMessage());
+            
+            // For debugging purposes only - remove in production
+            $message .= ' (Note: Email notification could not be sent. Please check logs for details.)';
+        }
         
         // Redirect to dashboard
         header("location:client_dashboard.php?message=" . urlencode($message));
