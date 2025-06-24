@@ -1,4 +1,8 @@
 <?php
+// Temporary error reporting - REMOVE IN PRODUCTION
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include './config/connection.php';
 
 $message = '';
@@ -14,6 +18,37 @@ if (isset($_POST['register'])) {
     $address = trim($_POST['address']);
     $dateOfBirth = $_POST['date_of_birth'];
     $gender = $_POST['gender'];
+    
+    // Profile picture handling
+    $profileImage = 'default_client.png'; // Default image
+    
+    // Check if a file was uploaded
+    if(isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        $maxSize = 2 * 1024 * 1024; // 2MB
+        
+        if(in_array($_FILES['profile_picture']['type'], $allowedTypes) && $_FILES['profile_picture']['size'] <= $maxSize) {
+            // Generate a unique filename
+            $fileExtension = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
+            $newFileName = time() . '_' . uniqid() . '.' . $fileExtension;
+            $uploadDir = 'system/client_images/';
+            $uploadPath = $uploadDir . $newFileName;
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            // Move the uploaded file
+            if(move_uploaded_file($_FILES['profile_picture']['tmp_name'], $uploadPath)) {
+                $profileImage = $newFileName;
+            } else {
+                $message = 'Failed to upload profile picture. Please try again.';
+            }
+        } else {
+            $message = 'Invalid file. Please upload a JPG, PNG or GIF image under 2MB.';
+        }
+    }
 
     // Validate passwords match
     if ($password !== $confirmPassword) {
@@ -36,20 +71,29 @@ if (isset($_POST['register'])) {
 
                 $query = "INSERT INTO `clients` 
                          (`full_name`, `email`, `password`, `phone_number`, 
-                          `address`, `date_of_birth`, `gender`)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)";
+                          `address`, `date_of_birth`, `gender`, `profile_picture`)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                 $stmt = $con->prepare($query);
                 $stmt->execute([
                     $fullName, $email, $encryptedPassword, $phoneNumber,
-                    $address, $dateOfBirth, $gender
+                    $address, $dateOfBirth, $gender, $profileImage
                 ]);
 
                 $con->commit();
                 $showSuccessAlert = true;
             } catch (PDOException $ex) {
                 $con->rollback();
-                $message = 'An error occurred. Please try again later.';
+                // Temporary debug output - REMOVE IN PRODUCTION
+                $message = 'Database error: ' . $ex->getMessage();
+                
+                // Log detailed information
+                error_log("Registration error: " . $ex->getMessage());
+                error_log("SQL Query: " . $query);
+                error_log("Params: " . json_encode([
+                    $fullName, $email, $encryptedPassword, $phoneNumber,
+                    $address, $dateOfBirth, $gender, $profileImage
+                ]));
             }
         }
     }
@@ -331,6 +375,53 @@ if (isset($_POST['register'])) {
             color: #0095e0;
         }
 
+        /* Profile picture upload styles */
+        .profile-upload {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-picture-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-overlay:hover {
+            background: #0095e0;
+        }
+
+        .profile-picture-input {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .register-container {
                 flex-direction: column;
@@ -403,7 +494,19 @@ if (isset($_POST['register'])) {
                 <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
             </div>
             
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
+                <!-- Profile Picture Upload -->
+                <div class="profile-upload">
+                    <div class="profile-picture-container">
+                        <img src="system/client_images/default_client.png" alt="Profile Picture" id="profilePreview" class="profile-picture">
+                        <label for="profile_picture" class="profile-picture-overlay">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" name="profile_picture" id="profile_picture" class="profile-picture-input" accept="image/*">
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Upload your profile picture</p>
+                </div>
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
@@ -580,5 +683,27 @@ if (isset($_POST['register'])) {
         });
     </script>
     <?php endif; ?>
+
+    <!-- JavaScript for profile picture preview -->
+    <script>
+        $(document).ready(function() {
+            // Profile picture preview functionality
+            $('#profile_picture').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#profilePreview').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Click on image to trigger file input
+            $('#profilePreview').click(function() {
+                $('#profile_picture').click();
+            });
+        });
+    </script>
 </body>
 </html> 
