@@ -89,7 +89,19 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
     $appointmentTime = isset($appointmentDetails['appointment_time']) ? 
                      date('h:i A', strtotime($appointmentDetails['appointment_time'])) : '';
     $reason = $appointmentDetails['reason'] ?? 'General Consultation';
+    $token = $appointmentDetails['view_token'] ?? '';
     
+    // Ensure token is not empty
+    if (empty($token)) {
+        error_log('Warning: Empty token in appointment confirmation email');
+    }
+    
+    // Build the PDF URL with the token - use a direct absolute path
+    $pdfUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/repo-core/Mamatid_MedClinic/actions/generate_appointment_pdf.php?token=' . urlencode($token);
+    
+    // Debug log the URL
+    error_log("PDF URL generated: " . $pdfUrl);
+
     // Build email body
     $body = '
     <!DOCTYPE html>
@@ -173,10 +185,18 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
                     <li>If you need to cancel or reschedule, please contact us at least 24 hours in advance.</li>
                 </ul>
                 
-                <p>You can view or manage your appointments through your patient portal.</p>
+                <p>You can view or download your appointment details using the button below.</p>';
+    
+    // Only add the button if we have a token
+    if (!empty($token)) {
+        $body .= '
+                <center><a href="' . htmlspecialchars($pdfUrl) . '" class="cta-button">Download Appointment PDF</a></center>';
+    } else {
+        $body .= '
+                <center><p style="color: #FF0000;">Your appointment link is being processed. Please check back later.</p></center>';
+    }
                 
-                <center><a href="#" class="cta-button">View My Appointments</a></center>
-                
+    $body .= '
                 <p>If you have any questions or need further assistance, please don\'t hesitate to contact us.</p>
                 
                 <p>Best regards,<br>Mamatid Health Center Team</p>

@@ -29,7 +29,6 @@ $excludeDirs = [
     'ajax',
     'actions',
     'plugins',
-    'pdflib',
     'dist',
     'system'
 ];

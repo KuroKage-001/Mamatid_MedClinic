@@ -174,14 +174,32 @@ if (isset($_POST['book_appointment'])) {
             $doctor = $doctorStmt->fetch(PDO::FETCH_ASSOC);
             $doctorName = $doctor ? $doctor['display_name'] : 'Your Doctor';
             
+            // Generate a secure token for viewing the appointment
+            $token = bin2hex(random_bytes(32)); // Generate a 64-character random hex string
+            $expiry = date('Y-m-d H:i:s', strtotime('+30 days')); // Token expires after 30 days
+            
+            // Add token and email sent status to the appointment record
+            $updateAppointmentQuery = "UPDATE appointments SET view_token = ?, token_expiry = ? WHERE id = ?";
+            $updateAppointmentStmt = $con->prepare($updateAppointmentQuery);
+            $updateAppointmentStmt->execute([
+                $token, 
+                $expiry, 
+                $appointmentId
+            ]);
+            
             // Prepare appointment details
             $appointmentDetails = [
                 'patient_name' => $clientName,
                 'doctor_name' => $doctorName,
                 'appointment_date' => $schedule['schedule_date'],
                 'appointment_time' => $appointmentTime,
-                'reason' => $reason
+                'reason' => $reason,
+                'view_token' => $token // Include the token in the appointment details
             ];
+            
+            // Debug logging for token
+            error_log("Appointment ID: " . $appointmentId . " - Token: " . $token);
+            error_log("Appointment details array: " . print_r($appointmentDetails, true));
             
             // Generate email body
             $emailBody = generateAppointmentConfirmationEmail($appointmentDetails);
@@ -197,12 +215,13 @@ if (isset($_POST['book_appointment'])) {
             // Log email result (could be stored in a database table in the future)
             error_log("Email sending result: " . ($emailResult['success'] ? 'Success' : $emailResult['message']));
             
-            // Add a note to the appointment record that email was sent
-            if ($emailResult['success']) {
-                $updateEmailSentQuery = "UPDATE appointments SET email_sent = 1 WHERE id = ?";
-                $updateEmailStmt = $con->prepare($updateEmailSentQuery);
-                $updateEmailStmt->execute([$appointmentId]);
-            }
+            // Update email sent status
+            $updateEmailStatusQuery = "UPDATE appointments SET email_sent = ? WHERE id = ?";
+            $updateEmailStatusStmt = $con->prepare($updateEmailStatusQuery);
+            $updateEmailStatusStmt->execute([
+                $emailResult['success'] ? 1 : 0,
+                $appointmentId
+            ]);
         } catch (Exception $ex) {
             // Log email error but don't prevent successful appointment booking
             error_log("Failed to send confirmation email: " . $ex->getMessage());

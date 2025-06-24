@@ -167,25 +167,21 @@ class LB_PDF extends FPDF {
     // Page header
     public function Header() {
         if ($this->pageHeaderRepeat || (!$this->pageHeaderRepeat && !$this->pageHeaderAdded)) {
-            // Logo
-            $this->Image('dist/img/logo01.png', $this->GetX(), $this->GetY(), 30);
+            // Logo - check if file exists before using it
+            $logoFile = '../dist/img/logo01.png';
+            if (file_exists($logoFile)) {
+                $this->Image($logoFile, 10.00125, 10.00125, 30);
+            }
+            
             // Times bold 13
             $this->SetFont('', 'B', self::HEADING_SIZE);
+            // Move to the right
+            $this->Cell(35);
             // Title
-            $this->Cell(0, 7, 'Patient Management System', 0, 0, 'C');
-            $this->Ln();
-            $this->Cell(0, 7, $this->reportTitle, 0, 0, 'C');
-            $this->Ln();
-            if ($this->fromDate != '' || $this->toDate != '') {
-                if ($this->fromDate != '' && $this->toDate != '') {
-                $this->Cell(0, 7, 'From ' . $this->fromDate . '  to  ' . $this->toDate, 0, 0, 'C');
-                } else if($this->fromDate != '') {
-                    $this->Cell(0, 7,  $this->fromDate , 0, 0, 'C');
-                }
-            }
-            // Line break.
-            $this->Ln(13);    //height of break can be given
-
+            $this->Cell(0, 10, $this->reportTitle, 0, 0, 'L');
+            // Line break
+            $this->Ln(15);
+            
             $this->SetFont('', '', self::BODY_SIZE);
             $this->pageHeaderAdded = true;
         }
