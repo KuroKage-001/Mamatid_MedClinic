@@ -97,9 +97,9 @@ if (isset($_POST['update_user'])) {
             
             if (in_array($ext, $allowed)) {
                 $newFilename = $user_id . '_' . time() . '.' . $ext;
-                if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], 'user_images/' . $newFilename)) {
-                    if ($user['profile_picture'] != 'default_profile.jpg' && file_exists('user_images/' . $user['profile_picture'])) {
-                        unlink('user_images/' . $user['profile_picture']);
+                if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], 'system/user_images/' . $newFilename)) {
+                    if ($user['profile_picture'] != 'default_profile.jpg' && file_exists('system/user_images/' . $user['profile_picture'])) {
+                        unlink('system/user_images/' . $user['profile_picture']);
                     }
                     $profilePicture = $newFilename;
                 }
@@ -375,9 +375,9 @@ if (isset($_POST['update_user'])) {
                         <div class="card-body p-0">
                             <div class="d-flex align-items-center p-3">
                                 <div class="profile-section me-4">
-                                    <img src="user_images/<?php echo $user['profile_picture']; ?>" 
+                                    <img src="system/user_images/<?php echo $user['profile_picture']; ?>" 
                                          alt="Profile Picture" class="profile-preview"
-                                         onerror="this.src='user_images/default_profile.jpg'">
+                                         onerror="this.src='system/user_images/default_profile.jpg'">
                                 </div>
                                 <div class="info-section">
                                     <h4 class="user-name mb-1"><?php echo htmlspecialchars($user['display_name']); ?></h4>

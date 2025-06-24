@@ -780,7 +780,7 @@ try {
                   <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                   <tr>
                     <td>
-                      <img src="user_images/<?php echo htmlspecialchars($row['profile_picture']); ?>" 
+                      <img src="system/user_images/<?php echo htmlspecialchars($row['profile_picture']); ?>" 
                            alt="User" class="user-img">
                     </td>
                     <td><?php echo htmlspecialchars($row['display_name']); ?></td>

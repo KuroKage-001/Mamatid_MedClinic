@@ -1,40 +1,56 @@
 <?php
 require_once './config/connection.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("location:index.php");
-    exit;
-}
+require_once './config/check_client_auth.php';
 require_once './common_service/common_functions.php';
 require_once './common_service/role_functions.php';
 
-// Check permission
-requireRole(['admin', 'health_worker', 'doctor']);
+// Check if this is a client-only page
+requireClient();
 
 $message = '';
 $error = '';
-$user_id = $_SESSION['user_id'];
+$client_id = $_SESSION['client_id'];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Handle profile update
     if (isset($_POST['update_profile'])) {
-        $display_name = trim($_POST['display_name']);
+        $full_name = trim($_POST['full_name']);
         $email = trim($_POST['email']);
-        $phone = trim($_POST['phone']);
+        $phone_number = trim($_POST['phone_number']);
+        $address = trim($_POST['address']);
+        $date_of_birth = trim($_POST['date_of_birth']);
+        $gender = trim($_POST['gender']);
         
-        $sql = "UPDATE users SET display_name = :display_name, email = :email, phone = :phone WHERE id = :user_id";
-        $stmt = $con->prepare($sql);
-        $stmt->bindParam(':display_name', $display_name);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':phone', $phone);
-        $stmt->bindParam(':user_id', $user_id);
+        // Check if email is already taken by another user
+        $check_email_sql = "SELECT id FROM clients WHERE email = :email AND id != :client_id";
+        $check_stmt = $con->prepare($check_email_sql);
+        $check_stmt->bindParam(':email', $email);
+        $check_stmt->bindParam(':client_id', $client_id);
+        $check_stmt->execute();
         
-        if ($stmt->execute()) {
-            $_SESSION['display_name'] = $display_name;
-            $message = "Profile updated successfully!";
+        if ($check_stmt->rowCount() > 0) {
+            $error = "Email address is already in use by another account.";
         } else {
-            $error = "Error updating profile";
+            $sql = "UPDATE clients SET full_name = :full_name, email = :email, phone_number = :phone_number, 
+                    address = :address, date_of_birth = :date_of_birth, gender = :gender 
+                    WHERE id = :client_id";
+            $stmt = $con->prepare($sql);
+            $stmt->bindParam(':full_name', $full_name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':phone_number', $phone_number);
+            $stmt->bindParam(':address', $address);
+            $stmt->bindParam(':date_of_birth', $date_of_birth);
+            $stmt->bindParam(':gender', $gender);
+            $stmt->bindParam(':client_id', $client_id);
+            
+            if ($stmt->execute()) {
+                $_SESSION['client_name'] = $full_name;
+                $_SESSION['client_email'] = $email;
+                $message = "Profile updated successfully!";
+            } else {
+                $error = "Error updating profile";
+            }
         }
     }
     
@@ -48,18 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "New passwords do not match!";
         } else {
             // Verify current password
-            $sql = "SELECT password FROM users WHERE id = :user_id";
+            $sql = "SELECT password FROM clients WHERE id = :client_id";
             $stmt = $con->prepare($sql);
-            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':client_id', $client_id);
             $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $client = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($user && md5($current_password) === $user['password']) {
+            if ($client && md5($current_password) === $client['password']) {
                 $hashed_password = md5($new_password);
-                $sql = "UPDATE users SET password = :password WHERE id = :user_id";
+                $sql = "UPDATE clients SET password = :password WHERE id = :client_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':password', $hashed_password);
-                $stmt->bindParam(':user_id', $user_id);
+                $stmt->bindParam(':client_id', $client_id);
                 
                 if ($stmt->execute()) {
                     $message = "Password changed successfully!";
@@ -79,26 +95,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         
         if (in_array($ext, $allowed)) {
-            $new_filename = $user_id . '_' . time() . '.' . $ext;
-            $upload_path = 'system/user_images/' . $new_filename;
+            $new_filename = $client_id . '_' . time() . '.' . $ext;
+            $upload_path = 'system/client_images/' . $new_filename;
             
             if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $upload_path)) {
                 // Delete old profile picture if it's not the default
-                if ($_SESSION['profile_picture'] != 'default_profile.jpg') {
-                    $old_file = 'system/user_images/' . $_SESSION['profile_picture'];
-                    if (file_exists($old_file)) {
-                        unlink($old_file);
-                    }
+                $sql = "SELECT profile_picture FROM clients WHERE id = :client_id";
+                $stmt = $con->prepare($sql);
+                $stmt->bindParam(':client_id', $client_id);
+                $stmt->execute();
+                $current_pic = $stmt->fetchColumn();
+                
+                if ($current_pic != 'default_client.png' && file_exists('system/client_images/' . $current_pic)) {
+                    unlink('system/client_images/' . $current_pic);
                 }
                 
                 // Update database
-                $sql = "UPDATE users SET profile_picture = :profile_picture WHERE id = :user_id";
+                $sql = "UPDATE clients SET profile_picture = :profile_picture WHERE id = :client_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':profile_picture', $new_filename);
-                $stmt->bindParam(':user_id', $user_id);
+                $stmt->bindParam(':client_id', $client_id);
                 
                 if ($stmt->execute()) {
-                    $_SESSION['profile_picture'] = $new_filename;
+                    $_SESSION['client_profile_picture'] = $new_filename;
                     $message = "Profile picture updated successfully!";
                 } else {
                     $error = "Error updating profile picture";
@@ -113,19 +132,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Get current user data
-$sql = "SELECT * FROM users WHERE id = :user_id";
+$sql = "SELECT * FROM clients WHERE id = :client_id";
 $stmt = $con->prepare($sql);
-$stmt->bindParam(':user_id', $user_id);
+$stmt->bindParam(':client_id', $client_id);
 $stmt->execute();
-$user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+$client_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Set default profile picture path
+$profile_pic = isset($client_data['profile_picture']) && !empty($client_data['profile_picture']) 
+               ? $client_data['profile_picture'] : 'default_client.png';
+$profile_pic_url = 'system/client_images/' . $profile_pic;
+
+// If the file doesn't exist, use a fallback image
+if (!file_exists($profile_pic_url)) {
+    $profile_pic_url = 'dist/img/patient-avatar.png';
+}
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Account Settings | Mamatid Health Center System</title>
+    <title>Account Settings | Mamatid Health Center</title>
     <?php include './config/site_css_links.php'; ?>
-    <link rel="stylesheet" href="system_styles/account_settings.css">
+    <link rel="stylesheet" href="system_styles/update_user.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <style>
         :root {
@@ -138,6 +167,11 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
           --danger-color: #F64E60;
           --light-color: #F3F6F9;
           --dark-color: #1a1a2d;
+        }
+
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
         }
 
         /* Card Styling */
@@ -214,6 +248,11 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
         /* Profile section styling */
+        .profile-info {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
         .profile-pic-container {
             position: relative;
             width: 150px;
@@ -226,10 +265,11 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
+            margin: 0 auto;
             border: 5px solid #f4f6f9;
             box-shadow: 0 5px 15px rgba(0,0,0,.1);
         }
-        
+
         .profile-pic-overlay {
             position: absolute;
             bottom: 0;
@@ -251,28 +291,15 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
             transform: scale(1.1);
         }
 
-        .role-badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            display: inline-block;
-            margin-top: 10px;
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        .role-admin {
-            background-color: rgba(137, 80, 252, 0.1);
-            color: var(--info-color);
-        }
-
-        .role-doctor {
-            background-color: rgba(255, 168, 0, 0.1);
-            color: var(--warning-color);
-        }
-
-        .role-health_worker {
-            background-color: rgba(54, 153, 255, 0.1);
-            color: var(--primary-color);
+        .profile-email {
+            color: #6c757d;
+            margin-bottom: 15px;
         }
 
         /* Content Header Styling */
@@ -305,23 +332,6 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
             background-color: rgba(246, 78, 96, 0.1);
             color: var(--danger-color);
             border-left: 4px solid var(--danger-color);
-        }
-        
-        /* User info styles */
-        .user-info {
-            text-align: center;
-        }
-        
-        .user-info h4 {
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        .user-info .username {
-            color: #7E8299;
-            margin-bottom: 15px;
-            display: block;
         }
         
         /* Password strength indicator */
@@ -371,7 +381,8 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include './config/header.php'; include './config/sidebar.php'; ?>
+<?php include './config/client_ui/header.php'; ?>
+<?php include './config/client_ui/sidebar.php'; ?>
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -380,7 +391,7 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="container-fluid">
             <div class="row align-items-center mb-4">
                 <div class="col-12 col-md-6" style="padding-left: 20px;">
-                    <h1>Account Settings</h1>
+                    <h1>My Account Settings</h1>
                 </div>
             </div>
         </div>
@@ -420,22 +431,16 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                         <div class="card-body">
                             <form method="POST" enctype="multipart/form-data" id="pictureForm">
                                 <div class="profile-pic-container">
-                                    <img src="system/user_images/<?php echo $_SESSION['profile_picture']; ?>" 
-                                         alt="Profile Picture" class="profile-pic"
-                                         onerror="this.src='system/user_images/default_profile.jpg'"
-                                         id="profileImage">
-                                    <label for="fileInput" class="profile-pic-overlay" title="Change Profile Picture">
+                                    <img src="<?php echo $profile_pic_url; ?>" alt="Profile Picture" class="profile-pic" id="profilePreview">
+                                    <label for="profilePicInput" class="profile-pic-overlay">
                                         <i class="fas fa-camera"></i>
                                     </label>
-                                    <input type="file" id="fileInput" name="profile_picture" style="display: none;" 
-                                           accept="image/jpeg,image/png,image/gif">
                                 </div>
-                                <div class="user-info">
-                                    <h4><?php echo htmlspecialchars($user_data['display_name']); ?></h4>
-                                    <span class="username">@<?php echo htmlspecialchars($user_data['user_name']); ?></span>
-                                    <div class="role-badge role-<?php echo $user_data['role']; ?>">
-                                        <?php echo getRoleDisplayName($user_data['role']); ?>
-                                    </div>
+                                <input type="file" id="profilePicInput" name="profile_picture" 
+                                       accept="image/*" style="display: none;" onchange="previewImage(this);">
+                                <div class="profile-info">
+                                    <h4 class="profile-name"><?php echo htmlspecialchars($client_data['full_name']); ?></h4>
+                                    <p class="profile-email"><?php echo htmlspecialchars($client_data['email']); ?></p>
                                     <div class="mt-4">
                                         <button type="submit" class="btn btn-primary" 
                                             id="uploadBtn" style="display: none;">
@@ -444,6 +449,34 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                                     </div>
                                 </div>
                             </form>
+                            <div class="mt-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="info-item">
+                                            <span class="info-label"><i class="fas fa-phone mr-2"></i>Phone</span>
+                                            <span class="info-value"><?php echo htmlspecialchars($client_data['phone_number']); ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-item">
+                                            <span class="info-label"><i class="fas fa-calendar mr-2"></i>Age</span>
+                                            <span class="info-value">
+                                                <?php 
+                                                    $birthdate = new DateTime($client_data['date_of_birth']);
+                                                    $today = new DateTime();
+                                                    echo $birthdate->diff($today)->y;
+                                                ?> years
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="info-item">
+                                        <span class="info-label"><i class="fas fa-map-marker-alt mr-2"></i>Address</span>
+                                        <span class="info-value"><?php echo htmlspecialchars($client_data['address']); ?></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -464,42 +497,57 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Display Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="display_name" 
-                                                   value="<?php echo htmlspecialchars($user_data['display_name']); ?>" required>
+                                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="full_name" 
+                                                   value="<?php echo htmlspecialchars($client_data['full_name']); ?>" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Username</label>
-                                            <input type="text" class="form-control" 
-                                                   value="<?php echo htmlspecialchars($user_data['user_name']); ?>" 
-                                                   disabled>
-                                            <small class="text-muted">Username cannot be changed</small>
+                                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" name="email" 
+                                                   value="<?php echo htmlspecialchars($client_data['email']); ?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" class="form-control" name="email" 
-                                                   value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>">
+                                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="phone_number" 
+                                                   value="<?php echo htmlspecialchars($client_data['phone_number']); ?>" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Phone</label>
-                                            <input type="text" class="form-control" name="phone" 
-                                                   value="<?php echo htmlspecialchars($user_data['phone'] ?? ''); ?>">
+                                            <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" name="date_of_birth" 
+                                                   value="<?php echo htmlspecialchars($client_data['date_of_birth']); ?>" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Gender <span class="text-danger">*</span></label>
+                                            <select class="form-control" name="gender" required>
+                                                <?php echo getGender($client_data['gender']); ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Address <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="address" 
+                                                   value="<?php echo htmlspecialchars($client_data['address']); ?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 text-right">
-                                <button type="submit" name="update_profile" class="btn btn-primary">
-                                    <i class="fas fa-save mr-2"></i>Update Profile
-                                </button>
+                                        <button type="submit" name="update_profile" class="btn btn-primary">
+                                            <i class="fas fa-save mr-2"></i>Update Profile
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -542,9 +590,9 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                                 </div>
                                 <div class="row">
                                     <div class="col-12 text-right">
-                                <button type="submit" name="change_password" class="btn btn-primary">
-                                    <i class="fas fa-key mr-2"></i>Change Password
-                                </button>
+                                        <button type="submit" name="change_password" class="btn btn-primary">
+                                            <i class="fas fa-key mr-2"></i>Change Password
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -556,7 +604,7 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
     </section>
 </div>
 
-<?php include './config/footer.php'; ?>
+<?php include './config/client_ui/footer.php'; ?>
 </div>
 
 <?php include './config/site_js_links.php'; ?>
@@ -616,29 +664,26 @@ $(document).ready(function() {
         const newPassword = $('#newPassword').val();
         const confirmPassword = $('#confirmPassword').val();
     
-    if (newPassword !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             e.preventDefault();
             Toast.fire({
                 icon: 'error',
                 title: 'New passwords do not match!'
             });
-        return false;
-    }
-    
-    if (newPassword.length < 6) {
+            return false;
+        }
+        
+        if (newPassword.length < 6) {
             e.preventDefault();
             Toast.fire({
                 icon: 'error',
                 title: 'Password must be at least 6 characters long!'
             });
-        return false;
-    }
-    
-    return true;
+            return false;
+        }
+        
+        return true;
     });
-    
-    // Show menu selected
-    showMenuSelected("#mnu_user_management", "");
 });
 </script>
 
