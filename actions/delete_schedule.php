@@ -8,35 +8,57 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Check permission - only doctors can delete their schedules
-requireRole(['doctor']);
+// Check permission - only admins, health workers, and doctors can delete their schedules
+requireRole(['admin', 'health_worker', 'doctor']);
 
-$doctorId = $_SESSION['user_id'];
+$staffId = $_SESSION['user_id'];
 $scheduleId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$userRole = $_SESSION['role'];
+$redirectPage = ($userRole == 'doctor') ? '../doctor_schedule.php' : '../staff_availability.php';
 
 if ($scheduleId > 0) {
     try {
-        // First check if the schedule belongs to the doctor
-        $query = "SELECT doctor_id FROM doctor_schedules WHERE id = ?";
+        // Determine which table to use based on role
+        if ($userRole == 'doctor') {
+            $tableName = 'doctor_schedules';
+            $idColumn = 'doctor_id';
+        } else {
+            $tableName = 'staff_schedules';
+            $idColumn = 'staff_id';
+        }
+
+        // First check if the schedule belongs to this staff member
+        $query = "SELECT {$idColumn} FROM {$tableName} WHERE id = ?";
         $stmt = $con->prepare($query);
         $stmt->execute([$scheduleId]);
         $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($schedule && $schedule['doctor_id'] == $doctorId) {
+        if ($schedule && $schedule[$idColumn] == $staffId) {
+            // Check if there are any appointments for this schedule
+            $apptQuery = "SELECT COUNT(*) as count FROM appointments WHERE schedule_id = ?";
+            $apptStmt = $con->prepare($apptQuery);
+            $apptStmt->execute([$scheduleId]);
+            $appointmentCount = $apptStmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            if ($appointmentCount > 0) {
+                header("location:{$redirectPage}?error=" . urlencode("Cannot delete: Schedule has booked appointments"));
+                exit;
+            }
+            
             // Delete the schedule
-            $query = "DELETE FROM doctor_schedules WHERE id = ?";
+            $query = "DELETE FROM {$tableName} WHERE id = ?";
             $stmt = $con->prepare($query);
             $stmt->execute([$scheduleId]);
             
-            header("location:../doctor_schedule.php?message=Schedule deleted successfully");
+            header("location:{$redirectPage}?message=Schedule deleted successfully");
         } else {
-            header("location:../doctor_schedule.php?error=You can only delete your own schedules");
+            header("location:{$redirectPage}?error=You can only delete your own schedules");
         }
     } catch(PDOException $ex) {
-        header("location:../doctor_schedule.php?error=" . urlencode("Error: " . $ex->getMessage()));
+        header("location:{$redirectPage}?error=" . urlencode("Error: " . $ex->getMessage()));
     }
 } else {
-    header("location:../doctor_schedule.php?error=Invalid schedule ID");
+    header("location:{$redirectPage}?error=Invalid schedule ID");
 }
 exit;
 ?> 

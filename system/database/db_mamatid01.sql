@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 25, 2025 at 12:17 AM
+-- Generation Time: Jun 25, 2025 at 11:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,6 +44,7 @@ CREATE TABLE `appointments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `email_sent` tinyint(1) DEFAULT 0,
+  `reminder_sent` tinyint(1) DEFAULT 0,
   `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is archived',
   `view_token` varchar(64) DEFAULT NULL,
   `token_expiry` datetime DEFAULT NULL
@@ -53,18 +54,20 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `is_archived`, `view_token`, `token_expiry`) VALUES
-(28, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '12:00:00', 'deworming 02', 'approved', NULL, 9, 19, '2025-06-24 18:39:35', '2025-06-24 18:39:40', 1, 0, NULL, NULL),
-(29, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '12:30:00', 'rbs', 'approved', NULL, 9, 19, '2025-06-24 18:43:53', '2025-06-24 18:43:59', 1, 0, NULL, NULL),
-(30, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '10:00:00', 'deworming 02', 'approved', NULL, 9, 19, '2025-06-24 19:18:32', '2025-06-24 19:18:38', 1, 0, 'dd7bd7bb12ca65f127eb06d1db83075c6ea8c5e96fc83cada4ed9cb5684867ad', '2025-07-24 21:18:38'),
-(31, 'Admin 01', '09918719610', 'admin', '2002-09-23', 'Male', '2025-06-26', '15:00:00', 'rbs', 'approved', NULL, 9, 19, '2025-06-24 19:34:49', '2025-06-24 19:34:56', 1, 0, '1b8784e01c60a98f4f2c6ce2ef813e5e25d9d72f384f1d1a8841c8d07cd729b1', '2025-07-24 21:34:56'),
-(32, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '16:30:00', 'deworming 03', 'approved', NULL, 9, 19, '2025-06-24 19:36:25', '2025-06-24 19:36:31', 1, 0, '96ea207194f5e037d4201abd11447f9dbb071be7cdf32d78e16ff4c4c96a663d', '2025-07-24 21:36:31'),
-(33, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '10:30:00', 'rbs 02', 'approved', NULL, 9, 19, '2025-06-24 20:14:27', '2025-06-24 20:14:34', 1, 0, 'c768642897ade632c3b86e093289ce4018464dcd6ed0712f9cbbe1a4e095c41a', '2025-07-24 22:14:34'),
-(34, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '14:30:00', 'rbs 03', 'approved', NULL, 9, 19, '2025-06-24 20:26:59', '2025-06-24 20:27:10', 1, 0, '9c8d7e6e739cbe544c375c2530bc77484c23f4de8d7b6869aed5b95eb5d6dd9c', '2025-07-24 22:27:10'),
-(35, 'Pauline Oliveros', '09765455654', '001', '2003-03-25', 'Female', '2025-06-26', '13:00:00', 'Family Planning 04', 'approved', NULL, 9, 19, '2025-06-24 20:52:30', '2025-06-24 20:52:37', 1, 0, 'cf773aca75b6f8861ecfe74991f4964fca19786dfb71747f6e2457b7505cf7db', '2025-07-24 22:52:37'),
-(36, 'Aila Drine Niala', '09787876787', '002', '2003-03-26', 'Female', '2025-06-26', '15:30:00', 'Deworming 04', 'approved', NULL, 9, 19, '2025-06-24 20:56:14', '2025-06-24 20:56:21', 1, 0, '65ec04adc2278da9bbc2c02870d116874fa7ef8cec3dfefed75fe78c6576dd3b', '2025-07-24 22:56:21'),
-(37, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '13:30:00', 'rbs 03', 'approved', NULL, 9, 19, '2025-06-24 20:58:57', '2025-06-24 20:59:07', 1, 0, 'c8beeac714e530ecde5db3ec40e2b43e29285659b39d8d35427378f9615ce468', '2025-07-24 22:59:07'),
-(38, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '11:30:00', 'deworming 05', 'approved', NULL, 9, 19, '2025-06-24 21:38:07', '2025-06-24 21:38:14', 1, 0, 'e43e4bb0694c61b4f6534c82d9d48ec1a4342b166dce2060f88d4a0927999381', '2025-07-24 23:38:14');
+INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`) VALUES
+(28, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '12:00:00', 'deworming 02', 'approved', NULL, 9, 19, '2025-06-24 18:39:35', '2025-06-24 18:39:40', 1, 0, 0, NULL, NULL),
+(29, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '12:30:00', 'rbs', 'approved', NULL, 9, 19, '2025-06-24 18:43:53', '2025-06-24 18:43:59', 1, 0, 0, NULL, NULL),
+(30, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '10:00:00', 'deworming 02', 'approved', NULL, 9, 19, '2025-06-24 19:18:32', '2025-06-24 19:18:38', 1, 0, 0, 'dd7bd7bb12ca65f127eb06d1db83075c6ea8c5e96fc83cada4ed9cb5684867ad', '2025-07-24 21:18:38'),
+(31, 'Admin 01', '09918719610', 'admin', '2002-09-23', 'Male', '2025-06-26', '15:00:00', 'rbs', 'approved', NULL, 9, 19, '2025-06-24 19:34:49', '2025-06-24 19:34:56', 1, 0, 0, '1b8784e01c60a98f4f2c6ce2ef813e5e25d9d72f384f1d1a8841c8d07cd729b1', '2025-07-24 21:34:56'),
+(32, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '16:30:00', 'deworming 03', 'approved', NULL, 9, 19, '2025-06-24 19:36:25', '2025-06-24 19:36:31', 1, 0, 0, '96ea207194f5e037d4201abd11447f9dbb071be7cdf32d78e16ff4c4c96a663d', '2025-07-24 21:36:31'),
+(33, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '10:30:00', 'rbs 02', 'approved', NULL, 9, 19, '2025-06-24 20:14:27', '2025-06-24 20:14:34', 1, 0, 0, 'c768642897ade632c3b86e093289ce4018464dcd6ed0712f9cbbe1a4e095c41a', '2025-07-24 22:14:34'),
+(34, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '14:30:00', 'rbs 03', 'approved', NULL, 9, 19, '2025-06-24 20:26:59', '2025-06-24 20:27:10', 1, 0, 0, '9c8d7e6e739cbe544c375c2530bc77484c23f4de8d7b6869aed5b95eb5d6dd9c', '2025-07-24 22:27:10'),
+(35, 'Pauline Oliveros', '09765455654', '001', '2003-03-25', 'Female', '2025-06-26', '13:00:00', 'Family Planning 04', 'approved', NULL, 9, 19, '2025-06-24 20:52:30', '2025-06-25 17:36:56', 1, 0, 1, 'cf773aca75b6f8861ecfe74991f4964fca19786dfb71747f6e2457b7505cf7db', '2025-07-24 22:52:37'),
+(36, 'Aila Drine Niala', '09787876787', '002', '2003-03-26', 'Female', '2025-06-26', '15:30:00', 'Deworming 04', 'approved', NULL, 9, 19, '2025-06-24 20:56:14', '2025-06-25 17:51:57', 1, 0, 1, '65ec04adc2278da9bbc2c02870d116874fa7ef8cec3dfefed75fe78c6576dd3b', '2025-07-24 22:56:21'),
+(37, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '13:30:00', 'rbs 03', 'approved', NULL, 9, 19, '2025-06-24 20:58:57', '2025-06-24 20:59:07', 1, 0, 0, 'c8beeac714e530ecde5db3ec40e2b43e29285659b39d8d35427378f9615ce468', '2025-07-24 22:59:07'),
+(38, 'Admin 03', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '2025-06-26', '11:30:00', 'deworming 05', 'approved', NULL, 9, 19, '2025-06-24 21:38:07', '2025-06-24 21:38:14', 1, 0, 0, 'e43e4bb0694c61b4f6534c82d9d48ec1a4342b166dce2060f88d4a0927999381', '2025-07-24 23:38:14'),
+(41, 'Jen Cantulo', '09767656545', '004', '2002-03-23', 'Female', '2025-06-27', '06:30:00', 'Deworming 06', 'approved', NULL, 16, 1, '2025-06-25 18:37:22', '2025-06-25 18:37:28', 1, 0, 0, '4068fc2bff6f834a208456f7349dcd425b7a0da981b6c7e19f891ba397a79d79', '2025-07-25 20:37:22'),
+(42, 'Jen Castulo', '09767656545', '004', '2002-03-23', 'Female', '2025-06-27', '07:00:00', 'Deworming 07', 'approved', NULL, 16, 1, '2025-06-25 18:39:56', '2025-06-25 18:40:02', 1, 0, 0, '9f5ad33738c71a494ab4fce80e68510b5434d21ca5d3cafbfca434eafcaf73cf', '2025-07-25 20:39:56');
 
 --
 -- Triggers `appointments`
@@ -171,7 +174,21 @@ INSERT INTO `appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, 
 (40, 9, '15:00:00', 1, 31),
 (41, 9, '15:30:00', 1, 36),
 (42, 9, '16:00:00', 0, NULL),
-(43, 9, '16:30:00', 1, 32);
+(43, 9, '16:30:00', 1, 32),
+(44, 12, '04:00:00', 0, NULL),
+(45, 12, '05:00:00', 0, NULL),
+(46, 12, '06:00:00', 0, NULL),
+(47, 12, '07:00:00', 0, NULL),
+(48, 12, '08:00:00', 0, NULL),
+(49, 12, '09:00:00', 0, NULL),
+(50, 12, '10:00:00', 0, NULL),
+(51, 12, '11:00:00', 0, NULL),
+(52, 12, '12:00:00', 0, NULL),
+(53, 12, '13:00:00', 0, NULL),
+(54, 12, '14:00:00', 0, NULL),
+(55, 12, '15:00:00', 0, NULL),
+(56, 12, '16:00:00', 0, NULL),
+(57, 8, '01:05:23', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -231,9 +248,11 @@ CREATE TABLE `clients` (
 INSERT INTO `clients` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `profile_picture`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
 (2, 'Admin 01', 'leocanada0056@gmail.com', '0192023a7bbd73250516f069df18b500', '09918719610', 'admin', '2002-09-23', 'Male', '2_1750793579.jpg', '2025-04-14 08:54:37', NULL, NULL),
 (5, 'Admin 02', 'admin04@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09918719610', 'Main Baskerville Villa', '2010-09-23', 'Male', 'default_client.png', '2025-04-17 08:36:04', NULL, NULL),
-(6, 'Admin 03', 'leomaresc853@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', 'default_client.png', '2025-04-17 08:37:27', NULL, NULL),
+(6, 'Admin 03', 'leomaresc853@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09676667567', 'Main House Baskerville01', '2009-09-22', 'Female', '6_1750865193.jpg', '2025-04-17 08:37:27', NULL, NULL),
 (7, 'Pauline Oliveros', 'oliverospaulinekaye03@gmail.com', 'e84d01bdb3aca89bcfca98d1bfd0db9d', '09765455654', '001', '2003-03-25', 'Female', 'default_client.png', '2025-06-24 20:51:14', NULL, NULL),
-(8, 'Aila Drine Niala', 'nialaaila38@gmail.com', 'e4db616efaffdbb51d538843480330f5', '09787876787', '002', '2003-03-26', 'Female', 'default_client.png', '2025-06-24 20:55:11', NULL, NULL);
+(8, 'Aila Drine Niala', 'nialaaila38@gmail.com', 'e4db616efaffdbb51d538843480330f5', '09787876787', '002', '2003-03-26', 'Female', 'default_client.png', '2025-06-24 20:55:11', NULL, NULL),
+(9, 'Leonil Escobin', 'shintaromolina@gmail.com', '7488e331b8b64e5794da3fa4eb10ad5d', '09876767656', '003', '2004-04-20', 'Male', '1750806051_685b2e238cea0.jpg', '2025-06-24 23:00:51', NULL, NULL),
+(11, 'Jen Castulo', 'jenelyncastulo05@gmail.com', '78e66d0ccd0334ab108d60c42908cf35', '09767656545', '004', '2002-03-23', 'Female', '1750876517_685c4165a82af.jpeg', '2025-06-25 18:35:17', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -287,7 +306,13 @@ CREATE TABLE `doctor_schedules` (
 
 INSERT INTO `doctor_schedules` (`id`, `doctor_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`, `approval_notes`) VALUES
 (8, 19, '2025-06-24', '10:30:00', '17:30:00', 30, 1, 'checkup 02', '2025-06-21 19:35:16', '2025-06-21 23:44:42', 1, ''),
-(9, 19, '2025-06-26', '10:00:00', '17:00:00', 30, 1, 'Apporved 01', '2025-06-24 16:37:48', '2025-06-24 16:38:38', 1, 'Approved 01');
+(9, 19, '2025-06-26', '10:00:00', '17:00:00', 30, 1, 'Apporved 01', '2025-06-24 16:37:48', '2025-06-24 16:38:38', 1, 'Approved 01'),
+(10, 19, '2025-06-27', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:18', 1, 'Approved 02'),
+(11, 19, '2025-06-30', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:26', 1, 'Approved 02'),
+(12, 19, '2025-07-01', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:00', 1, ''),
+(13, 19, '2025-07-02', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:31', 1, 'Approved 02'),
+(14, 19, '2025-07-03', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:38', 1, 'Approved 02'),
+(15, 19, '2025-07-04', '04:00:00', '17:00:00', 60, 1, 'Approved 02', '2025-06-25 15:51:17', '2025-06-25 15:53:47', 1, 'Approved 02');
 
 -- --------------------------------------------------------
 
@@ -504,6 +529,33 @@ INSERT INTO `random_blood_sugar` (`id`, `name`, `date`, `address`, `age`, `resul
 (4, 'Pomeranian Baskerville', '2025-04-17', 'Baskerville Main House 1', 10, 'None', '2025-04-17 10:03:29'),
 (5, 'Yeomra Baskerville', '2025-04-20', 'Hell Main House', 500, 'None', '2025-04-19 18:35:33'),
 (6, 'Osiris Baskerville', '2025-04-20', 'Baskerville Main House 2', 70, 'None', '2025-04-19 18:35:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_schedules`
+--
+
+CREATE TABLE `staff_schedules` (
+  `id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
+  `max_patients` int(11) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_schedules`
+--
+
+INSERT INTO `staff_schedules` (`id`, `staff_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`) VALUES
+(9, 14, '2025-06-27', '05:48:00', '17:50:00', 30, 1, '', '2025-06-25 20:48:34', '2025-06-25 20:48:34', 1);
 
 -- --------------------------------------------------------
 
@@ -760,7 +812,10 @@ ALTER TABLE `deworming`
 ALTER TABLE `doctor_schedules`
   ADD PRIMARY KEY (`id`),
   ADD KEY `doctor_id` (`doctor_id`),
-  ADD KEY `schedule_date` (`schedule_date`);
+  ADD KEY `schedule_date` (`schedule_date`),
+  ADD KEY `idx_doctor_schedules_doctor_id` (`doctor_id`),
+  ADD KEY `idx_doctor_schedules_schedule_date` (`schedule_date`),
+  ADD KEY `idx_doctor_schedules_is_approved` (`is_approved`);
 
 --
 -- Indexes for table `family_members`
@@ -821,6 +876,16 @@ ALTER TABLE `random_blood_sugar`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `staff_schedules`
+--
+ALTER TABLE `staff_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_id` (`staff_id`),
+  ADD KEY `schedule_date` (`schedule_date`),
+  ADD KEY `idx_staff_schedules_staff_id` (`staff_id`),
+  ADD KEY `idx_staff_schedules_schedule_date` (`schedule_date`);
+
+--
 -- Indexes for table `stock_movement_log`
 --
 ALTER TABLE `stock_movement_log`
@@ -875,13 +940,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `appointment_slots`
 --
 ALTER TABLE `appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `bp_monitoring`
@@ -893,7 +958,7 @@ ALTER TABLE `bp_monitoring`
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `deworming`
@@ -905,7 +970,7 @@ ALTER TABLE `deworming`
 -- AUTO_INCREMENT for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `family_members`
@@ -954,6 +1019,12 @@ ALTER TABLE `medicine_stock`
 --
 ALTER TABLE `random_blood_sugar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `staff_schedules`
+--
+ALTER TABLE `staff_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `stock_movement_log`
@@ -1033,6 +1104,12 @@ ALTER TABLE `medicine_inventory`
 --
 ALTER TABLE `medicine_stock`
   ADD CONSTRAINT `medicine_stock_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_schedules`
+--
+ALTER TABLE `staff_schedules`
+  ADD CONSTRAINT `staff_schedules_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `stock_movement_log`

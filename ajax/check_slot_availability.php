@@ -1,147 +1,96 @@
 <?php
 include '../config/connection.php';
+header('Content-Type: application/json');
 
-// Check if required parameters are provided
+// Set default response
+$response = [
+    'is_available' => false,
+    'error' => null,
+    'client_has_appointment' => false,
+    'max_patients' => 1
+];
+
+// Check input parameters
 if (!isset($_POST['schedule_id']) || !isset($_POST['appointment_time'])) {
-    echo json_encode(['error' => 'Schedule ID and appointment time are required']);
+    $response['error'] = "Missing required parameters";
+    echo json_encode($response);
     exit;
 }
 
-$scheduleId = $_POST['schedule_id'];
+$scheduleId = intval($_POST['schedule_id']);
 $appointmentTime = $_POST['appointment_time'];
+$clientId = isset($_POST['client_id']) ? intval($_POST['client_id']) : 0;
+$scheduleType = isset($_POST['schedule_type']) ? $_POST['schedule_type'] : 'doctor';
 
 try {
-    // Start a transaction to ensure consistency
-    $con->beginTransaction();
+    // Determine which table to check based on schedule type
+    $schedulesTable = ($scheduleType === 'staff') ? 'staff_schedules' : 'doctor_schedules';
+    $staffIdColumn = ($scheduleType === 'staff') ? 'staff_id' : 'doctor_id';
     
-    // Get schedule details to check if it's in the past
-    $scheduleQuery = "SELECT schedule_date FROM doctor_schedules WHERE id = ? FOR UPDATE";
+    // First, validate that the schedule exists and is approved
+    $scheduleQuery = "SELECT s.*, u.display_name as provider_name
+                    FROM {$schedulesTable} s
+                    JOIN users u ON s.{$staffIdColumn} = u.id
+                    WHERE s.id = ?";
+    
+    // Add approval check only for doctor schedules
+    if ($scheduleType === 'doctor') {
+        $scheduleQuery .= " AND s.is_approved = 1";
+    }
+    
     $scheduleStmt = $con->prepare($scheduleQuery);
     $scheduleStmt->execute([$scheduleId]);
     $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$schedule) {
-        $con->rollBack();
-        echo json_encode([
-            'is_available' => false,
-            'error' => 'Invalid schedule ID.'
-        ]);
+        $response['error'] = "Invalid or unapproved schedule";
+        echo json_encode($response);
         exit;
     }
     
-    // Check if the schedule date is in the past
-    $scheduleDateTime = strtotime($schedule['schedule_date'] . ' ' . $appointmentTime);
-    $currentDateTime = time();
-    if ($scheduleDateTime < $currentDateTime) {
-        $con->rollBack();
-        echo json_encode([
-            'is_available' => false,
-            'error' => 'Cannot book appointments for past dates or times.'
-        ]);
-        exit;
-    }
+    $maxPatients = $schedule['max_patients'];
+    $response['max_patients'] = $maxPatients;
     
-    // First check if this slot exists in appointment_slots table and if it's marked as booked
-    $slotExistsQuery = "SELECT id, is_booked, appointment_id FROM appointment_slots 
-                      WHERE schedule_id = ? AND slot_time = ? 
-                      FOR UPDATE";
-    $slotExistsStmt = $con->prepare($slotExistsQuery);
-    $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
-    $slotExists = $slotExistsStmt->fetch(PDO::FETCH_ASSOC);
-    
-    // If the slot exists and is marked as booked, it's not available
-    if ($slotExists && $slotExists['is_booked'] == 1) {
-        $con->rollBack();
-        echo json_encode([
-            'is_available' => false,
-            'max_patients' => 1,
-            'error' => 'This time slot is already booked.'
-        ]);
-        exit;
-    }
-    
-    // Check if there's any appointment for this slot
-    $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
-                WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled'
-                FOR UPDATE";
-    $slotStmt = $con->prepare($slotQuery);
-    $slotStmt->execute([$scheduleId, $appointmentTime]);
-    $slotCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['slot_count'];
-    
-    // If there's already an appointment for this slot, it's not available
-    if ($slotCount > 0) {
-        $con->rollBack();
-        echo json_encode([
-            'is_available' => false,
-            'max_patients' => 1,
-            'booked_count' => $slotCount,
-            'error' => 'This time slot is already booked.'
-        ]);
-        exit;
-    }
-    
-    // If the client is logged in, check if they already have an appointment at this time slot
-    $clientHasAppointment = false;
-    if (isset($_POST['client_id']) && $_POST['client_id']) {
-        $clientId = $_POST['client_id'];
-        
-        // Get client info
-        $clientQuery = "SELECT full_name FROM clients WHERE id = ?";
+    // Check if the client already has an appointment at this time
+    if ($clientId > 0) {
+        $clientQuery = "SELECT * FROM clients WHERE id = ?";
         $clientStmt = $con->prepare($clientQuery);
         $clientStmt->execute([$clientId]);
         $client = $clientStmt->fetch(PDO::FETCH_ASSOC);
         
         if ($client) {
-            $clientName = $client['full_name'];
+            $checkClientQuery = "SELECT COUNT(*) as count FROM appointments 
+                              WHERE appointment_date = ? 
+                              AND appointment_time = ? 
+                              AND patient_name = ? 
+                              AND status != 'cancelled'";
+            $checkClientStmt = $con->prepare($checkClientQuery);
+            $checkClientStmt->execute([$schedule['schedule_date'], $appointmentTime, $client['full_name']]);
+            $clientAppointmentCount = $checkClientStmt->fetch(PDO::FETCH_ASSOC)['count'];
             
-            // Check if this client already has an appointment at this time slot
-            $existingQuery = "SELECT COUNT(*) as existing_count FROM appointments 
-                            WHERE schedule_id = ? AND appointment_time = ? 
-                            AND patient_name = ? AND status != 'cancelled'
-                            FOR UPDATE";
-            $existingStmt = $con->prepare($existingQuery);
-            $existingStmt->execute([$scheduleId, $appointmentTime, $clientName]);
-            $clientHasAppointment = ($existingStmt->fetch(PDO::FETCH_ASSOC)['existing_count'] > 0);
+            if ($clientAppointmentCount > 0) {
+                $response['client_has_appointment'] = true;
+                echo json_encode($response);
+                exit;
+            }
         }
     }
     
-    // Slot is available if there are no appointments and the client doesn't already have one
-    $isAvailable = ($slotCount == 0) && !$clientHasAppointment;
+    // Check if the slot is already booked
+    $slotQuery = "SELECT COUNT(*) as count FROM appointments 
+                WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled'";
+    $slotStmt = $con->prepare($slotQuery);
+    $slotStmt->execute([$scheduleId, $appointmentTime]);
+    $bookedCount = $slotStmt->fetch(PDO::FETCH_ASSOC)['count'];
     
-    // Update the appointment_slots table to reflect the current status
-    if ($slotExists) {
-        // Only update if the status has changed
-        if ($slotExists['is_booked'] != ($slotCount > 0 ? 1 : 0)) {
-            $updateSlotQuery = "UPDATE appointment_slots 
-                              SET is_booked = ? 
-                              WHERE id = ?";
-            $updateSlotStmt = $con->prepare($updateSlotQuery);
-            $updateSlotStmt->execute([($slotCount > 0 ? 1 : 0), $slotExists['id']]);
-        }
-    } else {
-        // Create the slot if it doesn't exist
-        $createSlotQuery = "INSERT INTO appointment_slots 
-                          (schedule_id, slot_time, is_booked) 
-                          VALUES (?, ?, ?)";
-        $createSlotStmt = $con->prepare($createSlotQuery);
-        $createSlotStmt->execute([$scheduleId, $appointmentTime, ($slotCount > 0 ? 1 : 0)]);
-    }
+    // If no appointments or less than max_patients, the slot is available
+    $response['is_available'] = ($bookedCount < $maxPatients);
     
-    // Commit the transaction
-    $con->commit();
+    // Send response
+    echo json_encode($response);
     
-    echo json_encode([
-        'is_available' => $isAvailable,
-        'max_patients' => 1,
-        'booked_count' => $slotCount,
-        'client_has_appointment' => $clientHasAppointment,
-        'error' => $clientHasAppointment ? 'You already have an appointment booked for this time slot.' : null
-    ]);
 } catch(PDOException $ex) {
-    // Rollback the transaction in case of error
-    if ($con->inTransaction()) {
-        $con->rollBack();
-    }
-    echo json_encode(['error' => $ex->getMessage()]);
+    $response['error'] = "Database error: " . $ex->getMessage();
+    echo json_encode($response);
 }
 ?> 

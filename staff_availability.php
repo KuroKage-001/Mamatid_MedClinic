@@ -8,13 +8,14 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Check permission - only doctors can access this page
-requireRole(['doctor']);
+// Check permission - only admins and health workers can access this page
+requireRole(['admin', 'health_worker']);
 
 $message = '';
 $error = '';
-$doctorId = $_SESSION['user_id'];
-$doctorName = $_SESSION['display_name'];
+$staffId = $_SESSION['user_id'];
+$staffName = $_SESSION['display_name'];
+$staffRole = $_SESSION['role'];
 
 // Get message/error from URL if redirected
 if (isset($_GET['message'])) {
@@ -35,31 +36,7 @@ try {
                   AND status = 'approved'
                   AND doctor_id = ?";
     $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->execute([$doctorId]);
-    $updatedCount = $updateStmt->rowCount();
-    
-    if ($updatedCount > 0) {
-        $message = $updatedCount . " past appointments were automatically marked as completed.";
-    }
-    
-    $con->commit();
-} catch(PDOException $ex) {
-    if ($con->inTransaction()) {
-        $con->rollBack();
-    }
-    $error = "Error updating past appointments: " . $ex->getMessage();
-}
-try {
-    $con->beginTransaction();
-    
-    // Update past appointments to completed status
-    $updateQuery = "UPDATE appointments 
-                  SET status = 'completed', updated_at = NOW() 
-                  WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
-                  AND status = 'approved'
-                  AND doctor_id = ?";
-    $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->execute([$doctorId]);
+    $updateStmt->execute([$staffId]);
     $updatedCount = $updateStmt->rowCount();
     
     if ($updatedCount > 0) {
@@ -84,16 +61,16 @@ if (isset($_POST['submit_schedule'])) {
             $startDate = $_POST['start_date'];
             $endDate = $_POST['end_date'];
             
-            $deleteQuery = "DELETE FROM doctor_schedules 
-                            WHERE doctor_id = ? 
+            $deleteQuery = "DELETE FROM staff_schedules 
+                            WHERE staff_id = ? 
                             AND schedule_date BETWEEN ? AND ?";
             $deleteStmt = $con->prepare($deleteQuery);
-            $deleteStmt->execute([$doctorId, $startDate, $endDate]);
+            $deleteStmt->execute([$staffId, $startDate, $endDate]);
         }
         
-        // Insert new schedule entries
-        $scheduleQuery = "INSERT INTO doctor_schedules 
-                         (doctor_id, schedule_date, start_time, end_time, time_slot_minutes, max_patients, notes) 
+        // Insert new schedule entries - auto-approved for admins and health workers
+        $scheduleQuery = "INSERT INTO staff_schedules 
+                         (staff_id, schedule_date, start_time, end_time, time_slot_minutes, max_patients, notes) 
                          VALUES (?, ?, ?, ?, ?, ?, ?)";
         $scheduleStmt = $con->prepare($scheduleQuery);
         
@@ -120,8 +97,20 @@ if (isset($_POST['submit_schedule'])) {
                 continue;
             }
             
+            // Check if a schedule already exists for this date and time
+            $checkQuery = "SELECT COUNT(*) FROM staff_schedules 
+                          WHERE staff_id = ? 
+                          AND schedule_date = ?
+                          AND start_time = ?
+                          AND end_time = ?";
+            $checkStmt = $con->prepare($checkQuery);
+            $checkStmt->execute([$staffId, $dateStr, $startTime, $endTime]);
+            $exists = $checkStmt->fetchColumn();
+            
+            // Only insert if no existing schedule
+            if (!$exists) {
             $scheduleStmt->execute([
-                $doctorId,
+                $staffId,
                 $dateStr,
                 $startTime,
                 $endTime,
@@ -129,56 +118,66 @@ if (isset($_POST['submit_schedule'])) {
                 $maxPatients,
                 $notes
             ]);
+            }
             
             $currentDate->modify('+1 day');
         }
         
         $con->commit();
-        $message = "Schedule successfully saved! Your schedule will be reviewed by an administrator.";
+        $message = "Schedule successfully saved and automatically approved for patient booking!";
+        
+        // Redirect to prevent form resubmission on page refresh
+        header("Location: staff_availability.php?message=" . urlencode($message));
+        exit;
         
     } catch(PDOException $ex) {
-        $con->rollback();
+        if ($con->inTransaction()) {
+            $con->rollBack();
+        }
         $error = "Error: " . $ex->getMessage();
+        
+        // Redirect with error message
+        header("Location: staff_availability.php?error=" . urlencode($error));
+        exit;
     }
 }
 
-// Fetch doctor's existing schedules
-$query = "SELECT * FROM doctor_schedules 
-          WHERE doctor_id = ? 
+// Fetch staff's existing schedules
+$query = "SELECT * FROM staff_schedules 
+          WHERE staff_id = ? 
           ORDER BY schedule_date ASC";
 $stmt = $con->prepare($query);
-$stmt->execute([$doctorId]);
+$stmt->execute([$staffId]);
 $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get booked appointments for this doctor
-$appointmentsQuery = "SELECT a.*, ds.time_slot_minutes 
+// Get booked appointments for this staff member
+$appointmentsQuery = "SELECT a.*, ss.time_slot_minutes 
                      FROM appointments a 
-                     JOIN doctor_schedules ds ON a.schedule_id = ds.id 
+                     JOIN staff_schedules ss ON a.schedule_id = ss.id 
                      WHERE a.doctor_id = ? AND a.status != 'cancelled'";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
-$appointmentsStmt->execute([$doctorId]);
+$appointmentsStmt->execute([$staffId]);
 $appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Format schedules for calendar
 $calendarEvents = [];
 foreach ($schedules as $schedule) {
     $isPast = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
-    $status = $schedule['is_approved'] ? 'Approved' : 'Pending';
-    $color = $isPast ? '#A0A0A0' : ($schedule['is_approved'] ? '#1BC5BD' : '#FFA800');
+    
+    // Set color based on staff role
+    $backgroundColor = $isPast ? '#A0A0A0' : ($staffRole == 'admin' ? '#8950FC' : '#1BC5BD');
     
     $calendarEvents[] = [
         'id' => 'schedule_' . $schedule['id'],
-        'title' => $doctorName . ' (' . $status . ')' . ($isPast ? ' [Past]' : ''),
+        'title' => $staffName . ($isPast ? ' [Past]' : ''),
         'start' => $schedule['schedule_date'] . 'T' . $schedule['start_time'],
         'end' => $schedule['schedule_date'] . 'T' . $schedule['end_time'],
-        'backgroundColor' => $color,
-        'borderColor' => $color,
+        'backgroundColor' => $backgroundColor,
+        'borderColor' => $backgroundColor,
         'extendedProps' => [
             'max_patients' => $schedule['max_patients'],
             'time_slot' => $schedule['time_slot_minutes'],
             'notes' => $schedule['notes'],
-            'is_approved' => $schedule['is_approved'],
-            'approval_notes' => $schedule['approval_notes'],
             'type' => 'schedule',
             'is_past' => $isPast
         ]
@@ -217,6 +216,9 @@ foreach ($appointments as $appointment) {
         ]
     ];
 }
+
+// Get the staff role name for display
+$roleDisplay = ucfirst($staffRole);
 ?>
 
 <!DOCTYPE html>
@@ -226,7 +228,7 @@ foreach ($appointments as $appointment) {
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
-    <title>Doctor Schedule - Mamatid Health Center System</title>
+    <title>Staff Availability - Mamatid Health Center System</title>
     <style>
         :root {
             --transition-speed: 0.3s;
@@ -396,18 +398,23 @@ foreach ($appointments as $appointment) {
             background-color: var(--secondary-color) !important;
         }
 
-        .badge-approved {
+        .role-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 30px;
+            margin-left: 0.5rem;
+        }
+        
+        .role-admin {
+            background-color: rgba(137, 80, 252, 0.1);
+            color: var(--info-color);
+        }
+        
+        .role-health_worker {
             background-color: rgba(27, 197, 189, 0.1);
             color: var(--success-color);
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-        }
-
-        .badge-pending {
-            background-color: rgba(255, 168, 0, 0.1);
-            color: var(--warning-color);
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
         }
         
         /* Calendar Legend Styling */
@@ -568,10 +575,6 @@ foreach ($appointments as $appointment) {
             background-color: rgba(246, 78, 96, 0.1);
         }
         
-        .bg-warning-light {
-            background-color: rgba(255, 168, 0, 0.1);
-        }
-        
         .event-date h4 {
             font-weight: 600;
             color: #333;
@@ -630,12 +633,15 @@ foreach ($appointments as $appointment) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Doctor Schedule</h1>
+                            <h1 class="m-0">
+                                My Availability
+                                <span class="role-badge role-<?php echo $staffRole; ?>"><?php echo $roleDisplay; ?></span>
+                            </h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Doctor Schedule</li>
+                                <li class="breadcrumb-item active">My Availability</li>
                             </ol>
                         </div>
                     </div>
@@ -757,27 +763,23 @@ foreach ($appointments as $appointment) {
                                             <h5 class="legend-title">Schedule Legend</h5>
                                             <div class="legend-items">
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #1BC5BD;"></span>
-                                                    <span class="legend-text">Approved Schedules</span>
+                                                    <span class="legend-color" style="background-color: <?php echo $staffRole == 'admin' ? '#8950FC' : '#1BC5BD'; ?>"></span>
+                                                    <span class="legend-text">Available Schedules</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #FFA800;"></span>
-                                                    <span class="legend-text">Pending Schedules</span>
-                                            </div>
-                                                <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #A0A0A0;"></span>
+                                                    <span class="legend-color" style="background-color: #A0A0A0"></span>
                                                     <span class="legend-text">Past Schedules</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #F64E60;"></span>
+                                                    <span class="legend-color" style="background-color: #F64E60"></span>
                                                     <span class="legend-text">Active Appointments</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #28a745;"></span>
+                                                    <span class="legend-color" style="background-color: #28a745"></span>
                                                     <span class="legend-text">Completed Appointments</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #6c757d;"></span>
+                                                    <span class="legend-color" style="background-color: #6c757d"></span>
                                                     <span class="legend-text">Past Appointments</span>
                                                 </div>
                                             </div>
@@ -786,7 +788,7 @@ foreach ($appointments as $appointment) {
                                     <div class="mt-3">
                                         <div class="alert alert-info p-3 rounded-lg shadow-sm">
                                             <i class="fas fa-info-circle mr-2"></i>
-                                            <span>Past appointments are automatically marked as completed. You can view all past and upcoming schedules in this calendar.</span>
+                                            <span>Unlike doctor schedules, your availability is automatically approved for patients to book.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -808,7 +810,6 @@ foreach ($appointments as $appointment) {
                                                 <th>Time</th>
                                                 <th>Slot Duration</th>
                                                 <th>Max Patients</th>
-                                                <th>Status</th>
                                                 <th>Notes</th>
                                                 <th>Action</th>
                                             </tr>
@@ -820,31 +821,31 @@ foreach ($appointments as $appointment) {
                                                     <td><?= date('h:i A', strtotime($schedule['start_time'])) ?> - <?= date('h:i A', strtotime($schedule['end_time'])) ?></td>
                                                     <td><?= $schedule['time_slot_minutes'] ?> minutes</td>
                                                     <td><?= $schedule['max_patients'] ?></td>
+                                                    <td><?= $schedule['notes'] ?></td>
                                                     <td>
-                                                        <?php if ($schedule['is_approved']) { ?>
-                                                            <span class="badge badge-success">Approved</span>
-                                                        <?php } else { ?>
-                                                            <span class="badge badge-warning">Pending</span>
-                                                        <?php } ?>
-                                                    </td>
-                                                    <td>
-                                                        <?= $schedule['notes'] ?>
-                                                        <?php if (!empty($schedule['approval_notes'])) { ?>
-                                                            <br><small class="text-muted">Admin notes: <?= $schedule['approval_notes'] ?></small>
-                                                        <?php } ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php if (!$schedule['is_approved']) { ?>
+                                                        <?php 
+                                                        // Check if schedule has appointments
+                                                        $checkQuery = "SELECT COUNT(*) as appt_count FROM appointments WHERE schedule_id = ?";
+                                                        $checkStmt = $con->prepare($checkQuery);
+                                                        $checkStmt->execute([$schedule['id']]);
+                                                        $hasAppointments = ($checkStmt->fetch(PDO::FETCH_ASSOC)['appt_count'] > 0);
+                                                        
+                                                        if (!$hasAppointments) {
+                                                            ?>
                                                             <a href="actions/delete_schedule.php?id=<?= $schedule['id'] ?>" 
                                                                class="btn btn-sm btn-danger" 
                                                                onclick="return confirm('Are you sure you want to delete this schedule?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
-                                                        <?php } else { ?>
-                                                            <button class="btn btn-sm btn-secondary" disabled>
+                                                            <?php
+                                                        } else {
+                                                            ?>
+                                                            <button class="btn btn-sm btn-secondary" disabled title="Cannot delete: Has booked appointments">
                                                                 <i class="fas fa-lock"></i>
                                                             </button>
-                                                        <?php } ?>
+                                                            <?php
+                                                        }
+                                                        ?>
                                                     </td>
                                                 </tr>
                                             <?php } ?>
@@ -881,29 +882,7 @@ foreach ($appointments as $appointment) {
                     url: 'ajax/update_past_appointments.php',
                     type: 'POST',
                     data: {
-                        doctor_id: <?= $doctorId ?>
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success && response.updated > 0) {
-                            console.log('Updated ' + response.updated + ' past appointments to completed status');
-                            // Reload page to refresh the calendar with updated status
-                            location.reload();
-                        }
-                    }
-                });
-            }
-            
-            // Call the update function when the page loads
-            updatePastAppointments();
-            
-            // Function to automatically update past appointments to completed status
-            function updatePastAppointments() {
-                $.ajax({
-                    url: 'ajax/update_past_appointments.php',
-                    type: 'POST',
-                    data: {
-                        doctor_id: <?= $doctorId ?>
+                        doctor_id: <?= $staffId ?>
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -962,13 +941,8 @@ foreach ($appointments as $appointment) {
                     if (props.type === 'schedule') {
                         // Schedule event
                         modalTitle = '<i class="fas fa-calendar-alt mr-2"></i> Schedule Information';
-                        
-                        // Set header class based on approval status and whether it's past
-                        if (props.is_past) {
-                            headerClass = 'bg-secondary text-white';
-                        } else {
-                            headerClass = props.is_approved ? 'bg-teal text-white' : 'bg-warning text-white';
-                        }
+                        headerClass = props.is_past ? 'bg-secondary text-white' : 
+                                     (<?= json_encode($staffRole) ?> === 'admin' ? 'bg-purple text-white' : 'bg-teal text-white');
                         
                         var formattedDate = event.start.toLocaleDateString('en-US', { 
                             weekday: 'long', 
@@ -977,14 +951,11 @@ foreach ($appointments as $appointment) {
                             day: 'numeric' 
                         });
                         
-                        var statusClass = props.is_approved ? 'badge-success' : 'badge-warning';
-                        var statusText = props.is_approved ? 'Approved' : 'Pending';
-                        
                         modalContent = `
                         <div class="schedule-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="event-date text-center py-3 ${props.is_past ? 'bg-secondary-light' : (props.is_approved ? 'bg-success-light' : 'bg-warning-light')}">
+                                    <div class="event-date text-center py-3 ${props.is_past ? 'bg-secondary-light' : 'bg-info-light'}">
                                         <h4 class="mb-0">${formattedDate}</h4>
                                     </div>
                                     <div class="event-info p-4">
@@ -1019,8 +990,8 @@ foreach ($appointments as $appointment) {
                                                 <div class="info-item">
                                                     <i class="fas fa-check-circle text-muted mr-2"></i>
                                                     <span class="info-label">Status:</span>
-                                                    <span class="badge ${statusClass} px-2 py-1">
-                                                        ${statusText} ${props.is_past ? '(Past)' : ''}
+                                                    <span class="badge ${props.is_past ? 'badge-secondary' : 'badge-success'} px-2 py-1">
+                                                        ${props.is_past ? 'Past' : 'Available'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -1029,11 +1000,6 @@ foreach ($appointments as $appointment) {
                                         <div class="notes mt-3 pt-3 border-top">
                                             <h6 class="font-weight-bold"><i class="fas fa-sticky-note text-muted mr-2"></i> Notes:</h6>
                                             <p class="mb-0 text-muted">${props.notes}</p>
-                                        </div>` : ''}
-                                        ${props.approval_notes ? `
-                                        <div class="notes mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-comment-alt text-muted mr-2"></i> Admin Notes:</h6>
-                                            <p class="mb-0 text-muted">${props.approval_notes}</p>
                                         </div>` : ''}
                                     </div>
                                 </div>
@@ -1183,4 +1149,4 @@ foreach ($appointments as $appointment) {
         });
     </script>
 </body>
-</html>
+</html> 

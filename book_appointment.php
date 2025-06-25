@@ -17,21 +17,32 @@ if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
 
-// Get all approved doctor schedules - ONLY FUTURE DATES
-$scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
+// Get all approved schedules from doctors - ONLY FUTURE DATES
+$doctorScheduleQuery = "SELECT ds.*, u.display_name as doctor_name, u.role 
                 FROM doctor_schedules ds
                 JOIN users u ON ds.doctor_id = u.id
                 WHERE ds.schedule_date >= CURDATE()
                 AND ds.is_approved = 1
                 ORDER BY ds.schedule_date ASC, ds.start_time ASC";
-$scheduleStmt = $con->prepare($scheduleQuery);
-$scheduleStmt->execute();
-$doctorSchedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
+$doctorScheduleStmt = $con->prepare($doctorScheduleQuery);
+$doctorScheduleStmt->execute();
+$doctorSchedules = $doctorScheduleStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get all staff schedules (auto-approved) - ONLY FUTURE DATES
+$staffScheduleQuery = "SELECT ss.*, u.display_name as staff_name, u.role 
+                FROM staff_schedules ss
+                JOIN users u ON ss.staff_id = u.id
+                WHERE ss.schedule_date >= CURDATE()
+                ORDER BY ss.schedule_date ASC, ss.start_time ASC";
+$staffScheduleStmt = $con->prepare($staffScheduleQuery);
+$staffScheduleStmt->execute();
+$staffSchedules = $staffScheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle appointment booking
 if (isset($_POST['book_appointment'])) {
     $clientId = $_SESSION['client_id'];
     $scheduleId = $_POST['schedule_id'];
+    $scheduleType = $_POST['schedule_type']; // 'doctor' or 'staff'
     $appointmentTime = $_POST['appointment_time'];
     $reason = $_POST['reason'];
 
@@ -51,8 +62,23 @@ if (isset($_POST['book_appointment'])) {
         // Start transaction
         $con->beginTransaction();
         
-        // Get schedule details with a lock
-        $scheduleQuery = "SELECT * FROM doctor_schedules WHERE id = ? FOR UPDATE";
+        // Get schedule details with a lock based on schedule type
+        if ($scheduleType == 'doctor') {
+            $scheduleQuery = "SELECT ds.*, u.id as provider_id, u.display_name as provider_name 
+                            FROM doctor_schedules ds
+                            JOIN users u ON ds.doctor_id = u.id
+                            WHERE ds.id = ? FOR UPDATE";
+            $tableName = 'doctor_schedules';
+            $providerIdColumn = 'doctor_id';
+        } else {
+            $scheduleQuery = "SELECT ss.*, u.id as provider_id, u.display_name as provider_name 
+                            FROM staff_schedules ss
+                            JOIN users u ON ss.staff_id = u.id
+                            WHERE ss.id = ? FOR UPDATE";
+            $tableName = 'staff_schedules';
+            $providerIdColumn = 'staff_id';
+        }
+        
         $scheduleStmt = $con->prepare($scheduleQuery);
         $scheduleStmt->execute([$scheduleId]);
         $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
@@ -65,6 +91,8 @@ if (isset($_POST['book_appointment'])) {
         }
         
         $maxPatients = $schedule['max_patients'];
+        $providerId = $schedule['provider_id'];
+        $providerName = $schedule['provider_name'];
         
         // Check if the selected time slot is available with a lock
         $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
@@ -136,7 +164,7 @@ if (isset($_POST['book_appointment'])) {
             $appointmentTime,
             $reason,
             $scheduleId,
-            $schedule['doctor_id']
+            $providerId
         ]);
         
         // Get the newly created appointment ID
@@ -167,13 +195,6 @@ if (isset($_POST['book_appointment'])) {
             
             $clientName = $client['full_name'];
             
-            // Get doctor name
-            $doctorQuery = "SELECT u.display_name FROM users u WHERE u.id = ?";
-            $doctorStmt = $con->prepare($doctorQuery);
-            $doctorStmt->execute([$schedule['doctor_id']]);
-            $doctor = $doctorStmt->fetch(PDO::FETCH_ASSOC);
-            $doctorName = $doctor ? $doctor['display_name'] : 'Your Doctor';
-            
             // Generate a secure token for viewing the appointment
             $token = bin2hex(random_bytes(32)); // Generate a 64-character random hex string
             $expiry = date('Y-m-d H:i:s', strtotime('+30 days')); // Token expires after 30 days
@@ -190,7 +211,7 @@ if (isset($_POST['book_appointment'])) {
             // Prepare appointment details
             $appointmentDetails = [
                 'patient_name' => $clientName,
-                'doctor_name' => $doctorName,
+                'doctor_name' => $providerName,
                 'appointment_date' => $schedule['schedule_date'],
                 'appointment_time' => $appointmentTime,
                 'reason' => $reason,
@@ -244,14 +265,17 @@ if (isset($_POST['book_appointment'])) {
     }
 }
 
-// Format doctor schedules for calendar
+// Format all schedules for calendar
 $calendarEvents = [];
+
+// Add doctor schedules to calendar events
 foreach ($doctorSchedules as $schedule) {
     // Generate time slots based on schedule
     $startTime = strtotime($schedule['start_time']);
     $endTime = strtotime($schedule['end_time']);
     $timeSlotMinutes = $schedule['time_slot_minutes'];
-    $doctorName = $schedule['doctor_name'];
+    $staffName = $schedule['doctor_name'];
+    $staffRole = $schedule['role'];
     $scheduleDate = $schedule['schedule_date'];
     
     // Skip past schedules for client view
@@ -259,26 +283,71 @@ foreach ($doctorSchedules as $schedule) {
         continue;
     }
     
+    // Set color based on staff role
+    $backgroundColor = '#3699FF'; // Default blue for doctors
+    
     // Format for calendar
     $calendarEvents[] = [
-        'id' => $schedule['id'],
-        'title' => $doctorName,
+        'id' => 'doctor_' . $schedule['id'],
+        'title' => $staffName . ' (Doctor)',
         'start' => $scheduleDate . 'T' . date('H:i:s', $startTime),
         'end' => $scheduleDate . 'T' . date('H:i:s', $endTime),
-        'backgroundColor' => '#3699FF',
-        'borderColor' => '#3699FF',
+        'backgroundColor' => $backgroundColor,
+        'borderColor' => $backgroundColor,
         'extendedProps' => [
-            'doctor_name' => $doctorName,
+            'staff_name' => $staffName,
+            'staff_role' => $staffRole,
             'time_slot' => $timeSlotMinutes,
             'max_patients' => $schedule['max_patients'],
-            'schedule_id' => $schedule['id']
+            'schedule_id' => $schedule['id'],
+            'schedule_type' => 'doctor'
+        ]
+    ];
+}
+
+// Add staff schedules to calendar events
+foreach ($staffSchedules as $schedule) {
+    // Generate time slots based on schedule
+    $startTime = strtotime($schedule['start_time']);
+    $endTime = strtotime($schedule['end_time']);
+    $timeSlotMinutes = $schedule['time_slot_minutes'];
+    $staffName = $schedule['staff_name'];
+    $staffRole = $schedule['role'];
+    $scheduleDate = $schedule['schedule_date'];
+    
+    // Skip past schedules for client view
+    if (strtotime($scheduleDate) < strtotime(date('Y-m-d'))) {
+        continue;
+    }
+    
+    // Set color based on staff role
+    $backgroundColor = ($staffRole == 'admin') ? '#8950FC' : '#1BC5BD'; // Purple for admins, teal for health workers
+    
+    // Format display name with role
+    $displayName = $staffName . ' (' . ucfirst($staffRole) . ')';
+    
+    // Format for calendar
+    $calendarEvents[] = [
+        'id' => 'staff_' . $schedule['id'],
+        'title' => $displayName,
+        'start' => $scheduleDate . 'T' . date('H:i:s', $startTime),
+        'end' => $scheduleDate . 'T' . date('H:i:s', $endTime),
+        'backgroundColor' => $backgroundColor,
+        'borderColor' => $backgroundColor,
+        'extendedProps' => [
+            'staff_name' => $staffName,
+            'staff_role' => $staffRole,
+            'time_slot' => $timeSlotMinutes,
+            'max_patients' => $schedule['max_patients'],
+            'schedule_id' => $schedule['id'],
+            'schedule_type' => 'staff'
         ]
     ];
 }
 
 // Set a message if no schedules are available
 if (empty($calendarEvents)) {
-    $message = 'No approved doctor schedules are currently available. Please check back later.';
+    $message = 'No approved schedules are currently available. Please check back later.';
 }
 ?>
 
@@ -1016,6 +1085,20 @@ if (empty($calendarEvents)) {
                         <div class="card-body">
                                     <div id="calendar"></div>
                                     <div class="mt-3">
+                                        <div class="d-flex flex-wrap justify-content-center mb-2">
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #3699FF; width: 20px; height: 20px;"></span>
+                                                <small>Doctor Schedules</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #8950FC; width: 20px; height: 20px;"></span>
+                                                <small>Admin Schedules</small>
+                                            </div>
+                                            <div class="mr-4 mb-2 d-flex align-items-center">
+                                                <span class="badge mr-1" style="background-color: #1BC5BD; width: 20px; height: 20px;"></span>
+                                                <small>Health Worker Schedules</small>
+                                            </div>
+                                        </div>
                                         <div class="alert alert-info p-2">
                                             <small><i class="fas fa-info-circle mr-1"></i> Only future dates are available for booking. Past appointments are automatically removed from view.</small>
                                         </div>

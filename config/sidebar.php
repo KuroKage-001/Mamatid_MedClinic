@@ -123,8 +123,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php', 'appointment_plotter.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php', 'appointment_plotter.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>
                             Appointments
@@ -138,6 +138,20 @@ $role_display_name = getRoleDisplayName($user_role);
                                 <p>Manage Appointments</p>
                             </a>
                         </li>
+                        <?php if (isAdmin() || isHealthWorker()): ?>
+                        <li class="nav-item">
+                            <a href="<?php echo $base_path; ?>/appointment_plotter.php" class="nav-link <?php echo ($current_page == 'appointment_plotter.php' ? 'active' : ''); ?>" id="mi_appointment_plotter">
+                                <i class="nav-icon-sm fas fa-calendar-week"></i>
+                                <p>Appointment Plotter</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo $base_path; ?>/staff_availability.php" class="nav-link <?php echo ($current_page == 'staff_availability.php' ? 'active' : ''); ?>" id="mi_staff_availability">
+                                <i class="nav-icon-sm fas fa-calendar-plus"></i>
+                                <p>My Availability</p>
+                            </a>
+                        </li>
+                        <?php endif; ?>
                         <?php if (isDoctor()): ?>
                         <li class="nav-item">
                             <a href="<?php echo $base_path; ?>/doctor_schedule.php" class="nav-link <?php echo ($current_page == 'doctor_schedule.php' ? 'active' : ''); ?>" id="mi_doctor_schedule">
