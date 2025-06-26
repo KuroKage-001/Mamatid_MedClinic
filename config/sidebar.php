@@ -132,12 +132,14 @@ $role_display_name = getRoleDisplayName($user_role);
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <?php if (isAdmin() || isHealthWorker()): ?>
                         <li class="nav-item">
                             <a href="<?php echo $base_path; ?>/manage_appointments.php" class="nav-link <?php echo ($current_page == 'manage_appointments.php' ? 'active' : ''); ?>" id="mi_appointments">
                                 <i class="nav-icon-sm fas fa-calendar-alt"></i>
                                 <p>Manage Appointments</p>
                             </a>
                         </li>
+                        <?php endif; ?>
                         <?php if (isAdmin() || isHealthWorker()): ?>
                         <li class="nav-item">
                             <a href="<?php echo $base_path; ?>/appointment_plotter.php" class="nav-link <?php echo ($current_page == 'appointment_plotter.php' ? 'active' : ''); ?>" id="mi_appointment_plotter">
@@ -164,7 +166,7 @@ $role_display_name = getRoleDisplayName($user_role);
                 </li>
                 <?php endif; ?>
 
-                <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
+                <?php if (isAdmin() || isHealthWorker()): ?>
                 <!-- Inventory Management Menu -->
                 <li class="nav-header">INVENTORY MANAGEMENT</li>
                 <li class="nav-item <?php echo (in_array($current_page, ['medicines.php', 'medicine_categories.php', 'medicine_stock.php', 'medicine_dispensing.php']) ? 'menu-open' : ''); ?>" id="mnu_inventory">
@@ -229,16 +231,6 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                     </ul>
-                </li>
-                <?php endif; ?>
-
-                <?php if (isHealthWorker() || isDoctor()): ?>
-                <!-- Attendance Menu for Health Workers and Doctors -->
-                <li class="nav-item" id="mnu_attendance">
-                    <a href="<?php echo $base_path; ?>/time_tracker.php" class="nav-link <?php echo ($current_page == 'time_tracker.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-clock"></i>
-                        <p>My Attendance</p>
-                    </a>
                 </li>
                 <?php endif; ?>
 

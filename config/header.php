@@ -64,10 +64,12 @@ require_once $base_path . '/config/session_fix.php';
                         <span>Manage Users</span>
                     </a>
                     <?php endif; ?>
-                    <a href="<?php echo $base_path; ?>/dashboard.php" class="dropdown-item">
-                        <i class="fas fa-tachometer-alt mr-2"></i>
-                        <span>Dashboard</span>
+                    <?php if (isDoctor() || isHealthWorker()): ?>
+                    <a href="<?php echo $base_path; ?>/time_tracker.php" class="dropdown-item">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>My Attendance</span>
                     </a>
+                    <?php endif; ?>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-footer">

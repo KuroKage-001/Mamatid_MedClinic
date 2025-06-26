@@ -3,6 +3,9 @@
 $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
 $base_path = $in_subdirectory ? '../..' : '.';
 
+// Add timestamp for cache-busting
+$timestamp = time();
+
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -24,7 +27,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="user-info-container">
                 <!-- User Image -->
                 <div class="user-image-container">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'" />
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'" />
                     <span class="user-status-indicator online"></span>
                 </div>
                 <!-- User Info -->

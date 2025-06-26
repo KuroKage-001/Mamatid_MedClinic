@@ -2,6 +2,9 @@
 // Determine if we're in a subdirectory by checking the script path
 $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
 $base_path = $in_subdirectory ? '../..' : '.';
+
+// Add timestamp for cache-busting
+$timestamp = time();
 ?>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark fixed-top">
@@ -26,7 +29,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
                 <div class="user-avatar">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
                     <span class="status-indicator status-online"></span>
                 </div>
                 <div class="user-info d-none d-md-block">
@@ -37,7 +40,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
                     <div class="user-details">
                         <h6><?php echo $_SESSION['client_name']; ?></h6>
                         <span class="username"><?php echo $_SESSION['client_email']; ?></span>
@@ -49,10 +52,6 @@ $base_path = $in_subdirectory ? '../..' : '.';
                     <a href="<?php echo $base_path; ?>/client_account_settings.php" class="dropdown-item">
                         <i class="fas fa-user-cog mr-2"></i>
                         <span>Account Settings</span>
-                    </a>
-                    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="dropdown-item">
-                        <i class="fas fa-tachometer-alt mr-2"></i>
-                        <span>Dashboard</span>
                     </a>
                     <a href="<?php echo $base_path; ?>/book_appointment.php" class="dropdown-item">
                         <i class="fas fa-calendar-plus mr-2"></i>

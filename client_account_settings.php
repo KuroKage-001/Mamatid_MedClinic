@@ -1,8 +1,8 @@
 <?php
-require_once './config/connection.php';
-require_once './config/check_client_auth.php';
-require_once './common_service/common_functions.php';
-require_once './common_service/role_functions.php';
+require_once 'config/connection.php';
+require_once 'config/check_client_auth.php';
+require_once 'common_service/common_functions.php';
+require_once 'common_service/role_functions.php';
 
 // Check if this is a client-only page
 requireClient();
@@ -153,7 +153,7 @@ if (!file_exists($profile_pic_url)) {
 <html>
 <head>
     <title>Account Settings | Mamatid Health Center</title>
-    <?php include './config/site_css_links.php'; ?>
+    <?php include 'config/site_css_links.php'; ?>
     <link rel="stylesheet" href="system_styles/update_user.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <style>
@@ -381,8 +381,8 @@ if (!file_exists($profile_pic_url)) {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include './config/client_ui/header.php'; ?>
-<?php include './config/client_ui/sidebar.php'; ?>
+<?php include 'config/client_ui/header.php'; ?>
+<?php include 'config/client_ui/sidebar.php'; ?>
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -604,10 +604,10 @@ if (!file_exists($profile_pic_url)) {
     </section>
 </div>
 
-<?php include './config/client_ui/footer.php'; ?>
+<?php include 'config/client_ui/footer.php'; ?>
 </div>
 
-<?php include './config/site_js_links.php'; ?>
+<?php include 'config/site_js_links.php'; ?>
 
 <script>
 function previewImage(input) {
@@ -684,8 +684,27 @@ $(document).ready(function() {
         
         return true;
     });
+    
+    // Handle successful profile picture update
+    <?php if(strpos($message, 'Profile picture updated successfully') !== false): ?>
+    // Add a random timestamp to force image refresh in header and sidebar
+    const timestamp = new Date().getTime();
+    // Find all profile images in header and sidebar and refresh them
+    const headerImages = window.parent.document.querySelectorAll('.main-header img.user-image, .main-header img.profile-img');
+    const sidebarImages = window.parent.document.querySelectorAll('.main-sidebar img.user-img');
+    
+    headerImages.forEach(img => {
+        let src = img.src.split('?')[0]; // Remove any existing query parameters
+        img.src = src + '?v=' + timestamp;
+    });
+    
+    sidebarImages.forEach(img => {
+        let src = img.src.split('?')[0]; // Remove any existing query parameters
+        img.src = src + '?v=' + timestamp;
+    });
+    <?php endif; ?>
 });
 </script>
 
 </body>
-</html> 
+</html>
