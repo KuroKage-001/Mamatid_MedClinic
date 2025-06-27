@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to deworming page with success message
-        header("Location: ../deworming.php?success=1");
+        header("Location: ../general_deworming.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,12 +25,12 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to deworming page with error message
-        header("Location: ../deworming.php?error=1");
+        header("Location: ../general_deworming.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to deworming page
-    header("Location: ../deworming.php");
+    header("Location: ../general_deworming.php");
     exit();
 }
 ?> 

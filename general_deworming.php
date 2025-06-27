@@ -64,7 +64,7 @@ if (isset($_POST['save_deworming'])) {
 
             if ($result) {
                 $con->commit();
-                header("Location: deworming.php?message=" . urlencode("Record saved successfully"));
+                header("Location: general_deworming.php?message=" . urlencode("Record saved successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to save record");

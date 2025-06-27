@@ -6,7 +6,7 @@ $message = '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 
 if ($id == '') {
-    header("Location:deworming.php");
+    header("Location:general_deworming.php");
     exit;
 }
 
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
             $con->commit();
-                header("Location: deworming.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_deworming.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -102,11 +102,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: deworming.php?message=" . urlencode("Record not found"));
+        header("Location: general_deworming.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (PDOException $e) {
-    header("Location: deworming.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_deworming.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -360,16 +360,17 @@ try {
                 </div>
               </div>
 
-              <div class="action-buttons">
-                <a href="deworming.php" class="btn btn-secondary">
-                  <i class="fas fa-times"></i> Cancel
-                </a>
-                <button type="button" class="btn btn-danger" id="deleteBtn">
-                  <i class="fas fa-trash"></i> Delete
-                </button>
-                <button type="submit" id="update_deworming" name="update_deworming" class="btn btn-primary">
-                  <i class="fas fa-save"></i> Update
-                </button>
+              <div class="row">
+                <div class="col-12 mt-4">
+                  <div class="d-flex justify-content-end">
+                    <a href="general_deworming.php" class="btn btn-secondary">
+                      <i class="fas fa-arrow-left mr-2"></i>Back
+                    </a>
+                    <button type="submit" name="update_deworming" class="btn btn-primary ml-2">
+                      <i class="fas fa-save mr-2"></i>Update Record
+                    </button>
+                  </div>
+                </div>
               </div>
             </form>
           </div>

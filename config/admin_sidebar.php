@@ -71,8 +71,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <!-- General Menu (Patients & Prescriptions) -->
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">PATIENT MANAGEMENT</li>
-                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'general_deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'general_deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-injured"></i>
                         <p>
                             General
@@ -93,7 +93,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/deworming.php" class="nav-link <?php echo ($current_page == 'deworming.php' ? 'active' : ''); ?>" id="mi_deworming">
+                            <a href="<?php echo $base_path; ?>/general_deworming.php" class="nav-link <?php echo ($current_page == 'general_deworming.php' || $current_page == 'deworming.php' ? 'active' : ''); ?>" id="mi_deworming">
                                 <i class="nav-icon-sm fas fa-bug"></i>
                                 <p>Deworming</p>
                             </a>
