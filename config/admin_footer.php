@@ -9,7 +9,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
       <!-- Left side: copyright -->
       <div class="col-12 col-md-6 text-center text-md-left">
         <strong>&copy; <?php echo date('Y');?>
-          <a href="<?php echo $base_path; ?>/dashboard.php" class="text-white text-decoration-none">Mamatid Health Center System</a>.
+          <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="text-white text-decoration-none">Mamatid Health Center System</a>.
         </strong> All rights reserved.
       </div>
       <!-- Right side: version info -->

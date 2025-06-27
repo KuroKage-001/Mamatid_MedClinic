@@ -347,7 +347,7 @@ $staffSchedules = $staffStmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar and Sidebar -->
-        <?php include './config/header.php'; include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -578,7 +578,7 @@ $staffSchedules = $staffStmt->fetchAll(PDO::FETCH_ASSOC);
             </section>
         </div>
 
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

@@ -133,7 +133,7 @@ if (isset($_POST['update_appointment'])) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="book_appointment.php" class="nav-link">
+                            <a href="client_appointment_booking.php" class="nav-link">
                                 <i class="nav-icon fas fa-calendar-plus"></i>
                                 <p>Book Appointment</p>
                             </a>
@@ -234,7 +234,7 @@ if (isset($_POST['update_appointment'])) {
         </div>
 
         <!-- Footer -->
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

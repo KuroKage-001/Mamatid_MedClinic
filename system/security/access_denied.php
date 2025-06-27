@@ -132,7 +132,7 @@ $current_role = getUserRole();
                 <p class="text-muted">
                     Your current role: <strong><?php echo getRoleDisplayName($current_role); ?></strong>
                 </p>
-                <a href="<?php echo $base_path; ?>/dashboard.php" class="btn-back">
+                <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="btn-back">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
                 </a>
             </div>

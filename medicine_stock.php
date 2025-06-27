@@ -203,7 +203,7 @@ try {
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
-        <?php include './config/sidebar.php'; ?>
+        <?php include './config/admin_sidebar.php'; ?>
         
         <div class="content-wrapper">
             <section class="content-header">
@@ -415,7 +415,7 @@ try {
             </div>
         </div>
 
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

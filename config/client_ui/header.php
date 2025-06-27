@@ -49,11 +49,11 @@ $timestamp = time();
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
-                    <a href="<?php echo $base_path; ?>/client_account_settings.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/account_client_settings.php" class="dropdown-item">
                         <i class="fas fa-user-cog mr-2"></i>
                         <span>Account Settings</span>
                     </a>
-                    <a href="<?php echo $base_path; ?>/book_appointment.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="dropdown-item">
                         <i class="fas fa-calendar-plus mr-2"></i>
                         <span>Book Appointment</span>
                     </a>

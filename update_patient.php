@@ -92,8 +92,8 @@ try {
   <div class="wrapper">
     <!-- Navbar and Sidebar -->
     <?php 
-      include './config/header.php';
-      include './config/sidebar.php';
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
     ?>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">

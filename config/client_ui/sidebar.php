@@ -32,7 +32,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
                 <!-- User Info -->
                 <div class="user-info">
-                    <a href="<?php echo $base_path; ?>/client_account_settings.php" class="user-display-name"><?php echo $_SESSION['client_name']; ?></a>
+                    <a href="<?php echo $base_path; ?>/account_client_settings.php" class="user-display-name"><?php echo $_SESSION['client_name']; ?></a>
                     <div class="user-role-badge">
                         <span class="role-text">Client</span>
                     </div>
@@ -54,7 +54,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 <!-- Book Appointment Menu Item -->
                 <li class="nav-item" id="mnu_book_appointment">
-                    <a href="<?php echo $base_path; ?>/book_appointment.php" class="nav-link <?php echo ($current_page == 'book_appointment.php' ? 'active' : ''); ?>">
+                    <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-plus"></i>
                         <p>Book Appointment</p>
                     </a>

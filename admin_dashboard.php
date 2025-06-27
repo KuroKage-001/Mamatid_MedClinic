@@ -377,8 +377,8 @@ try {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
     <?php
-      include './config/header.php';
-      include './config/sidebar.php';
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
     ?>
     <div class="content-wrapper">
       <section class="content-header">
@@ -604,7 +604,7 @@ try {
         </div>
       </section>
     </div>
-    <?php include './config/footer.php'; ?>
+    <?php include './config/admin_footer.php'; ?>
   </div>
   <?php include './config/site_js_links.php'; ?>
   <!-- Local Chart.js and jsPDF libraries -->

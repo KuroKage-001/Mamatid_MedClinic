@@ -149,8 +149,8 @@ include './common_service/common_functions.php';
   <div class="wrapper">
     <!-- Include Navbar and Sidebar -->
     <?php 
-      include './config/header.php';
-      include './config/sidebar.php';
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
     ?>
     
     <!-- Content Wrapper -->
@@ -484,7 +484,7 @@ include './common_service/common_functions.php';
     <!-- End Content Wrapper -->
 
     <!-- Include Footer -->
-    <?php include './config/footer.php'; ?>  
+    <?php include './config/admin_footer.php'; ?>  
   </div>
   <!-- End Wrapper -->
 

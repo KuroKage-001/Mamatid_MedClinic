@@ -52,7 +52,7 @@ if (isset($_POST['login'])) {
             }
 
             // Redirect to dashboard
-            header("location:dashboard.php");
+            header("location:admin_dashboard.php");
             exit;
         } else {
             // Invalid credentials or inactive account

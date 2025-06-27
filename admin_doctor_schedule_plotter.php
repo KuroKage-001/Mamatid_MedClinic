@@ -226,7 +226,7 @@ foreach ($appointments as $appointment) {
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
-    <title>Doctor Schedule - Mamatid Health Center System</title>
+    <title>Doctor Schedule Plotter - Mamatid Health Center System</title>
     <style>
         :root {
             --transition-speed: 0.3s;
@@ -623,19 +623,19 @@ foreach ($appointments as $appointment) {
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/header.php'; ?>
-        <?php include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; ?>
+        <?php include './config/admin_sidebar.php'; ?>
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Doctor Schedule</h1>
+                            <h1 class="m-0">Doctor Schedule Plotter</h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Doctor Schedule</li>
+                                <li class="breadcrumb-item"><a href="admin_dashboard.php">Dashboard</a></li>
+                                <li class="breadcrumb-item active">Doctor Schedule Plotter</li>
                             </ol>
                         </div>
                     </div>
@@ -858,7 +858,7 @@ foreach ($appointments as $appointment) {
             </div>
         </div>
         
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
     
     <?php include './config/site_js_links.php'; ?>

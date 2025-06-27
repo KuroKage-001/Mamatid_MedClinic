@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // If user is already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
-    header("location:../../dashboard.php");
+    header("location:../../admin_dashboard.php");
     exit;
 }
 

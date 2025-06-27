@@ -78,8 +78,8 @@ $inventoryData = $inventoryStmt->fetch(PDO::FETCH_ASSOC);
   <div class="wrapper">
     <!-- Header & Sidebar -->
     <?php 
-      include './config/header.php';
-      include './config/sidebar.php';
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
     ?>
     <!-- Content Wrapper -->
     <div class="content-wrapper">

@@ -626,8 +626,8 @@ $roleDisplay = ucfirst($staffRole);
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/header.php'; ?>
-        <?php include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; ?>
+        <?php include './config/admin_sidebar.php'; ?>
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
@@ -640,7 +640,7 @@ $roleDisplay = ucfirst($staffRole);
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="admin_dashboard.php">Dashboard</a></li>
                                 <li class="breadcrumb-item active">My Availability</li>
                             </ol>
                         </div>
@@ -859,7 +859,7 @@ $roleDisplay = ucfirst($staffRole);
             </div>
         </div>
         
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
     
     <?php include './config/site_js_links.php'; ?>

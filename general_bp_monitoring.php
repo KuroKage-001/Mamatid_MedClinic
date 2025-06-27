@@ -58,7 +58,7 @@ if (isset($_POST['save_bp'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:system/utilities/congratulation.php?goto_page=bp_monitoring.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=general_bp_monitoring.php&message=$message");
     exit;
 }
 
@@ -418,8 +418,8 @@ try {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
     <?php 
-      include './config/header.php';
-      include './config/sidebar.php'; 
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php'; 
     ?>
     <div class="content-wrapper">
       <section class="content-header">
@@ -629,7 +629,7 @@ try {
     </div>
 
     <?php
-      include './config/footer.php';
+      include './config/admin_footer.php';
       $message = isset($_GET['message']) ? $_GET['message'] : '';
     ?>
     

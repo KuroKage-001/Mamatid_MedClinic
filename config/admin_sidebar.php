@@ -28,7 +28,7 @@ $role_display_name = getRoleDisplayName($user_role);
 <!-- Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo $base_path; ?>/dashboard.php" class="brand-link logo-switch">
+    <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="brand-link logo-switch">
         <div class="brand-logo-container">
             <h3 class="brand-image-xl logo-xs mb-0"><b>MHC</b></h3>
             <h3 class="brand-image-xl logo-xl mb-0">Clinic <b>MHC</b></h3>
@@ -48,7 +48,7 @@ $role_display_name = getRoleDisplayName($user_role);
                 </div>
                 <!-- User Info -->
                 <div class="user-info">
-                    <a href="<?php echo $base_path; ?>/account_settings.php" class="user-display-name"><?php echo $_SESSION['display_name']; ?></a>
+                    <a href="<?php echo $base_path; ?>/account_admin_settings.php" class="user-display-name"><?php echo $_SESSION['display_name']; ?></a>
                     <div class="user-role-badge">
                         <span class="role-text"><?php echo getRoleDisplayName($_SESSION['role'] ?? 'admin'); ?></span>
                     </div>
@@ -62,7 +62,7 @@ $role_display_name = getRoleDisplayName($user_role);
                 
                 <!-- Dashboard Menu Item -->
                 <li class="nav-item" id="mnu_dashboard">
-                    <a href="<?php echo $base_path; ?>/dashboard.php" class="nav-link <?php echo ($current_page == 'dashboard.php' ? 'active' : ''); ?>">
+                    <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="nav-link <?php echo ($current_page == 'admin_dashboard.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
@@ -71,8 +71,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <!-- General Menu (Patients & Prescriptions) -->
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">PATIENT MANAGEMENT</li>
-                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-injured"></i>
                         <p>
                             General
@@ -105,7 +105,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/bp_monitoring.php" class="nav-link <?php echo ($current_page == 'bp_monitoring.php' ? 'active' : ''); ?>" id="mi_bp_monitoring">
+                            <a href="<?php echo $base_path; ?>/general_bp_monitoring.php" class="nav-link <?php echo ($current_page == 'general_bp_monitoring.php' ? 'active' : ''); ?>" id="mi_bp_monitoring">
                                 <i class="nav-icon-sm fas fa-heartbeat"></i>
                                 <p>BP Monitoring</p>
                             </a>
@@ -123,8 +123,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php', 'appointment_plotter.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'doctor_schedule.php', 'appointment_plotter.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>
                             Appointments
@@ -136,15 +136,15 @@ $role_display_name = getRoleDisplayName($user_role);
                         <li class="nav-item">
                             <a href="<?php echo $base_path; ?>/manage_appointments.php" class="nav-link <?php echo ($current_page == 'manage_appointments.php' ? 'active' : ''); ?>" id="mi_appointments">
                                 <i class="nav-icon-sm fas fa-calendar-alt"></i>
-                                <p>Manage Appointments</p>
+                                <p>Appointments</p>
                             </a>
                         </li>
                         <?php endif; ?>
                         <?php if (isAdmin() || isHealthWorker()): ?>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/appointment_plotter.php" class="nav-link <?php echo ($current_page == 'appointment_plotter.php' ? 'active' : ''); ?>" id="mi_appointment_plotter">
+                            <a href="<?php echo $base_path; ?>/admin_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_appointment_plotter">
                                 <i class="nav-icon-sm fas fa-calendar-week"></i>
-                                <p>Appointment Plotter</p>
+                                <p>Schedule Plotter</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -156,7 +156,7 @@ $role_display_name = getRoleDisplayName($user_role);
                         <?php endif; ?>
                         <?php if (isDoctor()): ?>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/doctor_schedule.php" class="nav-link <?php echo ($current_page == 'doctor_schedule.php' ? 'active' : ''); ?>" id="mi_doctor_schedule">
+                            <a href="<?php echo $base_path; ?>/admin_doctor_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_doctor_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_doctor_schedule">
                                 <i class="nav-icon-sm fas fa-clock"></i>
                                 <p>My Schedule</p>
                             </a>

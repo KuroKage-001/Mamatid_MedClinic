@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to BP monitoring page with success message
-        header("Location: ../bp_monitoring.php?success=1");
+        header("Location: ../general_bp_monitoring.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,11 +25,11 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to BP monitoring page with error message
-        header("Location: ../bp_monitoring.php?error=1");
+        header("Location: ../general_bp_monitoring.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to BP monitoring page
-    header("Location: ../bp_monitoring.php");
+    header("Location: ../general_bp_monitoring.php");
     exit();
 } 

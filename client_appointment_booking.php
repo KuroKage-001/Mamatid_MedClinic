@@ -54,7 +54,7 @@ if (isset($_POST['book_appointment'])) {
 
     if (!$client) {
         $error = "Invalid client information.";
-        header("location:book_appointment.php?error=" . urlencode($error));
+        header("location:client_appointment_booking.php?error=" . urlencode($error));
         exit;
     }
 
@@ -86,7 +86,7 @@ if (isset($_POST['book_appointment'])) {
         if (!$schedule) {
             $con->rollBack();
             $error = "Invalid schedule selected.";
-            header("location:book_appointment.php?error=" . urlencode($error));
+            header("location:client_appointment_booking.php?error=" . urlencode($error));
             exit;
         }
         
@@ -105,7 +105,7 @@ if (isset($_POST['book_appointment'])) {
         if ($slotCount > 0) {
             $con->rollBack();
             $error = "This time slot is already booked. Please select another time.";
-            header("location:book_appointment.php?error=" . urlencode($error));
+            header("location:client_appointment_booking.php?error=" . urlencode($error));
             exit;
         }
         
@@ -120,7 +120,7 @@ if (isset($_POST['book_appointment'])) {
         if ($existingCount > 0) {
             $con->rollBack();
             $error = "You already have an appointment booked for this time slot.";
-            header("location:book_appointment.php?error=" . urlencode($error));
+            header("location:client_appointment_booking.php?error=" . urlencode($error));
             exit;
         }
 
@@ -260,7 +260,7 @@ if (isset($_POST['book_appointment'])) {
             $con->rollBack();
         }
         $error = 'An error occurred: ' . $ex->getMessage();
-        header("location:book_appointment.php?error=" . urlencode($error));
+        header("location:client_appointment_booking.php?error=" . urlencode($error));
         exit;
     }
 }

@@ -863,7 +863,7 @@ try {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
     <!-- Header and sidebar include -->
-    <?php include './config/header.php'; include './config/sidebar.php'; ?>
+    <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">

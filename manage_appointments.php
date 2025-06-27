@@ -415,7 +415,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar and Sidebar -->
-        <?php include './config/header.php'; include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -621,7 +621,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             </section>
         </div>
 
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

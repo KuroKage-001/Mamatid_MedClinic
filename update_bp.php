@@ -4,7 +4,7 @@ include './config/connection.php';
 // Check if ID is provided
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 if (empty($id)) {
-    header("Location: bp_monitoring.php");
+    header("Location: general_bp_monitoring.php");
     exit;
 }
 
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $con->commit();
-                header("Location: bp_monitoring.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_bp_monitoring.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -114,11 +114,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: bp_monitoring.php?message=" . urlencode("Record not found"));
+        header("Location: general_bp_monitoring.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (PDOException $e) {
-    header("Location: bp_monitoring.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_bp_monitoring.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -327,8 +327,8 @@ try {
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/header.php'; ?>
-        <?php include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; ?>
+        <?php include './config/admin_sidebar.php'; ?>
         <div class="content-wrapper">
         <section class="content-header">
           <div class="container-fluid">
@@ -439,7 +439,7 @@ try {
                             </div>
 
                             <div class="action-buttons">
-                                <a href="bp_monitoring.php" class="btn btn-secondary">
+                                <a href="general_bp_monitoring.php" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Cancel
                                 </a>
                                 <button type="button" class="btn btn-danger" id="deleteBtn">

@@ -369,8 +369,8 @@ $patients = getAllPatientsWithHistory($con);
   <div class="wrapper">
     <!-- Navbar and Sidebar -->
     <?php 
-      include './config/header.php';
-      include './config/sidebar.php';
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
     ?>
     
     <!-- Content Wrapper -->
@@ -646,7 +646,7 @@ $patients = getAllPatientsWithHistory($con);
     </div>
     <!-- /.content-wrapper -->
 
-    <?php include './config/footer.php'; ?>
+    <?php include './config/admin_footer.php'; ?>
     <!-- /.control-sidebar -->
   </div>
   <!-- ./wrapper -->

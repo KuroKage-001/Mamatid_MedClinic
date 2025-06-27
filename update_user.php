@@ -24,7 +24,7 @@ $user_id = intval($_GET['id']);
 
 // Prevent editing own account (should use account settings)
 if ($_SESSION['user_id'] == $user_id) {
-    header("location:account_settings.php?message=" . urlencode("Use Account Settings to edit your own profile") . "&type=info");
+    header("location:account_admin_settings.php?message=" . urlencode("Use Account Settings to edit your own profile") . "&type=info");
     exit;
 }
 
@@ -355,7 +355,7 @@ if (isset($_POST['update_user'])) {
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed update-user-page">
     <div class="wrapper">
-        <?php include './config/header.php'; include './config/sidebar.php'; ?>
+        <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
         
         <div class="content-wrapper">
             <section class="content-header">

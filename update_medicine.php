@@ -70,8 +70,8 @@ try {
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
-  <?php include './config/header.php';
-  include './config/sidebar.php';?>
+  <?php include './config/admin_header.php';
+  include './config/admin_sidebar.php';?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
