@@ -34,23 +34,40 @@ if ($scheduleId > 0) {
         $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($schedule && $schedule[$idColumn] == $staffId) {
+            // Check if schedule is in the past
+            $scheduleQuery = "SELECT schedule_date FROM {$tableName} WHERE id = ?";
+            $scheduleStmt = $con->prepare($scheduleQuery);
+            $scheduleStmt->execute([$scheduleId]);
+            $scheduleData = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
+            $isPastSchedule = strtotime($scheduleData['schedule_date']) < strtotime(date('Y-m-d'));
+            
             // Check if there are any appointments for this schedule
             $apptQuery = "SELECT COUNT(*) as count FROM appointments WHERE schedule_id = ?";
             $apptStmt = $con->prepare($apptQuery);
             $apptStmt->execute([$scheduleId]);
             $appointmentCount = $apptStmt->fetch(PDO::FETCH_ASSOC)['count'];
             
-            if ($appointmentCount > 0) {
+            // Only check for appointments if it's not a past schedule
+            if ($appointmentCount > 0 && !$isPastSchedule) {
                 header("location:{$redirectPage}?error=" . urlencode("Cannot delete: Schedule has booked appointments"));
                 exit;
             }
             
-            // Delete the schedule
-            $query = "DELETE FROM {$tableName} WHERE id = ?";
-            $stmt = $con->prepare($query);
-            $stmt->execute([$scheduleId]);
-            
-            header("location:{$redirectPage}?message=Schedule deleted successfully");
+            // If there are past appointments linked to this schedule, mark the schedule as deleted but keep the record
+            if ($appointmentCount > 0 && $isPastSchedule) {
+                $query = "UPDATE {$tableName} SET is_deleted = 1, updated_at = NOW() WHERE id = ?";
+                $stmt = $con->prepare($query);
+                $stmt->execute([$scheduleId]);
+                
+                header("location:{$redirectPage}?message=Past schedule marked as deleted. Linked appointments are preserved.");
+            } else {
+                // Delete the schedule normally if no appointments or not past
+                $query = "DELETE FROM {$tableName} WHERE id = ?";
+                $stmt = $con->prepare($query);
+                $stmt->execute([$scheduleId]);
+                
+                header("location:{$redirectPage}?message=Schedule deleted successfully");
+            }
         } else {
             header("location:{$redirectPage}?error=You can only delete your own schedules");
         }

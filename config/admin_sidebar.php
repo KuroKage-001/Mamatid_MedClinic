@@ -43,7 +43,7 @@ $role_display_name = getRoleDisplayName($user_role);
             <div class="user-info-container">
                 <!-- User Image -->
                 <div class="user-image-container">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-img" alt="User Image" />
+                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'" />
                     <span class="user-status-indicator <?php echo isset($_SESSION['online_status']) && $_SESSION['online_status'] ? 'online' : 'offline'; ?>"></span>
                 </div>
                 <!-- User Info -->

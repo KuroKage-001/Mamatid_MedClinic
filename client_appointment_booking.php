@@ -296,6 +296,7 @@ foreach ($doctorSchedules as $schedule) {
         'borderColor' => $backgroundColor,
         'extendedProps' => [
             'staff_name' => $staffName,
+            'doctor_name' => $staffName, // Add doctor_name explicitly
             'staff_role' => $staffRole,
             'time_slot' => $timeSlotMinutes,
             'max_patients' => $schedule['max_patients'],
@@ -1149,6 +1150,7 @@ if (empty($calendarEvents)) {
                                     <form id="appointmentForm" method="post" action="" class="mt-4">
                                         <input type="hidden" id="scheduleId" name="schedule_id">
                                         <input type="hidden" id="appointmentTime" name="appointment_time">
+                                        <input type="hidden" name="schedule_type" value="doctor">
                                         
                                         <div class="form-group">
                                             <label for="selectedDoctor">Doctor</label>
@@ -1253,10 +1255,10 @@ if (empty($calendarEvents)) {
                     // Get event details
                     const event = info.event;
                     const props = event.extendedProps;
-                    const doctorName = props.doctor_name;
                     const scheduleId = props.schedule_id;
                     const timeSlot = props.time_slot;
                     const maxPatients = props.max_patients;
+                    const scheduleType = props.schedule_type;
                     
                     // Check if the selected date is in the past
                     const eventDate = event.start;
@@ -1272,9 +1274,35 @@ if (empty($calendarEvents)) {
                         return;
                     }
                     
+                    // Get staff name from all possible sources in props
+                    let staffName = props.staff_name || props.doctor_name;
+                    
+                    // Debug to console
+                    console.log('Event props:', props);
+                    console.log('Event title:', event.title);
+                    
+                    if (!staffName) {
+                        // Extract name from title if not in props
+                        const titleParts = event.title.split(' (');
+                        staffName = titleParts[0];
+                        console.log('Extracted staff name from title:', staffName);
+                    }
+                    
+                    // If still no name, use a default
+                    if (!staffName || staffName === 'undefined') {
+                        if (scheduleType === 'doctor') {
+                            staffName = 'Selected Doctor';
+                        } else {
+                            staffName = 'Selected Staff';
+                        }
+                    }
+                    
                     // Set form values
-                    $('#selectedDoctor').val(doctorName);
+                    $('#selectedDoctor').val(staffName);
                     $('#scheduleId').val(scheduleId);
+                    if (scheduleType) {
+                        $('input[name="schedule_type"]').val(scheduleType);
+                    }
                     $('#selectedDate').val(event.start.toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 

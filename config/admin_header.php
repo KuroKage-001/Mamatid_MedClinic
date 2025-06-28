@@ -32,7 +32,7 @@ require_once $base_path . '/config/session_fix.php';
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
                 <div class="user-avatar">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
                     <span class="status-indicator <?php echo isset($_SESSION['status']) && $_SESSION['status'] == 'active' ? 'status-online' : 'status-offline'; ?>"></span>
                 </div>
                 <div class="user-info d-none d-md-block">
@@ -43,7 +43,7 @@ require_once $base_path . '/config/session_fix.php';
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
                     <div class="user-details">
                         <h6><?php echo $_SESSION['display_name']; ?></h6>
                         <span class="username">@<?php echo $_SESSION['user_name']; ?></span>
@@ -52,7 +52,7 @@ require_once $base_path . '/config/session_fix.php';
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
-                    <?php if (canAccess('account_settings')): ?>
+                    <?php if (isAdmin() || isDoctor() || isHealthWorker()): ?>
                     <a href="<?php echo $base_path; ?>/account_admin_settings.php" class="dropdown-item">
                         <i class="fas fa-user-cog mr-2"></i>
                         <span>Account Settings</span>

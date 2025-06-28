@@ -74,10 +74,22 @@ try {
     $error = "Error updating past appointments: " . $ex->getMessage();
 }
 
+// Generate a unique form token if it doesn't exist
+if (!isset($_SESSION['form_token'])) {
+    $_SESSION['form_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle schedule submission
 if (isset($_POST['submit_schedule'])) {
-    try {
-        $con->beginTransaction();
+    // Verify form token to prevent duplicate submissions
+    if (!isset($_POST['form_token']) || $_POST['form_token'] !== $_SESSION['form_token']) {
+        $error = "Invalid form submission. Please try again.";
+    } else {
+        // Generate a new token for next submission
+        $_SESSION['form_token'] = bin2hex(random_bytes(32));
+        
+        try {
+            $con->beginTransaction();
         
         // Delete existing schedule entries for the selected dates if requested
         if (isset($_POST['replace_existing'])) {
@@ -120,6 +132,22 @@ if (isset($_POST['submit_schedule'])) {
                 continue;
             }
             
+            // Check if schedule already exists for this date and time range
+            $checkDuplicateQuery = "SELECT id FROM doctor_schedules 
+                                   WHERE doctor_id = ? 
+                                   AND schedule_date = ? 
+                                   AND start_time = ? 
+                                   AND end_time = ? 
+                                   AND (is_deleted = 0 OR is_deleted IS NULL)";
+            $checkDuplicateStmt = $con->prepare($checkDuplicateQuery);
+            $checkDuplicateStmt->execute([$doctorId, $dateStr, $startTime, $endTime]);
+            
+            // Skip if duplicate found
+            if ($checkDuplicateStmt->rowCount() > 0) {
+                $currentDate->modify('+1 day');
+                continue;
+            }
+            
             $scheduleStmt->execute([
                 $doctorId,
                 $dateStr,
@@ -130,21 +158,56 @@ if (isset($_POST['submit_schedule'])) {
                 $notes
             ]);
             
+            // Get the ID of the newly created schedule
+            $scheduleId = $con->lastInsertId();
+            
+            // Create appointment slots for this schedule
+            $startDateTime = strtotime($dateStr . ' ' . $startTime);
+            $endDateTime = strtotime($dateStr . ' ' . $endTime);
+            $slotDuration = $timeSlot * 60; // Convert minutes to seconds
+            
+            // Generate slots for the entire schedule duration
+            $currentSlot = $startDateTime;
+            while ($currentSlot < $endDateTime) {
+                $slotTime = date('H:i:s', $currentSlot);
+                
+                // Check if slot already exists
+                $checkSlotQuery = "SELECT id FROM appointment_slots WHERE schedule_id = ? AND slot_time = ?";
+                $checkSlotStmt = $con->prepare($checkSlotQuery);
+                $checkSlotStmt->execute([$scheduleId, $slotTime]);
+                
+                if ($checkSlotStmt->rowCount() == 0) {
+                    // Insert new slot if it doesn't exist
+                    $insertSlotQuery = "INSERT INTO appointment_slots (schedule_id, slot_time, is_booked) VALUES (?, ?, 0)";
+                    $insertSlotStmt = $con->prepare($insertSlotQuery);
+                    $insertSlotStmt->execute([$scheduleId, $slotTime]);
+                }
+                
+                // Move to next slot
+                $currentSlot += $slotDuration;
+            }
+            
             $currentDate->modify('+1 day');
         }
         
         $con->commit();
         $message = "Schedule successfully saved! Your schedule will be reviewed by an administrator.";
         
+        // Redirect to prevent form resubmission on refresh
+        header("Location: admin_doctor_schedule_plotter.php?message=" . urlencode($message));
+        exit;
+        
     } catch(PDOException $ex) {
         $con->rollback();
         $error = "Error: " . $ex->getMessage();
     }
+  }
 }
 
 // Fetch doctor's existing schedules
 $query = "SELECT * FROM doctor_schedules 
           WHERE doctor_id = ? 
+          AND (is_deleted = 0 OR is_deleted IS NULL)
           ORDER BY schedule_date ASC";
 $stmt = $con->prepare($query);
 $stmt->execute([$doctorId]);
@@ -213,7 +276,8 @@ foreach ($appointments as $appointment) {
             'reason' => $appointment['reason'],
             'status' => $appointment['status'],
             'type' => 'appointment',
-            'is_past' => $isPast
+            'is_past' => $isPast,
+            'appointment_id' => $appointment['id']
         ]
     ];
 }
@@ -668,6 +732,8 @@ foreach ($appointments as $appointment) {
                                 </div>
                                 <div class="card-body">
                                     <form method="post">
+                                        <!-- Add form token to prevent duplicate submissions -->
+                                        <input type="hidden" name="form_token" value="<?php echo $_SESSION['form_token']; ?>">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -749,6 +815,11 @@ foreach ($appointments as $appointment) {
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
                                     <h3 class="card-title">Your Schedule Calendar</h3>
+                                    <div class="card-tools">
+                                        <button type="button" id="refresh-calendar" class="btn btn-sm btn-info">
+                                            <i class="fas fa-sync-alt mr-1"></i> Refresh Calendar
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <div id="calendar"></div>
@@ -834,10 +905,12 @@ foreach ($appointments as $appointment) {
                                                         <?php } ?>
                                                     </td>
                                                     <td>
-                                                        <?php if (!$schedule['is_approved']) { ?>
+                                                        <?php 
+                                                        $isPastSchedule = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
+                                                        if (!$schedule['is_approved'] || $isPastSchedule) { ?>
                                                             <a href="actions/delete_schedule.php?id=<?= $schedule['id'] ?>" 
                                                                class="btn btn-sm btn-danger" 
-                                                               onclick="return confirm('Are you sure you want to delete this schedule?')">
+                                                               onclick="return confirm('Are you sure you want to delete this schedule? Any appointments made for this schedule will NOT be affected.')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
                                                         <?php } else { ?>
@@ -873,6 +946,69 @@ foreach ($appointments as $appointment) {
                 "lengthChange": false,
                 "autoWidth": false,
                 "order": [[0, "asc"]]
+            });
+            
+            // Handle send notification button click
+            $(document).on('click', '.send-notification', function() {
+                const appointmentId = $(this).data('appointment-id');
+                const btn = $(this);
+                
+                // Disable button and show loading state
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Sending...');
+                
+                // Send AJAX request to send notification
+                $.ajax({
+                    url: 'ajax/send_appointment_notification.php',
+                    type: 'POST',
+                    data: {
+                        appointment_id: appointmentId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            const alertHtml = `
+                                <div class="alert alert-success alert-dismissible fade show mt-3">
+                                    <i class="fas fa-check-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Update button to show sent status
+                            btn.removeClass('btn-primary').addClass('btn-success')
+                               .html('<i class="fas fa-check mr-2"></i> Notification Sent')
+                               .prop('disabled', true);
+                        } else {
+                            // Show error message
+                            const alertHtml = `
+                                <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Reset button
+                            btn.prop('disabled', false)
+                               .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                        }
+                    },
+                    error: function() {
+                        // Show error message
+                        const alertHtml = `
+                            <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the notification.
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        `;
+                        btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                        
+                        // Reset button
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                    }
+                });
             });
             
             // Function to automatically update past appointments to completed status
@@ -918,6 +1054,57 @@ foreach ($appointments as $appointment) {
             
             // Call the update function when the page loads
             updatePastAppointments();
+            
+            // Function to refresh appointments and update calendar
+            function refreshAppointmentsCalendar() {
+                $.ajax({
+                    url: 'ajax/get_doctor_appointments.php',
+                    type: 'POST',
+                    data: {
+                        doctor_id: <?= $doctorId ?>
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove all existing appointment events
+                            var existingEvents = calendar.getEvents();
+                            existingEvents.forEach(function(event) {
+                                if (event.id.startsWith('appointment_')) {
+                                    event.remove();
+                                }
+                            });
+                            
+                            // Add the newly fetched appointments
+                            if (response.appointments && response.appointments.length > 0) {
+                                calendar.addEventSource(response.appointments);
+                                console.log('Calendar updated with ' + response.appointments.length + ' appointments');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Set up periodic refresh (every 60 seconds)
+            setInterval(refreshAppointmentsCalendar, 60000);
+            
+            // Handle manual refresh button click
+            $('#refresh-calendar').click(function() {
+                const $btn = $(this);
+                
+                // Show loading spinner
+                $btn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Refreshing...').prop('disabled', true);
+                
+                // Call refresh function
+                refreshAppointmentsCalendar();
+                
+                // Reset button after a delay
+                setTimeout(function() {
+                    $btn.html('<i class="fas fa-sync-alt mr-1"></i> Refresh Calendar').prop('disabled', false);
+                }, 1000);
+            });
+            
+            // Refresh once when page loads (after calendar is initialized)
+            setTimeout(refreshAppointmentsCalendar, 1000);
             
             // Initialize Calendar
             var calendarEl = document.getElementById('calendar');
@@ -1123,6 +1310,16 @@ foreach ($appointments as $appointment) {
                                 </div>
                             </div>
                         </div>`;
+                        
+                        // Add send notification button for active appointments
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                            modalContent += `
+                            <div class="text-center pb-3">
+                                <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
+                                    <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                </button>
+                            </div>`;
+                        }
                     }
                     
                     // Create and show modal

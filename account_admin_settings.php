@@ -420,7 +420,7 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                         <div class="card-body">
                             <form method="POST" enctype="multipart/form-data" id="pictureForm">
                                 <div class="profile-pic-container">
-                                    <img src="system/user_images/<?php echo $_SESSION['profile_picture']; ?>" 
+                                    <img src="system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" 
                                          alt="Profile Picture" class="profile-pic"
                                          onerror="this.src='system/user_images/default_profile.jpg'"
                                          id="profileImage">
@@ -566,7 +566,7 @@ function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('profilePreview').src = e.target.result;
+            document.getElementById('profileImage').src = e.target.result;
             document.getElementById('uploadBtn').style.display = 'inline-block';
         }
         reader.readAsDataURL(input.files[0]);
@@ -574,6 +574,15 @@ function previewImage(input) {
 }
 
 $(document).ready(function() {
+    // Handle file input change
+    $('#fileInput').on('change', function() {
+        previewImage(this);
+        // Auto-submit the form when a file is selected
+        setTimeout(function() {
+            $('#pictureForm').submit();
+        }, 1000); // Short delay to allow preview to show
+    });
+    
     // Initialize Toast
     const Toast = Swal.mixin({
         toast: true,
@@ -616,25 +625,25 @@ $(document).ready(function() {
         const newPassword = $('#newPassword').val();
         const confirmPassword = $('#confirmPassword').val();
     
-    if (newPassword !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             e.preventDefault();
             Toast.fire({
                 icon: 'error',
                 title: 'New passwords do not match!'
             });
-        return false;
-    }
-    
-    if (newPassword.length < 6) {
+            return false;
+        }
+        
+        if (newPassword.length < 6) {
             e.preventDefault();
             Toast.fire({
                 icon: 'error',
                 title: 'Password must be at least 6 characters long!'
             });
-        return false;
-    }
-    
-    return true;
+            return false;
+        }
+        
+        return true;
     });
     
     // Show menu selected
