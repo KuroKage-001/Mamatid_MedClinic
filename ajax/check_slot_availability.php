@@ -1,5 +1,5 @@
 <?php
-include '../config/connection.php';
+include '../config/db_connection.php';
 header('Content-Type: application/json');
 
 // Set default response

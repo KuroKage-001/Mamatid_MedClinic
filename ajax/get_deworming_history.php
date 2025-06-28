@@ -2,7 +2,7 @@
 // Define helper as included
 define('HISTORY_HELPER_INCLUDED', true);
 
-include '../config/connection.php';
+include '../config/db_connection.php';
 include 'history_helper.php';
 
 // Apply cache prevention headers

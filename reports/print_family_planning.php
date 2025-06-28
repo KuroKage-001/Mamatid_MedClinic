@@ -1,5 +1,5 @@
 <?php
-include '../config/connection.php';
+include '../config/db_connection.php';
 include '../common_service/common_functions.php';
 
 $from = $_GET['from'] ?? '';

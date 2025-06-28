@@ -1,5 +1,5 @@
 <?php
-include '../../config/connection.php';
+include '../../config/db_connection.php';
 require_once '../../system/phpmailer/system/mailer.php';
 
 // Error logging

@@ -1,5 +1,5 @@
 <?php
-require_once 'config/connection.php';
+require_once 'config/db_connection.php';
 require_once 'config/check_client_auth.php';
 require_once 'common_service/common_functions.php';
 require_once 'common_service/role_functions.php';

@@ -1,5 +1,5 @@
 <?php
-require_once './config/connection.php';
+require_once './config/db_connection.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("location:index.php");

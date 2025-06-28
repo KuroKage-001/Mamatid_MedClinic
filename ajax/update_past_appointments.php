@@ -1,5 +1,5 @@
 <?php
-include '../config/connection.php';
+include '../config/db_connection.php';
 
 // Check if doctor_id is provided
 $doctorId = isset($_POST['doctor_id']) ? intval($_POST['doctor_id']) : null;

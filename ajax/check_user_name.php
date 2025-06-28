@@ -1,5 +1,5 @@
 <?php 
-	include '../config/connection.php';
+	include '../config/db_connection.php';
 
   	$userName = $_GET['user_name'];
 

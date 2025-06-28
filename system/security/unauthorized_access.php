@@ -4,14 +4,36 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// If user is already logged in, redirect to dashboard
+// Check if this is an account settings page
+$is_admin_settings = strpos($_GET['page'] ?? '', 'account_admin_settings.php') !== false;
+$is_client_settings = strpos($_GET['page'] ?? '', 'account_client_settings.php') !== false;
+
+// If user is already logged in as admin/staff, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
     header("location:../../admin_dashboard.php");
     exit;
 }
 
+// If user is already logged in as client and trying to access client settings
+if (isset($_SESSION['client_id']) && $is_client_settings) {
+    header("location:../../account_client_settings.php");
+    exit;
+}
+
+// If user is already logged in as client but trying to access admin settings
+if (isset($_SESSION['client_id']) && $is_admin_settings) {
+    header("location:../../system/security/access_denied.php?required_role=admin");
+    exit;
+}
+
 // Get the page that was attempted to be accessed
 $attempted_page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'a protected page';
+
+// Determine the correct login page based on the attempted access
+$login_url = "../../index.php";
+if ($is_client_settings) {
+    $login_url = "../../client_login.php";
+}
 ?>
 
 <!DOCTYPE html>
@@ -154,7 +176,7 @@ $attempted_page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'a pr
                     Please login with your credentials to continue.
                 </p>
                 <div>
-                    <a href="../../index.php" class="btn-login">
+                    <a href="<?php echo $login_url; ?>" class="btn-login">
                         <i class="fas fa-sign-in-alt mr-2"></i> Login
                     </a>
                     <a href="../../index.php" class="btn-home">

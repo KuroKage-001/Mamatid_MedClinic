@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Include the database connection (connection.php already calls session_start())
-include './config/connection.php';
+include './config/db_connection.php';
 include './common_service/common_functions.php';
 require_once './common_service/role_functions.php';
 

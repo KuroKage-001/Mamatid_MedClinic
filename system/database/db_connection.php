@@ -19,7 +19,7 @@ if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_secure', 0);             // Set to 1 for HTTPS in production
     ini_set('session.use_only_cookies', 1);          // Only use cookies for sessions
     ini_set('session.cookie_lifetime', 0);           // Session expires when browser closes
-    ini_set('session.gc_maxlifetime', 1800);         // 30 minutes idle timeout
+    ini_set('session.gc_maxlifetime', 3600);         // 1 hour idle timeout
     ini_set('session.gc_probability', 1);            // Garbage collection probability
     ini_set('session.gc_divisor', 100);              // Garbage collection divisor
     
@@ -60,7 +60,7 @@ try {
 
 // Session timeout check for inactive sessions
 function checkSessionTimeout($session) {
-    $timeout = 1800; // 30 minutes
+    $timeout = 3600; // 1 hour
     
     // Check admin/staff session timeout
     if (isset($session['user_id'])) {

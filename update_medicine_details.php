@@ -1,6 +1,6 @@
 <?php
 // Include the database connection and common functions
-include './config/connection.php';
+include './config/db_connection.php';
 include './common_service/common_functions.php';
 
 // Initialize message variable

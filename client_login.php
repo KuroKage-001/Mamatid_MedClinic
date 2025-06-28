@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-include './config/connection.php';
+include './config/db_connection.php';
 
 // Initialize an empty message string
 $message = '';

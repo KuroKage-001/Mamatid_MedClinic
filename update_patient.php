@@ -1,6 +1,6 @@
 <?php
 // Include necessary files for DB connection and common functions
-include './config/connection.php';
+include './config/db_connection.php';
 include './common_service/common_functions.php';
 
 $message = '';

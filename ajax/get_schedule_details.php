@@ -1,5 +1,5 @@
 <?php
-include '../config/connection.php';
+include '../config/db_connection.php';
 
 // Check if schedule_id is provided
 if (!isset($_POST['schedule_id'])) {

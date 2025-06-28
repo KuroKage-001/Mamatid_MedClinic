@@ -12,7 +12,7 @@
  */
 
 // Include database connection
-include '../../config/connection.php';
+include '../../config/db_connection.php';
 
 // Get redirect parameters
 $gotoPage = $_GET['goto_page'];

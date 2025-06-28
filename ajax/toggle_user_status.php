@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-require_once '../config/connection.php';
+require_once '../config/db_connection.php';
 
 // Get POST data
 $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;

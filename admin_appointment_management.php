@@ -6,7 +6,7 @@
  * Doctor schedule approval functionality has been moved to appointment_plotter.php.
  */
 
-include './config/connection.php';
+include './config/db_connection.php';
 require_once './common_service/role_functions.php';
 
 // Check if user is logged in

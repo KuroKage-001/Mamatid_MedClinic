@@ -1,5 +1,5 @@
 <?php
-include './config/connection.php';
+include './config/db_connection.php';
 require_once './common_service/role_functions.php';
 
 // Restrict this page to clients only

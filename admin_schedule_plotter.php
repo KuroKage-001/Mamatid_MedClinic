@@ -7,7 +7,7 @@
  * Staff schedules (admin and health worker) are auto-approved.
  */
 
-include './config/connection.php';
+include './config/db_connection.php';
 require_once './common_service/role_functions.php';
 
 // Check if user is logged in

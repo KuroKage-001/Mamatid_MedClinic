@@ -51,7 +51,7 @@ RewriteRule ^(.*)$ system/security/unauthorized_access.php?page=$1 [L,QSA]
 <IfModule mod_php.c>
     php_flag session.cookie_httponly on
     php_flag session.use_only_cookies on
-    php_value session.gc_maxlifetime 1800
+    php_value session.gc_maxlifetime 3600
     php_value session.cookie_lifetime 0
 </IfModule>
 

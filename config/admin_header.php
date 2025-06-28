@@ -63,6 +63,10 @@ require_once $base_path . '/config/session_fix.php';
                         <i class="fas fa-users mr-2"></i>
                         <span>Manage Users</span>
                     </a>
+                    <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="dropdown-item">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>My Attendance</span>
+                    </a>
                     <?php endif; ?>
                     <?php if (isDoctor() || isHealthWorker()): ?>
                     <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="dropdown-item">

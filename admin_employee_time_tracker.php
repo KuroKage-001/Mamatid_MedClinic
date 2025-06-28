@@ -1,5 +1,5 @@
 <?php
-include './config/connection.php';
+include './config/db_connection.php';
 include './common_service/common_functions.php';
 include './common_service/role_functions.php';
 
@@ -1064,7 +1064,7 @@ try {
             </div>
         </section>
     </div>
-    <?php include './config/footer.php'; ?>
+    <?php include './config/admin_footer.php'; ?>
 </div>
 
 <!-- Edit Attendance Modal -->
