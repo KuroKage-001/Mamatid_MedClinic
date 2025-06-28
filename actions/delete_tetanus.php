@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to tetanus toxoid page with success message
-        header("Location: ../tetanus_toxoid.php?success=1");
+        header("Location: ../general_tetanus_toxoid.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,12 +25,12 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to tetanus toxoid page with error message
-        header("Location: ../tetanus_toxoid.php?error=1");
+        header("Location: ../general_tetanus_toxoid.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to tetanus toxoid page
-    header("Location: ../tetanus_toxoid.php");
+    header("Location: ../general_tetanus_toxoid.php");
     exit();
 }
 ?> 

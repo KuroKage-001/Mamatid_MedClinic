@@ -59,13 +59,13 @@ require_once $base_path . '/config/session_fix.php';
                     </a>
                     <?php endif; ?>
                     <?php if (isAdmin()): ?>
-                    <a href="<?php echo $base_path; ?>/users.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/admin_users_management.php" class="dropdown-item">
                         <i class="fas fa-users mr-2"></i>
                         <span>Manage Users</span>
                     </a>
                     <?php endif; ?>
                     <?php if (isDoctor() || isHealthWorker()): ?>
-                    <a href="<?php echo $base_path; ?>/time_tracker.php" class="dropdown-item">
+                    <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="dropdown-item">
                         <i class="fas fa-clock mr-2"></i>
                         <span>My Attendance</span>
                     </a>

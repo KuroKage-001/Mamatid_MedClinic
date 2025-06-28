@@ -14,34 +14,31 @@ requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
 
-// Handle form submission to save a new family planning record
-if (isset($_POST['save_family'])) {
+// Handle form submission to save a new family member
+if (isset($_POST['save_family_member'])) {
     // Retrieve and sanitize form inputs
     $name = trim($_POST['name']);
     $date = trim($_POST['date']);
-    $age = trim($_POST['age']);
-    $address = trim($_POST['address']);
 
     // Convert date format from MM/DD/YYYY to YYYY-MM-DD
     $dateArr = explode("/", $date);
     $date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
 
-    // Format name and address (capitalize each word)
+    // Format name (capitalize each word)
     $name = ucwords(strtolower($name));
-    $address = ucwords(strtolower($address));
 
     // Check if all required fields are provided
-    if ($name != '' && $date != '' && $address != '' && $age != '') {
+    if ($name != '' && $date != '') {
         // Prepare INSERT query
-        $query = "INSERT INTO `family_planning`(`name`, `date`, `age`, `address`)
-                  VALUES('$name', '$date', '$age', '$address');";
+        $query = "INSERT INTO `family_members`(`name`, `date`)
+                  VALUES('$name', '$date');";
         try {
             // Start transaction and execute query
             $con->beginTransaction();
             $stmt = $con->prepare($query);
             $stmt->execute();
             $con->commit();
-            $message = 'Family planning record added successfully.';
+            $message = 'Family member added successfully.';
         } catch (PDOException $ex) {
             // Rollback on error and output exception details (for debugging only)
             $con->rollback();
@@ -51,16 +48,16 @@ if (isset($_POST['save_family'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:system/utilities/congratulation.php?goto_page=family_planning.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=general_family_members.php&message=$message");
     exit;
 }
 
-// Retrieve all family planning records for the listing
+// Retrieve all family members for the listing
 try {
-    $query = "SELECT `id`, `name`, `address`, `age`,
+    $query = "SELECT `id`, `name`, 
                      DATE_FORMAT(`date`, '%d %b %Y') as `date`,
                      DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `family_planning`
+              FROM `family_members`
               ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();
@@ -77,7 +74,7 @@ try {
   <?php include './config/data_tables_css.php'; ?>
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Family Planning - Mamatid Health Center System</title>
+  <title>Family Members - Mamatid Health Center System</title>
   <style>
     :root {
       --transition-speed: 0.3s;
@@ -252,7 +249,7 @@ try {
       }
     }
 
-    /* Update these styles in your existing styles section */
+    /* Export Buttons and Column Visibility Styling */
     .chart-actions {
       display: flex;
       gap: 8px;
@@ -376,16 +373,13 @@ try {
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
-    <?php
-      include './config/admin_header.php';
-      include './config/admin_sidebar.php';
-    ?>
+    <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
     <div class="content-wrapper">
       <section class="content-header">
         <div class="container-fluid">
           <div class="row align-items-center mb-4">
             <div class="col-12 col-md-6" style="padding-left: 20px;">
-              <h1>Family Planning Record</h1>
+              <h1>Family Members</h1>
             </div>
           </div>
         </div>
@@ -394,7 +388,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Add Family Planning Record</h3>
+            <h3 class="card-title">Add Family Member</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -404,14 +398,14 @@ try {
           <div class="card-body">
             <form method="post">
               <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
                   <div class="form-group">
                     <label class="form-label">Name</label>
                     <input type="text" id="name" name="name" required="required"
-                           class="form-control" placeholder="Enter patient name"/>
+                           class="form-control" placeholder="Enter member name"/>
                   </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
                   <div class="form-group">
                     <label class="form-label">Date</label>
                     <div class="input-group date" id="date" data-target-input="nearest">
@@ -424,28 +418,12 @@ try {
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                  <div class="form-group">
-                    <label class="form-label">Age</label>
-                    <input type="number" id="age" name="age" required="required"
-                           class="form-control" placeholder="Enter age"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <input type="text" id="address" name="address" required="required"
-                           class="form-control" placeholder="Enter complete address"/>
-                  </div>
-                </div>
               </div>
               <div class="row">
                 <div class="col-12 text-right">
-                  <button type="submit" id="save_family" name="save_family" 
+                  <button type="submit" id="save_family_member" name="save_family_member" 
                           class="btn btn-primary">
-                    <i class="fas fa-save mr-2"></i>Save Record
+                    <i class="fas fa-save mr-2"></i>Save Member
                   </button>
                 </div>
               </div>
@@ -457,7 +435,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Family Planning Records</h3>
+            <h3 class="card-title">Family Members List</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -497,14 +475,12 @@ try {
                   </div>
                 </div>
               </div>
-              <table id="all_family" class="table table-striped table-hover">
+              <table id="all_family_members" class="table table-striped table-hover">
                 <thead>
                   <tr>
                     <th>S.No</th>
                     <th>Name</th>
                     <th>Date</th>
-                    <th>Age</th>
-                    <th>Address</th>
                     <th>Created At</th>
                     <th>Action</th>
                   </tr>
@@ -519,11 +495,9 @@ try {
                     <td><?php echo $count; ?></td>
                     <td><?php echo $row['name']; ?></td>
                     <td><?php echo $row['date']; ?></td>
-                    <td><?php echo $row['age']; ?></td>
-                    <td><?php echo $row['address']; ?></td>
                     <td><?php echo $row['created_at']; ?></td>
                     <td>
-                      <a href="update_family.php?id=<?php echo $row['id']; ?>" 
+                      <a href="update_family_member.php?id=<?php echo $row['id']; ?>" 
                          class="btn btn-primary">
                         <i class="fa fa-edit"></i>
                       </a>
@@ -537,134 +511,136 @@ try {
         </div>
       </section>
     </div>
+    <?php include './config/admin_footer.php'; ?>
+  </div>
 
-    <?php
-      include './config/admin_footer.php';
-      $message = isset($_GET['message']) ? $_GET['message'] : '';
-    ?>
-    
-    <?php include './config/site_js_links.php'; ?>
-    <?php include './config/data_tables_js.php'; ?>
-    <script src="plugins/moment/moment.min.js"></script>
-    <script src="plugins/daterangepicker/daterangepicker.js"></script>
-    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        // Initialize DataTable with export buttons
-        var table = $("#all_family").DataTable({
-          responsive: true,
-          lengthChange: false,
-          autoWidth: false,
-          buttons: [
-            {
-              extend: 'copy',
-              text: '<i class="fas fa-copy"></i> Copy',
-              className: 'btn btn-gradient btn-sm'
-            },
-            {
-              extend: 'csv',
-              text: '<i class="fas fa-file-csv"></i> CSV',
-              className: 'btn btn-gradient btn-sm'
-            },
-            {
-              extend: 'excel',
-              text: '<i class="fas fa-file-excel"></i> Excel',
-              className: 'btn btn-gradient btn-sm'
-            },
-            {
-              extend: 'pdf',
-              text: '<i class="fas fa-file-pdf"></i> PDF',
-              className: 'btn btn-gradient btn-sm'
-            },
-            {
-              extend: 'print',
-              text: '<i class="fas fa-print"></i> Print',
-              className: 'btn btn-gradient btn-sm'
-            }
-          ],
-          language: {
-            search: "",
-            searchPlaceholder: "Search records..."
+  <?php include './config/site_js_links.php'; ?>
+  <?php include './config/data_tables_js.php'; ?>
+  <script src="plugins/moment/moment.min.js"></script>
+  <script src="plugins/daterangepicker/daterangepicker.js"></script>
+  <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize DataTable with export buttons
+      var table = $("#all_family_members").DataTable({
+        responsive: true,
+        lengthChange: false,
+        autoWidth: false,
+        buttons: [
+          {
+            extend: 'copy',
+            text: '<i class="fas fa-copy"></i> Copy',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'csv',
+            text: '<i class="fas fa-file-csv"></i> CSV',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'excel',
+            text: '<i class="fas fa-file-excel"></i> Excel',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'pdf',
+            text: '<i class="fas fa-file-pdf"></i> PDF',
+            className: 'btn btn-gradient btn-sm'
+          },
+          {
+            extend: 'print',
+            text: '<i class="fas fa-print"></i> Print',
+            className: 'btn btn-gradient btn-sm'
           }
-        });
-
-        // Custom button click handlers
-        $('#btnCopy').on('click', function() {
-          table.button('.buttons-copy').trigger();
-        });
-
-        $('#btnCSV').on('click', function() {
-          table.button('.buttons-csv').trigger();
-        });
-
-        $('#btnExcel').on('click', function() {
-          table.button('.buttons-excel').trigger();
-        });
-
-        $('#btnPDF').on('click', function() {
-          table.button('.buttons-pdf').trigger();
-        });
-
-        $('#btnPrint').on('click', function() {
-          table.button('.buttons-print').trigger();
-        });
-
-        // Initialize column visibility menu
-        var columnVisibility = $('#columnVisibility');
-        table.columns().every(function(index) {
-          var column = this;
-          var title = $(column.header()).text();
-          
-          var menuItem = $('<div class="dropdown-item">' +
-            '<input type="checkbox" checked="checked" id="col_' + index + '">' +
-            '<label for="col_' + index + '">' + title + '</label>' +
-            '</div>');
-            
-          $('input', menuItem).on('click', function() {
-            var isVisible = column.visible();
-            column.visible(!isVisible);
-          });
-          
-          columnVisibility.append(menuItem);
-        });
-
-        // Initialize Date Picker
-        $('#date').datetimepicker({
-          format: 'L',
-          icons: {
-            time: 'fas fa-clock',
-            date: 'fas fa-calendar',
-            up: 'fas fa-arrow-up',
-            down: 'fas fa-arrow-down',
-            previous: 'fas fa-chevron-left',
-            next: 'fas fa-chevron-right',
-            today: 'fas fa-calendar-check',
-            clear: 'fas fa-trash',
-            close: 'fas fa-times'
-          }
-        });
-
-        // Initialize Toast
-        const Toast = Swal.mixin({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true
-        });
-
-        // Show message if exists
-        var message = '<?php echo $message;?>';
-        if(message !== '') {
-          Toast.fire({
-            icon: 'success',
-            title: message
-          });
+        ],
+        language: {
+          search: "",
+          searchPlaceholder: "Search records..."
         }
       });
 
-      // Highlight current menu
-      showMenuSelected("#mnu_patients", "#mi_family_planning");
-    </script>
+      // Custom button click handlers
+      $('#btnCopy').on('click', function() {
+        table.button('.buttons-copy').trigger();
+      });
+
+      $('#btnCSV').on('click', function() {
+        table.button('.buttons-csv').trigger();
+      });
+
+      $('#btnExcel').on('click', function() {
+        table.button('.buttons-excel').trigger();
+      });
+
+      $('#btnPDF').on('click', function() {
+        table.button('.buttons-pdf').trigger();
+      });
+
+      $('#btnPrint').on('click', function() {
+        table.button('.buttons-print').trigger();
+      });
+
+      // Initialize column visibility menu
+      var columnVisibility = $('#columnVisibility');
+      table.columns().every(function(index) {
+        var column = this;
+        var title = $(column.header()).text();
+        
+        var menuItem = $('<div class="dropdown-item">' +
+          '<input type="checkbox" checked="checked" id="col_' + index + '">' +
+          '<label for="col_' + index + '">' + title + '</label>' +
+          '</div>');
+          
+        $('input', menuItem).on('click', function() {
+          var isVisible = column.visible();
+          column.visible(!isVisible);
+        });
+        
+        columnVisibility.append(menuItem);
+      });
+
+      // Initialize Date Picker
+      $('#date').datetimepicker({
+        format: 'L',
+        icons: {
+          time: 'fas fa-clock',
+          date: 'fas fa-calendar',
+          up: 'fas fa-arrow-up',
+          down: 'fas fa-arrow-down',
+          previous: 'fas fa-chevron-left',
+          next: 'fas fa-chevron-right',
+          today: 'fas fa-calendar-check',
+          clear: 'fas fa-trash',
+          close: 'fas fa-times'
+        }
+      });
+
+      // Initialize Toast
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      // Show message if exists
+      var message = <?php echo json_encode(isset($_GET['message']) ? $_GET['message'] : ''); ?>;
+      if(message !== '') {
+        Toast.fire({
+          icon: 'success',
+          title: message
+        });
+      }
+    });
+
+    // Show menu
+    showMenuSelected("#mnu_patients", "#mi_family_members");
+  </script>
 </body>
 </html> 

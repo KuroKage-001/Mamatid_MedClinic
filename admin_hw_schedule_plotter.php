@@ -127,7 +127,7 @@ if (isset($_POST['submit_schedule'])) {
         $message = "Schedule successfully saved and automatically approved for patient booking!";
         
         // Redirect to prevent form resubmission on page refresh
-        header("Location: staff_availability.php?message=" . urlencode($message));
+        header("Location: admin_hw_schedule_plotter.php?message=" . urlencode($message));
         exit;
         
     } catch(PDOException $ex) {
@@ -137,7 +137,7 @@ if (isset($_POST['submit_schedule'])) {
         $error = "Error: " . $ex->getMessage();
         
         // Redirect with error message
-        header("Location: staff_availability.php?error=" . urlencode($error));
+        header("Location: admin_hw_schedule_plotter.php?error=" . urlencode($error));
         exit;
     }
 }
@@ -228,7 +228,7 @@ $roleDisplay = ucfirst($staffRole);
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
-    <title>Staff Availability - Mamatid Health Center System</title>
+    <title>Schedule Plotter - Mamatid Health Center System</title>
     <style>
         :root {
             --transition-speed: 0.3s;
@@ -634,14 +634,14 @@ $roleDisplay = ucfirst($staffRole);
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1 class="m-0">
-                                My Availability
+                                Schedule Plotter
                                 <span class="role-badge role-<?php echo $staffRole; ?>"><?php echo $roleDisplay; ?></span>
                             </h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="admin_dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">My Availability</li>
+                                <li class="breadcrumb-item active">Schedule Plotter</li>
                             </ol>
                         </div>
                     </div>

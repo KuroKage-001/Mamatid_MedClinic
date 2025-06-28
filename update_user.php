@@ -16,7 +16,7 @@ $messageType = 'success';
 
 // Get and validate user ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("location:users.php?message=" . urlencode("Invalid user ID") . "&type=error");
+    header("location:admin_users_management.php?message=" . urlencode("Invalid user ID") . "&type=error");
     exit;
 }
 
@@ -39,18 +39,18 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$user) {
-        header("location:users.php?message=" . urlencode("User not found") . "&type=error");
+        header("location:admin_users_management.php?message=" . urlencode("User not found") . "&type=error");
         exit;
     }
     
     // Prevent admins from editing other admins
     if ($user['role'] === 'admin') {
-        header("location:users.php?message=" . urlencode("You cannot edit other administrator accounts") . "&type=error");
+        header("location:admin_users_management.php?message=" . urlencode("You cannot edit other administrator accounts") . "&type=error");
         exit;
     }
     
 } catch(PDOException $ex) {
-    header("location:users.php?message=" . urlencode("Error fetching user details") . "&type=error");
+    header("location:admin_users_management.php?message=" . urlencode("Error fetching user details") . "&type=error");
     exit;
 }
 
@@ -147,7 +147,7 @@ if (isset($_POST['update_user'])) {
                 echo json_encode(['success' => true, 'message' => 'User updated successfully']);
                 exit;
             } else {
-            header("location:users.php?message=" . urlencode("User updated successfully"));
+            header("location:admin_users_management.php?message=" . urlencode("User updated successfully"));
             exit;
             }
         } else {
@@ -501,7 +501,7 @@ if (isset($_POST['update_user'])) {
                                 </div>
 
                                 <div class="form-actions">
-                                    <a href="users.php" class="btn btn-secondary">
+                                    <a href="admin_users_management.php" class="btn btn-secondary">
                                             <i class="fas fa-times mr-2"></i>Cancel
                                         </a>
                                         <button type="submit" name="update_user" class="btn btn-primary">
@@ -619,9 +619,9 @@ if (isset($_POST['update_user'])) {
                                     title: 'User updated successfully!'
                                 });
                                 
-                                // Redirect to users.php after a short delay
+                                // Redirect to admin_users_management.php after a short delay
                                 setTimeout(function() {
-                                    window.location.href = 'users.php?message=' + encodeURIComponent('User updated successfully');
+                                    window.location.href = 'admin_users_management.php?message=' + encodeURIComponent('User updated successfully');
                                 }, 1500);
                             },
                             error: function(xhr, status, error) {

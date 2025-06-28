@@ -4,7 +4,7 @@ include './config/connection.php';
 // Check if ID is provided
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 if (empty($id)) {
-    header("Location: family_planning.php");
+    header("Location: general_family_planning.php");
     exit;
 }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $con->commit();
-                header("Location: family_planning.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_family_planning.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -75,11 +75,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: family_planning.php?message=" . urlencode("Record not found"));
+        header("Location: general_family_planning.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (Exception $e) {
-    header("Location: family_planning.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_family_planning.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -230,7 +230,7 @@ try {
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="float-right">
-                                            <a href="family_planning.php" class="btn btn-secondary mr-2">
+                                            <a href="general_family_planning.php" class="btn btn-secondary mr-2">
                                                 <i class="fas fa-times mr-2"></i>Cancel
                                             </a>
                                             <button type="button" class="btn btn-danger mr-2" id="deleteBtn">

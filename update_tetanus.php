@@ -4,7 +4,7 @@ include './config/connection.php';
 // Check if ID is provided
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 if (empty($id)) {
-    header("Location: tetanus_toxoid.php");
+    header("Location: general_tetanus_toxoid.php");
     exit;
 }
 
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $con->commit();
-                header("Location: tetanus_toxoid.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_tetanus_toxoid.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -100,11 +100,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: tetanus_toxoid.php?message=" . urlencode("Record not found"));
+        header("Location: general_tetanus_toxoid.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (PDOException $e) {
-    header("Location: tetanus_toxoid.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_tetanus_toxoid.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -368,8 +368,8 @@ try {
                             </div>
 
                             <div class="action-buttons">
-                                <a href="tetanus_toxoid.php" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Cancel
+                                <a href="general_tetanus_toxoid.php" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-2"></i>Cancel
                                 </a>
                                 <button type="button" class="btn btn-danger" id="deleteBtn">
                                     <i class="fas fa-trash"></i> Delete

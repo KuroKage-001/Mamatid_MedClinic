@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to random blood sugar page with success message
-        header("Location: ../random_blood_sugar.php?success=1");
+        header("Location: ../general_rbs.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,12 +25,12 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to random blood sugar page with error message
-        header("Location: ../random_blood_sugar.php?error=1");
+        header("Location: ../general_rbs.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to random blood sugar page
-    header("Location: ../random_blood_sugar.php");
+    header("Location: ../general_rbs.php");
     exit();
 }
 ?> 

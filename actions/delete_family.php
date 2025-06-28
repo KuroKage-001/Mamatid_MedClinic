@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to family planning page with success message
-        header("Location: ../family_planning.php?success=1");
+        header("Location: ../general_family_planning.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,12 +25,12 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to family planning page with error message
-        header("Location: ../family_planning.php?error=1");
+        header("Location: ../general_family_planning.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to family planning page
-    header("Location: ../family_planning.php");
+    header("Location: ../general_family_planning.php");
     exit();
 }
 ?> 

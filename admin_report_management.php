@@ -13,7 +13,7 @@ include './common_service/common_functions.php';
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <!-- Tab icon -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Reports - Mamatid Health Center System</title>
+  <title>Reports Management - Mamatid Health Center System</title>
 
   <style>
     :root {

@@ -14,7 +14,7 @@ requireRole(['admin', 'health_worker', 'doctor']);
 $staffId = $_SESSION['user_id'];
 $scheduleId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $userRole = $_SESSION['role'];
-$redirectPage = ($userRole == 'doctor') ? '../admin_doctor_schedule_plotter.php' : '../staff_availability.php';
+$redirectPage = ($userRole == 'doctor') ? '../admin_doctor_schedule_plotter.php' : '../admin_hw_schedule_plotter.php';
 
 if ($scheduleId > 0) {
     try {

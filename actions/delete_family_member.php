@@ -17,7 +17,7 @@ if(isset($_GET['id'])) {
         $con->commit();
         
         // Redirect to family members page with success message
-        header("Location: ../family_members.php?success=1");
+        header("Location: ../general_family_members.php?success=1");
         exit();
         
     } catch(PDOException $e) {
@@ -25,12 +25,12 @@ if(isset($_GET['id'])) {
         $con->rollBack();
         
         // Redirect to family members page with error message
-        header("Location: ../family_members.php?error=1");
+        header("Location: ../general_family_members.php?error=1");
         exit();
     }
 } else {
     // If no ID provided, redirect to family members page
-    header("Location: ../family_members.php");
+    header("Location: ../general_family_members.php");
     exit();
 }
 ?> 

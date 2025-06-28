@@ -14,76 +14,54 @@ requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
 
-// Handle form submission to save a new tetanus toxoid record
-if (isset($_POST['save_tetanus'])) {
+// Handle form submission to save a new family planning record
+if (isset($_POST['save_family'])) {
     // Retrieve and sanitize form inputs
-    $name = trim($_POST['name'] ?? '');
-    $date = trim($_POST['date'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-    $age = trim($_POST['age'] ?? '');
-    $diagnosis = trim($_POST['diagnosis'] ?? '');
-    $remarks = trim($_POST['remarks'] ?? '');
+    $name = trim($_POST['name']);
+    $date = trim($_POST['date']);
+    $age = trim($_POST['age']);
+    $address = trim($_POST['address']);
 
-    // Validation
-    $errors = [];
-    if (empty($name)) $errors[] = "Name is required";
-    if (empty($date)) $errors[] = "Date is required";
-    if (empty($address)) $errors[] = "Address is required";
-    if (empty($age)) $errors[] = "Age is required";
+    // Convert date format from MM/DD/YYYY to YYYY-MM-DD
+    $dateArr = explode("/", $date);
+    $date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
 
-    if (empty($errors)) {
+    // Format name and address (capitalize each word)
+    $name = ucwords(strtolower($name));
+    $address = ucwords(strtolower($address));
+
+    // Check if all required fields are provided
+    if ($name != '' && $date != '' && $address != '' && $age != '') {
+        // Prepare INSERT query
+        $query = "INSERT INTO `family_planning`(`name`, `date`, `age`, `address`)
+                  VALUES('$name', '$date', '$age', '$address');";
         try {
-            // Convert date format from MM/DD/YYYY to YYYY-MM-DD
-            $dateArr = explode("/", $date);
-            if (count($dateArr) !== 3) {
-                throw new Exception("Invalid date format");
-            }
-            $formatted_date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
-
-            // Format name and address (capitalize each word)
-            $name = ucwords(strtolower($name));
-            $address = ucwords(strtolower($address));
-
-            // Prepare INSERT query with parameterized statement
-            $query = "INSERT INTO tetanus_toxoid (name, date, address, age, diagnosis, remarks) 
-                     VALUES (:name, :date, :address, :age, :diagnosis, :remarks)";
-
-            // Start transaction
+            // Start transaction and execute query
             $con->beginTransaction();
-            
             $stmt = $con->prepare($query);
-            $result = $stmt->execute([
-                ':name' => $name,
-                ':date' => $formatted_date,
-                ':address' => $address,
-                ':age' => $age,
-                ':diagnosis' => $diagnosis,
-                ':remarks' => $remarks
-            ]);
-
-            if ($result) {
-                $con->commit();
-                header("Location: tetanus_toxoid.php?message=" . urlencode("Record saved successfully"));
-                exit;
-            } else {
-                throw new Exception("Failed to save record");
-            }
-        } catch (Exception $e) {
+            $stmt->execute();
+            $con->commit();
+            $message = 'Family planning record added successfully.';
+        } catch (PDOException $ex) {
+            // Rollback on error and output exception details (for debugging only)
             $con->rollback();
-            $message = $e->getMessage();
+            echo $ex->getMessage();
+            echo $ex->getTraceAsString();
+            exit;
         }
-    } else {
-        $message = implode(", ", $errors);
     }
+    // Redirect with a success or error message
+    header("Location:system/utilities/congratulation.php?goto_page=general_family_planning.php&message=$message");
+    exit;
 }
 
-// Retrieve all tetanus toxoid records for the listing
+// Retrieve all family planning records for the listing
 try {
-    $query = "SELECT id, name, address, age, diagnosis, remarks,
-                     DATE_FORMAT(date, '%d %b %Y') as date,
-                     DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
-              FROM tetanus_toxoid
-              ORDER BY date DESC";
+    $query = "SELECT `id`, `name`, `address`, `age`,
+                     DATE_FORMAT(`date`, '%d %b %Y') as `date`,
+                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
+              FROM `family_planning`
+              ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();
 } catch (PDOException $ex) {
@@ -99,7 +77,7 @@ try {
   <?php include './config/data_tables_css.php'; ?>
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Tetanus Toxoid - Mamatid Health Center System</title>
+  <title>Family Planning - Mamatid Health Center System</title>
   <style>
     :root {
       --transition-speed: 0.3s;
@@ -156,12 +134,6 @@ try {
     .form-control:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-    }
-
-    textarea.form-control {
-      height: auto;
-      min-height: 100px;
-      resize: vertical;
     }
 
     .form-label {
@@ -280,7 +252,7 @@ try {
       }
     }
 
-    /* Export Buttons and Column Visibility Styling */
+    /* Update these styles in your existing styles section */
     .chart-actions {
       display: flex;
       gap: 8px;
@@ -404,13 +376,16 @@ try {
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
   <div class="wrapper">
-    <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
+    <?php
+      include './config/admin_header.php';
+      include './config/admin_sidebar.php';
+    ?>
     <div class="content-wrapper">
       <section class="content-header">
         <div class="container-fluid">
           <div class="row align-items-center mb-4">
             <div class="col-12 col-md-6" style="padding-left: 20px;">
-              <h1>Tetanus Toxoid Record</h1>
+              <h1>Family Planning Record</h1>
             </div>
           </div>
         </div>
@@ -419,7 +394,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Add Tetanus Toxoid Record</h3>
+            <h3 class="card-title">Add Family Planning Record</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -427,7 +402,7 @@ try {
             </div>
           </div>
           <div class="card-body">
-            <form method="post" id="saveForm">
+            <form method="post">
               <div class="row">
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <div class="form-group">
@@ -458,33 +433,17 @@ try {
                 </div>
               </div>
               <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
+                <div class="col-12">
                   <div class="form-group">
                     <label class="form-label">Address</label>
                     <input type="text" id="address" name="address" required="required"
                            class="form-control" placeholder="Enter complete address"/>
                   </div>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
-                  <div class="form-group">
-                    <label class="form-label">Diagnosis</label>
-                    <input type="text" id="diagnosis" name="diagnosis"
-                           class="form-control" placeholder="Enter diagnosis"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Remarks</label>
-                    <textarea id="remarks" name="remarks" rows="3"
-                             class="form-control" placeholder="Enter additional remarks"></textarea>
-                  </div>
-                </div>
               </div>
               <div class="row">
                 <div class="col-12 text-right">
-                  <button type="submit" id="save_tetanus" name="save_tetanus" 
+                  <button type="submit" id="save_family" name="save_family" 
                           class="btn btn-primary">
                     <i class="fas fa-save mr-2"></i>Save Record
                   </button>
@@ -498,7 +457,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Tetanus Toxoid Records</h3>
+            <h3 class="card-title">Family Planning Records</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -538,16 +497,14 @@ try {
                   </div>
                 </div>
               </div>
-              <table id="all_tetanus" class="table table-striped table-hover">
+              <table id="all_family" class="table table-striped table-hover">
                 <thead>
                   <tr>
                     <th>S.No</th>
                     <th>Name</th>
                     <th>Date</th>
-                    <th>Address</th>
                     <th>Age</th>
-                    <th>Diagnosis</th>
-                    <th>Remarks</th>
+                    <th>Address</th>
                     <th>Created At</th>
                     <th>Action</th>
                   </tr>
@@ -560,16 +517,14 @@ try {
                   ?>
                   <tr>
                     <td><?php echo $count; ?></td>
-                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['date']); ?></td>
-                    <td><?php echo htmlspecialchars($row['address']); ?></td>
-                    <td><?php echo htmlspecialchars($row['age']); ?></td>
-                    <td><?php echo htmlspecialchars($row['diagnosis']); ?></td>
-                    <td><?php echo htmlspecialchars($row['remarks']); ?></td>
-                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                    <td><?php echo $row['name']; ?></td>
+                    <td><?php echo $row['date']; ?></td>
+                    <td><?php echo $row['age']; ?></td>
+                    <td><?php echo $row['address']; ?></td>
+                    <td><?php echo $row['created_at']; ?></td>
                     <td>
-                      <a href="update_tetanus.php?id=<?php echo $row['id']; ?>" 
-                         class="btn btn-primary btn-sm">
+                      <a href="update_family.php?id=<?php echo $row['id']; ?>" 
+                         class="btn btn-primary">
                         <i class="fa fa-edit"></i>
                       </a>
                     </td>
@@ -582,186 +537,134 @@ try {
         </div>
       </section>
     </div>
-    <?php include './config/footer.php'; ?>
-  </div>
 
-  <?php include './config/site_js_links.php'; ?>
-  <?php include './config/data_tables_js.php'; ?>
-  <script src="plugins/moment/moment.min.js"></script>
-  <script src="plugins/daterangepicker/daterangepicker.js"></script>
-  <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-  
-  <script>
-    $(document).ready(function() {
-      // Initialize DataTable with export buttons
-      var table = $("#all_tetanus").DataTable({
-        responsive: true,
-        lengthChange: false,
-        autoWidth: false,
-        buttons: [
-          {
-            extend: 'copy',
-            text: '<i class="fas fa-copy"></i> Copy',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'csv',
-            text: '<i class="fas fa-file-csv"></i> CSV',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'excel',
-            text: '<i class="fas fa-file-excel"></i> Excel',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'pdf',
-            text: '<i class="fas fa-file-pdf"></i> PDF',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'print',
-            text: '<i class="fas fa-print"></i> Print',
-            className: 'btn btn-gradient btn-sm'
+    <?php
+      include './config/admin_footer.php';
+      $message = isset($_GET['message']) ? $_GET['message'] : '';
+    ?>
+    
+    <?php include './config/site_js_links.php'; ?>
+    <?php include './config/data_tables_js.php'; ?>
+    <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Initialize DataTable with export buttons
+        var table = $("#all_family").DataTable({
+          responsive: true,
+          lengthChange: false,
+          autoWidth: false,
+          buttons: [
+            {
+              extend: 'copy',
+              text: '<i class="fas fa-copy"></i> Copy',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'csv',
+              text: '<i class="fas fa-file-csv"></i> CSV',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'excel',
+              text: '<i class="fas fa-file-excel"></i> Excel',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'pdf',
+              text: '<i class="fas fa-file-pdf"></i> PDF',
+              className: 'btn btn-gradient btn-sm'
+            },
+            {
+              extend: 'print',
+              text: '<i class="fas fa-print"></i> Print',
+              className: 'btn btn-gradient btn-sm'
+            }
+          ],
+          language: {
+            search: "",
+            searchPlaceholder: "Search records..."
           }
-        ],
-        language: {
-          search: "",
-          searchPlaceholder: "Search records..."
-        }
-      });
+        });
 
-      // Custom button click handlers
-      $('#btnCopy').on('click', function() {
-        table.button('.buttons-copy').trigger();
-      });
+        // Custom button click handlers
+        $('#btnCopy').on('click', function() {
+          table.button('.buttons-copy').trigger();
+        });
 
-      $('#btnCSV').on('click', function() {
-        table.button('.buttons-csv').trigger();
-      });
+        $('#btnCSV').on('click', function() {
+          table.button('.buttons-csv').trigger();
+        });
 
-      $('#btnExcel').on('click', function() {
-        table.button('.buttons-excel').trigger();
-      });
+        $('#btnExcel').on('click', function() {
+          table.button('.buttons-excel').trigger();
+        });
 
-      $('#btnPDF').on('click', function() {
-        table.button('.buttons-pdf').trigger();
-      });
+        $('#btnPDF').on('click', function() {
+          table.button('.buttons-pdf').trigger();
+        });
 
-      $('#btnPrint').on('click', function() {
-        table.button('.buttons-print').trigger();
-      });
+        $('#btnPrint').on('click', function() {
+          table.button('.buttons-print').trigger();
+        });
 
-      // Initialize column visibility menu
-      var columnVisibility = $('#columnVisibility');
-      table.columns().every(function(index) {
-        var column = this;
-        var title = $(column.header()).text();
-        
-        var menuItem = $('<div class="dropdown-item">' +
-          '<input type="checkbox" checked="checked" id="col_' + index + '">' +
-          '<label for="col_' + index + '">' + title + '</label>' +
-          '</div>');
+        // Initialize column visibility menu
+        var columnVisibility = $('#columnVisibility');
+        table.columns().every(function(index) {
+          var column = this;
+          var title = $(column.header()).text();
           
-        $('input', menuItem).on('click', function() {
-          var isVisible = column.visible();
-          column.visible(!isVisible);
+          var menuItem = $('<div class="dropdown-item">' +
+            '<input type="checkbox" checked="checked" id="col_' + index + '">' +
+            '<label for="col_' + index + '">' + title + '</label>' +
+            '</div>');
+            
+          $('input', menuItem).on('click', function() {
+            var isVisible = column.visible();
+            column.visible(!isVisible);
+          });
+          
+          columnVisibility.append(menuItem);
         });
-        
-        columnVisibility.append(menuItem);
-      });
 
-      // Initialize Date Picker
-      $('#date').datetimepicker({
-        format: 'L',
-        icons: {
-          time: 'fas fa-clock',
-          date: 'fas fa-calendar',
-          up: 'fas fa-arrow-up',
-          down: 'fas fa-arrow-down',
-          previous: 'fas fa-chevron-left',
-          next: 'fas fa-chevron-right',
-          today: 'fas fa-calendar-check',
-          clear: 'fas fa-trash',
-          close: 'fas fa-times'
-        }
-      });
-
-      // Initialize Toast
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      });
-
-      // Show message if exists
-      var message = <?php echo json_encode(isset($_GET['message']) ? $_GET['message'] : ''); ?>;
-      if(message !== '') {
-        Toast.fire({
-          icon: 'success',
-          title: message
-        });
-      }
-
-      // Form validation and submission
-      $('#saveForm').submit(function(e) {
-        // Basic form validation
-        let isValid = true;
-        const name = $('#name').val().trim();
-        const date = $('#date input').val().trim();
-        const address = $('#address').val().trim();
-        const age = $('#age').val().trim();
-
-        // Clear previous error messages
-        $('.is-invalid').removeClass('is-invalid');
-        $('.invalid-feedback').remove();
-
-        // Validate each field
-        if (!name) {
-          isValid = false;
-          $('#name').addClass('is-invalid')
-            .after('<div class="invalid-feedback">Name is required</div>');
-        }
-
-        if (!date) {
-          isValid = false;
-          $('#date input').addClass('is-invalid')
-            .after('<div class="invalid-feedback">Date is required</div>');
-        }
-
-        if (!address) {
-          isValid = false;
-          $('#address').addClass('is-invalid')
-            .after('<div class="invalid-feedback">Address is required</div>');
-        }
-
-        if (!age) {
-          isValid = false;
-          $('#age').addClass('is-invalid')
-            .after('<div class="invalid-feedback">Age is required</div>');
-        }
-
-        if (!isValid) {
-          e.preventDefault();
-          // Scroll to first error
-          const firstError = $('.is-invalid').first();
-          if (firstError.length) {
-            $('html, body').animate({
-              scrollTop: firstError.offset().top - 100
-            }, 500);
+        // Initialize Date Picker
+        $('#date').datetimepicker({
+          format: 'L',
+          icons: {
+            time: 'fas fa-clock',
+            date: 'fas fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'fas fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times'
           }
+        });
+
+        // Initialize Toast
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true
+        });
+
+        // Show message if exists
+        var message = '<?php echo $message;?>';
+        if(message !== '') {
+          Toast.fire({
+            icon: 'success',
+            title: message
+          });
         }
       });
 
-      // Show menu
-      showMenuSelected("#mnu_patients", "#mi_tetanus_toxoid");
-    });
-  </script>
+      // Highlight current menu
+      showMenuSelected("#mnu_patients", "#mi_family_planning");
+    </script>
 </body>
 </html> 

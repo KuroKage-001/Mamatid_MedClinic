@@ -5,8 +5,14 @@ include './common_service/common_functions.php';
 $message = '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location:general_rbs.php");
+    exit;
+}
+
 if ($id == '') {
-    header("Location:random_blood_sugar.php");
+    header("Location:general_rbs.php");
     exit;
 }
 
@@ -77,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $con->commit();
-                header("Location: random_blood_sugar.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_rbs.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -101,11 +107,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: random_blood_sugar.php?message=" . urlencode("Record not found"));
+        header("Location: general_rbs.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (PDOException $e) {
-    header("Location: random_blood_sugar.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_rbs.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -358,7 +364,7 @@ try {
               </div>
 
               <div class="action-buttons">
-                <a href="random_blood_sugar.php" class="btn btn-secondary">
+                <a href="general_rbs.php" class="btn btn-secondary">
                   <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="button" class="btn btn-danger" id="deleteBtn">
@@ -412,7 +418,7 @@ try {
             confirmButtonText: 'Yes, delete it!'
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = 'actions/delete_random_blood_sugar.php?id=<?php echo $id; ?>';
+              window.location.href = 'actions/delete_general_rbs.php?id=<?php echo $id; ?>';
             }
           });
         });

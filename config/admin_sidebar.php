@@ -71,8 +71,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <!-- General Menu (Patients & Prescriptions) -->
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">PATIENT MANAGEMENT</li>
-                <li class="nav-item <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'general_deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['family_members.php', 'random_blood_sugar.php', 'deworming.php', 'general_deworming.php', 'tetanus_toxoid.php', 'general_bp_monitoring.php', 'family_planning.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['general_family_members.php', 'general_rbs.php', 'deworming.php', 'general_deworming.php', 'general_tetanus_toxoid.php', 'general_bp_monitoring.php', 'general_family_planning.php']) ? 'menu-open' : ''); ?>" id="mnu_patients">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['general_family_members.php', 'general_rbs.php', 'deworming.php', 'general_deworming.php', 'general_tetanus_toxoid.php', 'general_bp_monitoring.php', 'general_family_planning.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-injured"></i>
                         <p>
                             General
@@ -81,13 +81,13 @@ $role_display_name = getRoleDisplayName($user_role);
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/family_members.php" class="nav-link <?php echo ($current_page == 'family_members.php' ? 'active' : ''); ?>" id="mi_family_members">
+                            <a href="<?php echo $base_path; ?>/general_family_members.php" class="nav-link <?php echo ($current_page == 'general_family_members.php' ? 'active' : ''); ?>" id="mi_family_members">
                                 <i class="nav-icon-sm fas fa-users"></i>
                                 <p>Family Members</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/random_blood_sugar.php" class="nav-link <?php echo ($current_page == 'random_blood_sugar.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
+                            <a href="<?php echo $base_path; ?>/general_rbs.php" class="nav-link <?php echo ($current_page == 'general_rbs.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
                                 <i class="nav-icon-sm fas fa-tint"></i>
                                 <p>RBS</p>
                             </a>
@@ -99,7 +99,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/tetanus_toxoid.php" class="nav-link <?php echo ($current_page == 'tetanus_toxoid.php' ? 'active' : ''); ?>" id="mi_tetanus_toxoid">
+                            <a href="<?php echo $base_path; ?>/general_tetanus_toxoid.php" class="nav-link <?php echo ($current_page == 'general_tetanus_toxoid.php' ? 'active' : ''); ?>" id="mi_tetanus_toxoid">
                                 <i class="nav-icon-sm fas fa-syringe"></i>
                                 <p>Tetanus Toxoid</p>
                             </a>
@@ -111,7 +111,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/family_planning.php" class="nav-link <?php echo ($current_page == 'family_planning.php' ? 'active' : ''); ?>" id="mi_family_planning">
+                            <a href="<?php echo $base_path; ?>/general_family_planning.php" class="nav-link <?php echo ($current_page == 'general_family_planning.php' ? 'active' : ''); ?>" id="mi_family_planning">
                                 <i class="nav-icon-sm fas fa-baby"></i>
                                 <p>Family Planning</p>
                             </a>
@@ -123,8 +123,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">CLINIC SERVICES</li>
                 <!-- Appointments Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['manage_appointments.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['manage_appointments.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['admin_appointment_management.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'menu-open' : ''); ?>" id="mnu_appointments">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['admin_appointment_management.php', 'admin_doctor_schedule_plotter.php', 'admin_schedule_plotter.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>
                             Appointments
@@ -134,7 +134,7 @@ $role_display_name = getRoleDisplayName($user_role);
                     <ul class="nav nav-treeview">
                         <?php if (isAdmin() || isHealthWorker()): ?>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/manage_appointments.php" class="nav-link <?php echo ($current_page == 'manage_appointments.php' ? 'active' : ''); ?>" id="mi_appointments">
+                            <a href="<?php echo $base_path; ?>/admin_appointment_management.php" class="nav-link <?php echo ($current_page == 'admin_appointment_management.php' ? 'active' : ''); ?>" id="mi_appointments">
                                 <i class="nav-icon-sm fas fa-calendar-alt"></i>
                                 <p>Appointments</p>
                             </a>
@@ -148,7 +148,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/staff_availability.php" class="nav-link <?php echo ($current_page == 'staff_availability.php' ? 'active' : ''); ?>" id="mi_staff_availability">
+                            <a href="<?php echo $base_path; ?>/admin_hw_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_hw_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_staff_availability">
                                 <i class="nav-icon-sm fas fa-calendar-plus"></i>
                                 <p>My Availability</p>
                             </a>
@@ -209,8 +209,8 @@ $role_display_name = getRoleDisplayName($user_role);
                 <?php if (isAdmin() || isHealthWorker() || isDoctor()): ?>
                 <li class="nav-header">REPORTS & MANAGEMENT</li>
                 <!-- Reports Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['patient_history.php', 'reports.php']) ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo (in_array($current_page, ['patient_history.php', 'admin_report_management.php']) ? 'menu-open' : ''); ?>" id="mnu_reports">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['patient_history.php', 'admin_report_management.php']) ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>
                             Reports
@@ -225,7 +225,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/reports.php" class="nav-link <?php echo ($current_page == 'reports.php' ? 'active' : ''); ?>" id="mi_reports">
+                            <a href="<?php echo $base_path; ?>/admin_report_management.php" class="nav-link <?php echo ($current_page == 'admin_report_management.php' ? 'active' : ''); ?>" id="mi_reports">
                                 <i class="nav-icon-sm fas fa-file-alt"></i>
                                 <p>Reports</p>
                             </a>
@@ -236,24 +236,26 @@ $role_display_name = getRoleDisplayName($user_role);
 
                 <?php if (isAdmin()): ?>
                 <!-- Users Menu -->
-                <li class="nav-item <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">
-                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['users.php', 'time_tracker.php']) ? 'active' : ''); ?>">
-                        <i class="nav-icon fa fa-users"></i>
+                <li class="nav-item <?php echo (in_array($current_page, ['admin_users_management.php', 'admin_employee_time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">
+                    <a href="#" class="nav-link <?php echo (in_array($current_page, ['admin_users_management.php', 'admin_employee_time_tracker.php']) ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-users"></i>
                         <p>
-                            Users
-                            <i class="right fas fa-angle-left"></i>
+                            User Management
+                            <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <?php if (isAdmin()): ?>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/users.php" class="nav-link <?php echo ($current_page == 'users.php' ? 'active' : ''); ?>" id="mi_users">
-                                <i class="nav-icon-sm fas fa-user-cog"></i>
+                            <a href="<?php echo $base_path; ?>/admin_users_management.php" class="nav-link <?php echo ($current_page == 'admin_users_management.php' ? 'active' : ''); ?>" id="mi_users">
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Users</p>
                             </a>
                         </li>
+                        <?php endif; ?>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/time_tracker.php" class="nav-link <?php echo ($current_page == 'time_tracker.php' ? 'active' : ''); ?>" id="mi_time_tracker">
-                                <i class="nav-icon-sm fas fa-clock"></i>
+                            <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="nav-link <?php echo ($current_page == 'admin_employee_time_tracker.php' ? 'active' : ''); ?>" id="mi_time_tracker">
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Attendance</p>
                             </a>
                         </li>

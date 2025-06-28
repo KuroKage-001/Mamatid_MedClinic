@@ -14,31 +14,35 @@ requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
 
-// Handle form submission to save a new family member
-if (isset($_POST['save_family_member'])) {
+// Handle form submission to save a new random blood sugar record
+if (isset($_POST['save_blood_sugar'])) {
     // Retrieve and sanitize form inputs
     $name = trim($_POST['name']);
     $date = trim($_POST['date']);
+    $address = trim($_POST['address']);
+    $age = trim($_POST['age']);
+    $result = trim($_POST['result']);
 
     // Convert date format from MM/DD/YYYY to YYYY-MM-DD
     $dateArr = explode("/", $date);
     $date = $dateArr[2] . '-' . $dateArr[0] . '-' . $dateArr[1];
 
-    // Format name (capitalize each word)
+    // Format name and address (capitalize each word)
     $name = ucwords(strtolower($name));
+    $address = ucwords(strtolower($address));
 
     // Check if all required fields are provided
-    if ($name != '' && $date != '') {
+    if ($name != '' && $date != '' && $address != '' && $age != '' && $result != '') {
         // Prepare INSERT query
-        $query = "INSERT INTO `family_members`(`name`, `date`)
-                  VALUES('$name', '$date');";
+        $query = "INSERT INTO `random_blood_sugar`(`name`, `date`, `address`, `age`, `result`)
+                  VALUES('$name', '$date', '$address', '$age', '$result');";
         try {
             // Start transaction and execute query
             $con->beginTransaction();
             $stmt = $con->prepare($query);
             $stmt->execute();
             $con->commit();
-            $message = 'Family member added successfully.';
+            $message = 'Random blood sugar record added successfully.';
         } catch (PDOException $ex) {
             // Rollback on error and output exception details (for debugging only)
             $con->rollback();
@@ -48,16 +52,16 @@ if (isset($_POST['save_family_member'])) {
         }
     }
     // Redirect with a success or error message
-    header("Location:system/utilities/congratulation.php?goto_page=family_members.php&message=$message");
+    header("Location:system/utilities/congratulation.php?goto_page=general_rbs.php&message=$message");
     exit;
 }
 
-// Retrieve all family members for the listing
+// Retrieve all random blood sugar records for the listing
 try {
-    $query = "SELECT `id`, `name`, 
+    $query = "SELECT `id`, `name`, `address`, `age`, `result`,
                      DATE_FORMAT(`date`, '%d %b %Y') as `date`,
                      DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `family_members`
+              FROM `random_blood_sugar`
               ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();
@@ -74,7 +78,7 @@ try {
   <?php include './config/data_tables_css.php'; ?>
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <title>Family Members - Mamatid Health Center System</title>
+  <title>Random Blood Sugar - Mamatid Health Center System</title>
   <style>
     :root {
       --transition-speed: 0.3s;
@@ -350,25 +354,6 @@ try {
       color: #3F4254;
       font-weight: 500;
     }
-
-    /* Ensure dropdown text is visible */
-    .dropdown-toggle::after {
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-
-    /* Add some spacing between button groups */
-    .chart-actions > * + * {
-      margin-left: 4px;
-    }
-
-    /* Make sure the buttons maintain their shape */
-    .btn {
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -379,7 +364,7 @@ try {
         <div class="container-fluid">
           <div class="row align-items-center mb-4">
             <div class="col-12 col-md-6" style="padding-left: 20px;">
-              <h1>Family Members</h1>
+              <h1>Random Blood Sugar Record</h1>
             </div>
           </div>
         </div>
@@ -388,7 +373,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Add Family Member</h3>
+            <h3 class="card-title">Add Random Blood Sugar Record</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -398,14 +383,14 @@ try {
           <div class="card-body">
             <form method="post">
               <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <div class="form-group">
                     <label class="form-label">Name</label>
                     <input type="text" id="name" name="name" required="required"
-                           class="form-control" placeholder="Enter member name"/>
+                           class="form-control" placeholder="Enter patient name"/>
                   </div>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                   <div class="form-group">
                     <label class="form-label">Date</label>
                     <div class="input-group date" id="date" data-target-input="nearest">
@@ -418,12 +403,35 @@ try {
                     </div>
                   </div>
                 </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                  <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <input type="number" id="age" name="age" required="required"
+                           class="form-control" placeholder="Enter age"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
+                  <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" id="address" name="address" required="required"
+                           class="form-control" placeholder="Enter complete address"/>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-10">
+                  <div class="form-group">
+                    <label class="form-label">Result</label>
+                    <input type="text" id="result" name="result" required="required"
+                           class="form-control" placeholder="Enter blood sugar result"/>
+                  </div>
+                </div>
               </div>
               <div class="row">
                 <div class="col-12 text-right">
-                  <button type="submit" id="save_family_member" name="save_family_member" 
+                  <button type="submit" id="save_blood_sugar" name="save_blood_sugar" 
                           class="btn btn-primary">
-                    <i class="fas fa-save mr-2"></i>Save Member
+                    <i class="fas fa-save mr-2"></i>Save Record
                   </button>
                 </div>
               </div>
@@ -435,7 +443,7 @@ try {
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">Family Members List</h3>
+            <h3 class="card-title">Random Blood Sugar Records</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -475,12 +483,15 @@ try {
                   </div>
                 </div>
               </div>
-              <table id="all_family_members" class="table table-striped table-hover">
+              <table id="all_blood_sugar" class="table table-striped table-hover">
                 <thead>
                   <tr>
                     <th>S.No</th>
                     <th>Name</th>
                     <th>Date</th>
+                    <th>Address</th>
+                    <th>Age</th>
+                    <th>Result</th>
                     <th>Created At</th>
                     <th>Action</th>
                   </tr>
@@ -495,9 +506,12 @@ try {
                     <td><?php echo $count; ?></td>
                     <td><?php echo $row['name']; ?></td>
                     <td><?php echo $row['date']; ?></td>
+                    <td><?php echo $row['address']; ?></td>
+                    <td><?php echo $row['age']; ?></td>
+                    <td><?php echo $row['result']; ?></td>
                     <td><?php echo $row['created_at']; ?></td>
                     <td>
-                      <a href="update_family_member.php?id=<?php echo $row['id']; ?>" 
+                      <a href="update_general_rbs.php?id=<?php echo $row['id']; ?>" 
                          class="btn btn-primary">
                         <i class="fa fa-edit"></i>
                       </a>
@@ -523,7 +537,7 @@ try {
   <script>
     $(document).ready(function() {
       // Initialize DataTable with export buttons
-      var table = $("#all_family_members").DataTable({
+      var table = $("#all_blood_sugar").DataTable({
         responsive: true,
         lengthChange: false,
         autoWidth: false,
@@ -637,10 +651,67 @@ try {
           title: message
         });
       }
-    });
 
-    // Show menu
-    showMenuSelected("#mnu_patients", "#mi_family_members");
+      // Form validation and submission
+      $('#saveForm').submit(function(e) {
+        // Basic form validation
+        let isValid = true;
+        const name = $('#name').val().trim();
+        const date = $('#date input').val().trim();
+        const address = $('#address').val().trim();
+        const age = $('#age').val().trim();
+        const result = $('#result').val().trim();
+
+        // Clear previous error messages
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        // Validate each field
+        if (!name) {
+          isValid = false;
+          $('#name').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Name is required</div>');
+        }
+
+        if (!date) {
+          isValid = false;
+          $('#date input').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Date is required</div>');
+        }
+
+        if (!address) {
+          isValid = false;
+          $('#address').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Address is required</div>');
+        }
+
+        if (!age) {
+          isValid = false;
+          $('#age').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Age is required</div>');
+        }
+
+        if (!result) {
+          isValid = false;
+          $('#result').addClass('is-invalid')
+            .after('<div class="invalid-feedback">Result is required</div>');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          // Scroll to first error
+          const firstError = $('.is-invalid').first();
+          if (firstError.length) {
+            $('html, body').animate({
+              scrollTop: firstError.offset().top - 100
+            }, 500);
+          }
+        }
+      });
+
+      // Show menu
+    showMenuSelected("#mnu_patients", "#mi_random_blood_sugar");
+    });
   </script>
 </body>
 </html> 

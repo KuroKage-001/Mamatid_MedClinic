@@ -5,8 +5,8 @@ include './common_service/common_functions.php';
 $message = '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 
-if ($id == '') {
-    header("Location:family_members.php");
+if (empty($id)) {
+    header("Location:general_family_members.php");
     exit;
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result) {
                 $con->commit();
-                header("Location: family_members.php?message=" . urlencode("Record updated successfully"));
+                header("Location: general_family_members.php?message=" . urlencode("Record updated successfully"));
                 exit;
             } else {
                 throw new Exception("Failed to update record");
@@ -82,11 +82,11 @@ try {
     $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$record) {
-        header("Location: family_members.php?message=" . urlencode("Record not found"));
+        header("Location: general_family_members.php?message=" . urlencode("Record not found"));
         exit;
     }
 } catch (PDOException $e) {
-    header("Location: family_members.php?message=" . urlencode($e->getMessage()));
+    header("Location: general_family_members.php?message=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -321,8 +321,8 @@ try {
               </div>
 
               <div class="action-buttons">
-                <a href="family_members.php" class="btn btn-secondary">
-                  <i class="fas fa-times"></i> Cancel
+                <a href="general_family_members.php" class="btn btn-secondary">
+                  <i class="fas fa-times mr-2"></i>Cancel
                 </a>
                 <button type="button" class="btn btn-danger" id="deleteBtn">
                   <i class="fas fa-trash"></i> Delete

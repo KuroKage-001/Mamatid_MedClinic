@@ -70,7 +70,7 @@ if (isset($_POST['action'])) {
     }
 
     // Redirect back to this page with the feedback message and type
-    header("Location: time_tracker.php?message=" . urlencode($message) . "&type=" . urlencode($type));
+    header("Location: admin_employee_time_tracker.php?message=" . urlencode($message) . "&type=" . urlencode($type));
     exit;
 }
 
@@ -187,7 +187,7 @@ if ($isAdmin && isset($_POST['admin_action'])) {
     }
     
     // Redirect back to this page with the feedback message and type
-    header("Location: time_tracker.php?message=" . urlencode($message) . "&type=" . urlencode($type));
+    header("Location: admin_employee_time_tracker.php?message=" . urlencode($message) . "&type=" . urlencode($type));
     exit;
 }
 
@@ -223,7 +223,7 @@ try {
     <?php include './config/site_css_links.php'; ?>
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
-    <title><?php echo $isAdmin ? 'Attendance Management' : 'My Attendance'; ?> - Mamatid Health Center System</title>
+    <title><?php echo $isAdmin ? 'Employee Time Tracking' : 'My Attendance'; ?> - Mamatid Health Center System</title>
     <style>
         :root {
             --transition-speed: 0.3s;
@@ -870,7 +870,7 @@ try {
             <div class="container-fluid">
                 <div class="row align-items-center mb-4">
                     <div class="col-12 col-md-6" style="padding-left: 20px;">
-                        <h1><?php echo $isAdmin ? 'Attendance Management' : 'My Attendance'; ?></h1>
+                        <h1><?php echo $isAdmin ? 'Employee Time Tracking' : 'My Attendance'; ?></h1>
                     </div>
                     <div class="col-12 col-md-6 text-md-right mt-3 mt-md-0">
                         <span id="datetime" class="d-inline-block"></span>
@@ -886,7 +886,7 @@ try {
                 <div class="card card-outline card-primary">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fas fa-user-clock mr-2"></i><?php echo $isAdmin ? 'Attendance Recording' : 'Record My Attendance'; ?>
+                            <i class="fas fa-user-clock mr-2"></i><?php echo $isAdmin ? 'Time Tracking' : 'Record My Attendance'; ?>
                         </h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -937,7 +937,7 @@ try {
                 <div class="card card-outline card-primary">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fas fa-history mr-2"></i><?php echo $isAdmin ? 'All Staff Attendance Records' : 'My Attendance History'; ?>
+                            <i class="fas fa-history mr-2"></i><?php echo $isAdmin ? 'Employee Time Records' : 'My Attendance History'; ?>
                         </h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
