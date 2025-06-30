@@ -1,6 +1,6 @@
 <?php
 /**
- * Session Fix to prevent undefined variable errors
+ * Admin Session Fixer to prevent undefined variable errors
  * 
  * @package    Mamatid Health Center System
  * @subpackage Security

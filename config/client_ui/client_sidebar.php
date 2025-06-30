@@ -6,6 +6,23 @@ $base_path = $in_subdirectory ? '../..' : '.';
 // Add timestamp for cache-busting
 $timestamp = time();
 
+// Ensure profile picture is set
+if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])) {
+    // Include database connection if not already included
+    if (!isset($con)) {
+        require_once $base_path . '/config/db_connection.php';
+    }
+    
+    // Fetch client profile picture
+    $profileQuery = "SELECT profile_picture FROM clients WHERE id = ?";
+    $profileStmt = $con->prepare($profileQuery);
+    $profileStmt->execute([$_SESSION['client_id']]);
+    $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Set profile picture in session
+    $_SESSION['client_profile_picture'] = !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png';
+}
+
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
@@ -380,3 +397,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
     display: none;
 }
 </style>
+
+<script>
+// Force image refresh on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add timestamp to force cache refresh
+    const timestamp = new Date().getTime();
+    
+    // Update all profile images
+    const images = document.querySelectorAll('.user-img');
+    images.forEach(img => {
+        // Only update if it's a profile image
+        if (img.src.includes('client_images')) {
+            const src = img.src.split('?')[0]; // Remove existing query params
+            img.src = src + '?v=' + timestamp;
+        }
+    });
+});
+</script>

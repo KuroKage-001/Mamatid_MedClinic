@@ -16,7 +16,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
 // Include role functions
 require_once $base_path . '/common_service/role_functions.php';
 // Include session fix to prevent undefined variable errors
-require_once $base_path . '/config/session_fix.php';
+require_once $base_path . '/config/admin_session_fixer.php';
 
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -43,7 +43,7 @@ $role_display_name = getRoleDisplayName($user_role);
             <div class="user-info-container">
                 <!-- User Image -->
                 <div class="user-image-container">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'" />
+                    <img src="<?php echo $base_path; ?>/system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/user_images/default_profile.jpg'" />
                     <span class="user-status-indicator <?php echo isset($_SESSION['online_status']) && $_SESSION['online_status'] ? 'online' : 'offline'; ?>"></span>
                 </div>
                 <!-- User Info -->

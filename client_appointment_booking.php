@@ -1,4 +1,7 @@
 <?php
+// Include client authentication check
+require_once './system/utilities/check_client_auth.php';
+
 include './config/db_connection.php';
 require_once './common_service/role_functions.php';
 
@@ -401,10 +404,42 @@ if (empty($calendarEvents)) {
         }
 
         /* Time Slot Styling */
-        .time-slot {
-            padding: 12px 15px;
+        .time-slots-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #e2e8f0;
+        }
+        
+        .time-slots-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .time-slots-wrapper::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        
+        .time-slots-wrapper::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            padding: 15px;
+        }
+        
+        .time-slot {
+            padding: 10px;
+            border-radius: 8px;
             border: 2px solid #e2e8f0;
             cursor: pointer;
             transition: all var(--transition-speed);
@@ -412,8 +447,10 @@ if (empty($calendarEvents)) {
             position: relative;
             overflow: hidden;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            text-align: center;
+            height: 100%;
         }
         
         .time-slot:hover:not(.booked) {
@@ -426,6 +463,7 @@ if (empty($calendarEvents)) {
             border-color: var(--primary-color);
             background-color: rgba(54, 153, 255, 0.1);
             box-shadow: 0 4px 15px rgba(54, 153, 255, 0.2);
+            transform: scale(1.05);
         }
         
         .time-slot.booked {
@@ -454,10 +492,13 @@ if (empty($calendarEvents)) {
         }
         
         .time-slot .time-label {
-            font-weight: 500;
+            font-weight: 600;
             z-index: 2;
             display: flex;
             align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            font-size: 1rem;
         }
         
         .time-slot.booked .time-label {
@@ -465,7 +506,7 @@ if (empty($calendarEvents)) {
         }
         
         .time-slot .time-label i {
-            margin-right: 8px;
+            margin-right: 5px;
         }
         
         .time-slot.booked .time-label i {
@@ -473,41 +514,126 @@ if (empty($calendarEvents)) {
         }
         
         .time-slot .badge {
-            font-size: 0.75rem;
-            padding: 5px 8px;
+            font-size: 0.7rem;
+            padding: 4px 6px;
             border-radius: 20px;
             z-index: 2;
+            margin-top: 5px;
         }
         
         .time-slot.booked .badge {
             background-color: #F64E60;
             color: white;
         }
+        
+        .time-slot .slot-status {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 5px;
+            z-index: 2;
+        }
+        
+        .time-period-divider {
+            grid-column: 1 / -1;
+            background-color: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #495057;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .time-period-divider i {
+            margin-right: 8px;
+        }
+        
+        /* Calendar Legend Styling */
+        .legend-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        
+        .legend-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            transition: all 0.2s;
+            border: 1px solid #e9ecef;
+        }
+        
+        .legend-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 0.75rem;
+            display: inline-block;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .legend-text {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
          
          /* Legend Styling */
          .time-slot-legend {
              display: flex;
-             justify-content: space-around;
+             flex-wrap: wrap;
+             justify-content: center;
              margin-bottom: 15px;
-             padding: 15px;
+             padding: 12px;
              background-color: #f8f9fa;
              border-radius: 8px;
              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+             border: 1px solid #e2e8f0;
          }
          
          .legend-item {
              display: flex;
              align-items: center;
-             margin-right: 10px;
-             padding: 8px 12px;
+             margin: 5px;
+             padding: 6px 10px;
              border-radius: 6px;
              cursor: pointer;
              transition: all 0.2s ease;
              position: relative;
+             min-width: 100px;
+             justify-content: center;
          }
          
          .legend-item:hover {
              background-color: rgba(0, 0, 0, 0.03);
+             transform: translateY(-2px);
          }
          
          .legend-item.active {
@@ -557,10 +683,10 @@ if (empty($calendarEvents)) {
          }
          
          .legend-color {
-             width: 20px;
-             height: 20px;
+             width: 16px;
+             height: 16px;
              border-radius: 4px;
-             margin-right: 8px;
+             margin-right: 6px;
              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
          }
          
@@ -599,17 +725,17 @@ if (empty($calendarEvents)) {
          
          .legend-item span {
              font-weight: 500;
-             font-size: 0.9rem;
+             font-size: 0.85rem;
          }
          
          .legend-item .count {
-             margin-left: 5px;
+             margin-left: 4px;
              background-color: #e2e8f0;
              color: #4a5568;
-             padding: 2px 6px;
+             padding: 1px 5px;
              border-radius: 10px;
-             font-size: 0.75rem;
-             min-width: 20px;
+             font-size: 0.7rem;
+             min-width: 18px;
              text-align: center;
          }
          
@@ -626,6 +752,65 @@ if (empty($calendarEvents)) {
          .legend-item.booked .count {
              background-color: rgba(246, 78, 96, 0.1);
              color: #F64E60;
+         }
+         
+         /* Time slot filter controls */
+         .time-slot-filters {
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             margin-bottom: 15px;
+             flex-wrap: wrap;
+         }
+         
+         .time-slot-search {
+             position: relative;
+             flex: 1;
+             max-width: 200px;
+             margin-right: 10px;
+             margin-bottom: 10px;
+         }
+         
+         .time-slot-search input {
+             padding-left: 30px;
+             border-radius: 20px;
+             border: 1px solid #e2e8f0;
+             font-size: 0.9rem;
+             width: 100%;
+         }
+         
+         .time-slot-search i {
+             position: absolute;
+             left: 10px;
+             top: 50%;
+             transform: translateY(-50%);
+             color: #a0aec0;
+         }
+         
+         .time-period-filter {
+             display: flex;
+             gap: 5px;
+             margin-bottom: 10px;
+         }
+         
+         .time-period-btn {
+             padding: 5px 10px;
+             border-radius: 20px;
+             background-color: #f8f9fa;
+             border: 1px solid #e2e8f0;
+             font-size: 0.85rem;
+             cursor: pointer;
+             transition: all 0.2s;
+         }
+         
+         .time-period-btn:hover {
+             background-color: #e9ecef;
+         }
+         
+         .time-period-btn.active {
+             background-color: var(--primary-color);
+             color: white;
+             border-color: var(--primary-color);
          }
          
          /* Count animation */
@@ -881,34 +1066,61 @@ if (empty($calendarEvents)) {
         }
 
         /* Calendar Styling */
-        .fc-event {
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            background-color: rgba(54, 153, 255, 0.2);
-            color: #3699FF;
-            margin-bottom: 5px;
-            transition: all 0.3s;
+        .fc {
+            font-family: inherit;
         }
-
-        .fc-event:hover {
-            background-color: rgba(54, 153, 255, 0.3);
-            transform: translateY(-2px);
+        
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+            font-weight: 600;
+            color: var(--dark-color);
         }
-
+        
+        .fc-button {
+            padding: 0.5rem 1rem !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: all 0.2s !important;
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .fc-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(54, 153, 255, 0.3) !important;
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+        
         .fc-day-today {
             background-color: rgba(54, 153, 255, 0.05) !important;
         }
-
-        .fc-button {
-            background-color: #3699FF !important;
-            border-color: #3699FF !important;
+        
+        .fc-event {
+            border-radius: 6px !important;
+            padding: 3px 5px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+            transition: transform 0.2s !important;
+            cursor: pointer;
+            margin-bottom: 5px;
         }
-
-        .fc-button:hover {
-            background-color: #187DE4 !important;
-            border-color: #187DE4 !important;
+        
+        .fc-event:hover {
+            transform: scale(1.02);
+        }
+        
+        .fc-daygrid-day-number {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .fc-col-header-cell-cushion {
+            font-weight: 600;
+            color: var(--dark-color);
         }
 
         /* Time Slot Styling */
@@ -1029,13 +1241,110 @@ if (empty($calendarEvents)) {
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
+        /* Event Modal Styling */
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: none;
+        }
+        
+        .modal-header .close {
+            opacity: 0.8;
+            text-shadow: none;
+        }
+        
+        .modal-header .close:hover {
+            opacity: 1;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        .bg-purple {
+            background-color: #8950FC !important;
+        }
+        
+        .bg-teal {
+            background-color: #1BC5BD !important;
+        }
+        
+        .bg-info-light {
+            background-color: rgba(54, 153, 255, 0.1);
+        }
+        
+        .bg-success-light {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .bg-secondary-light {
+            background-color: rgba(108, 117, 125, 0.1);
+        }
+        
+        .bg-danger-light {
+            background-color: rgba(246, 78, 96, 0.1);
+        }
+        
+        .bg-warning-light {
+            background-color: rgba(255, 168, 0, 0.1);
+        }
+        
+        .event-date h4 {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-label {
+            color: #6c757d;
+            margin-right: 0.25rem;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .notes, .reason {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .modal-footer {
+            border-top: none;
+            padding: 0.75rem 1.25rem 1.25rem;
+            justify-content: center;
+        }
+        
+        .modal-footer .btn {
+            min-width: 120px;
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .modal-footer .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/client_ui/header.php'; ?>
-        <?php include './config/client_ui/sidebar.php'; ?>
+        <?php include './config/client_ui/client_header.php'; ?>
+        <?php include './config/client_ui/client_sidebar.php'; ?>
 
         <div class="content-wrapper">
             <section class="content-header">
@@ -1071,37 +1380,43 @@ if (empty($calendarEvents)) {
 
                     <div class="row">
                         <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">
                                         <i class="fas fa-calendar-alt mr-2"></i>
                                         Available Doctor Schedules
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" id="refresh-calendar" class="btn btn-sm btn-info">
+                                            <i class="fas fa-sync-alt mr-1"></i> Refresh Calendar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
                                     <div id="calendar"></div>
-                                    <div class="mt-3">
-                                        <div class="d-flex flex-wrap justify-content-center mb-2">
-                                            <div class="mr-4 mb-2 d-flex align-items-center">
-                                                <span class="badge mr-1" style="background-color: #3699FF; width: 20px; height: 20px;"></span>
-                                                <small>Doctor Schedules</small>
-                                            </div>
-                                            <div class="mr-4 mb-2 d-flex align-items-center">
-                                                <span class="badge mr-1" style="background-color: #8950FC; width: 20px; height: 20px;"></span>
-                                                <small>Admin Schedules</small>
-                                            </div>
-                                            <div class="mr-4 mb-2 d-flex align-items-center">
-                                                <span class="badge mr-1" style="background-color: #1BC5BD; width: 20px; height: 20px;"></span>
-                                                <small>Health Worker Schedules</small>
+                                    <div class="mt-4">
+                                        <div class="legend-container">
+                                            <h5 class="legend-title">Schedule Legend</h5>
+                                            <div class="legend-items">
+                                                <div class="legend-item">
+                                                    <span class="legend-color" style="background-color: #3699FF;"></span>
+                                                    <span class="legend-text">Doctor Schedules</span>
+                                                </div>
+                                                <div class="legend-item">
+                                                    <span class="legend-color" style="background-color: #8950FC;"></span>
+                                                    <span class="legend-text">Admin Schedules</span>
+                                                </div>
+                                                <div class="legend-item">
+                                                    <span class="legend-color" style="background-color: #1BC5BD;"></span>
+                                                    <span class="legend-text">Health Worker Schedules</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="alert alert-info p-2">
-                                            <small><i class="fas fa-info-circle mr-1"></i> Only future dates are available for booking. Past appointments are automatically removed from view.</small>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="alert alert-info p-3 rounded-lg shadow-sm">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            <span>Only future dates are available for booking. Past appointments are automatically removed from view.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1109,7 +1424,7 @@ if (empty($calendarEvents)) {
                         </div>
 
                         <div class="col-md-4">
-                            <div class="card">
+                            <div class="card card-outline card-primary">
                                 <div class="card-header">
                                     <h3 class="card-title">
                                         <i class="fas fa-calendar-plus mr-2"></i>
@@ -1125,6 +1440,20 @@ if (empty($calendarEvents)) {
                                             <i class="fas fa-info-circle mr-2"></i>
                                             Each time slot can only be booked by one patient.
                                         </div>
+                                        
+                                        <div class="time-slot-filters">
+                                            <div class="time-slot-search">
+                                                <i class="fas fa-search"></i>
+                                                <input type="text" id="timeSlotSearch" class="form-control" placeholder="Search time...">
+                                            </div>
+                                            <div class="time-period-filter">
+                                                <button type="button" class="time-period-btn active" data-period="all">All</button>
+                                                <button type="button" class="time-period-btn" data-period="morning">Morning</button>
+                                                <button type="button" class="time-period-btn" data-period="afternoon">Afternoon</button>
+                                                <button type="button" class="time-period-btn" data-period="evening">Evening</button>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="time-slot-legend mb-3">
                                             <div class="legend-item available active" data-filter="available">
                                                 <div class="legend-color available"></div>
@@ -1142,6 +1471,7 @@ if (empty($calendarEvents)) {
                                                 <span class="count" id="booked-count">0</span>
                                             </div>
                                         </div>
+                                        
                                         <div id="timeSlots" class="time-slot-container">
                                             <p class="text-muted">Please select a schedule from the calendar to view available time slots.</p>
                                         </div>
@@ -1181,7 +1511,7 @@ if (empty($calendarEvents)) {
             </section>
         </div>
 
-        <?php include './config/client_ui/footer.php'; ?>
+        <?php include './config/client_ui/client_footer.php'; ?>
     </div>
     <!-- ./wrapper -->
     <?php include './config/site_js_links.php'; ?>
@@ -1222,6 +1552,28 @@ if (empty($calendarEvents)) {
                     title: error
                 });
             }
+            
+            // Handle refresh calendar button
+            $('#refresh-calendar').click(function() {
+                const $btn = $(this);
+                
+                // Show loading spinner
+                $btn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Refreshing...').prop('disabled', true);
+                
+                // Refresh calendar events
+                calendar.refetchEvents();
+                
+                // Reset button after a delay
+                setTimeout(function() {
+                    $btn.html('<i class="fas fa-sync-alt mr-1"></i> Refresh Calendar').prop('disabled', false);
+                    
+                    // Show success message
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Calendar refreshed successfully'
+                    });
+                }, 1000);
+            });
 
             // Modern datetime display with animation
             function updateDateTime() {
@@ -1251,6 +1603,25 @@ if (empty($calendarEvents)) {
                     right: 'dayGridMonth,timeGridWeek'
                 },
                 events: <?php echo json_encode($calendarEvents); ?>,
+                height: 'auto',
+                themeSystem: 'bootstrap',
+                dayMaxEvents: true,
+                navLinks: true,
+                firstDay: 1, // Start week on Monday
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                eventDidMount: function(info) {
+                    // Add tooltip for all events
+                    $(info.el).tooltip({
+                        title: info.event.title,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                },
                 eventClick: function(info) {
                     // Get event details
                     const event = info.event;
@@ -1297,21 +1668,131 @@ if (empty($calendarEvents)) {
                         }
                     }
                     
-                    // Set form values
-                    $('#selectedDoctor').val(staffName);
-                    $('#scheduleId').val(scheduleId);
-                    if (scheduleType) {
-                        $('input[name="schedule_type"]').val(scheduleType);
+                    // Create a modal to display schedule details
+                    var modalId = 'eventModal' + Date.now();
+                    var modalTitle = '<i class="fas fa-calendar-alt mr-2"></i> Schedule Information';
+                    var headerClass = '';
+                    
+                    // Set header class based on staff type
+                    if (scheduleType === 'doctor') {
+                        headerClass = 'bg-primary text-white';
+                    } else if (props.staff_role === 'admin') {
+                        headerClass = 'bg-purple text-white';
+                    } else {
+                        headerClass = 'bg-teal text-white';
                     }
-                    $('#selectedDate').val(event.start.toLocaleDateString('en-US', { 
+                    
+                    var formattedDate = event.start.toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
-                    }));
+                    });
                     
-                    // Generate time slots
-                    generateTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
+                    var formattedStartTime = event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    var formattedEndTime = event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    var modalContent = `
+                    <div class="schedule-details p-0">
+                        <div class="card mb-0 border-0">
+                            <div class="card-body p-0">
+                                <div class="event-date text-center py-3 bg-info-light">
+                                    <h4 class="mb-0">${formattedDate}</h4>
+                                </div>
+                                <div class="event-info p-4">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <i class="fas fa-user-md text-muted mr-2"></i>
+                                                <span class="info-label">Provider:</span>
+                                                <span class="info-value font-weight-bold">${staffName}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <i class="fas fa-clock text-muted mr-2"></i>
+                                                <span class="info-label">Time:</span>
+                                                <span class="info-value font-weight-bold">
+                                                    ${formattedStartTime} - ${formattedEndTime}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <i class="fas fa-hourglass-half text-muted mr-2"></i>
+                                                <span class="info-label">Time Slot:</span>
+                                                <span class="info-value font-weight-bold">${timeSlot} minutes</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <i class="fas fa-users text-muted mr-2"></i>
+                                                <span class="info-label">Max Patients:</span>
+                                                <span class="info-value font-weight-bold">${maxPatients}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Create and show modal
+                    var modalHTML = `
+                    <div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header ${headerClass}">
+                                    <h5 class="modal-title">${modalTitle}</h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body p-0">
+                                    ${modalContent}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary book-this-schedule">Book This Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Append modal to body
+                    $('body').append(modalHTML);
+                    
+                    // Show modal
+                    $('#' + modalId).modal('show');
+                    
+                    // Handle "Book This Schedule" button click
+                    $('.book-this-schedule').click(function() {
+                        // Close the modal
+                        $('#' + modalId).modal('hide');
+                        
+                        // Set form values
+                        $('#selectedDoctor').val(staffName);
+                        $('#scheduleId').val(scheduleId);
+                        if (scheduleType) {
+                            $('input[name="schedule_type"]').val(scheduleType);
+                        }
+                        $('#selectedDate').val(formattedDate);
+                        
+                        // Generate time slots
+                        generateTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
+                        
+                        // Scroll to the booking form
+                        $('html, body').animate({
+                            scrollTop: $("#timeSlots").offset().top - 100
+                        }, 500);
+                    });
+                    
+                    // Remove modal from DOM when hidden
+                    $('#' + modalId).on('hidden.bs.modal', function() {
+                        $(this).remove();
+                    });
                 }
             });
             calendar.render();
@@ -1398,10 +1879,17 @@ if (empty($calendarEvents)) {
                         var endTime = new Date(end);
                         var hasAvailableSlots = false;
                         
-                        // Create a container for all time slots with a loading overlay
-                        const slotsContainer = $('<div class="position-relative"></div>');
+                        // Create a wrapper for scrollable time slots
+                        const slotsWrapper = $('<div class="time-slots-wrapper"></div>');
+                        // Create a grid container for time slots
+                        const slotsContainer = $('<div class="time-slots-grid"></div>');
                         const loadingOverlay = $('<div class="position-absolute w-100 h-100 d-none" style="background: rgba(255,255,255,0.8); z-index: 10; display: flex; align-items: center; justify-content: center;"><div class="spinner-border text-primary" role="status"></div><span class="ml-2">Checking availability...</span></div>');
-                        slotsContainer.append(loadingOverlay);
+                        
+                        // Group time slots by period (morning, afternoon, evening)
+                        let morningSlots = [];
+                        let afternoonSlots = [];
+                        let eveningSlots = [];
+                        let allTimeSlots = [];
                         
                         while (currentTime < endTime) {
                             var timeString = currentTime.toTimeString().substring(0, 5);
@@ -1449,71 +1937,78 @@ if (empty($calendarEvents)) {
                             
                             var remainingSlots = maxPatients - slotCount;
                             
+                            // Determine time period (morning, afternoon, evening)
+                            const hour = currentTime.getHours();
+                            let timePeriod = 'morning';
+                            if (hour >= 12 && hour < 17) {
+                                timePeriod = 'afternoon';
+                            } else if (hour >= 17) {
+                                timePeriod = 'evening';
+                            }
+                            
+                            let slotElement;
+                            
                             if (!isBooked && !clientHasAppointment) {
                                 hasAvailableSlots = true;
                                 
-                                // Create progress bar for booking status
-                                const percentBooked = Math.round((slotCount / maxPatients) * 100);
-                                const progressBarColor = percentBooked > 75 ? 'warning' : 'success';
-                                
-                                const slotElement = $('<div class="time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '">' +
+                                slotElement = $('<div class="time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '" data-period="' + timePeriod + '">' +
                                     '<div class="time-label"><i class="far fa-clock"></i>' + formattedTime + '</div>' +
-                                    '<div class="slot-details">' +
-                                    '<span class="badge badge-info">' + remainingSlots + ' of ' + maxPatients + ' available</span>' +
-                                    '<div class="booking-progress mt-2">' +
-                                    '<div class="progress">' +
-                                    '<div class="progress-bar bg-' + progressBarColor + '" role="progressbar" style="width: ' + percentBooked + '%"' +
-                                    ' aria-valuenow="' + percentBooked + '" aria-valuemin="0" aria-valuemax="100"></div>' +
-                                    '</div>' +
-                                    '<small class="text-muted">' + slotCount + ' booked</small>' +
-                                    '</div>' +
-                                    '</div>' +
+                                    '<span class="badge badge-info">' + remainingSlots + ' available</span>' +
+                                    '<div class="slot-status">Open</div>' +
                                     '</div>');
                                 
-                                slotsContainer.append(slotElement);
                             } else if (clientHasAppointment) {
                                 // Client already has an appointment at this time
-                                const slotElement = $('<div class="time-slot booked locked">' +
-                                    '<div class="time-label"><i class="fas fa-calendar-check"></i>' + formattedTime + 
-                                    '<span class="ml-2"><i class="fas fa-lock" data-toggle="tooltip" title="You already have an appointment at this time"></i></span></div>' +
-                                    '<div class="slot-details">' +
+                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '">' +
+                                    '<div class="time-label"><i class="fas fa-calendar-check"></i>' + formattedTime + '</div>' +
                                     '<span class="badge badge-primary">Your appointment</span>' +
-                                    '<div class="booking-progress mt-2">' +
-                                    '<div class="progress">' +
-                                    '<div class="progress-bar bg-primary" role="progressbar" style="width: 100%"' +
-                                    ' aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>' +
-                                    '</div>' +
-                                    '<small class="text-primary">You have already booked this slot</small>' +
-                                    '</div>' +
-                                    '</div>' +
+                                    '<div class="slot-status">Booked by you</div>' +
                                     '</div>');
                                 
-                                slotsContainer.append(slotElement);
                             } else {
-                                const slotElement = $('<div class="time-slot booked locked">' +
-                                    '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + 
-                                    '<span class="ml-2"><i class="fas fa-lock" data-toggle="tooltip" title="This slot is already booked"></i></span></div>' +
-                                    '<div class="slot-details">' +
+                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '">' +
+                                    '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + '</div>' +
                                     '<span class="badge badge-danger">Booked</span>' +
-                                    '<div class="booking-progress mt-2">' +
-                                    '<div class="progress">' +
-                                    '<div class="progress-bar bg-danger" role="progressbar" style="width: 100%"' +
-                                    ' aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>' +
-                                    '</div>' +
-                                    '<small class="text-danger">This slot is already taken</small>' +
-                                    '</div>' +
-                                    '</div>' +
+                                    '<div class="slot-status">Unavailable</div>' +
                                     '</div>');
-                                
-                                slotsContainer.append(slotElement);
                             }
+                            
+                            // Add to the appropriate time period array
+                            if (timePeriod === 'morning') {
+                                morningSlots.push(slotElement);
+                            } else if (timePeriod === 'afternoon') {
+                                afternoonSlots.push(slotElement);
+                            } else {
+                                eveningSlots.push(slotElement);
+                            }
+                            
+                            allTimeSlots.push(slotElement);
                             
                             // Add minutes to current time
                             currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
                         }
                         
-                        // Add the slots container to the main container
-                        timeSlotContainer.append(slotsContainer);
+                        // Add time period dividers and slots to the container
+                        if (morningSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-sun"></i> Morning</div>');
+                            morningSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        if (afternoonSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-cloud-sun"></i> Afternoon</div>');
+                            afternoonSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        if (eveningSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-moon"></i> Evening</div>');
+                            eveningSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        // Add the slots container to the wrapper
+                        slotsWrapper.append(slotsContainer);
+                        
+                        // Add the wrapper to the main container
+                        timeSlotContainer.append(slotsWrapper);
                         
                         if (!hasAvailableSlots) {
                             timeSlotContainer.prepend('<div class="alert alert-warning"><i class="fas fa-exclamation-triangle mr-2"></i>No available time slots for this schedule.</div>');

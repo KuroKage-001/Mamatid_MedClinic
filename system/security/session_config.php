@@ -84,15 +84,28 @@ function checkSessionTimeout() {
  * Check if session has expired and redirect appropriately
  */
 function handleSessionExpiry() {
+    // Get the current script name
+    $current_script = basename($_SERVER['SCRIPT_NAME']);
+    
+    // Skip checking for login pages and assets
+    $skip_pages = ['index.php', 'client_login.php', 'client_register.php'];
+    if (in_array($current_script, $skip_pages)) {
+        return;
+    }
+    
     // Check admin session expiry
     if (isset($_SESSION['user_id']) && !checkSessionTimeout()) {
-        header("location: ../../index.php?message=session_expired");
+        $_SESSION['alert_message'] = "Your session has expired. Please login again.";
+        $_SESSION['alert_type'] = "warning";
+        header("location: ../../index.php");
         exit;
     }
     
     // Check client session expiry
     if (isset($_SESSION['client_id']) && !checkSessionTimeout()) {
-        header("location: ../../client_login.php?message=session_expired");
+        $_SESSION['alert_message'] = "Your session has expired. Please login again.";
+        $_SESSION['alert_type'] = "warning";
+        header("location: ../../client_login.php");
         exit;
     }
 }

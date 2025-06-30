@@ -6,11 +6,11 @@ ob_start();
 date_default_timezone_set('Asia/Manila');
 
 // Include authentication check
-require_once './config/check_auth.php';
+require_once './system/utilities/check_auth.php';
 
 include './config/db_connection.php';
 // Include session fix to prevent undefined variable errors
-require_once './config/session_fix.php';
+require_once './config/admin_session_fixer.php';
 
 // Set current date components used throughout the queries
 $date  = date('Y-m-d');

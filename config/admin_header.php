@@ -6,7 +6,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
 // Include role functions for access control
 require_once $base_path . '/common_service/role_functions.php';
 // Include session fix to prevent undefined variable errors
-require_once $base_path . '/config/session_fix.php';
+require_once $base_path . '/config/admin_session_fixer.php';
 ?>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-dark fixed-top">
@@ -32,7 +32,7 @@ require_once $base_path . '/config/session_fix.php';
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
                 <div class="user-avatar">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/user_images/default_profile.jpg'">
                     <span class="status-indicator <?php echo isset($_SESSION['status']) && $_SESSION['status'] == 'active' ? 'status-online' : 'status-offline'; ?>"></span>
                 </div>
                 <div class="user-info d-none d-md-block">
@@ -43,7 +43,7 @@ require_once $base_path . '/config/session_fix.php';
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/user_images/default_profile.jpg'">
+                    <img src="<?php echo $base_path; ?>/system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/user_images/default_profile.jpg'">
                     <div class="user-details">
                         <h6><?php echo $_SESSION['display_name']; ?></h6>
                         <span class="username">@<?php echo $_SESSION['user_name']; ?></span>

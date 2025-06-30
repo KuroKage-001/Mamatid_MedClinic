@@ -1,6 +1,52 @@
 <?php
-// Include database connection
+session_start();
 include './config/db_connection.php';
+
+// Alert Handler Code
+if (!defined('ALERT_HANDLER_INCLUDED')) {
+    define('ALERT_HANDLER_INCLUDED', true);
+
+    // Function to display alert message using SweetAlert2
+    if (!function_exists('displayAlert')) {
+        function displayAlert() {
+            if (isset($_SESSION['alert_message'])): ?>
+                <script>
+                    $(document).ready(function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'modern-toast'
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: '<?php echo $_SESSION['alert_type']; ?>',
+                            title: '<?php echo addslashes($_SESSION['alert_message']); ?>',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown animate__faster'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp animate__faster'
+                            }
+                        });
+                    });
+                </script>
+                <?php
+                unset($_SESSION['alert_message']);
+                unset($_SESSION['alert_type']);
+            endif;
+        }
+    }
+}
 
 // Initialize an empty message string
 $message = '';
@@ -56,7 +102,8 @@ if (isset($_POST['login'])) {
             exit;
         } else {
             // Invalid credentials or inactive account
-            $message = 'Incorrect username or password, or account is inactive.';
+            $_SESSION['alert_type'] = 'error';
+            $_SESSION['alert_message'] = 'Access Denied: Incorrect username or password, or account is inactive. Please check your credentials and try again.';
         }
     } catch (PDOException $ex) {
         // On query error, display debugging info (not recommended in production)
@@ -86,6 +133,8 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="dist/css/animate.min.css">
   
   <!-- Include jQuery and SweetAlert2 JS -->
   <script src="plugins/jquery/jquery.min.js"></script>
@@ -193,7 +242,23 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
     .login-logo {
       text-align: center;
       margin-bottom: 2rem;
-      padding: 1rem;
+    }
+
+    .login-logo img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      padding: 8px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 169, 255, 0.2);
+      border: 2px solid var(--primary-color);
+      transition: all 0.3s ease;
+      object-fit: cover;
+    }
+
+    .login-logo img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 169, 255, 0.3);
     }
 
     /* Typewriter animation styles */
@@ -216,24 +281,6 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
     @keyframes typing {
       from { width: 0 }
       to { width: 100% }
-    }
-
-    .login-logo img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      padding: 8px;
-      background: white;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      border: 2px solid var(--primary-color);
-      transition: all 0.3s ease;
-    }
-
-    .login-logo img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      border-color: var(--secondary-color);
     }
 
     .login-form-group {
@@ -363,6 +410,8 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
   </style>
 </head>
 <body class="login-page">
+  <?php displayAlert(); ?>
+  
   <div class="login-wrapper">
     <div class="login-left">
       <div class="login-left-content">
@@ -373,7 +422,7 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
     
     <div class="login-right">
       <div class="login-logo">
-        <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+        <img src="dist/img/mamatid-logo-01.jpg.png" alt="MHC Logo">
       </div>
       
       <div class="typewriter">
@@ -426,42 +475,5 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
       </form>
     </div>
   </div>
-
-  <?php if (!empty($message)): ?>
-  <script>
-    $(document).ready(function() {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        showCloseButton: true,
-        timer: 4000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        },
-        customClass: {
-          popup: 'modern-toast'
-        }
-      });
-
-      Toast.fire({
-        icon: 'error',
-        title: 'Access Denied',
-        html: '<div style="display: flex; align-items: center; gap: 8px;">' +
-              '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
-              '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
-              '</div>',
-        showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
-        },
-        hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
-        }
-      });
-    });
-  </script>
-  <?php endif; ?>
 </body>
 </html>

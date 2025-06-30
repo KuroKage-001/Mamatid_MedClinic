@@ -99,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 if ($stmt->execute()) {
                     $_SESSION['profile_picture'] = $new_filename;
+                    $_SESSION['profile_picture_timestamp'] = time();
                     $message = "Profile picture updated successfully!";
                 } else {
                     $error = "Error updating profile picture";
@@ -420,7 +421,7 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
                         <div class="card-body">
                             <form method="POST" enctype="multipart/form-data" id="pictureForm">
                                 <div class="profile-pic-container">
-                                    <img src="system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo time(); ?>" 
+                                    <img src="system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" 
                                          alt="Profile Picture" class="profile-pic"
                                          onerror="this.src='system/user_images/default_profile.jpg'"
                                          id="profileImage">

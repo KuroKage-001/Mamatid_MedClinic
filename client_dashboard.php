@@ -1,16 +1,8 @@
 <?php
+// Include client authentication check
+require_once './system/utilities/check_client_auth.php';
+
 include './config/db_connection.php';
-
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if client is logged in
-if (!isset($_SESSION['client_id'])) {
-    header("location:client_login.php");
-    exit;
-}
 
 // Get client's appointments
 $clientId = $_SESSION['client_id'];
@@ -285,8 +277,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
 
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <div class="wrapper">
-        <?php include './config/client_ui/header.php'; ?>
-        <?php include './config/client_ui/sidebar.php'; ?>
+        <?php include './config/client_ui/client_header.php'; ?>
+        <?php include './config/client_ui/client_sidebar.php'; ?>
 
         <div class="content-wrapper">
             <section class="content-header">
@@ -550,7 +542,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             </section>
         </div>
 
-        <?php include './config/client_ui/footer.php'; ?>
+        <?php include './config/client_ui/client_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

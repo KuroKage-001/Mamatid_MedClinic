@@ -1,6 +1,52 @@
 <?php
-// Include database connection
+session_start();
 include './config/db_connection.php';
+
+// Alert Handler Code
+if (!defined('ALERT_HANDLER_INCLUDED')) {
+    define('ALERT_HANDLER_INCLUDED', true);
+
+    // Function to display alert message using SweetAlert2
+    if (!function_exists('displayAlert')) {
+        function displayAlert() {
+            if (isset($_SESSION['alert_message'])): ?>
+                <script>
+                    $(document).ready(function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'modern-toast'
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: '<?php echo $_SESSION['alert_type']; ?>',
+                            title: '<?php echo addslashes($_SESSION['alert_message']); ?>',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown animate__faster'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp animate__faster'
+                            }
+                        });
+                    });
+                </script>
+                <?php
+                unset($_SESSION['alert_message']);
+                unset($_SESSION['alert_type']);
+            endif;
+        }
+    }
+}
 
 // Initialize an empty message string
 $message = '';
@@ -30,16 +76,20 @@ if (isset($_POST['login'])) {
             // Fetch client data
             $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
 
-            // Start session if not already started
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-
             // Store client data in session
             $_SESSION['client_id'] = $row['id'];
             $_SESSION['client_name'] = $row['full_name'];
             $_SESSION['client_email'] = $row['email'];
             $_SESSION['client_last_activity'] = time(); // Set client activity timestamp
+            
+            // Fetch client profile picture
+            $profileQuery = "SELECT profile_picture FROM clients WHERE id = ?";
+            $profileStmt = $con->prepare($profileQuery);
+            $profileStmt->execute([$row['id']]);
+            $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Set profile picture in session
+            $_SESSION['client_profile_picture'] = !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png';
 
             // Handle "Remember Me" functionality
             if (isset($_POST['remember_me'])) {
@@ -55,10 +105,12 @@ if (isset($_POST['login'])) {
             exit;
         } else {
             // Invalid credentials
-            $message = 'Incorrect email or password.';
+            $_SESSION['alert_type'] = 'error';
+            $_SESSION['alert_message'] = 'Access Denied: Incorrect email or password. Please check your credentials and try again.';
         }
     } catch(PDOException $ex) {
-        $message = 'An error occurred. Please try again later.';
+        $_SESSION['alert_type'] = 'error';
+        $_SESSION['alert_message'] = 'An error occurred. Please try again later.';
     }
 }
 
@@ -401,17 +453,20 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
 </head>
 
 <body>
+    <?php displayAlert(); ?>
     <div class="client-container">
         <div class="client-left">
             <div class="client-left-content">
                 <h1>Welcome to Your Health Portal</h1>
-                <p>Access your healthcare services and manage your appointments with ease.</p>
+                <p>Access your healthcare services and manage your appointments with ease at Mamatid Health Center.</p>
                 
                 <ul class="client-features">
-                    <li><i class="fas fa-calendar-check"></i> Book and manage appointments</li>
-                    <li><i class="fas fa-file-medical"></i> Access medical records</li>
-                    <li><i class="fas fa-bell"></i> Get health notifications</li>
-                    <li><i class="fas fa-comments"></i> Communicate with healthcare providers</li>
+                    <li><i class="fas fa-calendar-alt"></i> View and manage all your appointments</li>
+                    <li><i class="fas fa-calendar-plus"></i> Book new appointments with real-time slot availability</li>
+                    <li><i class="fas fa-bell"></i> Get instant updates on appointment status changes</li>
+                    <li><i class="fas fa-history"></i> Track your complete appointment history</li>
+                    <li><i class="fas fa-check-circle"></i> Monitor pending and approved appointments</li>
+                    <li><i class="fas fa-notes-medical"></i> Add detailed reasons for your visits</li>
                 </ul>
             </div>
         </div>
@@ -475,36 +530,5 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
             </div>
         </div>
     </div>
-
-    <?php if (!empty($message)): ?>
-    <script>
-        $(document).ready(function() {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                showCloseButton: true,
-                timer: 4000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                },
-                customClass: {
-                    popup: 'modern-toast'
-                }
-            });
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Access Denied',
-                html: '<div style="display: flex; align-items: center; gap: 8px;">' +
-                      '<div style="flex-grow: 1;"><?php echo addslashes($message); ?><br>' +
-                      '<small style="color: #666;">Please check your credentials and try again.</small></div>' +
-                      '</div>'
-            });
-        });
-    </script>
-    <?php endif; ?>
 </body>
 </html> 

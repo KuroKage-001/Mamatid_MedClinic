@@ -1,6 +1,8 @@
 <?php
+// Include client authentication check
+require_once './system/utilities/check_client_auth.php';
+
 require_once 'config/db_connection.php';
-require_once 'config/check_client_auth.php';
 require_once 'common_service/common_functions.php';
 require_once 'common_service/role_functions.php';
 
@@ -119,6 +121,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if ($stmt->execute()) {
                     $_SESSION['client_profile_picture'] = $new_filename;
                     $message = "Profile picture updated successfully!";
+                    
+                    // Force immediate refresh of the profile image cache and reload page
+                    echo "<script>
+                        // Add timestamp to force cache refresh
+                        const timestamp = new Date().getTime();
+                        
+                        // Function to update image sources with timestamp
+                        function updateImageSrc(selector) {
+                            const images = document.querySelectorAll(selector);
+                            images.forEach(img => {
+                                let src = img.src.split('?')[0]; // Remove existing query params
+                                img.src = src + '?v=' + timestamp;
+                            });
+                        }
+                        
+                        // Update all profile images when DOM is ready
+                        document.addEventListener('DOMContentLoaded', function() {
+                            updateImageSrc('.main-header .user-image');
+                            updateImageSrc('.main-header .profile-img');
+                            updateImageSrc('.main-sidebar .user-img');
+                            
+                            // Reload the page after a short delay to refresh all frames
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1000);
+                        });
+                    </script>";
                 } else {
                     $error = "Error updating profile picture";
                 }
@@ -381,8 +410,8 @@ if (!file_exists($profile_pic_url)) {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include 'config/client_ui/header.php'; ?>
-<?php include 'config/client_ui/sidebar.php'; ?>
+<?php include 'config/client_ui/client_header.php'; ?>
+<?php include 'config/client_ui/client_sidebar.php'; ?>
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -604,7 +633,7 @@ if (!file_exists($profile_pic_url)) {
     </section>
 </div>
 
-<?php include 'config/client_ui/footer.php'; ?>
+<?php include 'config/client_ui/client_footer.php'; ?>
 </div>
 
 <?php include 'config/site_js_links.php'; ?>
@@ -689,10 +718,13 @@ $(document).ready(function() {
     <?php if(strpos($message, 'Profile picture updated successfully') !== false): ?>
     // Add a random timestamp to force image refresh in header and sidebar
     const timestamp = new Date().getTime();
-    // Find all profile images in header and sidebar and refresh them
-    const headerImages = window.parent.document.querySelectorAll('.main-header img.user-image, .main-header img.profile-img');
-    const sidebarImages = window.parent.document.querySelectorAll('.main-sidebar img.user-img');
     
+    // Find all profile images in header and sidebar and refresh them
+    // Try both direct document and parent document (in case of frames)
+    const headerImages = document.querySelectorAll('.main-header img.user-image, .main-header img.profile-img');
+    const sidebarImages = document.querySelectorAll('.main-sidebar img.user-img');
+    
+    // Update images in current document
     headerImages.forEach(img => {
         let src = img.src.split('?')[0]; // Remove any existing query parameters
         img.src = src + '?v=' + timestamp;
@@ -702,6 +734,27 @@ $(document).ready(function() {
         let src = img.src.split('?')[0]; // Remove any existing query parameters
         img.src = src + '?v=' + timestamp;
     });
+    
+    // Also update in parent document if it exists (for frames)
+    if (window.parent && window.parent.document) {
+        const parentHeaderImages = window.parent.document.querySelectorAll('.main-header img.user-image, .main-header img.profile-img');
+        const parentSidebarImages = window.parent.document.querySelectorAll('.main-sidebar img.user-img');
+        
+        parentHeaderImages.forEach(img => {
+            let src = img.src.split('?')[0];
+            img.src = src + '?v=' + timestamp;
+        });
+        
+        parentSidebarImages.forEach(img => {
+            let src = img.src.split('?')[0];
+            img.src = src + '?v=' + timestamp;
+        });
+    }
+    
+    // Reload the page after a short delay to ensure all images are refreshed
+    setTimeout(function() {
+        window.location.reload();
+    }, 1500);
     <?php endif; ?>
 });
 </script>
