@@ -1,8 +1,8 @@
 <?php
 /**
- * Session Configuration Bridge File
+ * Admin Session Configuration Bridge File
  * This file maintains backward compatibility with existing code
- * while moving the actual session configuration logic to system/security/session_config.php
+ * while moving the actual session configuration logic to system/security/admin_session_config.php
  * 
  * @package    Mamatid Health Center System
  * @subpackage Config
@@ -10,5 +10,5 @@
  */
 
 // Include the actual session config file from the new location
-require_once __DIR__ . '/../system/security/session_config.php';
+require_once __DIR__ . '/../system/security/admin_session_config.php';
 ?> 

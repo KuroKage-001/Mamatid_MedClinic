@@ -879,7 +879,7 @@ $roleDisplay = ucfirst($staffRole);
             // Function to automatically update past appointments to completed status
             function updatePastAppointments() {
                 $.ajax({
-                    url: 'ajax/update_past_appointments.php',
+                    url: 'ajax/admin_check_update_past_appointment.php',
                     type: 'POST',
                     data: {
                         doctor_id: <?= $staffId ?>

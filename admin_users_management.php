@@ -108,7 +108,7 @@ if (isset($_POST['save_user'])) {
 
 // Handle user deletion via AJAX (already handled in delete_user.php)
 
-// Handle status toggle via AJAX (already handled in toggle_user_status.php)
+// Handle status toggle via AJAX (already handled in admin_check_user_status.php)
 
 // Retrieve all users for the listing
 try {
@@ -979,7 +979,7 @@ try {
         const username = $(this).val();
         if (username.length > 0) {
           $.ajax({
-            url: 'ajax/check_user_name.php',
+            url: 'ajax/admin_check_username_management.php',
             type: 'GET',
             data: { user_name: username },
             success: function(response) {
@@ -1002,7 +1002,7 @@ try {
         const toggle = $(this);
 
         $.ajax({
-          url: 'ajax/toggle_user_status.php',
+          url: 'ajax/admin_check_user_status.php',
           type: 'POST',
           data: {
             user_id: userId,

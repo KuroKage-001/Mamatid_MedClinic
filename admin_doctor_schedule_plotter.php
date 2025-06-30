@@ -958,7 +958,7 @@ foreach ($appointments as $appointment) {
                 
                 // Send AJAX request to send notification
                 $.ajax({
-                    url: 'ajax/send_appointment_notification.php',
+                    url: 'ajax/admin_notif_appointment_sender.php',
                     type: 'POST',
                     data: {
                         appointment_id: appointmentId
@@ -1014,7 +1014,7 @@ foreach ($appointments as $appointment) {
             // Function to automatically update past appointments to completed status
             function updatePastAppointments() {
                 $.ajax({
-                    url: 'ajax/update_past_appointments.php',
+                    url: 'ajax/admin_check_update_past_appointment.php',
                     type: 'POST',
                     data: {
                         doctor_id: <?= $doctorId ?>
@@ -1036,7 +1036,7 @@ foreach ($appointments as $appointment) {
             // Function to automatically update past appointments to completed status
             function updatePastAppointments() {
                 $.ajax({
-                    url: 'ajax/update_past_appointments.php',
+                    url: 'ajax/admin_check_update_past_appointment.php',
                     type: 'POST',
                     data: {
                         doctor_id: <?= $doctorId ?>

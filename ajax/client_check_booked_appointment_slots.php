@@ -1,4 +1,12 @@
 <?php
+/**
+ * Client Appointment Booked Slots Checker
+ * 
+ * This script retrieves information about booked appointment slots for a specific schedule.
+ * It provides data about which slots are available, booked, or in the past,
+ * and checks if the client already has appointments at specific times.
+ */
+
 include '../config/db_connection.php';
 header('Content-Type: application/json');
 
@@ -11,16 +19,25 @@ $response = [
     'error' => null
 ];
 
-// Check if schedule ID is provided
+// Validate input parameters
 if (!isset($_POST['schedule_id'])) {
     $response['error'] = "Schedule ID is required";
     echo json_encode($response);
     exit;
 }
 
-$scheduleId = intval($_POST['schedule_id']);
-$clientId = isset($_POST['client_id']) ? intval($_POST['client_id']) : 0;
-$scheduleType = isset($_POST['schedule_type']) ? $_POST['schedule_type'] : 'doctor';
+// Sanitize and validate inputs
+$scheduleId = filter_var($_POST['schedule_id'], FILTER_VALIDATE_INT);
+if ($scheduleId === false) {
+    $response['error'] = "Invalid schedule ID";
+    echo json_encode($response);
+    exit;
+}
+
+$clientId = isset($_POST['client_id']) ? filter_var($_POST['client_id'], FILTER_VALIDATE_INT) : 0;
+$scheduleType = isset($_POST['schedule_type']) ? 
+    (in_array($_POST['schedule_type'], ['doctor', 'staff']) ? $_POST['schedule_type'] : 'doctor') : 
+    'doctor';
 
 try {
     // Determine which table to check based on schedule type
@@ -114,7 +131,11 @@ try {
     echo json_encode($response);
     
 } catch (PDOException $ex) {
-    $response['error'] = "Database error: " . $ex->getMessage();
+    // Log the error for administrators
+    error_log("Database error in client_check_booked_appointment_slots.php: " . $ex->getMessage());
+    
+    // Return a generic error message to the client
+    $response['error'] = "A database error occurred. Please try again later.";
     echo json_encode($response);
 }
 ?> 

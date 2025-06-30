@@ -1846,7 +1846,7 @@ if (empty($calendarEvents)) {
                 
                 // Get available slots from the server
                 $.ajax({
-                    url: 'ajax/get_booked_slots.php',
+                    url: 'ajax/client_check_booked_appointment_slots.php',
                     type: 'POST',
                     data: {
                         schedule_id: scheduleId,
@@ -2233,7 +2233,7 @@ if (empty($calendarEvents)) {
                 console.log('Appointment Time:', $('#appointmentTime').val());
                 
                 $.ajax({
-                    url: 'ajax/check_slot_availability.php',
+                    url: 'ajax/client_check_timeslot_availability.php',
                     type: 'POST',
                     data: {
                         schedule_id: $('#scheduleId').val(),

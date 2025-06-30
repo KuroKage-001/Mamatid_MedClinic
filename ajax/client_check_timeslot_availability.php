@@ -1,4 +1,11 @@
 <?php
+/**
+ * Client Appointment Time Slot Availability Checker
+ * 
+ * This script checks if a specific appointment time slot is available for booking.
+ * It validates schedule existence, client appointment conflicts, and slot availability.
+ */
+
 include '../config/db_connection.php';
 header('Content-Type: application/json');
 
@@ -10,6 +17,13 @@ $response = [
     'max_patients' => 1
 ];
 
+// Validate CSRF token if needed
+// if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+//     $response['error'] = "Invalid request";
+//     echo json_encode($response);
+//     exit;
+// }
+
 // Check input parameters
 if (!isset($_POST['schedule_id']) || !isset($_POST['appointment_time'])) {
     $response['error'] = "Missing required parameters";
@@ -17,10 +31,25 @@ if (!isset($_POST['schedule_id']) || !isset($_POST['appointment_time'])) {
     exit;
 }
 
-$scheduleId = intval($_POST['schedule_id']);
-$appointmentTime = $_POST['appointment_time'];
-$clientId = isset($_POST['client_id']) ? intval($_POST['client_id']) : 0;
-$scheduleType = isset($_POST['schedule_type']) ? $_POST['schedule_type'] : 'doctor';
+// Sanitize and validate inputs
+$scheduleId = filter_var($_POST['schedule_id'], FILTER_VALIDATE_INT);
+if ($scheduleId === false) {
+    $response['error'] = "Invalid schedule ID";
+    echo json_encode($response);
+    exit;
+}
+
+$appointmentTime = trim($_POST['appointment_time']);
+if (empty($appointmentTime)) {
+    $response['error'] = "Invalid appointment time";
+    echo json_encode($response);
+    exit;
+}
+
+$clientId = isset($_POST['client_id']) ? filter_var($_POST['client_id'], FILTER_VALIDATE_INT) : 0;
+$scheduleType = isset($_POST['schedule_type']) ? 
+    (in_array($_POST['schedule_type'], ['doctor', 'staff']) ? $_POST['schedule_type'] : 'doctor') : 
+    'doctor';
 
 try {
     // Determine which table to check based on schedule type
@@ -90,7 +119,11 @@ try {
     echo json_encode($response);
     
 } catch(PDOException $ex) {
-    $response['error'] = "Database error: " . $ex->getMessage();
+    // Log the error for administrators
+    error_log("Database error in client_check_timeslot_availability.php: " . $ex->getMessage());
+    
+    // Return a generic error message to the client
+    $response['error'] = "A database error occurred. Please try again later.";
     echo json_encode($response);
 }
 ?> 
