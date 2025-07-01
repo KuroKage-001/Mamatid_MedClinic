@@ -13,13 +13,17 @@ $patientName = $_GET['patient_name'];
 try {
     $query = "SELECT 
         ROW_NUMBER() OVER (ORDER BY date DESC) as sno,
+        id,
         name,
         DATE_FORMAT(date, '%Y-%m-%d') as date,
+        address,
+        sex,
         bp,
         alcohol,
         smoke,
-        obese
-    FROM bp_monitoring 
+        obese,
+        cp_number
+    FROM general_bp_monitoring 
     WHERE name = :patient_name 
     ORDER BY date DESC";
 
