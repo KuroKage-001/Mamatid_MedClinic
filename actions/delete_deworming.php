@@ -10,7 +10,7 @@ if(isset($_GET['id'])) {
         $con->beginTransaction();
         
         // Delete the record
-        $stmt = $con->prepare("DELETE FROM deworming WHERE id = ?");
+        $stmt = $con->prepare("DELETE FROM general_deworming WHERE id = ?");
         $stmt->execute([$id]);
         
         // Commit transaction

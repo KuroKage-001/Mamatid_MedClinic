@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Prepare the update query with parameterized statement
-            $query = "UPDATE bp_monitoring SET 
+            $query = "UPDATE general_bp_monitoring SET 
                      name = :name,
                      date = :date,
                      address = :address,
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 try {
     $query = "SELECT id, name, address, sex, bp, alcohol, smoke, obese, cp_number,
              DATE_FORMAT(date, '%m/%d/%Y') as date
-             FROM bp_monitoring 
+             FROM general_bp_monitoring 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);
@@ -454,7 +454,7 @@ try {
                 </div>
             </section>
         </div>
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>

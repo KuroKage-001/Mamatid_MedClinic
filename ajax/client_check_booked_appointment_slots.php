@@ -87,12 +87,17 @@ try {
     
     $response['booked_slots'] = $bookedSlots;
     
-    // Get slot statuses from appointment_slots table
-    $slotStatusesQuery = "SELECT slot_time, is_booked FROM appointment_slots WHERE schedule_id = ?";
+    // Get slot statuses from the appropriate slots table based on schedule type
+    $slotStatuses = [];
+    if ($scheduleType === 'staff') {
+        $slotStatusesQuery = "SELECT slot_time, is_booked FROM staff_appointment_slots WHERE schedule_id = ?";
+    } else {
+        $slotStatusesQuery = "SELECT slot_time, is_booked FROM appointment_slots WHERE schedule_id = ?";
+    }
+    
     $slotStatusesStmt = $con->prepare($slotStatusesQuery);
     $slotStatusesStmt->execute([$scheduleId]);
     
-    $slotStatuses = [];
     while ($statusRow = $slotStatusesStmt->fetch(PDO::FETCH_ASSOC)) {
         $slotStatuses[$statusRow['slot_time']] = [
             'is_booked' => $statusRow['is_booked']

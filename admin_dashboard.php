@@ -19,39 +19,39 @@ $month = date('m');
 
 // Query for today's total visits (combining all services)
 $queryToday = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE DATE(date) = ?) +
-    (SELECT COUNT(*) FROM family_planning WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM general_bp_monitoring WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_planning WHERE DATE(date) = ?) +
     (SELECT COUNT(*) FROM tetanus_toxoid WHERE DATE(date) = ?) +
     (SELECT COUNT(*) FROM random_blood_sugar WHERE DATE(date) = ?) +
-    (SELECT COUNT(*) FROM deworming WHERE DATE(date) = ?) +
-    (SELECT COUNT(*) FROM family_members WHERE DATE(date) = ?) as today";
+    (SELECT COUNT(*) FROM general_deworming WHERE DATE(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_members WHERE DATE(date) = ?) as today";
 
 // Query for current week visits
 $queryWeek = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM general_bp_monitoring WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM general_family_planning WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
     (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
     (SELECT COUNT(*) FROM random_blood_sugar WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
-    (SELECT COUNT(*) FROM deworming WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
-    (SELECT COUNT(*) FROM family_members WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) as week";
+    (SELECT COUNT(*) FROM general_deworming WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) +
+    (SELECT COUNT(*) FROM general_family_members WHERE YEARWEEK(date, 1) = YEARWEEK(?, 1)) as week";
 
 // Query for current month visits
 $queryMonth = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM general_bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?) +
     (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = ? AND MONTH(date) = ?) +
     (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = ? AND MONTH(date) = ?) as month";
+    (SELECT COUNT(*) FROM general_deworming WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_members WHERE YEAR(date) = ? AND MONTH(date) = ?) as month";
 
 // Query for current year visits
 $queryYear = "SELECT 
-    (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = ?) +
-    (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM general_bp_monitoring WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_planning WHERE YEAR(date) = ?) +
     (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = ?) +
     (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = ?) +
-    (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = ?) +
-    (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = ?) as year";
+    (SELECT COUNT(*) FROM general_deworming WHERE YEAR(date) = ?) +
+    (SELECT COUNT(*) FROM general_family_members WHERE YEAR(date) = ?) as year";
 
 // Initialize counts to default values
 $todaysCount = 0;
@@ -103,12 +103,12 @@ try {
         
         // Count visits for this day across all services
         $dayQuery = "SELECT 
-            (SELECT COUNT(*) FROM bp_monitoring WHERE DATE(date) = ?) +
-            (SELECT COUNT(*) FROM family_planning WHERE DATE(date) = ?) +
+            (SELECT COUNT(*) FROM general_bp_monitoring WHERE DATE(date) = ?) +
+            (SELECT COUNT(*) FROM general_family_planning WHERE DATE(date) = ?) +
             (SELECT COUNT(*) FROM tetanus_toxoid WHERE DATE(date) = ?) +
             (SELECT COUNT(*) FROM random_blood_sugar WHERE DATE(date) = ?) +
-            (SELECT COUNT(*) FROM deworming WHERE DATE(date) = ?) +
-            (SELECT COUNT(*) FROM family_members WHERE DATE(date) = ?) as total";
+            (SELECT COUNT(*) FROM general_deworming WHERE DATE(date) = ?) +
+            (SELECT COUNT(*) FROM general_family_members WHERE DATE(date) = ?) as total";
         
         $stmt = $con->prepare($dayQuery);
         $stmt->execute([$checkDate, $checkDate, $checkDate, $checkDate, $checkDate, $checkDate]);
@@ -134,12 +134,12 @@ try {
         
         // Count visits for this week across all services
         $weekQuery = "SELECT 
-            (SELECT COUNT(*) FROM bp_monitoring WHERE DATE(date) BETWEEN ? AND ?) +
-            (SELECT COUNT(*) FROM family_planning WHERE DATE(date) BETWEEN ? AND ?) +
+            (SELECT COUNT(*) FROM general_bp_monitoring WHERE DATE(date) BETWEEN ? AND ?) +
+            (SELECT COUNT(*) FROM general_family_planning WHERE DATE(date) BETWEEN ? AND ?) +
             (SELECT COUNT(*) FROM tetanus_toxoid WHERE DATE(date) BETWEEN ? AND ?) +
             (SELECT COUNT(*) FROM random_blood_sugar WHERE DATE(date) BETWEEN ? AND ?) +
-            (SELECT COUNT(*) FROM deworming WHERE DATE(date) BETWEEN ? AND ?) +
-            (SELECT COUNT(*) FROM family_members WHERE DATE(date) BETWEEN ? AND ?) as total";
+            (SELECT COUNT(*) FROM general_deworming WHERE DATE(date) BETWEEN ? AND ?) +
+            (SELECT COUNT(*) FROM general_family_members WHERE DATE(date) BETWEEN ? AND ?) as total";
         
         $stmt = $con->prepare($weekQuery);
         $stmt->execute([$weekStart, $weekEnd, $weekStart, $weekEnd, $weekStart, $weekEnd, 
@@ -170,12 +170,12 @@ try {
         
         // Count visits for this month across all services
         $monthQuery = "SELECT 
-            (SELECT COUNT(*) FROM bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-            (SELECT COUNT(*) FROM family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+            (SELECT COUNT(*) FROM general_bp_monitoring WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+            (SELECT COUNT(*) FROM general_family_planning WHERE YEAR(date) = ? AND MONTH(date) = ?) +
             (SELECT COUNT(*) FROM tetanus_toxoid WHERE YEAR(date) = ? AND MONTH(date) = ?) +
             (SELECT COUNT(*) FROM random_blood_sugar WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-            (SELECT COUNT(*) FROM deworming WHERE YEAR(date) = ? AND MONTH(date) = ?) +
-            (SELECT COUNT(*) FROM family_members WHERE YEAR(date) = ? AND MONTH(date) = ?) as total";
+            (SELECT COUNT(*) FROM general_deworming WHERE YEAR(date) = ? AND MONTH(date) = ?) +
+            (SELECT COUNT(*) FROM general_family_members WHERE YEAR(date) = ? AND MONTH(date) = ?) as total";
         
         $stmt = $con->prepare($monthQuery);
         $stmt->execute([$checkYear, $checkMonth, $checkYear, $checkMonth, $checkYear, $checkMonth,

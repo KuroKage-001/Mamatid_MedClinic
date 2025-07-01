@@ -37,16 +37,14 @@ if (isset($_POST['save_bp'])) {
 
     // Check if all required fields are provided
     if ($name != '' && $date != '' && $address != '' && $sex != '' && $bp != '') {
-        // Prepare INSERT query
-        $query = "INSERT INTO `bp_monitoring`(`name`, `date`, `address`, `sex`, `bp`, 
-                  `alcohol`, `smoke`, `obese`, `cp_number`)
-                  VALUES('$name', '$date', '$address', '$sex', '$bp', 
-                         $alcohol, $smoke, $obese, '$cp_number');";
+        // Prepare INSERT query with parameterized statement
+        $query = "INSERT INTO `general_bp_monitoring`(`name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`)
+                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             // Start transaction and execute query
             $con->beginTransaction();
             $stmt = $con->prepare($query);
-            $stmt->execute();
+            $stmt->execute([$name, $date, $address, $sex, $bp, (int)$alcohol, (int)$smoke, (int)$obese, $cp_number]);
             $con->commit();
             $message = 'BP monitoring record added successfully.';
         } catch (PDOException $ex) {
@@ -64,11 +62,19 @@ if (isset($_POST['save_bp'])) {
 
 // Retrieve all BP monitoring records for the listing
 try {
-    $query = "SELECT `id`, `name`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`,
-                     DATE_FORMAT(`date`, '%d %b %Y') as `date`,
-                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `bp_monitoring`
-              ORDER BY `date` DESC;";
+    $query = "SELECT `id`,
+                 `name`,
+                 `address`,
+                 `sex`,
+                 `bp`,
+                 `alcohol`,
+                 `smoke`,
+                 `obese`,
+                 `cp_number`,
+                 DATE_FORMAT(`date`, '%d %b %Y') as `date`,
+                 DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
+         FROM `general_bp_monitoring`
+         ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();
 } catch (PDOException $ex) {
@@ -607,9 +613,9 @@ try {
                     <td><?php echo $row['address']; ?></td>
                     <td><?php echo $row['sex']; ?></td>
                     <td><?php echo $row['bp']; ?></td>
-                    <td><span class="badge badge-<?php echo $row['alcohol'] ? 'warning' : 'light'; ?>"><?php echo $row['alcohol'] ? 'Yes' : 'No'; ?></span></td>
-                    <td><span class="badge badge-<?php echo $row['smoke'] ? 'danger' : 'light'; ?>"><?php echo $row['smoke'] ? 'Yes' : 'No'; ?></span></td>
-                    <td><span class="badge badge-<?php echo $row['obese'] ? 'info' : 'light'; ?>"><?php echo $row['obese'] ? 'Yes' : 'No'; ?></span></td>
+                    <td><span class="badge badge-<?php echo ($row['alcohol'] == 1) ? 'warning' : 'light'; ?>"><?php echo ($row['alcohol'] == 1) ? 'Yes' : 'No'; ?></span></td>
+                    <td><span class="badge badge-<?php echo ($row['smoke'] == 1) ? 'danger' : 'light'; ?>"><?php echo ($row['smoke'] == 1) ? 'Yes' : 'No'; ?></span></td>
+                    <td><span class="badge badge-<?php echo ($row['obese'] == 1) ? 'info' : 'light'; ?>"><?php echo ($row['obese'] == 1) ? 'Yes' : 'No'; ?></span></td>
                     <td><?php echo $row['cp_number']; ?></td>
                     <td><?php echo $row['created_at']; ?></td>
                     <td>

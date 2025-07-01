@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Prepare the update query with parameterized statement
-            $query = "UPDATE family_members SET 
+            $query = "UPDATE general_family_members SET 
                      name = :name,
                      date = :date
                      WHERE id = :id";
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch existing record
 try {
     $query = "SELECT id, name, DATE_FORMAT(date, '%m/%d/%Y') as date
-             FROM family_members 
+             FROM general_family_members 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);

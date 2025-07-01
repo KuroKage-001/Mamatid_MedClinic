@@ -18,7 +18,7 @@ try {
                 name,
                 date,
                 created_at
-              FROM family_members
+              FROM general_family_members
               WHERE DATE(date) BETWEEN :from_date AND :to_date
               ORDER BY date DESC";
 

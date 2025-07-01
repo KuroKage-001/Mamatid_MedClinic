@@ -30,7 +30,7 @@ if (isset($_POST['save_family_member'])) {
     // Check if all required fields are provided
     if ($name != '' && $date != '') {
         // Prepare INSERT query
-        $query = "INSERT INTO `family_members`(`name`, `date`)
+        $query = "INSERT INTO `general_family_members`(`name`, `date`)
                   VALUES('$name', '$date');";
         try {
             // Start transaction and execute query
@@ -57,7 +57,7 @@ try {
     $query = "SELECT `id`, `name`, 
                      DATE_FORMAT(`date`, '%d %b %Y') as `date`,
                      DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `family_members`
+              FROM `general_family_members`
               ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();

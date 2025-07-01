@@ -17,7 +17,7 @@ try {
         DATE_FORMAT(date, '%Y-%m-%d') as date,
         age,
         address
-    FROM family_planning 
+    FROM general_family_planning 
     WHERE name = :patient_name 
     ORDER BY date DESC";
 

@@ -1,17 +1,5 @@
 <?php
 
-function getGender222() {
-	//do not use this function
-	exit;
-	$data = '<option value="">Select Gender</option>';
-
-	$data = $data .'<option value="Male">Male</option>';
-	$data = $data .'<option value="Female">Female</option>';
-	$data = $data .'<option value="Other">Other</option>';
-
-	return $data;
-}
-
 function getGender($gender = '') {
 	$data = '<option value="">Select Gender</option>';
 	
@@ -30,7 +18,6 @@ function getGender($gender = '') {
 
 	return $data;
 }
-
 
 function getMedicines($con, $medicineId = 0) {
 
@@ -113,17 +100,17 @@ function getAllPatientsWithHistory($con) {
     // Get all unique patient names from all history tables
     $query = "SELECT DISTINCT name, cp_number as phone_number 
               FROM (
-                  SELECT name, cp_number FROM bp_monitoring
+                  SELECT name, cp_number FROM general_bp_monitoring
                   UNION
-                  SELECT name, '' as cp_number FROM family_members
+                  SELECT name, '' as cp_number FROM general_family_members
                   UNION
                   SELECT name, '' as cp_number FROM random_blood_sugar
                   UNION
-                  SELECT name, '' as cp_number FROM deworming
+                  SELECT name, '' as cp_number FROM general_deworming
                   UNION
                   SELECT name, '' as cp_number FROM tetanus_toxoid
                   UNION
-                  SELECT name, '' as cp_number FROM family_planning
+                  SELECT name, '' as cp_number FROM general_family_planning
               ) AS combined_patients 
               ORDER BY name ASC";
 
@@ -156,19 +143,19 @@ function getPatientHistory($con, $patientName) {
     
     if (!empty($patientName)) {
         // Get family planning records
-        $query = "SELECT * FROM family_planning WHERE name = ? ORDER BY date DESC";
+        $query = "SELECT * FROM general_family_planning WHERE name = ? ORDER BY date DESC";
         $stmt = $con->prepare($query);
         $stmt->execute([$patientName]);
         $result['family'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Get deworming records
-        $query = "SELECT * FROM deworming WHERE name = ? ORDER BY date DESC";
+        $query = "SELECT * FROM general_deworming WHERE name = ? ORDER BY date DESC";
         $stmt = $con->prepare($query);
         $stmt->execute([$patientName]);
         $result['deworming'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Get BP monitoring records
-        $query = "SELECT * FROM bp_monitoring WHERE name = ? ORDER BY date DESC";
+        $query = "SELECT * FROM general_bp_monitoring WHERE name = ? ORDER BY date DESC";
         $stmt = $con->prepare($query);
         $stmt->execute([$patientName]);
         $result['bp'] = $stmt->fetchAll(PDO::FETCH_ASSOC);

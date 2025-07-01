@@ -48,7 +48,7 @@ if (isset($_POST['save_deworming'])) {
             $name = ucwords(strtolower($name));
 
             // Prepare INSERT query with parameterized statement
-            $query = "INSERT INTO deworming (name, date, age, birthday) 
+            $query = "INSERT INTO general_deworming (name, date, age, birthday) 
                      VALUES (:name, :date, :age, :birthday)";
 
             // Start transaction
@@ -84,7 +84,7 @@ try {
                      DATE_FORMAT(date, '%d %b %Y') as date,
                      DATE_FORMAT(birthday, '%d %b %Y') as birthday,
                      DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
-              FROM deworming
+              FROM general_deworming
               ORDER BY date DESC";
     $stmt = $con->prepare($query);
     $stmt->execute();

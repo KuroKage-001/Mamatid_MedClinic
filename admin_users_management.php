@@ -863,7 +863,7 @@ try {
         </div>
       </section>
     </div>
-    <?php include './config/footer.php'; ?>
+    <?php include './config/admin_footer.php'; ?>
   </div>
 
   <?php include './config/site_js_links.php'; ?>

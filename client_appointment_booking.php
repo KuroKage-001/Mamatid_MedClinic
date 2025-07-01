@@ -70,16 +70,21 @@ if (isset($_POST['book_appointment'])) {
             $scheduleQuery = "SELECT ds.*, u.id as provider_id, u.display_name as provider_name 
                             FROM doctor_schedules ds
                             JOIN users u ON ds.doctor_id = u.id
-                            WHERE ds.id = ? FOR UPDATE";
+                            WHERE ds.id = ? AND ds.is_approved = 1 FOR UPDATE";
             $tableName = 'doctor_schedules';
             $providerIdColumn = 'doctor_id';
-        } else {
+        } else if ($scheduleType == 'staff') {
             $scheduleQuery = "SELECT ss.*, u.id as provider_id, u.display_name as provider_name 
                             FROM staff_schedules ss
                             JOIN users u ON ss.staff_id = u.id
                             WHERE ss.id = ? FOR UPDATE";
             $tableName = 'staff_schedules';
             $providerIdColumn = 'staff_id';
+        } else {
+            $con->rollBack();
+            $error = "Invalid schedule type selected.";
+            header("location:client_appointment_booking.php?error=" . urlencode($error));
+            exit;
         }
         
         $scheduleStmt = $con->prepare($scheduleQuery);
@@ -127,26 +132,50 @@ if (isset($_POST['book_appointment'])) {
             exit;
         }
 
-        // Check or create the appointment slot record
-        $slotExistsQuery = "SELECT id, is_booked FROM appointment_slots 
-                          WHERE schedule_id = ? AND slot_time = ? 
-                          FOR UPDATE";
-        $slotExistsStmt = $con->prepare($slotExistsQuery);
-        $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
-        $slotExists = $slotExistsStmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$slotExists) {
-            // Create the slot if it doesn't exist
-            $createSlotQuery = "INSERT INTO appointment_slots 
-                              (schedule_id, slot_time, is_booked) 
-                              VALUES (?, ?, 0)";
-            $createSlotStmt = $con->prepare($createSlotQuery);
-            $createSlotStmt->execute([$scheduleId, $appointmentTime]);
+        // Check or create the appointment slot record based on schedule type
+        if ($scheduleType == 'doctor') {
+            $slotExistsQuery = "SELECT id, is_booked FROM appointment_slots 
+                              WHERE schedule_id = ? AND slot_time = ? 
+                              FOR UPDATE";
+            $slotExistsStmt = $con->prepare($slotExistsQuery);
+            $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
+            $slotExists = $slotExistsStmt->fetch(PDO::FETCH_ASSOC);
             
-            // Get the newly created slot ID
-            $slotId = $con->lastInsertId();
+            if (!$slotExists) {
+                // Create the slot if it doesn't exist
+                $createSlotQuery = "INSERT INTO appointment_slots 
+                                  (schedule_id, slot_time, is_booked) 
+                                  VALUES (?, ?, 0)";
+                $createSlotStmt = $con->prepare($createSlotQuery);
+                $createSlotStmt->execute([$scheduleId, $appointmentTime]);
+                
+                // Get the newly created slot ID
+                $slotId = $con->lastInsertId();
+            } else {
+                $slotId = $slotExists['id'];
+            }
         } else {
-            $slotId = $slotExists['id'];
+            // For staff schedules, use staff_appointment_slots table
+            $slotExistsQuery = "SELECT id, is_booked FROM staff_appointment_slots 
+                              WHERE schedule_id = ? AND slot_time = ? 
+                              FOR UPDATE";
+            $slotExistsStmt = $con->prepare($slotExistsQuery);
+            $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
+            $slotExists = $slotExistsStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$slotExists) {
+                // Create the slot if it doesn't exist
+                $createSlotQuery = "INSERT INTO staff_appointment_slots 
+                                  (schedule_id, slot_time, is_booked) 
+                                  VALUES (?, ?, 0)";
+                $createSlotStmt = $con->prepare($createSlotQuery);
+                $createSlotStmt->execute([$scheduleId, $appointmentTime]);
+                
+                // Get the newly created slot ID
+                $slotId = $con->lastInsertId();
+            } else {
+                $slotId = $slotExists['id'];
+            }
         }
 
         // Insert the appointment
@@ -173,12 +202,20 @@ if (isset($_POST['book_appointment'])) {
         // Get the newly created appointment ID
         $appointmentId = $con->lastInsertId();
         
-        // Update the appointment_slots table
-        $updateSlotQuery = "UPDATE appointment_slots 
-                          SET is_booked = 1, appointment_id = ? 
-                          WHERE id = ?";
-        $updateSlotStmt = $con->prepare($updateSlotQuery);
-        $updateSlotStmt->execute([$appointmentId, $slotId]);
+        // Update the appropriate slot table based on schedule type
+        if ($scheduleType == 'doctor') {
+            $updateSlotQuery = "UPDATE appointment_slots 
+                              SET is_booked = 1, appointment_id = ? 
+                              WHERE id = ?";
+            $updateSlotStmt = $con->prepare($updateSlotQuery);
+            $updateSlotStmt->execute([$appointmentId, $slotId]);
+        } else {
+            $updateSlotQuery = "UPDATE staff_appointment_slots 
+                              SET is_booked = 1, appointment_id = ? 
+                              WHERE id = ?";
+            $updateSlotStmt = $con->prepare($updateSlotQuery);
+            $updateSlotStmt->execute([$appointmentId, $slotId]);
+        }
 
         // Commit the transaction
         $con->commit();
@@ -1775,9 +1812,18 @@ if (empty($calendarEvents)) {
                         // Set form values
                         $('#selectedDoctor').val(staffName);
                         $('#scheduleId').val(scheduleId);
-                        if (scheduleType) {
-                            $('input[name="schedule_type"]').val(scheduleType);
+                        
+                        // Set the schedule type properly
+                        console.log('Schedule type:', scheduleType);
+                        $('input[name="schedule_type"]').val(scheduleType);
+                        
+                        // Update label based on schedule type
+                        if (scheduleType === 'staff') {
+                            $('label[for="selectedDoctor"]').text('Healthcare Provider');
+                        } else {
+                            $('label[for="selectedDoctor"]').text('Doctor');
                         }
+                        
                         $('#selectedDate').val(formattedDate);
                         
                         // Generate time slots
@@ -1815,7 +1861,8 @@ if (empty($calendarEvents)) {
                         url: 'ajax/get_schedule_details.php',
                         type: 'POST',
                         data: {
-                            schedule_id: scheduleId
+                            schedule_id: scheduleId,
+                            schedule_type: $('input[name="schedule_type"]').val()
                         },
                         dataType: 'json',
                         success: function(response) {
@@ -1850,6 +1897,7 @@ if (empty($calendarEvents)) {
                     type: 'POST',
                     data: {
                         schedule_id: scheduleId,
+                        schedule_type: $('input[name="schedule_type"]').val(),
                         client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
                     },
                     dataType: 'json',
@@ -2238,6 +2286,7 @@ if (empty($calendarEvents)) {
                     data: {
                         schedule_id: $('#scheduleId').val(),
                         appointment_time: $('#appointmentTime').val(),
+                        schedule_type: $('input[name="schedule_type"]').val(),
                         client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
                     },
                     dataType: 'json',

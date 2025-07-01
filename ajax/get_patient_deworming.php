@@ -17,7 +17,7 @@ try {
         DATE_FORMAT(date, '%Y-%m-%d') as date,
         age,
         DATE_FORMAT(birthday, '%Y-%m-%d') as birthday
-    FROM deworming 
+    FROM general_deworming 
     WHERE name = :patient_name 
     ORDER BY date DESC";
 

@@ -33,7 +33,7 @@ try {
                 DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
                 date as raw_date,
                 created_at
-              FROM family_members 
+              FROM general_family_members 
               WHERE name = :name
               ORDER BY date DESC, created_at DESC";
     
@@ -63,7 +63,7 @@ try {
                     DATE_FORMAT(date, '%m/%d/%Y') as formatted_date,
                     date as raw_date,
                     created_at
-                  FROM family_members 
+                  FROM general_family_members 
                   WHERE name LIKE :name
                   ORDER BY date DESC, created_at DESC";
         

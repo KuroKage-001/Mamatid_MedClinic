@@ -12,7 +12,7 @@ try {
     $fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
     $toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
 
-    $query = "SELECT * FROM bp_monitoring 
+    $query = "SELECT * FROM general_bp_monitoring 
               WHERE DATE(date) BETWEEN :from_date AND :to_date 
               ORDER BY date DESC";
 

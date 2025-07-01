@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Update record
-            $query = "UPDATE family_planning SET 
+            $query = "UPDATE general_family_planning SET 
                      name = :name,
                      date = :date,
                      age = :age,
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 try {
     $query = "SELECT id, name, address, age, 
              DATE_FORMAT(date, '%m/%d/%Y') as date
-             FROM family_planning 
+             FROM general_family_planning 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);

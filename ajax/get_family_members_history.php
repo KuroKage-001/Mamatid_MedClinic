@@ -15,7 +15,7 @@ $days = isset($_GET['days']) ? intval($_GET['days']) : 7;
 $cacheBuster = uniqid();
 
 // Get standard history data
-$response = get_standard_history_data($con, 'family_members', 'family_members', $days);
+$response = get_standard_history_data($con, 'general_family_members', 'family_members', $days);
 
 // Return JSON response
 header('Content-Type: application/json');

@@ -87,9 +87,9 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/general_rbs.php" class="nav-link <?php echo ($current_page == 'general_rbs.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
-                                <i class="nav-icon-sm fas fa-tint"></i>
-                                <p>RBS</p>
+                            <a href="<?php echo $base_path; ?>/general_family_planning.php" class="nav-link <?php echo ($current_page == 'general_family_planning.php' ? 'active' : ''); ?>" id="mi_family_planning">
+                            <i class="nav-icon-sm fas fa-baby"></i>
+                                <p>Family Planning</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -111,9 +111,9 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/general_family_planning.php" class="nav-link <?php echo ($current_page == 'general_family_planning.php' ? 'active' : ''); ?>" id="mi_family_planning">
-                                <i class="nav-icon-sm fas fa-baby"></i>
-                                <p>Family Planning</p>
+                            <a href="<?php echo $base_path; ?>/general_rbs.php" class="nav-link <?php echo ($current_page == 'general_rbs.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
+                            <i class="nav-icon-sm fas fa-tint"></i>
+                                <p>RBS</p>
                             </a>
                         </li>
                     </ul>

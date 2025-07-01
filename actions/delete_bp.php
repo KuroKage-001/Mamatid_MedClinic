@@ -10,7 +10,7 @@ if(isset($_GET['id'])) {
         $con->beginTransaction();
         
         // Delete the record
-        $stmt = $con->prepare("DELETE FROM bp_monitoring WHERE id = ?");
+        $stmt = $con->prepare("DELETE FROM general_bp_monitoring WHERE id = ?");
         $stmt->execute([$id]);
         
         // Commit transaction

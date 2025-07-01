@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Prepare the update query with parameterized statement
-            $query = "UPDATE deworming SET 
+            $query = "UPDATE general_deworming SET 
                      name = :name,
                      date = :date,
                      age = :age,
@@ -94,7 +94,7 @@ try {
     $query = "SELECT id, name, age,
              DATE_FORMAT(date, '%m/%d/%Y') as date,
              DATE_FORMAT(birthday, '%m/%d/%Y') as birthday
-             FROM deworming 
+             FROM general_deworming 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);
