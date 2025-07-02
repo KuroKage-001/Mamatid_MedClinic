@@ -15,7 +15,7 @@ $days = isset($_GET['days']) ? intval($_GET['days']) : 7;
 $cacheBuster = uniqid();
 
 // Get standard history data
-$response = get_standard_history_data($con, 'tetanus', 'tetanus_toxoid', $days);
+$response = get_standard_history_data($con, 'tetanus', 'general_tetanus_toxoid', $days);
 
 // Return JSON response
 header('Content-Type: application/json');

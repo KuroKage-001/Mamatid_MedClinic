@@ -15,7 +15,7 @@ $days = isset($_GET['days']) ? intval($_GET['days']) : 7;
 $cacheBuster = uniqid();
 
 // Get standard history data
-$response = get_standard_history_data($con, 'blood_sugar', 'random_blood_sugar', $days);
+$response = get_standard_history_data($con, 'blood_sugar', 'general_rbs', $days);
 
 // Return JSON response
 header('Content-Type: application/json');

@@ -604,7 +604,7 @@ include './common_service/common_functions.php';
       // Tetanus Toxoid Report
       $("#print_tetanus").click(function() {
         generateReport(
-          "reports/print_tetanus_toxoid.php",
+          "reports/print_general_general_tetanus_toxoid.php",
           $("#tetanus_from").val(),
           $("#tetanus_to").val()
         );

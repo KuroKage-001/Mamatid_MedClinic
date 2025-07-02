@@ -104,11 +104,11 @@ function getAllPatientsWithHistory($con) {
                   UNION
                   SELECT name, '' as cp_number FROM general_family_members
                   UNION
-                  SELECT name, '' as cp_number FROM random_blood_sugar
+                  SELECT name, '' as cp_number FROM general_rbs
                   UNION
                   SELECT name, '' as cp_number FROM general_deworming
                   UNION
-                  SELECT name, '' as cp_number FROM tetanus_toxoid
+                  SELECT name, '' as cp_number FROM general_tetanus_toxoid
                   UNION
                   SELECT name, '' as cp_number FROM general_family_planning
               ) AS combined_patients 
@@ -161,13 +161,13 @@ function getPatientHistory($con, $patientName) {
         $result['bp'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Get blood sugar records
-        $query = "SELECT * FROM random_blood_sugar WHERE name = ? ORDER BY date DESC";
+        $query = "SELECT * FROM general_rbs WHERE name = ? ORDER BY date DESC";
         $stmt = $con->prepare($query);
         $stmt->execute([$patientName]);
         $result['blood_sugar'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Get tetanus records
-        $query = "SELECT * FROM tetanus_toxoid WHERE name = ? ORDER BY date DESC";
+        $query = "SELECT * FROM general_tetanus_toxoid WHERE name = ? ORDER BY date DESC";
         $stmt = $con->prepare($query);
         $stmt->execute([$patientName]);
         $result['tetanus'] = $stmt->fetchAll(PDO::FETCH_ASSOC);

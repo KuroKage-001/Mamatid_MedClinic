@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Prepare the update query with parameterized statement
-            $query = "UPDATE random_blood_sugar SET 
+            $query = "UPDATE general_rbs SET 
                      name = :name,
                      date = :date,
                      address = :address,
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 try {
     $query = "SELECT id, name, address, age, result,
              DATE_FORMAT(date, '%m/%d/%Y') as date
-             FROM random_blood_sugar 
+             FROM general_rbs 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);
@@ -370,7 +370,7 @@ try {
                 <button type="button" class="btn btn-danger" id="deleteBtn">
                   <i class="fas fa-trash"></i> Delete
                 </button>
-                <button type="submit" id="update_random_blood_sugar" name="update_random_blood_sugar" class="btn btn-primary">
+                <button type="submit" id="update_general_rbs" name="update_general_rbs" class="btn btn-primary">
                   <i class="fas fa-save"></i> Update
                 </button>
               </div>
@@ -497,7 +497,7 @@ try {
         });
 
         // Show menu
-        showMenuSelected("#mnu_patients", "#mi_random_blood_sugar");
+        showMenuSelected("#mnu_patients", "#mi_general_rbs");
       });
     </script>
 </body>

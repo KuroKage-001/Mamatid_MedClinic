@@ -34,7 +34,7 @@ if (isset($_POST['save_blood_sugar'])) {
     // Check if all required fields are provided
     if ($name != '' && $date != '' && $address != '' && $age != '' && $result != '') {
         // Prepare INSERT query
-        $query = "INSERT INTO `random_blood_sugar`(`name`, `date`, `address`, `age`, `result`)
+        $query = "INSERT INTO `general_rbs`(`name`, `date`, `address`, `age`, `result`)
                   VALUES('$name', '$date', '$address', '$age', '$result');";
         try {
             // Start transaction and execute query
@@ -61,7 +61,7 @@ try {
     $query = "SELECT `id`, `name`, `address`, `age`, `result`,
                      DATE_FORMAT(`date`, '%d %b %Y') as `date`,
                      DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-              FROM `random_blood_sugar`
+              FROM `general_rbs`
               ORDER BY `date` DESC;";
     $stmt = $con->prepare($query);
     $stmt->execute();
@@ -710,7 +710,7 @@ try {
       });
 
       // Show menu
-    showMenuSelected("#mnu_patients", "#mi_random_blood_sugar");
+    showMenuSelected("#mnu_patients", "#mi_general_rbs");
     });
   </script>
 </body>

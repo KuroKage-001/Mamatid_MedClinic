@@ -18,7 +18,7 @@ try {
         age,
         diagnosis,
         remarks
-    FROM tetanus_toxoid 
+    FROM general_tetanus_toxoid 
     WHERE name = :patient_name 
     ORDER BY date DESC";
 

@@ -17,7 +17,7 @@ try {
         DATE_FORMAT(date, '%Y-%m-%d') as date,
         age,
         result
-    FROM random_blood_sugar 
+    FROM general_rbs 
     WHERE name = :patient_name 
     ORDER BY date DESC";
 

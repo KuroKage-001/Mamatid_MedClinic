@@ -45,7 +45,7 @@ if (isset($_POST['save_tetanus'])) {
             $address = ucwords(strtolower($address));
 
             // Prepare INSERT query with parameterized statement
-            $query = "INSERT INTO tetanus_toxoid (name, date, address, age, diagnosis, remarks) 
+            $query = "INSERT INTO general_tetanus_toxoid (name, date, address, age, diagnosis, remarks) 
                      VALUES (:name, :date, :address, :age, :diagnosis, :remarks)";
 
             // Start transaction
@@ -82,7 +82,7 @@ try {
     $query = "SELECT id, name, address, age, diagnosis, remarks,
                      DATE_FORMAT(date, '%d %b %Y') as date,
                      DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
-              FROM tetanus_toxoid
+              FROM general_tetanus_toxoid
               ORDER BY date DESC";
     $stmt = $con->prepare($query);
     $stmt->execute();
@@ -582,7 +582,7 @@ try {
         </div>
       </section>
     </div>
-    <?php include './config/footer.php'; ?>
+    <?php include './config/admin_footer.php'; ?>
   </div>
 
   <?php include './config/site_js_links.php'; ?>
@@ -760,7 +760,7 @@ try {
       });
 
       // Show menu
-      showMenuSelected("#mnu_patients", "#mi_tetanus_toxoid");
+      showMenuSelected("#mnu_patients", "#mi_general_tetanus_toxoid");
     });
   </script>
 </body>

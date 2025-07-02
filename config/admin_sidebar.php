@@ -99,7 +99,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/general_tetanus_toxoid.php" class="nav-link <?php echo ($current_page == 'general_tetanus_toxoid.php' ? 'active' : ''); ?>" id="mi_tetanus_toxoid">
+                            <a href="<?php echo $base_path; ?>/general_tetanus_toxoid.php" class="nav-link <?php echo ($current_page == 'general_tetanus_toxoid.php' ? 'active' : ''); ?>" id="mi_general_tetanus_toxoid">
                                 <i class="nav-icon-sm fas fa-syringe"></i>
                                 <p>Tetanus Toxoid</p>
                             </a>
@@ -111,7 +111,7 @@ $role_display_name = getRoleDisplayName($user_role);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/general_rbs.php" class="nav-link <?php echo ($current_page == 'general_rbs.php' ? 'active' : ''); ?>" id="mi_random_blood_sugar">
+                            <a href="<?php echo $base_path; ?>/general_rbs.php" class="nav-link <?php echo ($current_page == 'general_rbs.php' ? 'active' : ''); ?>" id="mi_general_rbs">
                             <i class="nav-icon-sm fas fa-tint"></i>
                                 <p>RBS</p>
                             </a>

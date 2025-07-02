@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->beginTransaction();
 
             // Prepare the update query with parameterized statement
-            $query = "UPDATE tetanus_toxoid SET 
+            $query = "UPDATE general_tetanus_toxoid SET 
                      name = :name,
                      date = :date,
                      address = :address,
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 try {
     $query = "SELECT id, name, address, age, diagnosis, remarks,
              DATE_FORMAT(date, '%m/%d/%Y') as date
-             FROM tetanus_toxoid 
+             FROM general_tetanus_toxoid 
              WHERE id = :id";
     
     $stmt = $con->prepare($query);
@@ -494,7 +494,7 @@ try {
             });
 
             // Show menu
-            showMenuSelected("#mnu_patients", "#mi_tetanus_toxoid");
+            showMenuSelected("#mnu_patients", "#mi_general_tetanus_toxoid");
         });
     </script>
 </body>

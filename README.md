@@ -148,8 +148,8 @@ The database (`db_mamatid01`) contains the following key tables:
 2. **patients**: Patient records
 3. **bp_monitoring**: Blood pressure monitoring records
 4. **family_planning**: Family planning service records
-5. **tetanus_toxoid**: Tetanus toxoid vaccination records
-6. **random_blood_sugar**: Blood sugar monitoring records
+5. **general_tetanus_toxoid**: Tetanus toxoid vaccination records
+6. **general_rbs**: Blood sugar monitoring records
 7. **deworming**: Deworming service records
 8. **family_members**: Family member records
 9. **appointments**: Patient appointment records
