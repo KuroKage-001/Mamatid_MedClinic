@@ -14,6 +14,9 @@ requireRole(['admin', 'health_worker', 'doctor']);
 
 $message = '';
 
+// Determine if showing archived records
+$show_archived = isset($_GET['archived']) && $_GET['archived'] == '1';
+
 // Handle form submission to save a new BP monitoring record
 if (isset($_POST['save_bp'])) {
     // Retrieve and sanitize form inputs
@@ -60,23 +63,47 @@ if (isset($_POST['save_bp'])) {
     exit;
 }
 
-// Retrieve all BP monitoring records for the listing
+// Retrieve BP monitoring records based on archive status
 try {
-    $query = "SELECT `id`,
-                 `name`,
-                 `address`,
-                 `sex`,
-                 `bp`,
-                 `alcohol`,
-                 `smoke`,
-                 `obese`,
-                 `cp_number`,
-                 DATE_FORMAT(`date`, '%d %b %Y') as `date`,
-                 DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
-         FROM `general_bp_monitoring`
-         ORDER BY `date` DESC;";
+    $archive_condition = $show_archived ? 1 : 0;
+    
+    if ($show_archived) {
+        $query = "SELECT `id`,
+                     `name`,
+                     `address`,
+                     `sex`,
+                     `bp`,
+                     `alcohol`,
+                     `smoke`,
+                     `obese`,
+                     `cp_number`,
+                     DATE_FORMAT(`date`, '%d %b %Y') as `date`,
+                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`,
+                     DATE_FORMAT(`archived_at`, '%d %b %Y %h:%i %p') as `archived_at`,
+                     `archive_reason`,
+                     (SELECT `display_name` FROM `users` WHERE `id` = `general_bp_monitoring`.`archived_by`) as `archived_by_name`
+             FROM `general_bp_monitoring`
+             WHERE `is_archived` = ?
+             ORDER BY `archived_at` DESC;";
+    } else {
+        $query = "SELECT `id`,
+                     `name`,
+                     `address`,
+                     `sex`,
+                     `bp`,
+                     `alcohol`,
+                     `smoke`,
+                     `obese`,
+                     `cp_number`,
+                     DATE_FORMAT(`date`, '%d %b %Y') as `date`,
+                     DATE_FORMAT(`created_at`, '%d %b %Y %h:%i %p') as `created_at`
+             FROM `general_bp_monitoring`
+             WHERE `is_archived` = ?
+             ORDER BY `date` DESC;";
+    }
+    
     $stmt = $con->prepare($query);
-    $stmt->execute();
+    $stmt->execute([$archive_condition]);
 } catch (PDOException $ex) {
     echo $ex->getMessage();
     echo $ex->getTraceAsString();
@@ -226,6 +253,74 @@ try {
 
     .btn-tool {
       color: var(--dark-color);
+    }
+
+    /* Archive Button Styling */
+    .btn-archive {
+      background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+      color: white !important;
+      border: none;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-archive:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(255, 168, 0, 0.3);
+      color: white !important;
+    }
+
+    .btn-unarchive {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+      color: white !important;
+      border: none;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-unarchive:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(27, 197, 189, 0.3);
+      color: white !important;
+    }
+
+    /* Archive Filter Buttons */
+    .archive-filter-btn {
+      background: linear-gradient(135deg, #E1F0FF 0%, #F8FBFF 100%);
+      color: var(--primary-color) !important;
+      border: 2px solid var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      margin-right: 0.5rem;
+    }
+
+    .archive-filter-btn:hover {
+      background: var(--primary-color);
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+      text-decoration: none;
+    }
+
+    .archive-filter-btn.active {
+      background: var(--primary-color);
+      color: white !important;
+    }
+
+    /* Archived Row Styling */
+    .archived-row {
+      background-color: rgba(255, 168, 0, 0.05) !important;
+      border-left: 4px solid #FFA800;
     }
 
     /* Table Styling */
@@ -438,6 +533,8 @@ try {
         </div>
       </section>
 
+      <!-- Add BP Monitoring Record Form (only show for active records) -->
+      <?php if (!$show_archived): ?>
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
@@ -539,15 +636,26 @@ try {
           </div>
         </div>
       </section>
+      <?php endif; ?>
 
       <section class="content">
         <div class="card card-outline card-primary">
           <div class="card-header">
-            <h3 class="card-title">BP Monitoring Records</h3>
+            <h3 class="card-title"><?php echo $show_archived ? 'Archived BP Monitoring Records' : 'Active BP Monitoring Records'; ?></h3>
             <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
+              <div class="d-flex align-items-center">
+                <a href="general_bp_monitoring.php" 
+                   class="archive-filter-btn <?php echo !$show_archived ? 'active' : ''; ?>">
+                  <i class="fas fa-list"></i> Active Records
+                </a>
+                <a href="general_bp_monitoring.php?archived=1" 
+                   class="archive-filter-btn <?php echo $show_archived ? 'active' : ''; ?>">
+                  <i class="fas fa-archive"></i> Archived Records
+                </a>
+                <button type="button" class="btn btn-tool ml-2" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
             </div>
           </div>
           <div class="card-body">
@@ -597,6 +705,11 @@ try {
                     <th>Obese</th>
                     <th>CP Number</th>
                     <th>Created At</th>
+                    <?php if ($show_archived): ?>
+                    <th>Archived At</th>
+                    <th>Archived By</th>
+                    <th>Archive Reason</th>
+                    <?php endif; ?>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -606,23 +719,47 @@ try {
                   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                       $count++;
                   ?>
-                  <tr>
+                  <tr <?php echo $show_archived ? 'class="archived-row"' : ''; ?>>
                     <td><?php echo $count; ?></td>
-                    <td><?php echo $row['name']; ?></td>
-                    <td><?php echo $row['date']; ?></td>
-                    <td><?php echo $row['address']; ?></td>
-                    <td><?php echo $row['sex']; ?></td>
-                    <td><?php echo $row['bp']; ?></td>
+                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['date']); ?></td>
+                    <td><?php echo htmlspecialchars($row['address']); ?></td>
+                    <td><?php echo htmlspecialchars($row['sex']); ?></td>
+                    <td><?php echo htmlspecialchars($row['bp']); ?></td>
                     <td><span class="badge badge-<?php echo ($row['alcohol'] == 1) ? 'warning' : 'light'; ?>"><?php echo ($row['alcohol'] == 1) ? 'Yes' : 'No'; ?></span></td>
                     <td><span class="badge badge-<?php echo ($row['smoke'] == 1) ? 'danger' : 'light'; ?>"><?php echo ($row['smoke'] == 1) ? 'Yes' : 'No'; ?></span></td>
                     <td><span class="badge badge-<?php echo ($row['obese'] == 1) ? 'info' : 'light'; ?>"><?php echo ($row['obese'] == 1) ? 'Yes' : 'No'; ?></span></td>
-                    <td><?php echo $row['cp_number']; ?></td>
-                    <td><?php echo $row['created_at']; ?></td>
+                    <td><?php echo htmlspecialchars($row['cp_number']); ?></td>
+                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                    <?php if ($show_archived): ?>
+                    <td><?php echo htmlspecialchars($row['archived_at'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($row['archived_by_name'] ?? ''); ?></td>
                     <td>
-                      <a href="update_bp.php?id=<?php echo $row['id']; ?>" 
-                         class="btn btn-primary">
-                        <i class="fa fa-edit"></i>
-                      </a>
+                      <?php if (!empty($row['archive_reason'])): ?>
+                        <span class="badge badge-info" data-toggle="tooltip" title="<?php echo htmlspecialchars($row['archive_reason']); ?>">
+                          <i class="fas fa-info-circle"></i> Reason
+                        </span>
+                      <?php else: ?>
+                        <span class="text-muted">No reason provided</span>
+                      <?php endif; ?>
+                    </td>
+                    <?php endif; ?>
+                    <td>
+                      <?php if ($show_archived): ?>
+                        <button type="button" class="btn btn-unarchive btn-sm" 
+                                onclick="unarchiveBPRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name'], ENT_QUOTES); ?>')">
+                          <i class="fas fa-undo"></i> Unarchive
+                        </button>
+                      <?php else: ?>
+                        <a href="update_bp.php?id=<?php echo $row['id']; ?>" 
+                           class="btn btn-primary btn-sm">
+                          <i class="fa fa-edit"></i> Edit
+                        </a>
+                        <button type="button" class="btn btn-archive btn-sm ml-1" 
+                                onclick="archiveBPRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name'], ENT_QUOTES); ?>')">
+                          <i class="fas fa-archive"></i> Archive
+                        </button>
+                      <?php endif; ?>
                     </td>
                   </tr>
                   <?php } ?>
@@ -645,6 +782,154 @@ try {
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <script>
+      // Archive BP Record Function
+      function archiveBPRecord(id, name) {
+        Swal.fire({
+          title: 'Archive BP Monitoring Record',
+          html: `
+            <p>Are you sure you want to archive the BP monitoring record for <strong>${name}</strong>?</p>
+            <div class="form-group mt-3">
+              <label for="archiveReason" class="form-label">Archive Reason (Optional):</label>
+              <textarea id="archiveReason" class="form-control" rows="3" placeholder="Enter reason for archiving..."></textarea>
+            </div>
+          `,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#FFA800',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-archive"></i> Archive Record',
+          cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+          customClass: {
+            container: 'swal-archive-container'
+          },
+          preConfirm: () => {
+            const reason = document.getElementById('archiveReason').value.trim();
+            return { reason: reason };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+              title: 'Archiving...',
+              text: 'Please wait while we archive the record.',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
+            // Send archive request
+            fetch('actions/archive_bp_monitoring.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: id,
+                reason: result.value.reason
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Archived Successfully!',
+                  text: data.message,
+                  confirmButtonColor: '#1BC5BD'
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Archive Failed',
+                  text: data.message,
+                  confirmButtonColor: '#F64E60'
+                });
+              }
+            })
+            .catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#F64E60'
+              });
+            });
+          }
+        });
+      }
+
+      // Unarchive BP Record Function
+      function unarchiveBPRecord(id, name) {
+        Swal.fire({
+          title: 'Unarchive BP Monitoring Record',
+          text: `Are you sure you want to unarchive the BP monitoring record for ${name}?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#1BC5BD',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-undo"></i> Unarchive Record',
+          cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+              title: 'Unarchiving...',
+              text: 'Please wait while we unarchive the record.',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
+            // Send unarchive request
+            fetch('actions/unarchive_bp_monitoring.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: id
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Unarchived Successfully!',
+                  text: data.message,
+                  confirmButtonColor: '#1BC5BD'
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Unarchive Failed',
+                  text: data.message,
+                  confirmButtonColor: '#F64E60'
+                });
+              }
+            })
+            .catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#F64E60'
+              });
+            });
+          }
+        });
+      }
+
       $(document).ready(function() {
         // Initialize DataTable with export buttons
         var table = $("#all_bp").DataTable({
@@ -724,21 +1009,26 @@ try {
           columnVisibility.append(menuItem);
         });
 
-        // Initialize Date Picker
-        $('#date').datetimepicker({
-          format: 'L',
-          icons: {
-            time: 'fas fa-clock',
-            date: 'fas fa-calendar',
-            up: 'fas fa-arrow-up',
-            down: 'fas fa-arrow-down',
-            previous: 'fas fa-chevron-left',
-            next: 'fas fa-chevron-right',
-            today: 'fas fa-calendar-check',
-            clear: 'fas fa-trash',
-            close: 'fas fa-times'
-          }
-        });
+        // Initialize Date Picker (only if form exists)
+        if ($('#date').length) {
+          $('#date').datetimepicker({
+            format: 'L',
+            icons: {
+              time: 'fas fa-clock',
+              date: 'fas fa-calendar',
+              up: 'fas fa-arrow-up',
+              down: 'fas fa-arrow-down',
+              previous: 'fas fa-chevron-left',
+              next: 'fas fa-chevron-right',
+              today: 'fas fa-calendar-check',
+              clear: 'fas fa-trash',
+              close: 'fas fa-times'
+            }
+          });
+        }
+
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
 
         // Initialize Toast
         const Toast = Swal.mixin({

@@ -78,14 +78,31 @@ if (isset($_POST['save_deworming'])) {
     }
 }
 
-// Retrieve all deworming records for the listing
+// Add filter for viewing archived/unarchived records
+$show_archived = isset($_GET['show_archived']) ? (bool)$_GET['show_archived'] : false;
+
+// Retrieve deworming records based on archive status
 try {
+    if ($show_archived) {
+        $query = "SELECT id, name, age,
+                         DATE_FORMAT(date, '%d %b %Y') as date,
+                         DATE_FORMAT(birthday, '%d %b %Y') as birthday,
+                         DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at,
+                         DATE_FORMAT(archived_at, '%d %b %Y %h:%i %p') as archived_at,
+                         archive_reason,
+                         (SELECT display_name FROM users WHERE id = general_deworming.archived_by) as archived_by_name
+                  FROM general_deworming
+                  WHERE is_archived = 1
+                  ORDER BY archived_at DESC";
+    } else {
     $query = "SELECT id, name, age,
                      DATE_FORMAT(date, '%d %b %Y') as date,
                      DATE_FORMAT(birthday, '%d %b %Y') as birthday,
                      DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
               FROM general_deworming
+                  WHERE is_archived = 0
               ORDER BY date DESC";
+    }
     $stmt = $con->prepare($query);
     $stmt->execute();
 } catch (PDOException $ex) {
@@ -372,6 +389,59 @@ try {
       justify-content: center;
     }
 
+    /* Archive-specific styles */
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning-color) 0%, #E8A317 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 168, 0, 0.4);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success-color) 0%, #159C96 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(27, 197, 189, 0.4);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+      color: white;
+    }
+
+    .archived-row {
+      background-color: rgba(255, 168, 0, 0.1) !important;
+    }
+
+    .archive-filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .archive-filter-tabs .btn {
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-weight: 500;
+    }
+
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       .card-header {
@@ -483,9 +553,19 @@ try {
 
       <section class="content">
         <div class="card card-outline card-primary">
-          <div class="card-header">
-            <h3 class="card-title">Deworming Records</h3>
-            <div class="card-tools">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">
+              <?php echo $show_archived ? 'Archived Deworming Records' : 'Active Deworming Records'; ?>
+            </h3>
+            <div class="d-flex gap-2">
+              <div class="archive-filter-tabs">
+                <a href="general_deworming.php" class="btn <?php echo !$show_archived ? 'btn-primary' : 'btn-secondary'; ?>">
+                  <i class="fas fa-users"></i> Active Records
+                </a>
+                <a href="general_deworming.php?show_archived=1" class="btn <?php echo $show_archived ? 'btn-warning' : 'btn-secondary'; ?>">
+                  <i class="fas fa-archive"></i> Archived Records
+                </a>
+              </div>
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
               </button>
@@ -533,6 +613,11 @@ try {
                     <th>Age</th>
                     <th>Birthday</th>
                     <th>Created At</th>
+                    <?php if ($show_archived): ?>
+                      <th>Archived At</th>
+                      <th>Archived By</th>
+                      <th>Archive Reason</th>
+                    <?php endif; ?>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -542,18 +627,37 @@ try {
                   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                       $count++;
                   ?>
-                  <tr>
+                  <tr <?php echo $show_archived ? 'class="archived-row"' : ''; ?>>
                     <td><?php echo $count; ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['date']); ?></td>
                     <td><?php echo htmlspecialchars($row['age']); ?></td>
                     <td><?php echo htmlspecialchars($row['birthday']); ?></td>
                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                    <?php if ($show_archived): ?>
+                      <td><?php echo $row['archived_at'] ?? 'N/A'; ?></td>
+                      <td><?php echo htmlspecialchars($row['archived_by_name'] ?? 'Unknown'); ?></td>
+                      <td><?php echo htmlspecialchars($row['archive_reason'] ?? 'No reason provided'); ?></td>
+                    <?php endif; ?>
                     <td>
+                      <?php if ($show_archived): ?>
+                        <!-- Unarchive Button -->
+                        <button type="button" class="btn btn-success btn-sm" 
+                                onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
+                          <i class="fas fa-undo"></i> Unarchive
+                        </button>
+                      <?php else: ?>
+                        <!-- Edit Button -->
                       <a href="update_deworming.php?id=<?php echo $row['id']; ?>" 
                          class="btn btn-primary btn-sm">
-                        <i class="fa fa-edit"></i>
-                      </a>
+                          <i class="fa fa-edit"></i> Edit
+                        </a>
+                        <!-- Archive Button -->
+                        <button type="button" class="btn btn-warning btn-sm" 
+                                onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
+                          <i class="fas fa-archive"></i> Archive
+                        </button>
+                      <?php endif; ?>
                     </td>
                   </tr>
                   <?php } ?>
@@ -740,6 +844,87 @@ try {
           }
         }
       });
+
+      // Archive Record Function
+      function archiveRecord(id, name) {
+        Swal.fire({
+          title: 'Archive Deworming Record',
+          html: `
+            <p>Are you sure you want to archive <strong>${name}</strong>?</p>
+            <div class="form-group mt-3">
+              <label for="archive_reason">Reason for archiving:</label>
+              <textarea class="form-control" id="archive_reason" rows="3" placeholder="Enter reason for archiving (optional)"></textarea>
+            </div>
+          `,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#FFA800',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-archive"></i> Archive',
+          cancelButtonText: 'Cancel',
+          focusConfirm: false,
+          preConfirm: () => {
+            const reason = document.getElementById('archive_reason').value;
+            return { reason: reason };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'actions/archive_deworming.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'archive_id';
+            idInput.value = id;
+            
+            const reasonInput = document.createElement('input');
+            reasonInput.type = 'hidden';
+            reasonInput.name = 'archive_reason';
+            reasonInput.value = result.value.reason;
+            
+            form.appendChild(idInput);
+            form.appendChild(reasonInput);
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      }
+
+      // Unarchive Record Function
+      function unarchiveRecord(id, name) {
+        Swal.fire({
+          title: 'Unarchive Deworming Record',
+          text: `Are you sure you want to unarchive ${name}?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#1BC5BD',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-undo"></i> Unarchive',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'actions/unarchive_deworming.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'unarchive_id';
+            idInput.value = id;
+            
+            form.appendChild(idInput);
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      }
+
+      // Expose functions globally for onclick handlers
+      window.archiveRecord = archiveRecord;
+      window.unarchiveRecord = unarchiveRecord;
 
       // Show menu
       showMenuSelected("#mnu_patients", "#mi_deworming");
