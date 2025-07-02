@@ -77,12 +77,20 @@ if (isset($_POST['save_tetanus'])) {
     }
 }
 
-// Retrieve all tetanus toxoid records for the listing
+// Determine which records to show (active or archived)
+$showArchived = isset($_GET['show_archived']) && $_GET['show_archived'] === '1';
+$archiveCondition = $showArchived ? "WHERE is_archived = 1" : "WHERE is_archived = 0";
+
+// Retrieve tetanus toxoid records for the listing
 try {
-    $query = "SELECT id, name, address, age, diagnosis, remarks,
+    $query = "SELECT id, name, address, age, diagnosis, remarks, is_archived,
                      DATE_FORMAT(date, '%d %b %Y') as date,
-                     DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at
+                     DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at,
+                     DATE_FORMAT(archived_at, '%d %b %Y %h:%i %p') as archived_at,
+                     archive_reason,
+                     (SELECT display_name FROM users WHERE id = general_tetanus_toxoid.archived_by) as archived_by_name
               FROM general_tetanus_toxoid
+              $archiveCondition
               ORDER BY date DESC";
     $stmt = $con->prepare($query);
     $stmt->execute();
@@ -400,6 +408,93 @@ try {
       align-items: center;
       justify-content: center;
     }
+
+    /* Archive/Unarchive Button Styling */
+    .archive-btn {
+      background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+      border: none;
+      color: white;
+      margin-left: 5px;
+    }
+
+    .archive-btn:hover {
+      background: linear-gradient(135deg, #F09000 0%, #E08000 100%);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(255, 168, 0, 0.3);
+    }
+
+    .unarchive-btn {
+      background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+      border: none;
+      color: white;
+    }
+
+    .unarchive-btn:hover {
+      background: linear-gradient(135deg, #17B8B0 0%, #15A8A0 100%);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(27, 197, 189, 0.3);
+    }
+
+    /* Archived Records Styling */
+    .archived-row {
+      background-color: rgba(108, 117, 125, 0.1);
+      opacity: 0.8;
+    }
+
+    .archived-row td {
+      color: #6c757d;
+    }
+
+    /* Archive Filter Tabs Styling */
+    .archive-filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .archive-filter-tabs .btn {
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-weight: 500;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning-color) 0%, #E8A317 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 168, 0, 0.4);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success-color) 0%, #159C96 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(27, 197, 189, 0.4);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      border: none;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+      color: white;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -497,9 +592,19 @@ try {
 
       <section class="content">
         <div class="card card-outline card-primary">
-          <div class="card-header">
-            <h3 class="card-title">Tetanus Toxoid Records</h3>
-            <div class="card-tools">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">
+              <?php echo $showArchived ? 'Archived Tetanus Toxoid Records' : 'Active Tetanus Toxoid Records'; ?>
+            </h3>
+            <div class="d-flex gap-2">
+              <div class="archive-filter-tabs">
+                <a href="general_tetanus_toxoid.php" class="btn <?php echo !$showArchived ? 'btn-primary' : 'btn-secondary'; ?>">
+                  <i class="fas fa-users"></i> Active Records
+                </a>
+                <a href="general_tetanus_toxoid.php?show_archived=1" class="btn <?php echo $showArchived ? 'btn-warning' : 'btn-secondary'; ?>">
+                  <i class="fas fa-archive"></i> Archived Records
+                </a>
+              </div>
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
               </button>
@@ -549,6 +654,11 @@ try {
                     <th>Diagnosis</th>
                     <th>Remarks</th>
                     <th>Created At</th>
+                    <?php if ($showArchived): ?>
+                      <th>Archived At</th>
+                      <th>Archived By</th>
+                      <th>Archive Reason</th>
+                    <?php endif; ?>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -558,7 +668,7 @@ try {
                   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                       $count++;
                   ?>
-                  <tr>
+                  <tr<?php echo $showArchived ? ' class="archived-row"' : ''; ?>>
                     <td><?php echo $count; ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['date']); ?></td>
@@ -567,11 +677,30 @@ try {
                     <td><?php echo htmlspecialchars($row['diagnosis']); ?></td>
                     <td><?php echo htmlspecialchars($row['remarks']); ?></td>
                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                    <?php if ($showArchived): ?>
+                      <td><?php echo $row['archived_at'] ?? 'N/A'; ?></td>
+                      <td><?php echo htmlspecialchars($row['archived_by_name'] ?? 'Unknown'); ?></td>
+                      <td><?php echo htmlspecialchars($row['archive_reason'] ?? 'No reason provided'); ?></td>
+                    <?php endif; ?>
                     <td>
-                      <a href="update_tetanus.php?id=<?php echo $row['id']; ?>" 
-                         class="btn btn-primary btn-sm">
-                        <i class="fa fa-edit"></i>
-                      </a>
+                      <?php if ($showArchived): ?>
+                        <!-- Unarchive Button -->
+                        <button type="button" class="btn btn-success btn-sm" 
+                                onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
+                          <i class="fas fa-undo"></i> Unarchive
+                        </button>
+                      <?php else: ?>
+                        <!-- Edit Button -->
+                        <a href="update_tetanus.php?id=<?php echo $row['id']; ?>" 
+                           class="btn btn-primary btn-sm">
+                          <i class="fa fa-edit"></i> Edit
+                        </a>
+                        <!-- Archive Button -->
+                        <button type="button" class="btn btn-warning btn-sm" 
+                                onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
+                          <i class="fas fa-archive"></i> Archive
+                        </button>
+                      <?php endif; ?>
                     </td>
                   </tr>
                   <?php } ?>
@@ -758,6 +887,87 @@ try {
           }
         }
       });
+
+      // Archive Record Function
+      function archiveRecord(id, name) {
+        Swal.fire({
+          title: 'Archive Tetanus Toxoid Record',
+          html: `
+            <p>Are you sure you want to archive <strong>${name}</strong>?</p>
+            <div class="form-group mt-3">
+              <label for="archive_reason">Reason for archiving:</label>
+              <textarea class="form-control" id="archive_reason" rows="3" placeholder="Enter reason for archiving (optional)"></textarea>
+            </div>
+          `,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#FFA800',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-archive"></i> Archive',
+          cancelButtonText: 'Cancel',
+          focusConfirm: false,
+          preConfirm: () => {
+            const reason = document.getElementById('archive_reason').value;
+            return { reason: reason };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'actions/archive_tetanus_toxoid.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'archive_id';
+            idInput.value = id;
+            
+            const reasonInput = document.createElement('input');
+            reasonInput.type = 'hidden';
+            reasonInput.name = 'archive_reason';
+            reasonInput.value = result.value.reason;
+            
+            form.appendChild(idInput);
+            form.appendChild(reasonInput);
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      }
+
+      // Unarchive Record Function
+      function unarchiveRecord(id, name) {
+        Swal.fire({
+          title: 'Unarchive Tetanus Toxoid Record',
+          text: `Are you sure you want to unarchive ${name}?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#1BC5BD',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: '<i class="fas fa-undo"></i> Unarchive',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'actions/unarchive_tetanus_toxoid.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'unarchive_id';
+            idInput.value = id;
+            
+            form.appendChild(idInput);
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      }
+
+      // Expose functions globally for onclick handlers
+      window.archiveRecord = archiveRecord;
+      window.unarchiveRecord = unarchiveRecord;
 
       // Show menu
       showMenuSelected("#mnu_patients", "#mi_general_tetanus_toxoid");
