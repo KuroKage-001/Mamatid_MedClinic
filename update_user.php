@@ -56,6 +56,9 @@ try {
 
 // Handle form submission
 if (isset($_POST['update_user'])) {
+    error_log("Update user form submitted for user ID: " . $user_id);
+    error_log("POST data: " . print_r($_POST, true));
+    
     try {
         $con->beginTransaction();
         
@@ -67,6 +70,8 @@ if (isset($_POST['update_user'])) {
         $role = $_POST['role'];
         $status = $_POST['status'];
         $newPassword = trim($_POST['new_password']);
+        
+        error_log("Processed form data - Display: $displayName, Username: $userName, Role: $role, Status: $status");
         
         // Validate required fields
         if (empty($displayName) || empty($userName) || empty($role) || empty($status)) {
@@ -140,15 +145,18 @@ if (isset($_POST['update_user'])) {
         
         if ($updateStmt->execute()) {
             $con->commit();
+            error_log("User updated successfully for user ID: " . $user_id);
             
             // Check if it's an AJAX request
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                error_log("Returning AJAX response");
                 header('Content-Type: application/json');
                 echo json_encode(['success' => true, 'message' => 'User updated successfully']);
                 exit;
             } else {
-            header("location:admin_users_management.php?message=" . urlencode("User updated successfully"));
-            exit;
+                error_log("Redirecting to admin_users_management.php");
+                header("location:admin_users_management.php?message=" . urlencode("User updated successfully"));
+                exit;
             }
         } else {
             throw new Exception("Failed to update user");
@@ -156,15 +164,17 @@ if (isset($_POST['update_user'])) {
         
     } catch (Exception $ex) {
         $con->rollback();
+        error_log("Update user error: " . $ex->getMessage());
         
         // Check if it's an AJAX request
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            error_log("Returning AJAX error response");
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
             exit;
         } else {
-        $message = $ex->getMessage();
-        $messageType = 'error';
+            $message = $ex->getMessage();
+            $messageType = 'error';
         }
     }
 }
@@ -419,7 +429,7 @@ if (isset($_POST['update_user'])) {
                         </div>
 
                         <div class="card-body">
-                            <form method="post" enctype="multipart/form-data">
+                            <form method="post" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF'] . '?id=' . $user_id; ?>">
                                 <div class="row">
                                     <!-- Display Name -->
                                     <div class="col-md-6 form-group">
@@ -502,11 +512,11 @@ if (isset($_POST['update_user'])) {
 
                                 <div class="form-actions">
                                     <a href="admin_users_management.php" class="btn btn-secondary">
-                                            <i class="fas fa-times mr-2"></i>Cancel
-                                        </a>
-                                        <button type="submit" name="update_user" class="btn btn-primary">
-                                            <i class="fas fa-save mr-2"></i>Update User
-                                        </button>
+                                        <i class="fas fa-times mr-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" name="update_user" class="btn btn-primary">
+                                        <i class="fas fa-save mr-2"></i>Update User
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -515,7 +525,7 @@ if (isset($_POST['update_user'])) {
             </section>
         </div>
 
-        <?php include './config/footer.php'; ?>
+        <?php include './config/admin_footer.php'; ?>
     </div>
 
     <?php include './config/site_js_links.php'; ?>
@@ -543,19 +553,16 @@ if (isset($_POST['update_user'])) {
             });
             <?php endif; ?>
 
-            // Form submission with SweetAlert confirmation
+            // Form submission with validation
             $('form').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-                
-                const form = this;
-                const formData = new FormData(form);
                 const displayName = $('input[name="display_name"]').val().trim();
                 const userName = $('input[name="user_name"]').val().trim();
                 const role = $('select[name="role"]').val();
                 const status = $('select[name="status"]').val();
 
-                // Validation
+                // Validation - only prevent submission if validation fails
                 if (!displayName || !userName || !role || !status) {
+                    e.preventDefault();
                     Toast.fire({
                         icon: 'warning',
                         title: 'Please fill all required fields'
@@ -565,6 +572,7 @@ if (isset($_POST['update_user'])) {
 
                 // Username validation
                 if (userName.length < 3) {
+                    e.preventDefault();
                     Toast.fire({
                         icon: 'warning',
                         title: 'Username must be at least 3 characters long'
@@ -572,73 +580,8 @@ if (isset($_POST['update_user'])) {
                     return false;
                 }
 
-                // SweetAlert confirmation
-                Swal.fire({
-                    title: 'Update User?',
-                    text: `Are you sure you want to update ${displayName}'s information?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3699FF',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-save mr-2"></i>Yes, Update User',
-                    cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
-                    reverseButtons: true,
-                    customClass: {
-                        confirmButton: 'btn btn-primary',
-                        cancelButton: 'btn btn-secondary',
-                        actions: 'swal2-actions-custom'
-                    },
-                    buttonsStyling: false,
-                    didOpen: () => {
-                        // Add custom spacing to buttons
-                        const actions = document.querySelector('.swal2-actions');
-                        if (actions) {
-                            actions.style.gap = '3rem';
-                            actions.style.justifyContent = 'center';
-                        }
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                // Show loading state
-                        const submitBtn = $(form).find('button[type="submit"]');
-                        submitBtn.prop('disabled', true).html(
-                    '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...'
-                );
-
-                        // Submit the form using AJAX
-                        $.ajax({
-                            url: window.location.href,
-                            type: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(response) {
-                                // Show success toast
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'User updated successfully!'
-                                });
-                                
-                                // Redirect to admin_users_management.php after a short delay
-                                setTimeout(function() {
-                                    window.location.href = 'admin_users_management.php?message=' + encodeURIComponent('User updated successfully');
-                                }, 1500);
-                            },
-                            error: function(xhr, status, error) {
-                                // Re-enable button
-                                submitBtn.prop('disabled', false).html(
-                                    '<i class="fas fa-save mr-2"></i>Update User'
-                                );
-                                
-                                // Show error toast
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: 'Error updating user. Please try again.'
-                                });
-                            }
-                        });
-                    }
-                });
+                // Form should submit normally if we reach here
+                return true;
             });
 
             // File upload preview

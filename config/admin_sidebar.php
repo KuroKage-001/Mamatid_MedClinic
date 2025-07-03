@@ -133,6 +133,12 @@ $role_display_name = getRoleDisplayName($user_role);
                     </a>
                     <ul class="nav nav-treeview">
                         <?php if (isAdmin() || isHealthWorker()): ?>
+                            <li class="nav-item">
+                            <a href="<?php echo $base_path; ?>/admin_hw_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_hw_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_staff_availability">
+                                <i class="nav-icon-sm fas fa-calendar-plus"></i>
+                                <p>My Availability</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="<?php echo $base_path; ?>/admin_appointment_management.php" class="nav-link <?php echo ($current_page == 'admin_appointment_management.php' ? 'active' : ''); ?>" id="mi_appointments">
                                 <i class="nav-icon-sm fas fa-calendar-alt"></i>
@@ -145,12 +151,6 @@ $role_display_name = getRoleDisplayName($user_role);
                             <a href="<?php echo $base_path; ?>/admin_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_appointment_plotter">
                                 <i class="nav-icon-sm fas fa-calendar-week"></i>
                                 <p>Schedule Plotter</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_path; ?>/admin_hw_schedule_plotter.php" class="nav-link <?php echo ($current_page == 'admin_hw_schedule_plotter.php' ? 'active' : ''); ?>" id="mi_staff_availability">
-                                <i class="nav-icon-sm fas fa-calendar-plus"></i>
-                                <p>My Availability</p>
                             </a>
                         </li>
                         <?php endif; ?>
