@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 03:45 PM
+-- Generation Time: Jul 02, 2025 at 09:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -252,15 +252,19 @@ CREATE TABLE `general_bp_monitoring` (
   `smoke` tinyint(1) NOT NULL DEFAULT 0,
   `obese` tinyint(1) NOT NULL DEFAULT 0,
   `cp_number` varchar(20) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, record is archived',
+  `archived_at` timestamp NULL DEFAULT NULL COMMENT 'When record was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the record',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_bp_monitoring`
 --
 
-INSERT INTO `general_bp_monitoring` (`id`, `name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`, `created_at`) VALUES
-(8, 'Test 01', '2025-07-02', 'Baskerville  Main Baskerville', 'Male', '120/30', 1, 1, 0, '09878776765', '2025-07-01 19:36:28');
+INSERT INTO `general_bp_monitoring` (`id`, `name`, `date`, `address`, `sex`, `bp`, `alcohol`, `smoke`, `obese`, `cp_number`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(8, 'Test 01', '2025-07-02', 'Baskerville  Main Baskerville', 'Male', '120/30', 1, 1, 0, '09878776765', '2025-07-01 19:36:28', 1, '2025-07-02 16:30:17', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -274,15 +278,19 @@ CREATE TABLE `general_deworming` (
   `date` date NOT NULL,
   `age` int(11) NOT NULL,
   `birthday` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, record is archived',
+  `archived_at` timestamp NULL DEFAULT NULL COMMENT 'When record was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the record',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_deworming`
 --
 
-INSERT INTO `general_deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`) VALUES
-(8, 'Test 01', '2025-07-02', 21, '2024-12-31', '2025-07-01 20:47:40');
+INSERT INTO `general_deworming` (`id`, `name`, `date`, `age`, `birthday`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(8, 'Test 01', '2025-07-02', 21, '2024-12-31', '2025-07-01 20:47:40', 1, '2025-07-02 15:21:54', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -294,15 +302,19 @@ CREATE TABLE `general_family_members` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `date` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, record is archived',
+  `archived_at` timestamp NULL DEFAULT NULL COMMENT 'When record was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the record',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_family_members`
 --
 
-INSERT INTO `general_family_members` (`id`, `name`, `date`, `created_at`) VALUES
-(11, 'Test 01', '2025-07-02', '2025-07-01 16:35:03');
+INSERT INTO `general_family_members` (`id`, `name`, `date`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(11, 'Test 01', '2025-07-02', '2025-07-01 16:35:03', 1, '2025-07-02 14:07:16', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -316,15 +328,19 @@ CREATE TABLE `general_family_planning` (
   `date` date NOT NULL,
   `age` int(11) NOT NULL,
   `address` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, record is archived',
+  `archived_at` timestamp NULL DEFAULT NULL COMMENT 'When record was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the record',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_family_planning`
 --
 
-INSERT INTO `general_family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`) VALUES
-(9, 'Test 01', '2025-07-02', 20, 'Main House Baskerville01', '2025-07-01 18:01:20');
+INSERT INTO `general_family_planning` (`id`, `name`, `date`, `age`, `address`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(9, 'Test 01', '2025-07-02', 20, 'Main House Baskerville01', '2025-07-01 18:01:20', 1, '2025-07-02 14:22:16', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -339,15 +355,19 @@ CREATE TABLE `general_rbs` (
   `address` text NOT NULL,
   `age` int(11) NOT NULL,
   `result` varchar(50) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0,
+  `archived_at` timestamp NULL DEFAULT NULL,
+  `archived_by` int(11) DEFAULT NULL,
+  `archive_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_rbs`
 --
 
-INSERT INTO `general_rbs` (`id`, `name`, `date`, `address`, `age`, `result`, `created_at`) VALUES
-(8, 'Test 01', '2025-07-02', 'Main House Baskerville01', 21, 'B', '2025-07-02 12:52:17');
+INSERT INTO `general_rbs` (`id`, `name`, `date`, `address`, `age`, `result`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(8, 'Test 01', '2025-07-02', 'Main House Baskerville01', 21, 'B', '2025-07-02 12:52:17', 1, '2025-07-02 17:49:40', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -363,15 +383,19 @@ CREATE TABLE `general_tetanus_toxoid` (
   `age` int(11) NOT NULL,
   `diagnosis` text NOT NULL,
   `remarks` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0,
+  `archived_at` timestamp NULL DEFAULT NULL,
+  `archived_by` int(11) DEFAULT NULL,
+  `archive_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `general_tetanus_toxoid`
 --
 
-INSERT INTO `general_tetanus_toxoid` (`id`, `name`, `date`, `address`, `age`, `diagnosis`, `remarks`, `created_at`) VALUES
-(7, 'Test 01', '2025-07-02', 'Main House Baskerville01', 21, 'test 01', 'test 01', '2025-07-02 13:39:55');
+INSERT INTO `general_tetanus_toxoid` (`id`, `name`, `date`, `address`, `age`, `diagnosis`, `remarks`, `created_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(7, 'Test 01', '2025-07-02', 'Main House Baskerville01', 21, 'test 01', 'test 01', '2025-07-02 13:39:55', 1, '2025-07-02 19:16:29', 1, 'test 2');
 
 -- --------------------------------------------------------
 
@@ -740,37 +764,55 @@ ALTER TABLE `doctor_schedules`
 -- Indexes for table `general_bp_monitoring`
 --
 ALTER TABLE `general_bp_monitoring`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_general_bp_monitoring_archived_by` (`archived_by`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `general_deworming`
 --
 ALTER TABLE `general_deworming`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_general_deworming_archived_by` (`archived_by`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `general_family_members`
 --
 ALTER TABLE `general_family_members`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_general_family_members_archived_by` (`archived_by`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `general_family_planning`
 --
 ALTER TABLE `general_family_planning`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_general_family_planning_archived_by` (`archived_by`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `general_rbs`
 --
 ALTER TABLE `general_rbs`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_rbs_archived_by` (`archived_by`),
+  ADD KEY `idx_rbs_is_archived` (`is_archived`),
+  ADD KEY `idx_rbs_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `general_tetanus_toxoid`
 --
 ALTER TABLE `general_tetanus_toxoid`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_tetanus_toxoid_archived_by` (`archived_by`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_archived_at` (`archived_at`);
 
 --
 -- Indexes for table `medicines`
@@ -1028,6 +1070,42 @@ ALTER TABLE `appointment_slots`
 --
 ALTER TABLE `doctor_schedules`
   ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `general_bp_monitoring`
+--
+ALTER TABLE `general_bp_monitoring`
+  ADD CONSTRAINT `fk_general_bp_monitoring_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `general_deworming`
+--
+ALTER TABLE `general_deworming`
+  ADD CONSTRAINT `fk_general_deworming_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `general_family_members`
+--
+ALTER TABLE `general_family_members`
+  ADD CONSTRAINT `fk_general_family_members_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `general_family_planning`
+--
+ALTER TABLE `general_family_planning`
+  ADD CONSTRAINT `fk_general_family_planning_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `general_rbs`
+--
+ALTER TABLE `general_rbs`
+  ADD CONSTRAINT `fk_rbs_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `general_tetanus_toxoid`
+--
+ALTER TABLE `general_tetanus_toxoid`
+  ADD CONSTRAINT `fk_tetanus_toxoid_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `medicines`
