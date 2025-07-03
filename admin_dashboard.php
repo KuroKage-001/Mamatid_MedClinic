@@ -613,11 +613,6 @@ try {
   <!-- Enhanced Export Functions -->
   <script src="dist/js/export-functions.js"></script>
   <script>
-    // Highlight the active menu item on page load
-    $(function(){
-      showMenuSelected("#mnu_dashboard", "");
-    });
-    
     // Modern datetime display with animation
     function updateDateTime() {
       var now = new Date();
@@ -950,6 +945,13 @@ try {
         renderChart(this.value);
         updateDropdownActiveClass(this.value);
       });
+      
+      // Highlight the active menu item on page load (after jQuery is loaded)
+      if (typeof $ !== 'undefined') {
+        $(function(){
+          showMenuSelected("#mnu_dashboard", "");
+        });
+      }
     });
 
 

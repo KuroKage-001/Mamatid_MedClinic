@@ -12,34 +12,30 @@ if (!isset($_SESSION['user_id'])) {
 // Check permission
 requireRole(['admin', 'health_worker', 'doctor']);
 
-if (isset($_POST['archive_id']) && isset($_POST['archive_reason'])) {
-    $id = (int)$_POST['archive_id'];
-    $reason = trim($_POST['archive_reason']);
-    $user_id = $_SESSION['user_id'];
+if (isset($_POST['unarchive_id'])) {
+    $id = (int)$_POST['unarchive_id'];
     
     try {
         $con->beginTransaction();
         
-        // Update the appointment to archived status with metadata
+        // Update the appointment to unarchived status
         $query = "UPDATE `appointments` 
-                  SET `is_archived` = 1, 
-                      `archived_at` = NOW(), 
-                      `archived_by` = :user_id,
-                      `archive_reason` = :reason,
+                  SET `is_archived` = 0, 
+                      `archived_at` = NULL, 
+                      `archived_by` = NULL,
+                      `archive_reason` = NULL,
                       `updated_at` = NOW()
-                  WHERE `id` = :id AND `is_archived` = 0";
+                  WHERE `id` = :id AND `is_archived` = 1";
         
         $stmt = $con->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(':reason', $reason, PDO::PARAM_STR);
         
         if ($stmt->execute()) {
             $con->commit();
-            $message = 'Appointment archived successfully.';
+            $message = 'Appointment unarchived successfully.';
         } else {
             $con->rollback();
-            $message = 'Failed to archive appointment.';
+            $message = 'Failed to unarchive appointment.';
         }
         
     } catch (PDOException $ex) {

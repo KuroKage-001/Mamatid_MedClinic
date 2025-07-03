@@ -44,28 +44,34 @@ if (isset($_POST['update_notes'])) {
     }
 }
 
-// Handle appointment archive/unarchive
-if (isset($_POST['toggle_archive'])) {
-    $appointmentId = $_POST['appointment_id'];
-    $isArchived = $_POST['is_archived'] ? 1 : 0;
-
-    try {
-        $query = "UPDATE appointments SET is_archived = ?, updated_at = NOW() WHERE id = ?";
-        $stmt = $con->prepare($query);
-        $stmt->execute([$isArchived, $appointmentId]);
-        $message = $isArchived ? "Appointment archived successfully!" : "Appointment unarchived successfully!";
-    } catch (PDOException $ex) {
-        $error = "Error updating archive status: " . $ex->getMessage();
-    }
-}
-
 // Handle archive filter
 $showArchived = isset($_GET['archived']) ? (int)$_GET['archived'] : 0;
 
-// Fetch all appointments
-$query = "SELECT * FROM appointments WHERE is_archived = ? ORDER BY appointment_date DESC, appointment_time DESC";
-$stmt = $con->prepare($query);
-$stmt->execute([$showArchived]);
+// Fetch all appointments with archive metadata
+try {
+    if ($showArchived) {
+        $query = "SELECT a.*, 
+                         DATE_FORMAT(a.appointment_date, '%M %d, %Y') as formatted_date,
+                         DATE_FORMAT(a.appointment_time, '%h:%i %p') as formatted_time,
+                         DATE_FORMAT(a.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
+                         u.display_name as archived_by_name
+                  FROM appointments a
+                  LEFT JOIN users u ON a.archived_by = u.id
+                  WHERE a.is_archived = 1 
+                  ORDER BY a.archived_at DESC";
+    } else {
+        $query = "SELECT *, 
+                         DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
+                         DATE_FORMAT(appointment_time, '%h:%i %p') as formatted_time
+                  FROM appointments 
+                  WHERE is_archived = 0 
+                  ORDER BY appointment_date DESC, appointment_time DESC";
+    }
+    $stmt = $con->prepare($query);
+    $stmt->execute();
+} catch (PDOException $ex) {
+    $error = "Error fetching appointments: " . $ex->getMessage();
+}
 
 // Count total archived and active appointments for the filter
 $countQuery = "SELECT 
@@ -379,6 +385,48 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             margin-left: 5px;
         }
 
+        /* Archive filter tabs styling */
+        .archive-filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .archive-filter-tabs .btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #E8A317 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 168, 0, 0.4);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #159C96 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(27, 197, 189, 0.4);
+            color: white;
+        }
+
+        .archived-row {
+            background-color: rgba(255, 168, 0, 0.1) !important;
+        }
+
         /* Modern Export Actions CSS */
         .dt-button-collection {
             display: none !important;
@@ -656,24 +704,27 @@ $archivedCount = $countResult['archived_count'] ?? 0;
 
                 <!-- Appointments Table Card -->
                 <div class="card card-outline card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">All Appointments</h3>
-                        <div class="card-tools">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <?php echo $showArchived ? 'Archived Appointments' : 'Active Appointments'; ?>
+                        </h3>
+                        <div class="d-flex gap-2">
+                            <div class="archive-filter-tabs">
+                                <a href="?archived=0" class="btn <?php echo !$showArchived ? 'btn-primary' : 'btn-secondary'; ?>">
+                                    <i class="fas fa-calendar-check"></i> Active Records
+                                    <span class="badge ml-1" style="background-color: white; color: <?php echo !$showArchived ? 'var(--primary-color)' : 'var(--dark-color)'; ?>;"><?php echo $activeCount; ?></span>
+                                </a>
+                                <a href="?archived=1" class="btn <?php echo $showArchived ? 'btn-warning' : 'btn-secondary'; ?>">
+                                    <i class="fas fa-archive"></i> Archived Records
+                                    <span class="badge ml-1" style="background-color: white; color: <?php echo $showArchived ? 'var(--warning-color)' : 'var(--dark-color)'; ?>;"><?php echo $archivedCount; ?></span>
+                                </a>
+                            </div>
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
-                        <!-- Filter Buttons -->
-                        <div class="mb-4">
-                            <a href="?archived=0" class="btn filter-btn <?php echo $showArchived ? '' : 'active'; ?>">
-                                Active <span class="badge"><?php echo $activeCount; ?></span>
-                            </a>
-                            <a href="?archived=1" class="btn filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
-                                Archived <span class="badge"><?php echo $archivedCount; ?></span>
-                            </a>
-                        </div>
                         
                         <div class="table-responsive">
                             <table id="appointments" class="table table-striped table-hover">
@@ -687,14 +738,19 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                         <th>Reason</th>
                                         <th>Status</th>
                                         <th>Notes</th>
+                                        <?php if ($showArchived): ?>
+                                            <th>Archived At</th>
+                                            <th>Archived By</th>
+                                            <th>Archive Reason</th>
+                                        <?php endif; ?>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                                     <tr class="<?php echo $row['is_archived'] ? 'archived-row' : ''; ?>">
-                                        <td><?php echo date('M d, Y', strtotime($row['appointment_date'])); ?></td>
-                                        <td><?php echo date('h:i A', strtotime($row['appointment_time'])); ?></td>
+                                        <td><?php echo isset($row['formatted_date']) ? $row['formatted_date'] : date('M d, Y', strtotime($row['appointment_date'])); ?></td>
+                                        <td><?php echo isset($row['formatted_time']) ? $row['formatted_time'] : date('h:i A', strtotime($row['appointment_time'])); ?></td>
                                         <td>
                                             <?php echo htmlspecialchars($row['patient_name']); ?>
                                             <?php if ($row['is_archived']): ?>
@@ -714,21 +770,32 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                             </span>
                                         </td>
                                         <td><?php echo htmlspecialchars($row['notes'] ?? ''); ?></td>
+                                        <?php if ($showArchived): ?>
+                                            <td><?php echo $row['archived_at_formatted'] ?? 'N/A'; ?></td>
+                                            <td><?php echo htmlspecialchars($row['archived_by_name'] ?? 'Unknown'); ?></td>
+                                            <td><?php echo htmlspecialchars($row['archive_reason'] ?? 'No reason provided'); ?></td>
+                                        <?php endif; ?>
                                         <td>
-                                            <div class="btn-group">
+                                            <?php if ($showArchived): ?>
+                                                <!-- Unarchive Button -->
+                                                <button type="button" class="btn btn-success btn-sm" 
+                                                        onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
+                                                    <i class="fas fa-undo"></i> Unarchive
+                                                </button>
+                                            <?php else: ?>
+                                                <!-- Edit Button -->
                                                 <button type="button" class="btn btn-sm btn-primary" 
                                                         data-toggle="modal" 
                                                         data-target="#updateModal<?php echo $row['id']; ?>">
                                                     <i class="fas fa-edit"></i> Notes
                                                 </button>
                                                 
-                                                <button type="button" class="btn btn-sm <?php echo $row['is_archived'] ? 'btn-success' : 'btn-secondary'; ?>"
-                                                        data-toggle="modal" 
-                                                        data-target="#archiveModal<?php echo $row['id']; ?>">
-                                                    <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?>"></i>
-                                                    <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?>
+                                                <!-- Archive Button -->
+                                                <button type="button" class="btn btn-warning btn-sm" 
+                                                        onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
+                                                    <i class="fas fa-archive"></i> Archive
                                                 </button>
-                                            </div>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
 
@@ -765,52 +832,6 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                         </button>
                                                         <button type="submit" name="update_notes" class="btn btn-primary">
                                                             <i class="fas fa-save mr-2"></i>Update Notes
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Archive Modal -->
-                                    <div class="modal fade" id="archiveModal<?php echo $row['id']; ?>">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                        <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?> mr-2"></i>
-                                                        <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?> Appointment
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                </div>
-                                                <form method="post">
-                                                    <div class="modal-body">
-                                                        <input type="hidden" name="appointment_id" value="<?php echo $row['id']; ?>">
-                                                        <input type="hidden" name="is_archived" value="<?php echo $row['is_archived'] ? '0' : '1'; ?>">
-                                                        
-                                                        <div class="text-center mb-4">
-                                                            <?php if ($row['is_archived']): ?>
-                                                                <i class="fas fa-box-open fa-4x text-success mb-3"></i>
-                                                                <p>Are you sure you want to unarchive this appointment? It will appear in the active appointments list.</p>
-                                                            <?php else: ?>
-                                                                <i class="fas fa-archive fa-4x text-secondary mb-3"></i>
-                                                                <p>Are you sure you want to archive this appointment? Archived appointments are stored for record-keeping but won't appear in the active list.</p>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                        
-                                                        <div class="alert alert-info">
-                                                            <strong>Patient:</strong> <?php echo htmlspecialchars($row['patient_name']); ?><br>
-                                                            <strong>Date & Time:</strong> <?php echo date('M d, Y', strtotime($row['appointment_date'])) . ' at ' . date('h:i A', strtotime($row['appointment_time'])); ?><br>
-                                                            <strong>Status:</strong> <?php echo ucfirst($row['status']); ?>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                            <i class="fas fa-times mr-2"></i>Cancel
-                                                        </button>
-                                                        <button type="submit" name="toggle_archive" class="btn <?php echo $row['is_archived'] ? 'btn-success' : 'btn-secondary'; ?>">
-                                                            <i class="fas <?php echo $row['is_archived'] ? 'fa-box-open' : 'fa-archive'; ?> mr-2"></i>
-                                                            <?php echo $row['is_archived'] ? 'Unarchive' : 'Archive'; ?> Appointment
                                                         </button>
                                                     </div>
                                                 </form>
@@ -962,6 +983,83 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 }
             });
         });
+
+        // Archive Appointment Function
+        function archiveRecord(id, name) {
+            Swal.fire({
+                title: 'Archive Appointment',
+                html: `
+                    <p>Are you sure you want to archive the appointment for <strong>${name}</strong>?</p>
+                    <div class="form-group mt-3">
+                        <label for="archive_reason">Reason for archiving:</label>
+                        <textarea class="form-control" id="archive_reason" rows="3" placeholder="Enter reason for archiving (optional)"></textarea>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#FFA800',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-archive"></i> Archive',
+                cancelButtonText: 'Cancel',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const reason = document.getElementById('archive_reason').value;
+                    return { reason: reason };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'actions/archive_appointment.php';
+                    
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'archive_id';
+                    idInput.value = id;
+                    
+                    const reasonInput = document.createElement('input');
+                    reasonInput.type = 'hidden';
+                    reasonInput.name = 'archive_reason';
+                    reasonInput.value = result.value.reason;
+                    
+                    form.appendChild(idInput);
+                    form.appendChild(reasonInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Unarchive Appointment Function
+        function unarchiveRecord(id, name) {
+            Swal.fire({
+                title: 'Unarchive Appointment',
+                text: `Are you sure you want to unarchive the appointment for ${name}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1BC5BD',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-undo"></i> Unarchive',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'actions/unarchive_appointment.php';
+                    
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'unarchive_id';
+                    idInput.value = id;
+                    
+                    form.appendChild(idInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
 
         // Highlight current menu
         showMenuSelected("#mnu_appointments", "#mi_appointments");

@@ -212,7 +212,8 @@ foreach ($appointments as $appointment) {
             'reason' => $appointment['reason'],
             'status' => $appointment['status'],
             'type' => 'appointment',
-            'is_past' => $isPast
+            'is_past' => $isPast,
+            'appointment_id' => $appointment['id']
         ]
     ];
 }
@@ -228,6 +229,7 @@ $roleDisplay = ucfirst($staffRole);
     <?php include './config/data_tables_css.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
+    <link href="plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet">
     <title>Schedule Plotter - Mamatid Health Center System</title>
     <style>
         :root {
@@ -622,6 +624,51 @@ $roleDisplay = ucfirst($staffRole);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        
+        /* Info Card Styling */
+        .info-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-card h6 {
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-card p {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .info-card i {
+            opacity: 0.8;
+        }
+        
+        .patient-avatar {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notes-section, .reason-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .notes-section .bg-light,
+        .reason-section .bg-light {
+            border-left: 4px solid #17a2b8;
+            background-color: #ffffff !important;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -650,21 +697,7 @@ $roleDisplay = ucfirst($staffRole);
 
             <div class="content">
                 <div class="container-fluid">
-                    <?php if ($message): ?>
-                        <div class="alert alert-info alert-dismissible fade show">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            <?php echo $message; ?>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <?php if ($error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            <?php echo $error; ?>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    <?php endif; ?>
+                    <!-- Messages will be handled by SweetAlert2 -->
 
                     <div class="row">
                         <div class="col-lg-5">
@@ -865,15 +898,98 @@ $roleDisplay = ucfirst($staffRole);
     <?php include './config/site_js_links.php'; ?>
     <?php include './config/data_tables_js.php'; ?>
     <script src="plugins/fullcalendar/main.min.js"></script>
+    <script src="plugins/sweetalert2/sweetalert2.min.js"></script>
     
     <script>
         $(function() {
+            // Initialize SweetAlert2 Toast
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Check for PHP messages and display them
+            <?php if ($message): ?>
+                Toast.fire({
+                    icon: 'success',
+                    title: '<?php echo addslashes($message); ?>'
+                });
+            <?php endif; ?>
+            
+            <?php if ($error): ?>
+                Toast.fire({
+                    icon: 'error',
+                    title: '<?php echo addslashes($error); ?>'
+                });
+            <?php endif; ?>
+            
             // Initialize DataTable
             $("#schedules_table").DataTable({
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
                 "order": [[0, "asc"]]
+            });
+            
+            // Handle send notification button click
+            $(document).on('click', '.send-notification', function() {
+                const appointmentId = $(this).data('appointment-id');
+                const btn = $(this);
+                
+                // Disable button and show loading state
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Sending...');
+                
+                // Send AJAX request to send notification
+                $.ajax({
+                    url: 'ajax/admin_notif_appointment_sender.php',
+                    type: 'POST',
+                    data: {
+                        appointment_id: appointmentId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success toast
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message
+                            });
+                            
+                            // Update button to show sent status
+                            btn.removeClass('btn-primary').addClass('btn-success')
+                               .html('<i class="fas fa-check mr-2"></i> Notification Sent')
+                               .prop('disabled', true);
+                        } else {
+                            // Show error toast
+                            Toast.fire({
+                                icon: 'error',
+                                title: response.message
+                            });
+                            
+                            // Reset button
+                            btn.prop('disabled', false)
+                               .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                        }
+                    },
+                    error: function() {
+                        // Show error toast
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'An error occurred while sending the notification.'
+                        });
+                        
+                        // Reset button
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                    }
+                });
             });
             
             // Function to automatically update past appointments to completed status
@@ -955,51 +1071,63 @@ $roleDisplay = ucfirst($staffRole);
                         <div class="schedule-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="event-date text-center py-3 ${props.is_past ? 'bg-secondary-light' : 'bg-info-light'}">
-                                        <h4 class="mb-0">${formattedDate}</h4>
+                                    <div class="event-date text-center py-4 ${props.is_past ? 'bg-secondary-light' : 'bg-info-light'} border-bottom">
+                                        <div class="date-icon mb-2">
+                                            <i class="fas fa-calendar-day fa-2x ${props.is_past ? 'text-secondary' : 'text-primary'}"></i>
+                                        </div>
+                                        <h4 class="mb-1 font-weight-bold">${formattedDate}</h4>
+                                        <p class="mb-0 text-muted">
+                                            <i class="fas fa-user-md mr-1"></i>
+                                            ${<?= json_encode($staffRole) ?> === 'admin' ? 'Administrator' : 'Health Worker'} Schedule
+                                        </p>
                                     </div>
                                     <div class="event-info p-4">
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-clock text-muted mr-2"></i>
-                                                    <span class="info-label">Time:</span>
-                                                    <span class="info-value font-weight-bold">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Schedule Time</h6>
+                                                    <p class="mb-0 text-muted">
                                                         ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
                                                         ${event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                    </span>
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-hourglass-half text-muted mr-2"></i>
-                                                    <span class="info-label">Time Slot:</span>
-                                                    <span class="info-value font-weight-bold">${props.time_slot} minutes</span>
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-hourglass-half fa-2x text-success mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Time Slot</h6>
+                                                    <p class="mb-0 text-muted">${props.time_slot} minutes per appointment</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-users text-muted mr-2"></i>
-                                                    <span class="info-label">Max Patients:</span>
-                                                    <span class="info-value font-weight-bold">${props.max_patients}</span>
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-users fa-2x text-warning mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Capacity</h6>
+                                                    <p class="mb-0 text-muted">${props.max_patients} patient per slot</p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-check-circle text-muted mr-2"></i>
-                                                    <span class="info-label">Status:</span>
-                                                    <span class="badge ${props.is_past ? 'badge-secondary' : 'badge-success'} px-2 py-1">
-                                                        ${props.is_past ? 'Past' : 'Available'}
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-${props.is_past ? 'history' : 'check-circle'} fa-2x ${props.is_past ? 'text-secondary' : 'text-success'} mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Status</h6>
+                                                    <span class="badge ${props.is_past ? 'badge-secondary' : 'badge-success'} px-3 py-2">
+                                                        ${props.is_past ? 'Past Schedule' : 'Available'}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         ${props.notes ? `
-                                        <div class="notes mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-sticky-note text-muted mr-2"></i> Notes:</h6>
-                                            <p class="mb-0 text-muted">${props.notes}</p>
+                                        <div class="notes-section mt-4 pt-3 border-top">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas fa-sticky-note fa-lg text-info mr-2"></i>
+                                                <h6 class="font-weight-bold mb-0">Additional Notes</h6>
+                                            </div>
+                                            <div class="bg-light rounded p-3">
+                                                <p class="mb-0 text-dark">${props.notes}</p>
+                                            </div>
                                         </div>` : ''}
                                     </div>
                                 </div>
@@ -1048,47 +1176,71 @@ $roleDisplay = ucfirst($staffRole);
                         <div class="appointment-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="patient-info p-3 ${props.is_past ? (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 'bg-danger-light'}">
+                                    <div class="patient-info p-4 ${props.is_past ? (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 'bg-danger-light'} border-bottom">
                                         <div class="d-flex align-items-center">
                                             <div class="patient-icon mr-3">
-                                                <i class="fas fa-user-circle fa-3x text-muted"></i>
+                                                <div class="patient-avatar bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-user fa-2x ${props.is_past ? (props.status == 'completed' ? 'text-success' : 'text-secondary') : 'text-danger'}"></i>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h5 class="mb-1">${props.patient_name}</h5>
-                                                <p class="mb-0 text-muted">${formattedDate}</p>
+                                            <div class="flex-grow-1">
+                                                <h4 class="mb-1 font-weight-bold">${props.patient_name}</h4>
+                                                <p class="mb-1 text-muted">
+                                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                                    ${formattedDate}
+                                                </p>
+                                                <p class="mb-0 text-muted">
+                                                    <i class="fas fa-user-md mr-1"></i>
+                                                    Appointment with ${<?= json_encode($staffRole) ?> === 'admin' ? 'Administrator' : 'Health Worker'}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="appointment-info p-4">
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-clock text-muted mr-2"></i>
-                                                    <span class="info-label">Time:</span>
-                                                    <span class="info-value font-weight-bold">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Appointment Time</h6>
+                                                    <p class="mb-0 text-muted font-weight-bold">
                                                         ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                    </span>
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-check-circle text-muted mr-2"></i>
-                                                    <span class="info-label">Status:</span>
-                                                    <span class="badge ${statusClass} px-2 py-1">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-${props.status == 'completed' ? 'check-circle' : (props.status == 'approved' ? 'calendar-check' : 'exclamation-triangle')} fa-2x ${statusClass.includes('success') ? 'text-success' : (statusClass.includes('primary') ? 'text-primary' : 'text-warning')} mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Status</h6>
+                                                    <span class="badge ${statusClass} px-3 py-2">
                                                         ${statusText} ${props.is_past ? '(Past)' : ''}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         ${props.reason ? `
-                                        <div class="reason mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-comment-medical text-muted mr-2"></i> Reason for Visit:</h6>
-                                            <p class="mb-0 text-muted">${props.reason}</p>
+                                        <div class="reason-section mt-4 pt-3 border-top">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas fa-comment-medical fa-lg text-info mr-2"></i>
+                                                <h6 class="font-weight-bold mb-0">Reason for Visit</h6>
+                                            </div>
+                                            <div class="bg-light rounded p-3">
+                                                <p class="mb-0 text-dark">${props.reason}</p>
+                                            </div>
                                         </div>` : ''}
                                     </div>
                                 </div>
                             </div>
                         </div>`;
+                        
+                        // Add send notification button for active appointments
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                            modalContent += `
+                            <div class="text-center pb-3">
+                                <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
+                                    <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                </button>
+                            </div>`;
+                        }
                     }
                     
                     // Create and show modal
@@ -1133,7 +1285,10 @@ $roleDisplay = ucfirst($staffRole);
                 
                 if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
                     $('#end_date').val(startDate);
-                    alert('End date cannot be before start date');
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'End date cannot be before start date'
+                    });
                 }
             });
             
@@ -1143,8 +1298,48 @@ $roleDisplay = ucfirst($staffRole);
                 
                 if (startTime && endTime && endTime <= startTime) {
                     $('#end_time').val('');
-                    alert('End time must be after start time');
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'End time must be after start time'
+                    });
                 }
+            });
+            
+            // Form submission validation
+            $('form').on('submit', function(e) {
+                var startDate = $('#start_date').val();
+                var endDate = $('#end_date').val();
+                var startTime = $('#start_time').val();
+                var endTime = $('#end_time').val();
+                
+                if (!startDate || !endDate || !startTime || !endTime) {
+                    e.preventDefault();
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Please fill in all required fields'
+                    });
+                    return false;
+                }
+                
+                if (new Date(endDate) < new Date(startDate)) {
+                    e.preventDefault();
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'End date cannot be before start date'
+                    });
+                    return false;
+                }
+                
+                if (endTime <= startTime) {
+                    e.preventDefault();
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'End time must be after start time'
+                    });
+                    return false;
+                }
+                
+                return true;
             });
         });
     </script>
