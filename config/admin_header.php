@@ -922,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Making AJAX call...');
             
             // Use native fetch instead of jQuery
-            fetch('actions/switch_account.php', {
+            fetch('actions/admin_switch_account.php', {
                 method: 'POST',
                 body: formData
             })
@@ -992,11 +992,11 @@ $(document).ready(function() {
         const originalText = submitBtn.html();
         submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Switching...');
         
-        console.log('Starting AJAX call to actions/switch_account.php');
+        console.log('Starting AJAX call to actions/admin_switch_account.php');
         
         // Submit the form via AJAX
         $.ajax({
-            url: 'actions/switch_account.php',
+            url: 'actions/admin_switch_account.php',
             type: 'POST',
             data: formData,
             processData: false,

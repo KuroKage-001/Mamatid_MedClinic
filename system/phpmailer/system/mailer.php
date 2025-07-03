@@ -97,7 +97,7 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
     }
     
     // Build the PDF URL with the token - use a direct absolute path
-    $pdfUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/repo-core/Mamatid_MedClinic/actions/generate_appointment_pdf.php?token=' . urlencode($token);
+    $pdfUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/repo-core/Mamatid_MedClinic/actions/admin_generate_appointment_pdf.php?token=' . urlencode($token);
     
     // Debug log the URL
     error_log("PDF URL generated: " . $pdfUrl);

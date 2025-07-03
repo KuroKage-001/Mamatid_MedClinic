@@ -71,7 +71,7 @@ try {
             
         // Add appointment link if token is available
         if (!empty($appointment['view_token'])) {
-            $viewUrl = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 3) . "/actions/generate_appointment_pdf.php?token=" . $appointment['view_token'];
+            $viewUrl = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 3) . "/actions/admin_generate_appointment_pdf.php?token=" . $appointment['view_token'];
             $emailBody .= "<p>View or download your appointment details: <a href='{$viewUrl}'>Click here</a></p>";
         }
             
