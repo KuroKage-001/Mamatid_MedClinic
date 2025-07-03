@@ -155,8 +155,8 @@ if (isset($_POST['update_user'])) {
                 exit;
             } else {
                 error_log("Redirecting to admin_users_management.php");
-                header("location:admin_users_management.php?message=" . urlencode("User updated successfully"));
-                exit;
+            header("location:admin_users_management.php?message=" . urlencode("User updated successfully"));
+            exit;
             }
         } else {
             throw new Exception("Failed to update user");
@@ -173,8 +173,8 @@ if (isset($_POST['update_user'])) {
             echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
             exit;
         } else {
-            $message = $ex->getMessage();
-            $messageType = 'error';
+        $message = $ex->getMessage();
+        $messageType = 'error';
         }
     }
 }
@@ -512,11 +512,11 @@ if (isset($_POST['update_user'])) {
 
                                 <div class="form-actions">
                                     <a href="admin_users_management.php" class="btn btn-secondary">
-                                        <i class="fas fa-times mr-2"></i>Cancel
-                                    </a>
-                                    <button type="submit" name="update_user" class="btn btn-primary">
-                                        <i class="fas fa-save mr-2"></i>Update User
-                                    </button>
+                                            <i class="fas fa-times mr-2"></i>Cancel
+                                        </a>
+                                        <button type="submit" name="update_user" class="btn btn-primary">
+                                            <i class="fas fa-save mr-2"></i>Update User
+                                        </button>
                                 </div>
                             </form>
                         </div>
