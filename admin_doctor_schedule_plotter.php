@@ -29,7 +29,7 @@ try {
     $con->beginTransaction();
     
     // Update past appointments to completed status
-    $updateQuery = "UPDATE appointments 
+    $updateQuery = "UPDATE admin_clients_appointments 
                   SET status = 'completed', updated_at = NOW() 
                   WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
                   AND status = 'approved'
@@ -53,7 +53,7 @@ try {
     $con->beginTransaction();
     
     // Update past appointments to completed status
-    $updateQuery = "UPDATE appointments 
+    $updateQuery = "UPDATE admin_clients_appointments 
                   SET status = 'completed', updated_at = NOW() 
                   WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
                   AND status = 'approved'
@@ -215,7 +215,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get booked appointments for this doctor
 $appointmentsQuery = "SELECT a.*, ds.time_slot_minutes 
-                     FROM appointments a 
+                     FROM admin_clients_appointments a 
                      JOIN doctor_schedules ds ON a.schedule_id = ds.id 
                      WHERE a.doctor_id = ? AND a.status != 'cancelled'";
 $appointmentsStmt = $con->prepare($appointmentsQuery);

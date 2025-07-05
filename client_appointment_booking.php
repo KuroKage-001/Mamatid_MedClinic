@@ -103,7 +103,7 @@ if (isset($_POST['book_appointment'])) {
         $providerName = $schedule['provider_name'];
         
         // Check if the selected time slot is available with a lock
-        $slotQuery = "SELECT COUNT(*) as slot_count FROM appointments 
+        $slotQuery = "SELECT COUNT(*) as slot_count FROM admin_clients_appointments 
                     WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled' 
                     FOR UPDATE";
         $slotStmt = $con->prepare($slotQuery);
@@ -118,7 +118,7 @@ if (isset($_POST['book_appointment'])) {
         }
         
         // Check if this client already has an appointment at this time slot
-        $existingQuery = "SELECT COUNT(*) as existing_count FROM appointments 
+        $existingQuery = "SELECT COUNT(*) as existing_count FROM admin_clients_appointments 
                         WHERE schedule_id = ? AND appointment_time = ? AND status != 'cancelled' 
                         AND patient_name = ? FOR UPDATE";
         $existingStmt = $con->prepare($existingQuery);
@@ -179,7 +179,7 @@ if (isset($_POST['book_appointment'])) {
         }
 
         // Insert the appointment
-        $query = "INSERT INTO appointments (
+        $query = "INSERT INTO admin_clients_appointments (
                     patient_name, phone_number, address, date_of_birth,
                     gender, appointment_date, appointment_time, reason, status,
                     schedule_id, doctor_id
@@ -246,7 +246,7 @@ if (isset($_POST['book_appointment'])) {
             $expiry = date('Y-m-d H:i:s', strtotime('+30 days')); // Token expires after 30 days
             
             // Add token and email sent status to the appointment record
-            $updateAppointmentQuery = "UPDATE appointments SET view_token = ?, token_expiry = ? WHERE id = ?";
+            $updateAppointmentQuery = "UPDATE admin_clients_appointments SET view_token = ?, token_expiry = ? WHERE id = ?";
             $updateAppointmentStmt = $con->prepare($updateAppointmentQuery);
             $updateAppointmentStmt->execute([
                 $token, 
@@ -283,7 +283,7 @@ if (isset($_POST['book_appointment'])) {
             error_log("Email sending result: " . json_encode($emailResult));
             
             // Update email sent status
-            $updateEmailStatusQuery = "UPDATE appointments SET email_sent = ? WHERE id = ?";
+            $updateEmailStatusQuery = "UPDATE admin_clients_appointments SET email_sent = ? WHERE id = ?";
             $updateEmailStatusStmt = $con->prepare($updateEmailStatusQuery);
             $updateEmailStatusStmt->execute([
                 $emailResult['success'] ? 1 : 0,

@@ -30,7 +30,7 @@ try {
     $con->beginTransaction();
     
     // Update past appointments to completed status
-    $updateQuery = "UPDATE appointments 
+    $updateQuery = "UPDATE admin_clients_appointments
                   SET status = 'completed', updated_at = NOW() 
                   WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
                   AND status = 'approved'
@@ -152,7 +152,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get booked appointments for this staff member
 $appointmentsQuery = "SELECT a.*, ss.time_slot_minutes 
-                     FROM appointments a 
+                     FROM admin_clients_appointments a 
                      JOIN staff_schedules ss ON a.schedule_id = ss.id 
                      WHERE a.doctor_id = ? AND a.status != 'cancelled'";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
@@ -858,7 +858,7 @@ $roleDisplay = ucfirst($staffRole);
                                                     <td>
                                                         <?php 
                                                         // Check if schedule has appointments
-                                                        $checkQuery = "SELECT COUNT(*) as appt_count FROM appointments WHERE schedule_id = ?";
+                                                        $checkQuery = "SELECT COUNT(*) as appt_count FROM admin_clients_appointments WHERE schedule_id = ?";
                                                         $checkStmt = $con->prepare($checkQuery);
                                                         $checkStmt->execute([$schedule['id']]);
                                                         $hasAppointments = ($checkStmt->fetch(PDO::FETCH_ASSOC)['appt_count'] > 0);

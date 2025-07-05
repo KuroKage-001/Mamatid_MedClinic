@@ -14,7 +14,7 @@ try {
     
     // Find appointments within 30 minutes that haven't received a reminder
     $query = "SELECT a.*, u.display_name as doctor_name, c.email as client_email
-            FROM appointments a
+            FROM admin_clients_appointments a
             LEFT JOIN users u ON a.doctor_id = u.id
             LEFT JOIN clients_user_accounts c ON c.full_name = a.patient_name
             WHERE a.appointment_date = ?
@@ -192,7 +192,7 @@ try {
         
         // Update reminder status in database
         if ($emailResult['success']) {
-            $updateQuery = "UPDATE appointments SET reminder_sent = 1 WHERE id = ?";
+            $updateQuery = "UPDATE admin_clients_appointments SET reminder_sent = 1 WHERE id = ?";
             $updateStmt = $con->prepare($updateQuery);
             $updateStmt->execute([$appointment['id']]);
             $reminderCount++;

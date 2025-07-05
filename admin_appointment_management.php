@@ -35,7 +35,7 @@ if (isset($_POST['update_notes'])) {
     $notes = $_POST['notes'];
 
     try {
-        $query = "UPDATE appointments SET notes = ? WHERE id = ?";
+        $query = "UPDATE admin_clients_appointments SET notes = ? WHERE id = ?";
         $stmt = $con->prepare($query);
         $stmt->execute([$notes, $appointmentId]);
         $message = "Appointment notes updated successfully!";
@@ -55,7 +55,7 @@ try {
                          DATE_FORMAT(a.appointment_time, '%h:%i %p') as formatted_time,
                          DATE_FORMAT(a.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
                          u.display_name as archived_by_name
-                  FROM appointments a
+                  FROM admin_clients_appointments a
                   LEFT JOIN admin_user_accounts u ON a.archived_by = u.id
                   WHERE a.is_archived = 1 
                   ORDER BY a.archived_at DESC";
@@ -63,7 +63,7 @@ try {
         $query = "SELECT *, 
                          DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
                          DATE_FORMAT(appointment_time, '%h:%i %p') as formatted_time
-                  FROM appointments 
+                  FROM admin_clients_appointments 
                   WHERE is_archived = 0 
                   ORDER BY appointment_date DESC, appointment_time DESC";
     }
@@ -77,7 +77,7 @@ try {
 $countQuery = "SELECT 
                 SUM(CASE WHEN is_archived = 0 THEN 1 ELSE 0 END) as active_count,
                 SUM(CASE WHEN is_archived = 1 THEN 1 ELSE 0 END) as archived_count
-               FROM appointments";
+               FROM admin_clients_appointments";
 $countStmt = $con->prepare($countQuery);
 $countStmt->execute();
 $countResult = $countStmt->fetch(PDO::FETCH_ASSOC);

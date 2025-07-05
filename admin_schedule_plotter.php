@@ -74,7 +74,7 @@ $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as docto
                           WHEN a.schedule_id IN (SELECT id FROM staff_schedules) THEN 'staff'
                           ELSE 'unknown'
                       END as schedule_type
-                      FROM appointments a
+                      FROM admin_clients_appointments a
                       LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
                       WHERE a.status != 'cancelled'
                       ORDER BY a.appointment_date ASC, a.appointment_time ASC";
