@@ -96,7 +96,7 @@ if (isset($_POST['submit_schedule'])) {
             $startDate = $_POST['start_date'];
             $endDate = $_POST['end_date'];
             
-            $deleteQuery = "DELETE FROM doctor_schedules 
+            $deleteQuery = "DELETE FROM admin_doctor_schedules 
                             WHERE doctor_id = ? 
                             AND schedule_date BETWEEN ? AND ?";
             $deleteStmt = $con->prepare($deleteQuery);
@@ -104,7 +104,7 @@ if (isset($_POST['submit_schedule'])) {
         }
         
         // Insert new schedule entries
-        $scheduleQuery = "INSERT INTO doctor_schedules 
+        $scheduleQuery = "INSERT INTO admin_doctor_schedules 
                          (doctor_id, schedule_date, start_time, end_time, time_slot_minutes, max_patients, notes) 
                          VALUES (?, ?, ?, ?, ?, ?, ?)";
         $scheduleStmt = $con->prepare($scheduleQuery);
@@ -133,7 +133,7 @@ if (isset($_POST['submit_schedule'])) {
             }
             
             // Check if schedule already exists for this date and time range
-            $checkDuplicateQuery = "SELECT id FROM doctor_schedules 
+            $checkDuplicateQuery = "SELECT id FROM admin_doctor_schedules 
                                    WHERE doctor_id = ? 
                                    AND schedule_date = ? 
                                    AND start_time = ? 
@@ -172,13 +172,13 @@ if (isset($_POST['submit_schedule'])) {
                 $slotTime = date('H:i:s', $currentSlot);
                 
                 // Check if slot already exists
-                $checkSlotQuery = "SELECT id FROM appointment_slots WHERE schedule_id = ? AND slot_time = ?";
+                $checkSlotQuery = "SELECT id FROM admin_doctor_appointment_slots WHERE schedule_id = ? AND slot_time = ?";
                 $checkSlotStmt = $con->prepare($checkSlotQuery);
                 $checkSlotStmt->execute([$scheduleId, $slotTime]);
                 
                 if ($checkSlotStmt->rowCount() == 0) {
                     // Insert new slot if it doesn't exist
-                    $insertSlotQuery = "INSERT INTO appointment_slots (schedule_id, slot_time, is_booked) VALUES (?, ?, 0)";
+                    $insertSlotQuery = "INSERT INTO admin_doctor_appointment_slots (schedule_id, slot_time, is_booked) VALUES (?, ?, 0)";
                     $insertSlotStmt = $con->prepare($insertSlotQuery);
                     $insertSlotStmt->execute([$scheduleId, $slotTime]);
                 }
@@ -205,7 +205,7 @@ if (isset($_POST['submit_schedule'])) {
 }
 
 // Fetch doctor's existing schedules
-$query = "SELECT * FROM doctor_schedules 
+$query = "SELECT * FROM admin_doctor_schedules 
           WHERE doctor_id = ? 
           AND (is_deleted = 0 OR is_deleted IS NULL)
           ORDER BY schedule_date ASC";
@@ -216,7 +216,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Get booked appointments for this doctor
 $appointmentsQuery = "SELECT a.*, ds.time_slot_minutes 
                      FROM admin_clients_appointments a 
-                     JOIN doctor_schedules ds ON a.schedule_id = ds.id 
+                     JOIN admin_doctor_schedules ds ON a.schedule_id = ds.id 
                      WHERE a.doctor_id = ? AND a.status != 'cancelled'";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
 $appointmentsStmt->execute([$doctorId]);

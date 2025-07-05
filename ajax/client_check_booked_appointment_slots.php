@@ -41,7 +41,7 @@ $scheduleType = isset($_POST['schedule_type']) ?
 
 try {
     // Determine which table to check based on schedule type
-    $schedulesTable = ($scheduleType === 'staff') ? 'staff_schedules' : 'doctor_schedules';
+    $schedulesTable = ($scheduleType === 'staff') ? 'admin_hw_schedules' : 'admin_doctor_schedules';
     $providerIdColumn = ($scheduleType === 'staff') ? 'staff_id' : 'doctor_id';
     
     // Get schedule details to check max patients and date
@@ -90,9 +90,9 @@ try {
     // Get slot statuses from the appropriate slots table based on schedule type
     $slotStatuses = [];
     if ($scheduleType === 'staff') {
-        $slotStatusesQuery = "SELECT slot_time, is_booked FROM staff_appointment_slots WHERE schedule_id = ?";
+        $slotStatusesQuery = "SELECT slot_time, is_booked FROM admin_hw_appointment_slots WHERE schedule_id = ?";
     } else {
-        $slotStatusesQuery = "SELECT slot_time, is_booked FROM appointment_slots WHERE schedule_id = ?";
+        $slotStatusesQuery = "SELECT slot_time, is_booked FROM admin_doctor_appointment_slots WHERE schedule_id = ?";
     }
     
     $slotStatusesStmt = $con->prepare($slotStatusesQuery);

@@ -10,7 +10,7 @@ $query = "SELECT *,
           DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
           TIME_FORMAT(appointment_time, '%h:%i %p') as formatted_time,
           COALESCE(updated_at, created_at) as last_modified
-          FROM appointments 
+          FROM admin_clients_appointments 
           WHERE patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)
           ORDER BY appointment_date DESC, appointment_time DESC";
 

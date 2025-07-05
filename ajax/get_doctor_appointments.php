@@ -14,7 +14,7 @@ try {
     // Get booked appointments for this doctor
     $appointmentsQuery = "SELECT a.*, ds.time_slot_minutes 
                          FROM appointments a 
-                         JOIN doctor_schedules ds ON a.schedule_id = ds.id 
+                         JOIN admin_doctor_schedules ds ON a.schedule_id = ds.id 
                          WHERE a.doctor_id = ? AND a.status != 'cancelled'";
     $appointmentsStmt = $con->prepare($appointmentsQuery);
     $appointmentsStmt->execute([$doctorId]);

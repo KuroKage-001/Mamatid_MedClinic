@@ -53,7 +53,7 @@ $scheduleType = isset($_POST['schedule_type']) ?
 
 try {
     // Determine which table to check based on schedule type
-    $schedulesTable = ($scheduleType === 'staff') ? 'staff_schedules' : 'doctor_schedules';
+    $schedulesTable = ($scheduleType === 'staff') ? 'admin_hw_schedules' : 'admin_doctor_schedules';
     $staffIdColumn = ($scheduleType === 'staff') ? 'staff_id' : 'doctor_id';
     
     // First, validate that the schedule exists and is approved

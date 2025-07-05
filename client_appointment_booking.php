@@ -22,7 +22,7 @@ if (isset($_GET['error'])) {
 
 // Get all approved schedules from doctors - ONLY FUTURE DATES
 $doctorScheduleQuery = "SELECT ds.*, u.display_name as doctor_name, u.role 
-                FROM doctor_schedules ds
+                FROM admin_doctor_schedules ds
                 JOIN admin_user_accounts u ON ds.doctor_id = u.id
                 WHERE ds.schedule_date >= CURDATE()
                 AND ds.is_approved = 1
@@ -33,7 +33,7 @@ $doctorSchedules = $doctorScheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get all staff schedules (auto-approved) - ONLY FUTURE DATES
 $staffScheduleQuery = "SELECT ss.*, u.display_name as staff_name, u.role 
-                FROM staff_schedules ss
+                FROM admin_hw_schedules ss
                 JOIN admin_user_accounts u ON ss.staff_id = u.id
                 WHERE ss.schedule_date >= CURDATE()
                 ORDER BY ss.schedule_date ASC, ss.start_time ASC";
@@ -68,17 +68,17 @@ if (isset($_POST['book_appointment'])) {
         // Get schedule details with a lock based on schedule type
         if ($scheduleType == 'doctor') {
             $scheduleQuery = "SELECT ds.*, u.id as provider_id, u.display_name as provider_name 
-                            FROM doctor_schedules ds
+                            FROM admin_doctor_schedules ds
                             JOIN admin_user_accounts u ON ds.doctor_id = u.id
                             WHERE ds.id = ? AND ds.is_approved = 1 FOR UPDATE";
-            $tableName = 'doctor_schedules';
+            $tableName = 'admin_doctor_schedules';
             $providerIdColumn = 'doctor_id';
         } else if ($scheduleType == 'staff') {
             $scheduleQuery = "SELECT ss.*, u.id as provider_id, u.display_name as provider_name 
-                            FROM staff_schedules ss
+                            FROM admin_hw_schedules ss
                             JOIN admin_user_accounts u ON ss.staff_id = u.id
                             WHERE ss.id = ? FOR UPDATE";
-            $tableName = 'staff_schedules';
+            $tableName = 'admin_hw_schedules';
             $providerIdColumn = 'staff_id';
         } else {
             $con->rollBack();
@@ -134,7 +134,7 @@ if (isset($_POST['book_appointment'])) {
 
         // Check or create the appointment slot record based on schedule type
         if ($scheduleType == 'doctor') {
-            $slotExistsQuery = "SELECT id, is_booked FROM appointment_slots 
+            $slotExistsQuery = "SELECT id, is_booked FROM admin_doctor_appointment_slots 
                               WHERE schedule_id = ? AND slot_time = ? 
                               FOR UPDATE";
             $slotExistsStmt = $con->prepare($slotExistsQuery);
@@ -143,7 +143,7 @@ if (isset($_POST['book_appointment'])) {
             
             if (!$slotExists) {
                 // Create the slot if it doesn't exist
-                $createSlotQuery = "INSERT INTO appointment_slots 
+                $createSlotQuery = "INSERT INTO admin_doctor_appointment_slots 
                                   (schedule_id, slot_time, is_booked) 
                                   VALUES (?, ?, 0)";
                 $createSlotStmt = $con->prepare($createSlotQuery);
@@ -155,8 +155,8 @@ if (isset($_POST['book_appointment'])) {
                 $slotId = $slotExists['id'];
             }
         } else {
-            // For staff schedules, use staff_appointment_slots table
-            $slotExistsQuery = "SELECT id, is_booked FROM staff_appointment_slots 
+            // For staff schedules, use admin_hw_appointment_slots table
+            $slotExistsQuery = "SELECT id, is_booked FROM admin_hw_appointment_slots 
                               WHERE schedule_id = ? AND slot_time = ? 
                               FOR UPDATE";
             $slotExistsStmt = $con->prepare($slotExistsQuery);
@@ -165,7 +165,7 @@ if (isset($_POST['book_appointment'])) {
             
             if (!$slotExists) {
                 // Create the slot if it doesn't exist
-                $createSlotQuery = "INSERT INTO staff_appointment_slots 
+                $createSlotQuery = "INSERT INTO admin_hw_appointment_slots 
                                   (schedule_id, slot_time, is_booked) 
                                   VALUES (?, ?, 0)";
                 $createSlotStmt = $con->prepare($createSlotQuery);
@@ -204,13 +204,13 @@ if (isset($_POST['book_appointment'])) {
         
         // Update the appropriate slot table based on schedule type
         if ($scheduleType == 'doctor') {
-            $updateSlotQuery = "UPDATE appointment_slots 
+            $updateSlotQuery = "UPDATE admin_doctor_appointment_slots 
                               SET is_booked = 1, appointment_id = ? 
                               WHERE id = ?";
             $updateSlotStmt = $con->prepare($updateSlotQuery);
             $updateSlotStmt->execute([$appointmentId, $slotId]);
         } else {
-            $updateSlotQuery = "UPDATE staff_appointment_slots 
+            $updateSlotQuery = "UPDATE admin_hw_appointment_slots 
                               SET is_booked = 1, appointment_id = ? 
                               WHERE id = ?";
             $updateSlotStmt = $con->prepare($updateSlotQuery);

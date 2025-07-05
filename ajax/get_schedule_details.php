@@ -14,11 +14,11 @@ try {
     // Determine which table to query based on schedule type
     if ($scheduleType === 'staff') {
         $query = "SELECT schedule_date, start_time, end_time, time_slot_minutes, max_patients 
-                  FROM staff_schedules 
+                  FROM admin_hw_schedules 
                   WHERE id = ?";
     } else {
         $query = "SELECT schedule_date, start_time, end_time, time_slot_minutes, max_patients 
-                  FROM doctor_schedules 
+                  FROM admin_doctor_schedules 
                   WHERE id = ?";
     }
     

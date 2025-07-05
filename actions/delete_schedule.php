@@ -20,10 +20,10 @@ if ($scheduleId > 0) {
     try {
         // Determine which table to use based on role
         if ($userRole == 'doctor') {
-            $tableName = 'doctor_schedules';
+            $tableName = 'admin_doctor_schedules';
             $idColumn = 'doctor_id';
         } else {
-            $tableName = 'staff_schedules';
+            $tableName = 'admin_hw_schedules';
             $idColumn = 'staff_id';
         }
 

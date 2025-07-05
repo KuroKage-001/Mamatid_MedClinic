@@ -37,7 +37,7 @@ if (isset($_POST['approve_schedule'])) {
     $approvalNotes = $_POST['approval_notes'];
     
     try {
-        $query = "UPDATE doctor_schedules SET is_approved = ?, approval_notes = ? WHERE id = ?";
+        $query = "UPDATE admin_doctor_schedules SET is_approved = ?, approval_notes = ? WHERE id = ?";
         $stmt = $con->prepare($query);
         $stmt->execute([$isApproved, $approvalNotes, $scheduleId]);
         $message = "Doctor schedule " . ($isApproved ? "approved" : "rejected") . " successfully!";
@@ -49,7 +49,7 @@ if (isset($_POST['approve_schedule'])) {
 // Fetch all doctor schedules
 $doctorSchedules = [];
 $scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
-                 FROM doctor_schedules ds
+                 FROM admin_doctor_schedules ds
                  JOIN admin_user_accounts u ON ds.doctor_id = u.id
                  ORDER BY ds.schedule_date ASC, ds.start_time ASC";
 $scheduleStmt = $con->prepare($scheduleQuery);
@@ -59,7 +59,7 @@ $doctorSchedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 // Fetch all staff schedules for reference (already auto-approved)
 $staffSchedules = [];
 $staffQuery = "SELECT ss.*, u.display_name as staff_name, u.role as staff_role
-              FROM staff_schedules ss
+              FROM admin_hw_schedules ss
               JOIN admin_user_accounts u ON ss.staff_id = u.id
               WHERE u.role IN ('admin', 'health_worker')
               ORDER BY ss.schedule_date ASC, ss.start_time ASC";
@@ -70,8 +70,8 @@ $staffSchedules = $staffStmt->fetchAll(PDO::FETCH_ASSOC);
 // Fetch all appointments for calendar display
 $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as doctor_role,
                       CASE 
-                          WHEN a.schedule_id IN (SELECT id FROM doctor_schedules) THEN 'doctor'
-                          WHEN a.schedule_id IN (SELECT id FROM staff_schedules) THEN 'staff'
+                          WHEN a.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN 'doctor'
+                          WHEN a.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN 'staff'
                           ELSE 'unknown'
                       END as schedule_type
                       FROM admin_clients_appointments a

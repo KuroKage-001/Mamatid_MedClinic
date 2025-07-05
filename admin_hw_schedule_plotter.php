@@ -61,7 +61,7 @@ if (isset($_POST['submit_schedule'])) {
             $startDate = $_POST['start_date'];
             $endDate = $_POST['end_date'];
             
-            $deleteQuery = "DELETE FROM staff_schedules 
+            $deleteQuery = "DELETE FROM admin_hw_schedules 
                             WHERE staff_id = ? 
                             AND schedule_date BETWEEN ? AND ?";
             $deleteStmt = $con->prepare($deleteQuery);
@@ -69,7 +69,7 @@ if (isset($_POST['submit_schedule'])) {
         }
         
         // Insert new schedule entries - auto-approved for admins and health workers
-        $scheduleQuery = "INSERT INTO staff_schedules 
+        $scheduleQuery = "INSERT INTO admin_hw_schedules 
                          (staff_id, schedule_date, start_time, end_time, time_slot_minutes, max_patients, notes) 
                          VALUES (?, ?, ?, ?, ?, ?, ?)";
         $scheduleStmt = $con->prepare($scheduleQuery);
@@ -98,7 +98,7 @@ if (isset($_POST['submit_schedule'])) {
             }
             
             // Check if a schedule already exists for this date and time
-            $checkQuery = "SELECT COUNT(*) FROM staff_schedules 
+            $checkQuery = "SELECT COUNT(*) FROM admin_hw_schedules 
                           WHERE staff_id = ? 
                           AND schedule_date = ?
                           AND start_time = ?
@@ -143,7 +143,7 @@ if (isset($_POST['submit_schedule'])) {
 }
 
 // Fetch staff's existing schedules
-$query = "SELECT * FROM staff_schedules 
+$query = "SELECT * FROM admin_hw_schedules 
           WHERE staff_id = ? 
           ORDER BY schedule_date ASC";
 $stmt = $con->prepare($query);
@@ -153,7 +153,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Get booked appointments for this staff member
 $appointmentsQuery = "SELECT a.*, ss.time_slot_minutes 
                      FROM admin_clients_appointments a 
-                     JOIN staff_schedules ss ON a.schedule_id = ss.id 
+                     JOIN admin_hw_schedules ss ON a.schedule_id = ss.id 
                      WHERE a.doctor_id = ? AND a.status != 'cancelled'";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
 $appointmentsStmt->execute([$staffId]);
