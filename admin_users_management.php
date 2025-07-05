@@ -129,7 +129,7 @@ try {
 <head>
   <?php include './config/site_css_links.php'; ?>
   <?php include './config/data_tables_css.php'; ?>
-  <link rel="stylesheet" href="system_styles/users.css">
+  <link rel="stylesheet" href="dist/css/admin_system_styles/admin_users_management.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Users Management - Mamatid Health Center System</title>
   <style>

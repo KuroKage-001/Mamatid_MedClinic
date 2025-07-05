@@ -184,7 +184,7 @@ if (isset($_POST['update_user'])) {
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
-    <link rel="stylesheet" href="system_styles/update_user.css">
+    <link rel="stylesheet" href="dist/css/admin_system_styles/admin_update_users.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <title>Update User - Mamatid Health Center System</title>
     <style>

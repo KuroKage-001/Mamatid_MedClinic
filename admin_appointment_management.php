@@ -135,6 +135,79 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             padding: 1.5rem;
         }
 
+        /* Archive Styling */
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #E8A317 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 168, 0, 0.4);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #159C96 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(27, 197, 189, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        .archived-row {
+            background-color: rgba(255, 168, 0, 0.1) !important;
+        }
+
+        .archive-filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .archive-filter-tabs .btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 500;
+        }
+
+        .archive-filter-tabs .badge {
+            background-color: white;
+            color: inherit;
+            margin-left: 5px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .archived-tag {
+            display: inline-block;
+            padding: 2px 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-left: 5px;
+        }
+
         /* Form Controls */
         .form-control {
             height: calc(2.5rem + 2px);
@@ -179,14 +252,15 @@ $archivedCount = $countResult['archived_count'] ?? 0;
         }
 
         .btn-secondary {
-            background: #e4e6ef;
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
             border: none;
-            color: var(--dark-color);
+            color: white;
         }
 
         .btn-secondary:hover {
-            background: #d7dae7;
-            color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+            color: white;
         }
 
         /* Table Styling */
@@ -396,7 +470,6 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             border-radius: 20px;
             padding: 8px 20px;
             font-weight: 500;
-            transition: all var(--transition-speed);
         }
 
         .btn-warning {
@@ -712,11 +785,11 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                             <div class="archive-filter-tabs">
                                 <a href="?archived=0" class="btn <?php echo !$showArchived ? 'btn-primary' : 'btn-secondary'; ?>">
                                     <i class="fas fa-calendar-check"></i> Active Records
-                                    <span class="badge ml-1" style="background-color: white; color: <?php echo !$showArchived ? 'var(--primary-color)' : 'var(--dark-color)'; ?>;"><?php echo $activeCount; ?></span>
+                                    <span class="badge"><?php echo $activeCount; ?></span>
                                 </a>
                                 <a href="?archived=1" class="btn <?php echo $showArchived ? 'btn-warning' : 'btn-secondary'; ?>">
                                     <i class="fas fa-archive"></i> Archived Records
-                                    <span class="badge ml-1" style="background-color: white; color: <?php echo $showArchived ? 'var(--warning-color)' : 'var(--dark-color)'; ?>;"><?php echo $archivedCount; ?></span>
+                                    <span class="badge"><?php echo $archivedCount; ?></span>
                                 </a>
                             </div>
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -784,7 +857,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                 </button>
                                             <?php else: ?>
                                                 <!-- Edit Button -->
-                                                <button type="button" class="btn btn-sm btn-primary" 
+                                                <button type="button" class="btn btn-primary btn-sm" 
                                                         data-toggle="modal" 
                                                         data-target="#updateModal<?php echo $row['id']; ?>">
                                                     <i class="fas fa-edit"></i> Notes

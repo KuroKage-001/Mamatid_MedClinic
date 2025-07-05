@@ -198,7 +198,7 @@ try {
 <head>
   <?php include './config/site_css_links.php'; ?>
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
-  <link rel="stylesheet" href="system_styles/dashboard.css">
+  <link rel="stylesheet" href="dist/css/admin_system_styles/admin_dashboard.css">
   <title>Dashboard - Mamatid Health Center System</title>
   
   <!-- Modern Export Actions Inline CSS -->
