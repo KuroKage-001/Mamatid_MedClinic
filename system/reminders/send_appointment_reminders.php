@@ -46,49 +46,146 @@ try {
         // Prepare email details
         $formattedDate = date('l, F j, Y', strtotime($appointment['appointment_date']));
         $formattedTime = date('h:i A', strtotime($appointment['appointment_time']));
-        $doctorName = $appointment['doctor_name'] ?? 'your doctor';
+        $doctorName = $appointment['doctor_name'] ?? 'your healthcare provider';
         
         // Generate email body
-        $emailBody = "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;'>
-            <div style='text-align: center; padding: 10px; background-color: #f8f9fa; margin-bottom: 20px;'>
-                <h2 style='color: #3699FF; margin: 0;'>Appointment Reminder</h2>
+        $emailBody = '
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Appointment Reminder - Mamatid Health Center</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333333;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #dddddd;
+                    border-radius: 5px;
+                    background-color: #ffffff;
+                }
+                .header {
+                    background-color: #2D5A27;
+                    color: white;
+                    padding: 20px;
+                    text-align: center;
+                    border-radius: 5px 5px 0 0;
+                }
+                .content {
+                    padding: 30px;
+                    background-color: #ffffff;
+                }
+                .appointment-details {
+                    background-color: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                    border-left: 4px solid #2D5A27;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 12px;
+                    color: #666666;
+                    margin-top: 30px;
+                    border-top: 1px solid #eeeeee;
+                    padding-top: 20px;
+                }
+                .reminder-alert {
+                    background-color: #fff3cd;
+                    border: 1px solid #ffeeba;
+                    color: #856404;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                    text-align: center;
+                    font-weight: bold;
+                }
+                .checklist {
+                    background-color: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h2 style="margin:0;">Mamatid Health Center</h2>
+                    <p style="margin:5px 0 0 0;">Appointment Reminder</p>
+                </div>
+                <div class="content">
+                    <p>Dear ' . htmlspecialchars($appointment['patient_name']) . ',</p>
+                    
+                    <div class="reminder-alert">
+                        Your appointment is scheduled in approximately ' . $minutesUntil . ' minutes
             </div>
             
-            <p>Dear <strong>{$appointment['patient_name']}</strong>,</p>
-            
-            <p>This is a friendly reminder that your appointment at Mamatid Health Center is scheduled in approximately <strong>{$minutesUntil} minutes</strong>.</p>
-            
-            <div style='background-color: #f1f8ff; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                <h3 style='margin-top: 0; color: #333;'>Appointment Details:</h3>
-                <p><strong>Date:</strong> {$formattedDate}</p>
-                <p><strong>Time:</strong> {$formattedTime}</p>
-                <p><strong>Doctor:</strong> {$doctorName}</p>
-                <p><strong>Reason for Visit:</strong> {$appointment['reason']}</p>
+                    <div class="appointment-details">
+                        <h3 style="margin-top:0;color:#2D5A27;">Appointment Information</h3>
+                        <p><strong>Healthcare Provider:</strong> ' . htmlspecialchars($doctorName) . '</p>
+                        <p><strong>Date:</strong> ' . htmlspecialchars($formattedDate) . '</p>
+                        <p><strong>Time:</strong> ' . htmlspecialchars($formattedTime) . '</p>
+                        <p><strong>Purpose of Visit:</strong> ' . htmlspecialchars($appointment['reason']) . '</p>
             </div>
             
-            <p>Please arrive a few minutes early to complete any necessary paperwork.</p>";
+                    <div class="checklist">
+                        <h4 style="margin-top:0;color:#2D5A27;">Final Checklist</h4>
+                        <ul style="padding-left:20px;margin:10px 0;">
+                            <li>Valid ID and medical insurance card (if applicable)</li>
+                            <li>List of current medications</li>
+                            <li>Relevant medical records or test results</li>
+                            <li>Face mask</li>
+                            <li>Payment method (if applicable)</li>
+                        </ul>
+                    </div>';
             
         // Add appointment link if token is available
         if (!empty($appointment['view_token'])) {
             $viewUrl = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 3) . "/actions/admin_generate_appointment_pdf.php?token=" . $appointment['view_token'];
-            $emailBody .= "<p>View or download your appointment details: <a href='{$viewUrl}'>Click here</a></p>";
+            $emailBody .= '
+                    <p style="text-align:center;">
+                        <a href="' . htmlspecialchars($viewUrl) . '" style="display:inline-block;background-color:#2D5A27;color:white;padding:12px 25px;text-decoration:none;border-radius:5px;margin:20px 0;font-weight:bold;">
+                            View Appointment Details
+                        </a>
+                    </p>';
         }
-            
-        $emailBody .= "
-            <p>If you need to reschedule or cancel, please contact us as soon as possible.</p>
-            
-            <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;'>
-                <p style='font-size: 12px; color: #777;'>Mamatid Health Center<br>
-                Email: clinic@mamatidhealth.com<br>
-                Tel: (02) 888-7777</p>
+        
+        $emailBody .= '
+                    <p>If you are experiencing any COVID-19 symptoms (fever, cough, etc.), please contact us before coming to the clinic.</p>
+                    
+                    <p>For any urgent concerns, please contact us at:</p>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>Phone: (02) 888-7777</li>
+                        <li>Email: appointments@mamatidhealth.com</li>
+                    </ul>
+                    
+                    <p>We look forward to serving you.</p>
+                    
+                    <p>Best regards,<br>
+                    <strong>Mamatid Health Center</strong></p>
+                </div>
+                <div class="footer">
+                    <p>This is an automated reminder. Please do not reply to this email.</p>
+                    <p>&copy; ' . date('Y') . ' Mamatid Health Center. All rights reserved.</p>
+                    <p>Address: 123 Mamatid Street, Cabuyao City, Laguna</p>
+                </div>
             </div>
-        </div>";
+        </body>
+        </html>';
         
         // Send email
         $emailResult = sendEmail(
             $appointment['client_email'],
-            '🕒 Reminder: Your Appointment in ' . $minutesUntil . ' Minutes - Mamatid Health Center',
+            '🕒 Reminder: Your Appointment Today at Mamatid Health Center',
             $emailBody,
             $appointment['patient_name']
         );

@@ -449,6 +449,20 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
         .modern-toast .swal2-html-container {
             color: var(--text-secondary) !important;
         }
+
+        .forgot-password-link {
+            color: #DC2626;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .forgot-password-link:hover {
+            color: #B91C1C;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -526,6 +540,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
             </form>
 
             <div class="register-link">
+                <p><a href="common_service/client_forgot_password.php" class="forgot-password-link">Forgot Password?</a></p>
                 <p>Don't have an account? <a href="client_register.php">Create One</a></p>
             </div>
         </div>

@@ -334,7 +334,7 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Appointment Confirmation</title>
+        <title>Appointment Confirmation - Mamatid Health Center</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -352,106 +352,120 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
                 background-color: #ffffff;
             }
             .header {
-                background-color: #3699FF;
+                background-color: #2D5A27;
                 color: white;
-                padding: 15px;
+                padding: 20px;
                 text-align: center;
                 border-radius: 5px 5px 0 0;
             }
             .content {
-                padding: 20px;
+                padding: 30px;
                 background-color: #ffffff;
             }
             .appointment-details {
-                background-color: #f9f9f9;
-                padding: 15px;
+                background-color: #f8f9fa;
+                padding: 20px;
                 border-radius: 5px;
-                margin: 15px 0;
-                border-left: 4px solid #3699FF;
+                margin: 20px 0;
+                border-left: 4px solid #2D5A27;
             }
             .appointment-details p {
-                margin: 5px 0;
+                margin: 8px 0;
             }
             .footer {
                 text-align: center;
                 font-size: 12px;
-                color: #777777;
-                margin-top: 20px;
-                border-top: 1px solid #eee;
-                padding-top: 15px;
+                color: #666666;
+                margin-top: 30px;
+                border-top: 1px solid #eeeeee;
+                padding-top: 20px;
             }
             .cta-button {
                 display: inline-block;
-                background-color: #3699FF;
+                background-color: #2D5A27;
                 color: white;
                 padding: 12px 25px;
                 text-decoration: none;
                 border-radius: 5px;
-                margin-top: 15px;
+                margin: 20px 0;
                 font-weight: bold;
             }
             .cta-button:hover {
-                background-color: #2980b9;
+                background-color: #234320;
             }
-            .important {
-                background-color: #fff3cd;
-                border: 1px solid #ffeaa7;
-                padding: 10px;
+            .important-notice {
+                background-color: #f8f9fa;
+                border: 1px solid #e9ecef;
+                padding: 15px;
                 border-radius: 5px;
-                margin: 15px 0;
+                margin: 20px 0;
+            }
+            .contact-info {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-top: 20px;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <h2>🏥 Appointment Confirmation</h2>
+                <h2 style="margin:0;">Mamatid Health Center</h2>
+                <p style="margin:5px 0 0 0;">Appointment Confirmation</p>
             </div>
             <div class="content">
                 <p>Dear ' . htmlspecialchars($patientName) . ',</p>
                 
-                <p>Thank you for booking an appointment with <strong>Mamatid Health Center</strong>. Your appointment has been confirmed successfully.</p>
+                <p>Thank you for choosing Mamatid Health Center for your healthcare needs. This email confirms your upcoming appointment details.</p>
                 
                 <div class="appointment-details">
-                    <h3>📅 Appointment Details:</h3>
-                    <p><strong>👨‍⚕️ Doctor:</strong> ' . htmlspecialchars($doctorName) . '</p>
-                    <p><strong>📅 Date:</strong> ' . htmlspecialchars($appointmentDate) . '</p>
-                    <p><strong>🕒 Time:</strong> ' . htmlspecialchars($appointmentTime) . '</p>
-                    <p><strong>📝 Reason for Visit:</strong> ' . htmlspecialchars($reason) . '</p>
+                    <h3 style="margin-top:0;color:#2D5A27;">Appointment Information</h3>
+                    <p><strong>Healthcare Provider:</strong> ' . htmlspecialchars($doctorName) . '</p>
+                    <p><strong>Date:</strong> ' . htmlspecialchars($appointmentDate) . '</p>
+                    <p><strong>Time:</strong> ' . htmlspecialchars($appointmentTime) . '</p>
+                    <p><strong>Purpose of Visit:</strong> ' . htmlspecialchars($reason) . '</p>
                 </div>
                 
-                <div class="important">
-                    <p><strong>⚠️ Important Reminders:</strong></p>
-                    <ul>
-                        <li>Please arrive 15 minutes before your scheduled appointment time.</li>
-                        <li>Bring your identification card and any relevant medical records.</li>
-                        <li>If you need to cancel or reschedule, please contact us at least 24 hours in advance.</li>
-                        <li>Wear a face mask and maintain social distancing protocols.</li>
-                    </ul>
-                </div>
-                
-                <p>You can view or download your appointment details using the button below:</p>';
+                <div class="important-notice">
+                    <h4 style="margin-top:0;color:#2D5A27;">Pre-Appointment Instructions</h4>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>Please arrive 15 minutes before your scheduled appointment time for registration.</li>
+                        <li>Bring a valid government-issued ID and your medical insurance card (if applicable).</li>
+                        <li>Bring a list of current medications and any relevant medical records.</li>
+                        <li>If you are experiencing fever, cough, or other COVID-19 symptoms, please contact us before your visit.</li>
+                        <li>Wear a face mask within the facility premises.</li>
+                </ul>
+                </div>';
     
     // Only add the button if we have a token
     if (!empty($token)) {
         $body .= '
-                <center><a href="' . htmlspecialchars($pdfUrl) . '" class="cta-button">📄 Download Appointment PDF</a></center>';
-    } else {
-        $body .= '
-                <center><p style="color: #FF0000;">📄 Your appointment link is being processed. Please check back later.</p></center>';
+                <div style="text-align:center;">
+                    <p>Click below to view or download your appointment details:</p>
+                    <a href="' . htmlspecialchars($pdfUrl) . '" class="cta-button">View Appointment Details</a>
+                </div>';
     }
                 
     $body .= '
-                <p>If you have any questions or need further assistance, please don\'t hesitate to contact us.</p>
+                <div class="contact-info">
+                    <h4 style="margin-top:0;color:#2D5A27;">Need to Reschedule?</h4>
+                    <p>If you need to reschedule or cancel your appointment, please contact us at least 24 hours in advance through:</p>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>Phone: (02) 888-7777</li>
+                        <li>Email: appointments@mamatidhealth.com</li>
+                    </ul>
+                </div>
+
+                <p>We look forward to providing you with quality healthcare services.</p>
                 
                 <p>Best regards,<br>
-                <strong>Mamatid Health Center Team</strong><br>
-                📧 Email: clinic@mamatidhealth.com<br>
-                📞 Phone: (02) 888-7777</p>
+                <strong>Mamatid Health Center</strong></p>
             </div>
             <div class="footer">
+                <p>This is an automated message. Please do not reply to this email.</p>
                 <p>&copy; ' . date('Y') . ' Mamatid Health Center. All rights reserved.</p>
-                <p>This is an automated message, please do not reply to this email.</p>
+                <p>Address: 123 Mamatid Street, Cabuyao City, Laguna</p>
             </div>
         </div>
     </body>

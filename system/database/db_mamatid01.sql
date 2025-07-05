@@ -1208,6 +1208,21 @@ ALTER TABLE `time_logs`
 --
 ALTER TABLE `time_out_logs`
   ADD CONSTRAINT `time_out_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Add password_resets table
+--
+CREATE TABLE IF NOT EXISTS `password_resets` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `email` varchar(255) NOT NULL,
+    `token` varchar(64) NOT NULL,
+    `expiry` datetime NOT NULL,
+    `used` tinyint(1) NOT NULL DEFAULT 0,
+    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `email` (`email`),
+    KEY `token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
