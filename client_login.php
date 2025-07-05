@@ -62,7 +62,7 @@ if (isset($_POST['login'])) {
 
     // Prepare query to fetch client details
     $query = "SELECT `id`, `full_name`, `email`
-              FROM `clients`
+              FROM `clients_user_accounts`
               WHERE `email` = ? AND `password` = ?";
 
     try {
@@ -83,7 +83,7 @@ if (isset($_POST['login'])) {
             $_SESSION['client_last_activity'] = time(); // Set client activity timestamp
             
             // Fetch client profile picture
-            $profileQuery = "SELECT profile_picture FROM clients WHERE id = ?";
+            $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
             $profileStmt = $con->prepare($profileQuery);
             $profileStmt->execute([$row['id']]);
             $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);

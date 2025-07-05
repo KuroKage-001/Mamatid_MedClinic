@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $validToken) {
         
         // Update password
         $hashedPassword = md5($password); // Note: In production, use a more secure hashing method
-        $updateQuery = "UPDATE clients SET password = ? WHERE email = ?";
+        $updateQuery = "UPDATE clients_user_accounts SET password = ? WHERE email = ?";
         $stmt = $con->prepare($updateQuery);
         $stmt->execute([$hashedPassword, $tokenEmail]);
         

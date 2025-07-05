@@ -50,7 +50,7 @@ if (isset($_POST['book_appointment'])) {
     $reason = $_POST['reason'];
 
     // Get client details
-    $query = "SELECT * FROM clients WHERE id = ?";
+    $query = "SELECT * FROM clients_user_accounts WHERE id = ?";
     $stmt = $con->prepare($query);
     $stmt->execute([$clientId]);
     $client = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -16,7 +16,7 @@ try {
     $query = "SELECT a.*, u.display_name as doctor_name, c.email as client_email
             FROM appointments a
             LEFT JOIN users u ON a.doctor_id = u.id
-            LEFT JOIN clients c ON c.full_name = a.patient_name
+            LEFT JOIN clients_user_accounts c ON c.full_name = a.patient_name
             WHERE a.appointment_date = ?
             AND TIME_TO_SEC(TIMEDIFF(a.appointment_time, ?)) <= 1800
             AND TIME_TO_SEC(TIMEDIFF(a.appointment_time, ?)) > 0

@@ -14,7 +14,7 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
     }
     
     // Fetch client profile picture
-    $profileQuery = "SELECT profile_picture FROM clients WHERE id = ?";
+    $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
     $profileStmt = $con->prepare($profileQuery);
     $profileStmt->execute([$_SESSION['client_id']]);
     $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);

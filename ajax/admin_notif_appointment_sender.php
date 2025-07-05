@@ -19,10 +19,10 @@ $appointmentId = intval($_POST['appointment_id']);
 
 try {
     // Get appointment details including patient information
-    $query = "SELECT a.*, c.email, c.full_name, u.display_name AS doctor_name 
+    $query = "SELECT a.*, u.display_name as doctor_name, c.email as client_email 
               FROM appointments a
-              LEFT JOIN clients c ON a.patient_name = c.full_name
-              LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
+              LEFT JOIN users u ON a.doctor_id = u.id
+              LEFT JOIN clients_user_accounts c ON a.patient_name = c.full_name
               WHERE a.id = ?";
     
     $stmt = $con->prepare($query);
@@ -35,7 +35,7 @@ try {
     }
     
     // Check if patient email is available
-    if (empty($appointment['email'])) {
+    if (empty($appointment['client_email'])) {
         echo json_encode(['success' => false, 'message' => 'Patient email not found']);
         exit;
     }
@@ -201,7 +201,7 @@ try {
                  "Mamatid Health Center | 123 Mamatid Street, Cabuyao City, Laguna";
     
     // Send the email
-    $emailSent = sendEmail($appointment['email'], $subject, $body, $appointment['patient_name'], $plainText);
+    $emailSent = sendEmail($appointment['client_email'], $subject, $body, $appointment['patient_name'], $plainText);
     
     if ($emailSent) {
         // Update the database to mark email as sent

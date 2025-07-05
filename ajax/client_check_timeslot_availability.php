@@ -82,7 +82,7 @@ try {
     
     // Check if the client already has an appointment at this time
     if ($clientId > 0) {
-        $clientQuery = "SELECT * FROM clients WHERE id = ?";
+        $clientQuery = "SELECT * FROM clients_user_accounts WHERE id = ?";
         $clientStmt = $con->prepare($clientQuery);
         $clientStmt->execute([$clientId]);
         $client = $clientStmt->fetch(PDO::FETCH_ASSOC);

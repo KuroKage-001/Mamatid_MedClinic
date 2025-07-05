@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Check if email exists in clients table
-        $query = "SELECT id, full_name FROM clients WHERE email = ?";
+        $query = "SELECT id, full_name FROM clients_user_accounts WHERE email = ?";
         $stmt = $con->prepare($query);
         $stmt->execute([$email]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -52,7 +52,7 @@ function getMedicines($con, $medicineId = 0) {
 
 function getPatients($con) {
 $query = "select `id`, `full_name`, `phone_number`
-from `clients` order by `full_name` asc;";
+from `clients_user_accounts` order by `full_name` asc;";
 
 	$stmt = $con->prepare($query);
 	try {

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $gender = trim($_POST['gender']);
         
         // Check if email is already taken by another user
-        $check_email_sql = "SELECT id FROM clients WHERE email = :email AND id != :client_id";
+        $check_email_sql = "SELECT id FROM clients_user_accounts WHERE email = :email AND id != :client_id";
         $check_stmt = $con->prepare($check_email_sql);
         $check_stmt->bindParam(':email', $email);
         $check_stmt->bindParam(':client_id', $client_id);
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($check_stmt->rowCount() > 0) {
             $error = "Email address is already in use by another account.";
         } else {
-            $sql = "UPDATE clients SET full_name = :full_name, email = :email, phone_number = :phone_number, 
+            $sql = "UPDATE clients_user_accounts SET full_name = :full_name, email = :email, phone_number = :phone_number, 
                     address = :address, date_of_birth = :date_of_birth, gender = :gender 
                     WHERE id = :client_id";
             $stmt = $con->prepare($sql);
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "New passwords do not match!";
         } else {
             // Verify current password
-            $sql = "SELECT password FROM clients WHERE id = :client_id";
+            $sql = "SELECT password FROM clients_user_accounts WHERE id = :client_id";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':client_id', $client_id);
             $stmt->execute();
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if ($client && md5($current_password) === $client['password']) {
                 $hashed_password = md5($new_password);
-                $sql = "UPDATE clients SET password = :password WHERE id = :client_id";
+                $sql = "UPDATE clients_user_accounts SET password = :password WHERE id = :client_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':password', $hashed_password);
                 $stmt->bindParam(':client_id', $client_id);
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $upload_path)) {
                 // Delete old profile picture if it's not the default
-                $sql = "SELECT profile_picture FROM clients WHERE id = :client_id";
+                $sql = "SELECT profile_picture FROM clients_user_accounts WHERE id = :client_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':client_id', $client_id);
                 $stmt->execute();
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
                 
                 // Update database
-                $sql = "UPDATE clients SET profile_picture = :profile_picture WHERE id = :client_id";
+                $sql = "UPDATE clients_user_accounts SET profile_picture = :profile_picture WHERE id = :client_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':profile_picture', $new_filename);
                 $stmt->bindParam(':client_id', $client_id);
@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Get current user data
-$sql = "SELECT * FROM clients WHERE id = :client_id";
+$sql = "SELECT * FROM clients_user_accounts WHERE id = :client_id";
 $stmt = $con->prepare($sql);
 $stmt->bindParam(':client_id', $client_id);
 $stmt->execute();

@@ -16,7 +16,7 @@ $message = '';
 $appointmentId = isset($_GET['id']) ? $_GET['id'] : 0;
 
 // Fetch appointment details
-$query = "SELECT * FROM appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients WHERE id = ?)";
+$query = "SELECT * FROM appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)";
 $stmt = $con->prepare($query);
 $stmt->execute([$appointmentId, $_SESSION['client_id']]);
 $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -40,7 +40,7 @@ if (isset($_POST['update_appointment'])) {
                  SET appointment_date = ?, 
                      appointment_time = ?, 
                      reason = ?
-                 WHERE id = ? AND patient_name = (SELECT full_name FROM clients WHERE id = ?)";
+                 WHERE id = ? AND patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)";
 
         $stmt = $con->prepare($query);
         $stmt->execute([

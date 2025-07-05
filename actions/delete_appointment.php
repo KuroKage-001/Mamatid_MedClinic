@@ -17,7 +17,7 @@ $appointmentId = isset($_GET['id']) ? $_GET['id'] : 0;
 
 try {
     // Check if appointment exists and belongs to the client
-    $query = "SELECT id FROM appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients WHERE id = ?)";
+    $query = "SELECT id FROM appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)";
     $stmt = $con->prepare($query);
     $stmt->execute([$appointmentId, $_SESSION['client_id']]);
     

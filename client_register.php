@@ -55,7 +55,7 @@ if (isset($_POST['register'])) {
         $message = 'Passwords do not match.';
     } else {
         // Check if email already exists
-        $checkQuery = "SELECT COUNT(*) as count FROM clients WHERE email = ?";
+        $checkQuery = "SELECT COUNT(*) as count FROM clients_user_accounts WHERE email = ?";
         $stmt = $con->prepare($checkQuery);
         $stmt->execute([$email]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -69,7 +69,7 @@ if (isset($_POST['register'])) {
             try {
                 $con->beginTransaction();
 
-                $query = "INSERT INTO `clients` 
+                $query = "INSERT INTO `clients_user_accounts` 
                          (`full_name`, `email`, `password`, `phone_number`, 
                           `address`, `date_of_birth`, `gender`, `profile_picture`)
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
