@@ -14,8 +14,8 @@ $today = date('Y-m-d');
 // Check if user is admin
 $isAdmin = isAdmin();
 
-// Check today's log in time_logs table for the current user
-$query = "SELECT * FROM `time_logs` WHERE `user_id` = :uid AND `log_date` = :today";
+// Check today's log in admin_time_logs table for the current user
+$query = "SELECT * FROM `admin_time_logs` WHERE `user_id` = :uid AND `log_date` = :today";
 $stmt = $con->prepare($query);
 $stmt->execute([':uid' => $userId, ':today' => $today]);
 $logToday = $stmt->fetch();
@@ -35,16 +35,16 @@ if (isset($_POST['action'])) {
         $con->beginTransaction();
 
         if ($action == 'time_in' && $canTimeIn) {
-            // Insert a new record into time_in_logs table
-            $query = "INSERT INTO `time_in_logs` (`user_id`, `log_date`, `time_in`) 
+            // Insert a new record into admin_time_in_attendance_logs table
+$query = "INSERT INTO `admin_time_in_attendance_logs` (`user_id`, `log_date`, `time_in`) 
                       VALUES (:uid, :today, :time_in)";
             $stmt = $con->prepare($query);
             $stmt->execute([':uid' => $userId, ':today' => $today, ':time_in' => $currentTime]);
             $message = 'Time In recorded successfully!';
             $type = 'success';
         } elseif ($action == 'time_out' && $canTimeOut) {
-            // Insert a record into time_out_logs table
-            $query = "INSERT INTO `time_out_logs` (`user_id`, `log_date`, `time_out`) 
+            // Insert a record into admin_time_out_attendance_logs table
+$query = "INSERT INTO `admin_time_out_attendance_logs` (`user_id`, `log_date`, `time_out`) 
                      VALUES (:uid, :today, :time_out)";
             $stmt = $con->prepare($query);
             $stmt->execute([
@@ -86,8 +86,8 @@ if ($isAdmin && isset($_POST['admin_action'])) {
             $timeIn = $_POST['time_in'];
             $timeOut = !empty($_POST['time_out']) ? $_POST['time_out'] : null;
             
-            // Get the user_id and log_date from the time_logs table
-            $queryGetLog = "SELECT user_id, log_date FROM time_logs WHERE id = :log_id";
+            // Get the user_id and log_date from the admin_time_logs table
+            $queryGetLog = "SELECT user_id, log_date FROM admin_time_logs WHERE id = :log_id";
             $stmtGetLog = $con->prepare($queryGetLog);
             $stmtGetLog->bindParam(':log_id', $logId);
             $stmtGetLog->execute();
@@ -97,8 +97,8 @@ if ($isAdmin && isset($_POST['admin_action'])) {
                 $userId = $logData['user_id'];
                 $logDate = $logData['log_date'];
                 
-                // Update time_in in time_in_logs table
-                $queryTimeIn = "INSERT INTO time_in_logs (user_id, log_date, time_in) 
+                // Update time_in in admin_time_in_attendance_logs table
+$queryTimeIn = "INSERT INTO admin_time_in_attendance_logs (user_id, log_date, time_in) 
                                VALUES (:uid, :log_date, :time_in)
                                ON DUPLICATE KEY UPDATE time_in = :time_in_update";
                 $stmtTimeIn = $con->prepare($queryTimeIn);
@@ -108,9 +108,9 @@ if ($isAdmin && isset($_POST['admin_action'])) {
                 $stmtTimeIn->bindParam(':time_in_update', $timeIn);
                 $stmtTimeIn->execute();
                 
-                // Handle time_out in time_out_logs table
+                // Handle time_out in admin_time_out_attendance_logs table
                 if ($timeOut) {
-                    $queryTimeOut = "INSERT INTO time_out_logs (user_id, log_date, time_out) 
+                    $queryTimeOut = "INSERT INTO admin_time_out_attendance_logs (user_id, log_date, time_out) 
                                     VALUES (:uid, :log_date, :time_out)
                                     ON DUPLICATE KEY UPDATE time_out = :time_out_update";
                     $stmtTimeOut = $con->prepare($queryTimeOut);
@@ -121,14 +121,14 @@ if ($isAdmin && isset($_POST['admin_action'])) {
                     $stmtTimeOut->execute();
                 } else {
                     // If time_out is NULL, delete any existing time_out record
-                    $queryDeleteTimeOut = "DELETE FROM time_out_logs WHERE user_id = :uid AND log_date = :log_date";
+                    $queryDeleteTimeOut = "DELETE FROM admin_time_out_attendance_logs WHERE user_id = :uid AND log_date = :log_date";
                     $stmtDeleteTimeOut = $con->prepare($queryDeleteTimeOut);
                     $stmtDeleteTimeOut->bindParam(':uid', $userId);
                     $stmtDeleteTimeOut->bindParam(':log_date', $logDate);
                     $stmtDeleteTimeOut->execute();
                     
-                    // Also update time_logs to ensure time_out is NULL
-                    $queryUpdateTimeLog = "UPDATE time_logs SET time_out = NULL, total_hours = NULL 
+                    // Also update admin_time_logs to ensure time_out is NULL
+                    $queryUpdateTimeLog = "UPDATE admin_time_logs SET time_out = NULL, total_hours = NULL 
                                           WHERE user_id = :uid AND log_date = :log_date";
                     $stmtUpdateTimeLog = $con->prepare($queryUpdateTimeLog);
                     $stmtUpdateTimeLog->bindParam(':uid', $userId);
@@ -143,8 +143,8 @@ if ($isAdmin && isset($_POST['admin_action'])) {
         elseif ($adminAction === 'delete_attendance' && isset($_POST['log_id'])) {
             $logId = $_POST['log_id'];
             
-            // Get the user_id and log_date from the time_logs table
-            $queryGetLog = "SELECT user_id, log_date FROM time_logs WHERE id = :log_id";
+            // Get the user_id and log_date from the admin_time_logs table
+            $queryGetLog = "SELECT user_id, log_date FROM admin_time_logs WHERE id = :log_id";
             $stmtGetLog = $con->prepare($queryGetLog);
             $stmtGetLog->bindParam(':log_id', $logId);
             $stmtGetLog->execute();
@@ -154,22 +154,22 @@ if ($isAdmin && isset($_POST['admin_action'])) {
                 $userId = $logData['user_id'];
                 $logDate = $logData['log_date'];
                 
-                // Delete from time_in_logs
-                $queryDeleteTimeIn = "DELETE FROM time_in_logs WHERE user_id = :uid AND log_date = :log_date";
+                // Delete from admin_time_in_attendance_logs
+$queryDeleteTimeIn = "DELETE FROM admin_time_in_attendance_logs WHERE user_id = :uid AND log_date = :log_date";
                 $stmtDeleteTimeIn = $con->prepare($queryDeleteTimeIn);
                 $stmtDeleteTimeIn->bindParam(':uid', $userId);
                 $stmtDeleteTimeIn->bindParam(':log_date', $logDate);
                 $stmtDeleteTimeIn->execute();
                 
-                // Delete from time_out_logs
-                $queryDeleteTimeOut = "DELETE FROM time_out_logs WHERE user_id = :uid AND log_date = :log_date";
+                // Delete from admin_time_out_attendance_logs
+                $queryDeleteTimeOut = "DELETE FROM admin_time_out_attendance_logs WHERE user_id = :uid AND log_date = :log_date";
                 $stmtDeleteTimeOut = $con->prepare($queryDeleteTimeOut);
                 $stmtDeleteTimeOut->bindParam(':uid', $userId);
                 $stmtDeleteTimeOut->bindParam(':log_date', $logDate);
                 $stmtDeleteTimeOut->execute();
                 
-                // Delete from time_logs (will be handled by triggers, but just to be sure)
-                $queryDeleteTimeLog = "DELETE FROM time_logs WHERE id = :log_id";
+                // Delete from admin_time_logs (will be handled by triggers, but just to be sure)
+                $queryDeleteTimeLog = "DELETE FROM admin_time_logs WHERE id = :log_id";
                 $stmtDeleteTimeLog = $con->prepare($queryDeleteTimeLog);
                 $stmtDeleteTimeLog->bindParam(':log_id', $logId);
                 $stmtDeleteTimeLog->execute();
@@ -197,7 +197,7 @@ try {
         // Admin can see all users' logs
         $stmtLogs = $con->prepare("
             SELECT tl.*, u.display_name, u.role 
-            FROM `time_logs` tl 
+            FROM `admin_time_logs` tl 
             JOIN `users` u ON tl.user_id = u.id 
             ORDER BY tl.log_date DESC, u.display_name ASC
         ");
@@ -209,7 +209,7 @@ try {
         $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
     } else {
         // Regular users can only see their own logs
-        $stmtLogs = $con->prepare("SELECT * FROM `time_logs` WHERE `user_id` = :uid ORDER BY `log_date` DESC");
+        $stmtLogs = $con->prepare("SELECT * FROM `admin_time_logs` WHERE `user_id` = :uid ORDER BY `log_date` DESC");
         $stmtLogs->execute([':uid' => $userId]);
     }
 } catch (PDOException $ex) {

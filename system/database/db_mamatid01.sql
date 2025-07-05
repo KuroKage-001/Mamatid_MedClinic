@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2025 at 09:02 AM
+-- Generation Time: Jul 05, 2025 at 11:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `appointments`
+-- Table structure for table `admin_clients_appointments`
 --
 
-CREATE TABLE `appointments` (
+CREATE TABLE `admin_clients_appointments` (
   `id` int(11) NOT NULL,
   `patient_name` varchar(60) NOT NULL,
   `phone_number` varchar(12) NOT NULL,
@@ -54,12 +54,12 @@ CREATE TABLE `appointments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `appointments`
+-- Dumping data for table `admin_clients_appointments`
 --
 
-INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
 (58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
-(59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'approved', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-03 15:19:43', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
+(59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'completed', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-05 08:13:29', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
 (60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'approved', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-03 16:11:55', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL),
 (61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'approved', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-05 03:25:39', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL),
 (62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'approved', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-05 03:28:26', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL),
@@ -67,10 +67,10 @@ INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `da
 (64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'approved', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-05 04:05:00', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL);
 
 --
--- Triggers `appointments`
+-- Triggers `admin_clients_appointments`
 --
 DELIMITER $$
-CREATE TRIGGER `after_doctor_appointment_insert` AFTER INSERT ON `appointments` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_doctor_appointment_insert` AFTER INSERT ON `admin_clients_appointments` FOR EACH ROW BEGIN
     DECLARE slot_id INT;
     
     
@@ -95,7 +95,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_doctor_appointment_update` AFTER UPDATE ON `appointments` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_doctor_appointment_update` AFTER UPDATE ON `admin_clients_appointments` FOR EACH ROW BEGIN
     
     IF NEW.schedule_id IN (SELECT id FROM doctor_schedules) THEN
         
@@ -122,7 +122,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_staff_appointment_delete` AFTER DELETE ON `appointments` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_staff_appointment_delete` AFTER DELETE ON `admin_clients_appointments` FOR EACH ROW BEGIN
     -- Update the staff slot when an appointment is deleted (only if it was a staff appointment)
     IF OLD.schedule_id IN (SELECT id FROM staff_schedules) THEN
         UPDATE staff_appointment_slots
@@ -133,7 +133,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_staff_appointment_insert` AFTER INSERT ON `appointments` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_staff_appointment_insert` AFTER INSERT ON `admin_clients_appointments` FOR EACH ROW BEGIN
     DECLARE slot_id INT;
     
     -- Check if this is a staff appointment
@@ -158,7 +158,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_staff_appointment_update` AFTER UPDATE ON `appointments` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_staff_appointment_update` AFTER UPDATE ON `admin_clients_appointments` FOR EACH ROW BEGIN
     -- Check if this is a staff appointment
     IF NEW.schedule_id IN (SELECT id FROM staff_schedules) THEN
         -- If status changed to cancelled, update the slot
@@ -188,10 +188,10 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `appointment_slots`
+-- Table structure for table `admin_doctor_appointment_slots`
 --
 
-CREATE TABLE `appointment_slots` (
+CREATE TABLE `admin_doctor_appointment_slots` (
   `id` int(11) NOT NULL,
   `schedule_id` int(11) NOT NULL,
   `slot_time` time NOT NULL,
@@ -202,10 +202,191 @@ CREATE TABLE `appointment_slots` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clients`
+-- Table structure for table `admin_doctor_schedules`
 --
 
-CREATE TABLE `clients` (
+CREATE TABLE `admin_doctor_schedules` (
+  `id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
+  `max_patients` int(11) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_approved` tinyint(1) NOT NULL DEFAULT 0,
+  `approval_notes` text DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_hw_appointment_slots`
+--
+
+CREATE TABLE `admin_hw_appointment_slots` (
+  `id` int(11) NOT NULL,
+  `schedule_id` int(11) NOT NULL,
+  `slot_time` time NOT NULL,
+  `is_booked` tinyint(1) NOT NULL DEFAULT 0,
+  `appointment_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_hw_appointment_slots`
+--
+
+INSERT INTO `admin_hw_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
+(6, 17, '06:00:00', 1, 58),
+(7, 18, '08:00:00', 1, 59),
+(8, 19, '05:00:00', 1, 60),
+(9, 18, '10:30:00', 1, 61),
+(10, 19, '12:00:00', 1, 62),
+(11, 18, '11:00:00', 1, 63),
+(12, 18, '11:30:00', 1, 64);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_hw_schedules`
+--
+
+CREATE TABLE `admin_hw_schedules` (
+  `id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
+  `max_patients` int(11) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_hw_schedules`
+--
+
+INSERT INTO `admin_hw_schedules` (`id`, `staff_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`) VALUES
+(17, 1, '2025-07-04', '06:00:00', '18:00:00', 30, 1, '', '2025-07-03 10:53:39', '2025-07-03 10:53:39', 1),
+(18, 1, '2025-07-05', '08:00:00', '16:00:00', 30, 1, 'test 2', '2025-07-03 15:12:49', '2025-07-03 15:12:49', 1),
+(19, 24, '2025-07-05', '05:00:00', '17:00:00', 30, 1, 'test 1', '2025-07-03 16:09:43', '2025-07-03 16:09:43', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_time_in_attendance_logs`
+--
+
+CREATE TABLE `admin_time_in_attendance_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_in` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `admin_time_in_attendance_logs`
+--
+DELIMITER $$
+CREATE TRIGGER `after_time_in_insert` AFTER INSERT ON `admin_time_in_attendance_logs` FOR EACH ROW BEGIN
+  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
+  VALUES (NEW.user_id, NEW.log_date, NEW.time_in, NULL, 0.00)
+  ON DUPLICATE KEY UPDATE `time_in` = NEW.time_in;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_time_logs`
+--
+
+CREATE TABLE `admin_time_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_in` time DEFAULT NULL,
+  `time_out` time DEFAULT NULL,
+  `total_hours` decimal(5,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_time_out_attendance_logs`
+--
+
+CREATE TABLE `admin_time_out_attendance_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `time_out` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `admin_time_out_attendance_logs`
+--
+DELIMITER $$
+CREATE TRIGGER `after_time_out_insert` AFTER INSERT ON `admin_time_out_attendance_logs` FOR EACH ROW BEGIN
+  DECLARE v_time_in TIME;
+  -- Get the corresponding Time In
+  SELECT `time_in` INTO v_time_in
+  FROM `time_in_logs`
+  WHERE `user_id` = NEW.user_id AND `log_date` = NEW.log_date;
+  -- Update time_logs with Time Out and calculate total hours
+  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
+  VALUES (NEW.user_id, NEW.log_date, v_time_in, NEW.time_out, 
+          ROUND(TIMESTAMPDIFF(SECOND, v_time_in, NEW.time_out) / 3600, 2))
+  ON DUPLICATE KEY UPDATE 
+    `time_out` = NEW.time_out,
+    `total_hours` = ROUND(TIMESTAMPDIFF(SECOND, `time_in`, NEW.time_out) / 3600, 2);
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_user_accounts`
+--
+
+CREATE TABLE `admin_user_accounts` (
+  `id` int(11) NOT NULL,
+  `display_name` varchar(30) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `user_name` varchar(30) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `role` enum('admin','health_worker','doctor') NOT NULL DEFAULT 'health_worker',
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `profile_picture` varchar(40) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_user_accounts`
+--
+
+INSERT INTO `admin_user_accounts` (`id`, `display_name`, `email`, `phone`, `user_name`, `password`, `role`, `status`, `profile_picture`, `created_at`, `updated_at`) VALUES
+(1, 'Administrator 01', 'admin@gmail.com', '09876777656', 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1_1750716275.jpeg', '2025-06-08 16:35:40', '2025-06-23 22:04:35'),
+(22, 'Doctor Leo', 'leomaresc853@gmail.com', '09918719610', 'docleo', 'c2a3a61e408026e908521ffc626f7429', 'doctor', 'active', '22_1751546845.jpg', '2025-07-01 16:11:44', '2025-07-03 12:47:25'),
+(24, 'HW - Leo', 'hcleo@gmail.com', '09787676566', 'hwleo', '40496d7b1e3df268628fa14e3959f58a', 'health_worker', 'active', 'default_profile.jpg', '2025-07-03 11:48:02', '2025-07-03 11:48:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `clients_user_accounts`
+--
+
+CREATE TABLE `clients_user_accounts` (
   `id` int(11) NOT NULL,
   `full_name` varchar(60) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -221,10 +402,10 @@ CREATE TABLE `clients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `clients`
+-- Dumping data for table `clients_user_accounts`
 --
 
-INSERT INTO `clients` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `profile_picture`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
+INSERT INTO `clients_user_accounts` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `profile_picture`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
 (6, 'Leomar Escobin', 'leomaresc853@gmail.com', '9f9974d013e8c0b3b51fc70c01db38ab', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '6_1750865193.jpg', '2025-04-17 08:37:27', 'bd56e5a8a8b2d110ee834309da93b0f0ccda05f9059dd3ebb4e9aa353a816470', '2025-07-05 06:19:22'),
 (7, 'Pauline Oliveros', 'oliverospaulinekaye03@gmail.com', 'e84d01bdb3aca89bcfca98d1bfd0db9d', '09765455654', '001', '2003-03-25', 'Female', 'default_client.png', '2025-06-24 20:51:14', NULL, NULL),
 (8, 'Aila Drine Niala', 'nialaaila38@gmail.com', 'e4db616efaffdbb51d538843480330f5', '09787876787', '002', '2003-03-26', 'Female', 'default_client.png', '2025-06-24 20:55:11', NULL, NULL);
@@ -251,28 +432,6 @@ CREATE TABLE `client_password_resets` (
 INSERT INTO `client_password_resets` (`id`, `email`, `token`, `expiry`, `used`, `created_at`) VALUES
 (1, 'leomaresc853@gmail.com', '29b87ece0be011cb664ffebdf227471579ed8147600128063b4a35964b24a155', '2025-07-05 07:17:41', 0, '2025-07-05 04:17:41'),
 (2, 'leomaresc853@gmail.com', '693b53f5173953d4ab1c525589b54162bf7f05e65d49910c73be574d593414a3', '2025-07-05 07:54:12', 1, '2025-07-05 04:54:12');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `doctor_schedules`
---
-
-CREATE TABLE `doctor_schedules` (
-  `id` int(11) NOT NULL,
-  `doctor_id` int(11) NOT NULL,
-  `schedule_date` date NOT NULL,
-  `start_time` time NOT NULL,
-  `end_time` time NOT NULL,
-  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
-  `max_patients` int(11) NOT NULL DEFAULT 1,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `is_approved` tinyint(1) NOT NULL DEFAULT 0,
-  `approval_notes` text DEFAULT NULL,
-  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -495,16 +654,6 @@ CREATE TABLE `medicine_dispensing` (
 -- (See below for the actual view)
 --
 CREATE TABLE `medicine_dispensing_history` (
-`id` int(11)
-,`dispensed_date` date
-,`medicine_name` varchar(100)
-,`generic_name` varchar(100)
-,`category_name` varchar(100)
-,`batch_number` varchar(50)
-,`quantity` int(11)
-,`patient_name` varchar(100)
-,`remarks` text
-,`dispensed_by` varchar(30)
 );
 
 -- --------------------------------------------------------
@@ -582,62 +731,6 @@ CREATE TABLE `medicine_stock_summary` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `staff_appointment_slots`
---
-
-CREATE TABLE `staff_appointment_slots` (
-  `id` int(11) NOT NULL,
-  `schedule_id` int(11) NOT NULL,
-  `slot_time` time NOT NULL,
-  `is_booked` tinyint(1) NOT NULL DEFAULT 0,
-  `appointment_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `staff_appointment_slots`
---
-
-INSERT INTO `staff_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
-(6, 17, '06:00:00', 1, 58),
-(7, 18, '08:00:00', 1, 59),
-(8, 19, '05:00:00', 1, 60),
-(9, 18, '10:30:00', 1, 61),
-(10, 19, '12:00:00', 1, 62),
-(11, 18, '11:00:00', 1, 63),
-(12, 18, '11:30:00', 1, 64);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `staff_schedules`
---
-
-CREATE TABLE `staff_schedules` (
-  `id` int(11) NOT NULL,
-  `staff_id` int(11) NOT NULL,
-  `schedule_date` date NOT NULL,
-  `start_time` time NOT NULL,
-  `end_time` time NOT NULL,
-  `time_slot_minutes` int(11) NOT NULL DEFAULT 30,
-  `max_patients` int(11) NOT NULL DEFAULT 1,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `is_approved` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `staff_schedules`
---
-
-INSERT INTO `staff_schedules` (`id`, `staff_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`) VALUES
-(17, 1, '2025-07-04', '06:00:00', '18:00:00', 30, 1, '', '2025-07-03 10:53:39', '2025-07-03 10:53:39', 1),
-(18, 1, '2025-07-05', '08:00:00', '16:00:00', 30, 1, 'test 2', '2025-07-03 15:12:49', '2025-07-03 15:12:49', 1),
-(19, 24, '2025-07-05', '05:00:00', '17:00:00', 30, 1, 'test 1', '2025-07-03 16:09:43', '2025-07-03 16:09:43', 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `stock_movement_log`
 --
 
@@ -654,109 +747,6 @@ CREATE TABLE `stock_movement_log` (
   `performed_by` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `time_in_logs`
---
-
-CREATE TABLE `time_in_logs` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `log_date` date NOT NULL,
-  `time_in` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Triggers `time_in_logs`
---
-DELIMITER $$
-CREATE TRIGGER `after_time_in_insert` AFTER INSERT ON `time_in_logs` FOR EACH ROW BEGIN
-  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
-  VALUES (NEW.user_id, NEW.log_date, NEW.time_in, NULL, 0.00)
-  ON DUPLICATE KEY UPDATE `time_in` = NEW.time_in;
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `time_logs`
---
-
-CREATE TABLE `time_logs` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `log_date` date NOT NULL,
-  `time_in` time DEFAULT NULL,
-  `time_out` time DEFAULT NULL,
-  `total_hours` decimal(5,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `time_out_logs`
---
-
-CREATE TABLE `time_out_logs` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `log_date` date NOT NULL,
-  `time_out` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Triggers `time_out_logs`
---
-DELIMITER $$
-CREATE TRIGGER `after_time_out_insert` AFTER INSERT ON `time_out_logs` FOR EACH ROW BEGIN
-  DECLARE v_time_in TIME;
-  -- Get the corresponding Time In
-  SELECT `time_in` INTO v_time_in
-  FROM `time_in_logs`
-  WHERE `user_id` = NEW.user_id AND `log_date` = NEW.log_date;
-  -- Update time_logs with Time Out and calculate total hours
-  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
-  VALUES (NEW.user_id, NEW.log_date, v_time_in, NEW.time_out, 
-          ROUND(TIMESTAMPDIFF(SECOND, v_time_in, NEW.time_out) / 3600, 2))
-  ON DUPLICATE KEY UPDATE 
-    `time_out` = NEW.time_out,
-    `total_hours` = ROUND(TIMESTAMPDIFF(SECOND, `time_in`, NEW.time_out) / 3600, 2);
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `display_name` varchar(30) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `phone` varchar(15) DEFAULT NULL,
-  `user_name` varchar(30) NOT NULL,
-  `password` varchar(100) NOT NULL,
-  `role` enum('admin','health_worker','doctor') NOT NULL DEFAULT 'health_worker',
-  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
-  `profile_picture` varchar(40) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `display_name`, `email`, `phone`, `user_name`, `password`, `role`, `status`, `profile_picture`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator 01', 'admin@gmail.com', '09876777656', 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1_1750716275.jpeg', '2025-06-08 16:35:40', '2025-06-23 22:04:35'),
-(22, 'Doctor Leo', 'leomaresc853@gmail.com', '09918719610', 'docleo', 'c2a3a61e408026e908521ffc626f7429', 'doctor', 'active', '22_1751546845.jpg', '2025-07-01 16:11:44', '2025-07-03 12:47:25'),
-(24, 'HW - Leo', 'hcleo@gmail.com', '09787676566', 'hwleo', '40496d7b1e3df268628fa14e3959f58a', 'health_worker', 'active', 'default_profile.jpg', '2025-07-03 11:48:02', '2025-07-03 11:48:02');
 
 -- --------------------------------------------------------
 
@@ -781,9 +771,9 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
--- Indexes for table `appointments`
+-- Indexes for table `admin_clients_appointments`
 --
-ALTER TABLE `appointments`
+ALTER TABLE `admin_clients_appointments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_patient_appointment` (`patient_name`,`schedule_id`,`appointment_time`,`status`),
   ADD UNIQUE KEY `unique_active_appointment` (`schedule_id`,`appointment_time`,`status`),
@@ -792,9 +782,9 @@ ALTER TABLE `appointments`
   ADD KEY `fk_appointments_archived_by` (`archived_by`);
 
 --
--- Indexes for table `appointment_slots`
+-- Indexes for table `admin_doctor_appointment_slots`
 --
-ALTER TABLE `appointment_slots`
+ALTER TABLE `admin_doctor_appointment_slots`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `idx_schedule_slot` (`schedule_id`,`slot_time`),
   ADD KEY `schedule_id` (`schedule_id`),
@@ -805,9 +795,75 @@ ALTER TABLE `appointment_slots`
   ADD KEY `idx_appointment_id` (`appointment_id`);
 
 --
--- Indexes for table `clients`
+-- Indexes for table `admin_doctor_schedules`
 --
-ALTER TABLE `clients`
+ALTER TABLE `admin_doctor_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `doctor_id` (`doctor_id`),
+  ADD KEY `schedule_date` (`schedule_date`),
+  ADD KEY `idx_doctor_schedules_doctor_id` (`doctor_id`),
+  ADD KEY `idx_doctor_schedules_schedule_date` (`schedule_date`),
+  ADD KEY `idx_doctor_schedules_is_approved` (`is_approved`);
+
+--
+-- Indexes for table `admin_hw_appointment_slots`
+--
+ALTER TABLE `admin_hw_appointment_slots`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_schedule_slot` (`schedule_id`,`slot_time`),
+  ADD KEY `schedule_id` (`schedule_id`),
+  ADD KEY `appointment_id` (`appointment_id`),
+  ADD KEY `idx_schedule_id` (`schedule_id`),
+  ADD KEY `idx_slot_time` (`slot_time`),
+  ADD KEY `idx_is_booked` (`is_booked`),
+  ADD KEY `idx_appointment_id` (`appointment_id`);
+
+--
+-- Indexes for table `admin_hw_schedules`
+--
+ALTER TABLE `admin_hw_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_id` (`staff_id`),
+  ADD KEY `schedule_date` (`schedule_date`),
+  ADD KEY `idx_staff_schedules_staff_id` (`staff_id`),
+  ADD KEY `idx_staff_schedules_schedule_date` (`schedule_date`);
+
+--
+-- Indexes for table `admin_time_in_attendance_logs`
+--
+ALTER TABLE `admin_time_in_attendance_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_time_in` (`user_id`,`log_date`);
+
+--
+-- Indexes for table `admin_time_logs`
+--
+ALTER TABLE `admin_time_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_date` (`user_id`,`log_date`),
+  ADD KEY `fk_time_logs_user_id` (`user_id`);
+
+--
+-- Indexes for table `admin_time_out_attendance_logs`
+--
+ALTER TABLE `admin_time_out_attendance_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_time_out` (`user_id`,`log_date`);
+
+--
+-- Indexes for table `admin_user_accounts`
+--
+ALTER TABLE `admin_user_accounts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_name` (`user_name`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_role` (`role`),
+  ADD KEY `idx_status` (`status`);
+
+--
+-- Indexes for table `clients_user_accounts`
+--
+ALTER TABLE `clients_user_accounts`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
@@ -818,17 +874,6 @@ ALTER TABLE `client_password_resets`
   ADD PRIMARY KEY (`id`),
   ADD KEY `email` (`email`),
   ADD KEY `token` (`token`);
-
---
--- Indexes for table `doctor_schedules`
---
-ALTER TABLE `doctor_schedules`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `doctor_id` (`doctor_id`),
-  ADD KEY `schedule_date` (`schedule_date`),
-  ADD KEY `idx_doctor_schedules_doctor_id` (`doctor_id`),
-  ADD KEY `idx_doctor_schedules_schedule_date` (`schedule_date`),
-  ADD KEY `idx_doctor_schedules_is_approved` (`is_approved`);
 
 --
 -- Indexes for table `general_bp_monitoring`
@@ -925,29 +970,6 @@ ALTER TABLE `medicine_stock`
   ADD KEY `medicine_id` (`medicine_id`);
 
 --
--- Indexes for table `staff_appointment_slots`
---
-ALTER TABLE `staff_appointment_slots`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_schedule_slot` (`schedule_id`,`slot_time`),
-  ADD KEY `schedule_id` (`schedule_id`),
-  ADD KEY `appointment_id` (`appointment_id`),
-  ADD KEY `idx_schedule_id` (`schedule_id`),
-  ADD KEY `idx_slot_time` (`slot_time`),
-  ADD KEY `idx_is_booked` (`is_booked`),
-  ADD KEY `idx_appointment_id` (`appointment_id`);
-
---
--- Indexes for table `staff_schedules`
---
-ALTER TABLE `staff_schedules`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `staff_id` (`staff_id`),
-  ADD KEY `schedule_date` (`schedule_date`),
-  ADD KEY `idx_staff_schedules_staff_id` (`staff_id`),
-  ADD KEY `idx_staff_schedules_schedule_date` (`schedule_date`);
-
---
 -- Indexes for table `stock_movement_log`
 --
 ALTER TABLE `stock_movement_log`
@@ -957,57 +979,67 @@ ALTER TABLE `stock_movement_log`
   ADD KEY `performed_by` (`performed_by`);
 
 --
--- Indexes for table `time_in_logs`
---
-ALTER TABLE `time_in_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_time_in` (`user_id`,`log_date`);
-
---
--- Indexes for table `time_logs`
---
-ALTER TABLE `time_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_date` (`user_id`,`log_date`),
-  ADD KEY `fk_time_logs_user_id` (`user_id`);
-
---
--- Indexes for table `time_out_logs`
---
-ALTER TABLE `time_out_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_time_out` (`user_id`,`log_date`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user_name` (`user_name`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `idx_role` (`role`),
-  ADD KEY `idx_status` (`status`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `appointments`
+-- AUTO_INCREMENT for table `admin_clients_appointments`
 --
-ALTER TABLE `appointments`
+ALTER TABLE `admin_clients_appointments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
--- AUTO_INCREMENT for table `appointment_slots`
+-- AUTO_INCREMENT for table `admin_doctor_appointment_slots`
 --
-ALTER TABLE `appointment_slots`
+ALTER TABLE `admin_doctor_appointment_slots`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
 
 --
--- AUTO_INCREMENT for table `clients`
+-- AUTO_INCREMENT for table `admin_doctor_schedules`
 --
-ALTER TABLE `clients`
+ALTER TABLE `admin_doctor_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `admin_hw_appointment_slots`
+--
+ALTER TABLE `admin_hw_appointment_slots`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `admin_hw_schedules`
+--
+ALTER TABLE `admin_hw_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `admin_time_in_attendance_logs`
+--
+ALTER TABLE `admin_time_in_attendance_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `admin_time_logs`
+--
+ALTER TABLE `admin_time_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `admin_time_out_attendance_logs`
+--
+ALTER TABLE `admin_time_out_attendance_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `admin_user_accounts`
+--
+ALTER TABLE `admin_user_accounts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `clients_user_accounts`
+--
+ALTER TABLE `clients_user_accounts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
@@ -1015,12 +1047,6 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `client_password_resets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `doctor_schedules`
---
-ALTER TABLE `doctor_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `general_bp_monitoring`
@@ -1089,105 +1115,69 @@ ALTER TABLE `medicine_stock`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `staff_appointment_slots`
---
-ALTER TABLE `staff_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `staff_schedules`
---
-ALTER TABLE `staff_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
 -- AUTO_INCREMENT for table `stock_movement_log`
 --
 ALTER TABLE `stock_movement_log`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `time_in_logs`
---
-ALTER TABLE `time_in_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT for table `time_logs`
---
-ALTER TABLE `time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
-
---
--- AUTO_INCREMENT for table `time_out_logs`
---
-ALTER TABLE `time_out_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
-
---
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `appointments`
+-- Constraints for table `admin_clients_appointments`
 --
-ALTER TABLE `appointments`
-  ADD CONSTRAINT `fk_appointments_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+ALTER TABLE `admin_clients_appointments`
+  ADD CONSTRAINT `fk_appointments_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `appointment_slots`
+-- Constraints for table `admin_doctor_appointment_slots`
 --
-ALTER TABLE `appointment_slots`
-  ADD CONSTRAINT `appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `doctor_schedules` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `appointment_slots_ibfk_2` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`) ON DELETE SET NULL;
+ALTER TABLE `admin_doctor_appointment_slots`
+  ADD CONSTRAINT `admin_doctor_appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `admin_doctor_schedules` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `admin_doctor_appointment_slots_ibfk_2` FOREIGN KEY (`appointment_id`) REFERENCES `admin_clients_appointments` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `doctor_schedules`
+-- Constraints for table `admin_doctor_schedules`
 --
-ALTER TABLE `doctor_schedules`
-  ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `admin_doctor_schedules`
+  ADD CONSTRAINT `admin_doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `admin_user_accounts` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `general_bp_monitoring`
 --
 ALTER TABLE `general_bp_monitoring`
-  ADD CONSTRAINT `fk_general_bp_monitoring_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_general_bp_monitoring_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `general_deworming`
 --
 ALTER TABLE `general_deworming`
-  ADD CONSTRAINT `fk_general_deworming_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_general_deworming_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `general_family_members`
 --
 ALTER TABLE `general_family_members`
-  ADD CONSTRAINT `fk_general_family_members_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_general_family_members_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `general_family_planning`
 --
 ALTER TABLE `general_family_planning`
-  ADD CONSTRAINT `fk_general_family_planning_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_general_family_planning_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `general_rbs`
 --
 ALTER TABLE `general_rbs`
-  ADD CONSTRAINT `fk_rbs_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_rbs_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `general_tetanus_toxoid`
 --
 ALTER TABLE `general_tetanus_toxoid`
-  ADD CONSTRAINT `fk_tetanus_toxoid_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_tetanus_toxoid_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `medicines`
@@ -1201,7 +1191,7 @@ ALTER TABLE `medicines`
 ALTER TABLE `medicine_dispensing`
   ADD CONSTRAINT `medicine_dispensing_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `medicine_dispensing_ibfk_2` FOREIGN KEY (`stock_id`) REFERENCES `medicine_stock` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `medicine_dispensing_ibfk_3` FOREIGN KEY (`dispensed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `medicine_dispensing_ibfk_3` FOREIGN KEY (`dispensed_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `medicine_stock`
