@@ -56,7 +56,7 @@ try {
                          DATE_FORMAT(a.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
                          u.display_name as archived_by_name
                   FROM appointments a
-                  LEFT JOIN users u ON a.archived_by = u.id
+                  LEFT JOIN admin_user_accounts u ON a.archived_by = u.id
                   WHERE a.is_archived = 1 
                   ORDER BY a.archived_at DESC";
     } else {

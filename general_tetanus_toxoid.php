@@ -88,7 +88,7 @@ try {
                      DATE_FORMAT(created_at, '%d %b %Y %h:%i %p') as created_at,
                      DATE_FORMAT(archived_at, '%d %b %Y %h:%i %p') as archived_at,
                      archive_reason,
-                     (SELECT display_name FROM users WHERE id = general_tetanus_toxoid.archived_by) as archived_by_name
+                     (SELECT display_name FROM admin_user_accounts WHERE id = general_tetanus_toxoid.archived_by) as archived_by_name
               FROM general_tetanus_toxoid
               $archiveCondition
               ORDER BY date DESC";

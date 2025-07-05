@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2025 at 03:31 AM
+-- Generation Time: Jul 05, 2025 at 09:02 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -58,9 +58,13 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
-(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'approved', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-03 15:10:44', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
+(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
 (59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'approved', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-03 15:19:43', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
-(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'approved', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-03 16:11:55', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL);
+(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'approved', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-03 16:11:55', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL),
+(61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'approved', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-05 03:25:39', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL),
+(62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'approved', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-05 03:28:26', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL),
+(63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'approved', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-05 03:44:47', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL),
+(64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'approved', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-05 04:05:00', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL);
 
 --
 -- Triggers `appointments`
@@ -221,9 +225,32 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `full_name`, `email`, `password`, `phone_number`, `address`, `date_of_birth`, `gender`, `profile_picture`, `created_at`, `reset_token`, `reset_token_expiry`) VALUES
-(6, 'Leomar Escobin', 'leomaresc853@gmail.com', '9f9974d013e8c0b3b51fc70c01db38ab', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '6_1750865193.jpg', '2025-04-17 08:37:27', NULL, NULL),
+(6, 'Leomar Escobin', 'leomaresc853@gmail.com', '9f9974d013e8c0b3b51fc70c01db38ab', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '6_1750865193.jpg', '2025-04-17 08:37:27', 'bd56e5a8a8b2d110ee834309da93b0f0ccda05f9059dd3ebb4e9aa353a816470', '2025-07-05 06:19:22'),
 (7, 'Pauline Oliveros', 'oliverospaulinekaye03@gmail.com', 'e84d01bdb3aca89bcfca98d1bfd0db9d', '09765455654', '001', '2003-03-25', 'Female', 'default_client.png', '2025-06-24 20:51:14', NULL, NULL),
 (8, 'Aila Drine Niala', 'nialaaila38@gmail.com', 'e4db616efaffdbb51d538843480330f5', '09787876787', '002', '2003-03-26', 'Female', 'default_client.png', '2025-06-24 20:55:11', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `client_password_resets`
+--
+
+CREATE TABLE `client_password_resets` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `expiry` datetime NOT NULL,
+  `used` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_password_resets`
+--
+
+INSERT INTO `client_password_resets` (`id`, `email`, `token`, `expiry`, `used`, `created_at`) VALUES
+(1, 'leomaresc853@gmail.com', '29b87ece0be011cb664ffebdf227471579ed8147600128063b4a35964b24a155', '2025-07-05 07:17:41', 0, '2025-07-05 04:17:41'),
+(2, 'leomaresc853@gmail.com', '693b53f5173953d4ab1c525589b54162bf7f05e65d49910c73be574d593414a3', '2025-07-05 07:54:12', 1, '2025-07-05 04:54:12');
 
 -- --------------------------------------------------------
 
@@ -573,7 +600,11 @@ CREATE TABLE `staff_appointment_slots` (
 INSERT INTO `staff_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
 (6, 17, '06:00:00', 1, 58),
 (7, 18, '08:00:00', 1, 59),
-(8, 19, '05:00:00', 1, 60);
+(8, 19, '05:00:00', 1, 60),
+(9, 18, '10:30:00', 1, 61),
+(10, 19, '12:00:00', 1, 62),
+(11, 18, '11:00:00', 1, 63),
+(12, 18, '11:30:00', 1, 64);
 
 -- --------------------------------------------------------
 
@@ -781,6 +812,14 @@ ALTER TABLE `clients`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `client_password_resets`
+--
+ALTER TABLE `client_password_resets`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email` (`email`),
+  ADD KEY `token` (`token`);
+
+--
 -- Indexes for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
@@ -957,7 +996,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `appointment_slots`
@@ -970,6 +1009,12 @@ ALTER TABLE `appointment_slots`
 --
 ALTER TABLE `clients`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `client_password_resets`
+--
+ALTER TABLE `client_password_resets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `doctor_schedules`
@@ -1047,7 +1092,7 @@ ALTER TABLE `medicine_stock`
 -- AUTO_INCREMENT for table `staff_appointment_slots`
 --
 ALTER TABLE `staff_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `staff_schedules`
@@ -1159,70 +1204,10 @@ ALTER TABLE `medicine_dispensing`
   ADD CONSTRAINT `medicine_dispensing_ibfk_3` FOREIGN KEY (`dispensed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `medicine_inventory`
---
-ALTER TABLE `medicine_inventory`
-  ADD CONSTRAINT `fk_inventory_medicine_details` FOREIGN KEY (`medicine_details_id`) REFERENCES `medicine_details` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `medicine_stock`
 --
 ALTER TABLE `medicine_stock`
   ADD CONSTRAINT `medicine_stock_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `staff_appointment_slots`
---
-ALTER TABLE `staff_appointment_slots`
-  ADD CONSTRAINT `staff_appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `staff_schedules` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `staff_appointment_slots_ibfk_2` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `staff_schedules`
---
-ALTER TABLE `staff_schedules`
-  ADD CONSTRAINT `staff_schedules_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `stock_movement_log`
---
-ALTER TABLE `stock_movement_log`
-  ADD CONSTRAINT `stock_movement_log_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `stock_movement_log_ibfk_2` FOREIGN KEY (`stock_id`) REFERENCES `medicine_stock` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `stock_movement_log_ibfk_3` FOREIGN KEY (`performed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `time_in_logs`
---
-ALTER TABLE `time_in_logs`
-  ADD CONSTRAINT `time_in_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `time_logs`
---
-ALTER TABLE `time_logs`
-  ADD CONSTRAINT `fk_time_logs_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `time_out_logs`
---
-ALTER TABLE `time_out_logs`
-  ADD CONSTRAINT `time_out_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Add password_resets table
---
-CREATE TABLE IF NOT EXISTS `password_resets` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `email` varchar(255) NOT NULL,
-    `token` varchar(64) NOT NULL,
-    `expiry` datetime NOT NULL,
-    `used` tinyint(1) NOT NULL DEFAULT 0,
-    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`),
-    KEY `email` (`email`),
-    KEY `token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

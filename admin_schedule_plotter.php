@@ -50,7 +50,7 @@ if (isset($_POST['approve_schedule'])) {
 $doctorSchedules = [];
 $scheduleQuery = "SELECT ds.*, u.display_name as doctor_name 
                  FROM doctor_schedules ds
-                 JOIN users u ON ds.doctor_id = u.id
+                 JOIN admin_user_accounts u ON ds.doctor_id = u.id
                  ORDER BY ds.schedule_date ASC, ds.start_time ASC";
 $scheduleStmt = $con->prepare($scheduleQuery);
 $scheduleStmt->execute();
@@ -60,7 +60,7 @@ $doctorSchedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 $staffSchedules = [];
 $staffQuery = "SELECT ss.*, u.display_name as staff_name, u.role as staff_role
               FROM staff_schedules ss
-              JOIN users u ON ss.staff_id = u.id
+              JOIN admin_user_accounts u ON ss.staff_id = u.id
               WHERE u.role IN ('admin', 'health_worker')
               ORDER BY ss.schedule_date ASC, ss.start_time ASC";
 $staffStmt = $con->prepare($staffQuery);
@@ -75,7 +75,7 @@ $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as docto
                           ELSE 'unknown'
                       END as schedule_type
                       FROM appointments a
-                      LEFT JOIN users u ON a.doctor_id = u.id
+                      LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
                       WHERE a.status != 'cancelled'
                       ORDER BY a.appointment_date ASC, a.appointment_time ASC";
 $appointmentsStmt = $con->prepare($appointmentsQuery);

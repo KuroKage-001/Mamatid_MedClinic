@@ -22,7 +22,7 @@ try {
     $query = "SELECT a.*, c.email, c.full_name, u.display_name AS doctor_name 
               FROM appointments a
               LEFT JOIN clients c ON a.patient_name = c.full_name
-              LEFT JOIN users u ON a.doctor_id = u.id
+              LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
               WHERE a.id = ?";
     
     $stmt = $con->prepare($query);

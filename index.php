@@ -62,7 +62,7 @@ if (isset($_POST['login'])) {
 
     // Prepare query to fetch user details with role and status
     $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status`
-              FROM `users`
+              FROM `admin_user_accounts`
               WHERE `user_name` = :user_name
                 AND `password` = :password
                 AND `status` = 'active'";

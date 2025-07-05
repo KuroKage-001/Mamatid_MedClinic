@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = trim($_POST['email']);
         $phone = trim($_POST['phone']);
         
-        $sql = "UPDATE users SET display_name = :display_name, email = :email, phone = :phone WHERE id = :user_id";
+        $sql = "UPDATE admin_user_accounts SET display_name = :display_name, email = :email, phone = :phone WHERE id = :user_id";
         $stmt = $con->prepare($sql);
         $stmt->bindParam(':display_name', $display_name);
         $stmt->bindParam(':email', $email);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "New passwords do not match!";
         } else {
             // Verify current password
-            $sql = "SELECT password FROM users WHERE id = :user_id";
+            $sql = "SELECT password FROM admin_user_accounts WHERE id = :user_id";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':user_id', $user_id);
             $stmt->execute();
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if ($user && md5($current_password) === $user['password']) {
                 $hashed_password = md5($new_password);
-                $sql = "UPDATE users SET password = :password WHERE id = :user_id";
+                $sql = "UPDATE admin_user_accounts SET password = :password WHERE id = :user_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':password', $hashed_password);
                 $stmt->bindParam(':user_id', $user_id);
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
                 
                 // Update database
-                $sql = "UPDATE users SET profile_picture = :profile_picture WHERE id = :user_id";
+                $sql = "UPDATE admin_user_accounts SET profile_picture = :profile_picture WHERE id = :user_id";
                 $stmt = $con->prepare($sql);
                 $stmt->bindParam(':profile_picture', $new_filename);
                 $stmt->bindParam(':user_id', $user_id);
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Get current user data
-$sql = "SELECT * FROM users WHERE id = :user_id";
+$sql = "SELECT * FROM admin_user_accounts WHERE id = :user_id";
 $stmt = $con->prepare($sql);
 $stmt->bindParam(':user_id', $user_id);
 $stmt->execute();

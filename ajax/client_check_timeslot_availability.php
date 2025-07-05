@@ -59,7 +59,7 @@ try {
     // First, validate that the schedule exists and is approved
     $scheduleQuery = "SELECT s.*, u.display_name as provider_name
                     FROM {$schedulesTable} s
-                    JOIN users u ON s.{$staffIdColumn} = u.id
+                    JOIN admin_user_accounts u ON s.{$staffIdColumn} = u.id
                     WHERE s.id = ?";
     
     // Add approval check only for doctor schedules

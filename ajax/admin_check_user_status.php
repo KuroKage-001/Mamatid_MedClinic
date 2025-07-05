@@ -41,7 +41,7 @@ if ($user_id == $_SESSION['user_id']) {
 
 try {
     // Check if target user is an admin - don't allow deactivating other admins
-    $checkSql = "SELECT role FROM users WHERE id = :id";
+    $checkSql = "SELECT role FROM admin_user_accounts WHERE id = :id";
     $checkStmt = $con->prepare($checkSql);
     $checkStmt->bindParam(':id', $user_id);
     $checkStmt->execute();
@@ -58,7 +58,7 @@ try {
     }
     
     // Update user status
-    $sql = "UPDATE users SET status = :status WHERE id = :id";
+    $sql = "UPDATE admin_user_accounts SET status = :status WHERE id = :id";
     $stmt = $con->prepare($sql);
     $stmt->bindParam(':status', $status);
     $stmt->bindParam(':id', $user_id);

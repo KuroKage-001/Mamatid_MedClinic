@@ -204,7 +204,7 @@ try {
         $stmtLogs->execute();
         
         // Get all users for the filter dropdown
-        $stmtUsers = $con->prepare("SELECT id, display_name FROM users ORDER BY display_name");
+        $stmtUsers = $con->prepare("SELECT id, display_name FROM admin_user_accounts ORDER BY display_name");
         $stmtUsers->execute();
         $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
     } else {

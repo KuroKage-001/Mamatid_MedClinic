@@ -84,7 +84,7 @@ if (isset($_POST['update_user'])) {
         }
         
         // Check username uniqueness
-        $checkQuery = "SELECT id FROM users WHERE user_name = :user_name AND id != :user_id";
+        $checkQuery = "SELECT id FROM admin_user_accounts WHERE user_name = :user_name AND id != :user_id";
         $checkStmt = $con->prepare($checkQuery);
         $checkStmt->bindParam(':user_name', $userName);
         $checkStmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -126,7 +126,7 @@ if (isset($_POST['update_user'])) {
             $updateFields[] = 'password = :password';
         }
         
-        $updateQuery = "UPDATE users SET " . implode(', ', $updateFields) . " WHERE id = :user_id";
+        $updateQuery = "UPDATE admin_user_accounts SET " . implode(', ', $updateFields) . " WHERE id = :user_id";
         $updateStmt = $con->prepare($updateQuery);
         
         $updateStmt->bindParam(':display_name', $displayName);

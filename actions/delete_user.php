@@ -26,7 +26,7 @@ if ($user_id == $_SESSION['user_id']) {
 }
 
 // Check if target user exists and get their role
-$checkSql = "SELECT role, display_name FROM users WHERE id = :id";
+$checkSql = "SELECT role, display_name FROM admin_user_accounts WHERE id = :id";
 $checkStmt = $con->prepare($checkSql);
 $checkStmt->bindParam(':id', $user_id);
 $checkStmt->execute();
@@ -48,7 +48,7 @@ try {
     $con->beginTransaction();
     
     // Delete user record
-    $sql = "DELETE FROM users WHERE id = :id";
+    $sql = "DELETE FROM admin_user_accounts WHERE id = :id";
     $stmt = $con->prepare($sql);
     $stmt->bindParam(':id', $user_id);
     

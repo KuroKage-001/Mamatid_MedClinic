@@ -23,7 +23,7 @@ if (isset($_GET['error'])) {
 // Get all approved schedules from doctors - ONLY FUTURE DATES
 $doctorScheduleQuery = "SELECT ds.*, u.display_name as doctor_name, u.role 
                 FROM doctor_schedules ds
-                JOIN users u ON ds.doctor_id = u.id
+                JOIN admin_user_accounts u ON ds.doctor_id = u.id
                 WHERE ds.schedule_date >= CURDATE()
                 AND ds.is_approved = 1
                 ORDER BY ds.schedule_date ASC, ds.start_time ASC";
@@ -34,7 +34,7 @@ $doctorSchedules = $doctorScheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 // Get all staff schedules (auto-approved) - ONLY FUTURE DATES
 $staffScheduleQuery = "SELECT ss.*, u.display_name as staff_name, u.role 
                 FROM staff_schedules ss
-                JOIN users u ON ss.staff_id = u.id
+                JOIN admin_user_accounts u ON ss.staff_id = u.id
                 WHERE ss.schedule_date >= CURDATE()
                 ORDER BY ss.schedule_date ASC, ss.start_time ASC";
 $staffScheduleStmt = $con->prepare($staffScheduleQuery);
@@ -69,14 +69,14 @@ if (isset($_POST['book_appointment'])) {
         if ($scheduleType == 'doctor') {
             $scheduleQuery = "SELECT ds.*, u.id as provider_id, u.display_name as provider_name 
                             FROM doctor_schedules ds
-                            JOIN users u ON ds.doctor_id = u.id
+                            JOIN admin_user_accounts u ON ds.doctor_id = u.id
                             WHERE ds.id = ? AND ds.is_approved = 1 FOR UPDATE";
             $tableName = 'doctor_schedules';
             $providerIdColumn = 'doctor_id';
         } else if ($scheduleType == 'staff') {
             $scheduleQuery = "SELECT ss.*, u.id as provider_id, u.display_name as provider_name 
                             FROM staff_schedules ss
-                            JOIN users u ON ss.staff_id = u.id
+                            JOIN admin_user_accounts u ON ss.staff_id = u.id
                             WHERE ss.id = ? FOR UPDATE";
             $tableName = 'staff_schedules';
             $providerIdColumn = 'staff_id';

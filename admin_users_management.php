@@ -39,7 +39,7 @@ if (isset($_POST['save_user'])) {
     
     // Check if username already exists
     if (empty($errors)) {
-        $checkQuery = "SELECT COUNT(*) as count FROM users WHERE user_name = ?";
+        $checkQuery = "SELECT COUNT(*) as count FROM admin_user_accounts WHERE user_name = ?";
         $stmt = $con->prepare($checkQuery);
         $stmt->execute([$user_name]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -51,7 +51,7 @@ if (isset($_POST['save_user'])) {
     
     // Check if email already exists (if provided)
     if (empty($errors) && !empty($email)) {
-        $checkQuery = "SELECT COUNT(*) as count FROM users WHERE email = ?";
+        $checkQuery = "SELECT COUNT(*) as count FROM admin_user_accounts WHERE email = ?";
         $stmt = $con->prepare($checkQuery);
         $stmt->execute([$email]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -70,7 +70,7 @@ if (isset($_POST['save_user'])) {
             $profile_picture = 'default_profile.jpg';
             
             // Prepare INSERT query
-            $query = "INSERT INTO users (display_name, email, phone, user_name, password, role, status, profile_picture) 
+            $query = "INSERT INTO admin_user_accounts (display_name, email, phone, user_name, password, role, status, profile_picture) 
                      VALUES (:display_name, :email, :phone, :user_name, :password, :role, :status, :profile_picture)";
             
             // Start transaction
@@ -115,7 +115,7 @@ try {
     $query = "SELECT id, display_name, email, phone, user_name, role, status, profile_picture,
                      DATE_FORMAT(created_at, '%d %b %Y') as created_at,
                      DATE_FORMAT(updated_at, '%d %b %Y') as updated_at
-              FROM users
+              FROM admin_user_accounts
               ORDER BY created_at DESC";
     $stmt = $con->prepare($query);
     $stmt->execute();
