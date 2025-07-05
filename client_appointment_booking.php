@@ -233,6 +233,12 @@ if (isset($_POST['book_appointment'])) {
                 throw new Exception("Client email address not found");
             }
             
+            // Validate email format
+            if (!filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
+                error_log("Invalid email format for client ID: {$clientId}, Email: {$clientEmail}");
+                throw new Exception("Invalid email address format");
+            }
+            
             $clientName = $client['full_name'];
             
             // Generate a secure token for viewing the appointment
@@ -260,12 +266,12 @@ if (isset($_POST['book_appointment'])) {
             
             // Debug logging for token
             error_log("Appointment ID: " . $appointmentId . " - Token: " . $token);
-            error_log("Appointment details array: " . print_r($appointmentDetails, true));
+            error_log("Attempting to send email to: {$clientEmail}");
             
             // Generate email body
             $emailBody = generateAppointmentConfirmationEmail($appointmentDetails);
             
-            // Send email
+            // Send email with improved error handling
             $emailResult = sendEmail(
                 $clientEmail,
                 'Your Appointment Confirmation - Mamatid Health Center',
@@ -273,8 +279,8 @@ if (isset($_POST['book_appointment'])) {
                 $clientName
             );
             
-            // Log email result (could be stored in a database table in the future)
-            error_log("Email sending result: " . ($emailResult['success'] ? 'Success' : $emailResult['message']));
+            // Log detailed email result
+            error_log("Email sending result: " . json_encode($emailResult));
             
             // Update email sent status
             $updateEmailStatusQuery = "UPDATE appointments SET email_sent = ? WHERE id = ?";
@@ -283,12 +289,22 @@ if (isset($_POST['book_appointment'])) {
                 $emailResult['success'] ? 1 : 0,
                 $appointmentId
             ]);
+            
+            // If email failed, log the specific reason but don't fail the booking
+            if (!$emailResult['success']) {
+                error_log("Email sending failed: " . $emailResult['message']);
+                $message .= ' (Note: Email notification could not be sent - ' . $emailResult['message'] . ')';
+            } else {
+                error_log("Email sent successfully to: {$clientEmail}");
+            }
+            
         } catch (Exception $ex) {
             // Log email error but don't prevent successful appointment booking
             error_log("Failed to send confirmation email: " . $ex->getMessage());
+            error_log("Stack trace: " . $ex->getTraceAsString());
             
-            // For debugging purposes only - remove in production
-            $message .= ' (Note: Email notification could not be sent. Please check logs for details.)';
+            // Add user-friendly message
+            $message .= ' (Note: Email notification could not be sent. Please check with the clinic for confirmation.)';
         }
         
         // Redirect to dashboard

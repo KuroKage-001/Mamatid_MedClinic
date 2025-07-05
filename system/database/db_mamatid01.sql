@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 09:31 PM
+-- Generation Time: Jul 05, 2025 at 03:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,8 +47,20 @@ CREATE TABLE `appointments` (
   `reminder_sent` tinyint(1) DEFAULT 0,
   `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is archived',
   `view_token` varchar(64) DEFAULT NULL,
-  `token_expiry` datetime DEFAULT NULL
+  `token_expiry` datetime DEFAULT NULL,
+  `archived_at` datetime DEFAULT NULL COMMENT 'Timestamp when appointment was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the appointment',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving appointment'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `appointments`
+--
+
+INSERT INTO `appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'approved', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-03 15:10:44', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
+(59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'approved', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-03 15:19:43', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
+(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'approved', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-03 16:11:55', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL);
 
 --
 -- Triggers `appointments`
@@ -554,6 +566,15 @@ CREATE TABLE `staff_appointment_slots` (
   `appointment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `staff_appointment_slots`
+--
+
+INSERT INTO `staff_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
+(6, 17, '06:00:00', 1, 58),
+(7, 18, '08:00:00', 1, 59),
+(8, 19, '05:00:00', 1, 60);
+
 -- --------------------------------------------------------
 
 --
@@ -573,6 +594,15 @@ CREATE TABLE `staff_schedules` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `is_approved` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_schedules`
+--
+
+INSERT INTO `staff_schedules` (`id`, `staff_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`) VALUES
+(17, 1, '2025-07-04', '06:00:00', '18:00:00', 30, 1, '', '2025-07-03 10:53:39', '2025-07-03 10:53:39', 1),
+(18, 1, '2025-07-05', '08:00:00', '16:00:00', 30, 1, 'test 2', '2025-07-03 15:12:49', '2025-07-03 15:12:49', 1),
+(19, 24, '2025-07-05', '05:00:00', '17:00:00', 30, 1, 'test 1', '2025-07-03 16:09:43', '2025-07-03 16:09:43', 1);
 
 -- --------------------------------------------------------
 
@@ -694,8 +724,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `display_name`, `email`, `phone`, `user_name`, `password`, `role`, `status`, `profile_picture`, `created_at`, `updated_at`) VALUES
 (1, 'Administrator 01', 'admin@gmail.com', '09876777656', 'admin', '0192023a7bbd73250516f069df18b500', 'admin', 'active', '1_1750716275.jpeg', '2025-06-08 16:35:40', '2025-06-23 22:04:35'),
-(22, 'Doctor Leo', 'leomaresc853@gmail.com', '09918719610', 'docleo', 'c2a3a61e408026e908521ffc626f7429', 'doctor', 'active', 'default_profile.jpg', '2025-07-01 16:11:44', '2025-07-01 16:11:44'),
-(23, 'HW - Leo', 'hcleo@gmail.com', '09918719610', 'hcleo', 'b5404cef28ce8df23ba14929bb3b7768', 'health_worker', 'active', 'default_profile.jpg', '2025-07-01 16:13:25', '2025-07-01 16:13:25');
+(22, 'Doctor Leo', 'leomaresc853@gmail.com', '09918719610', 'docleo', 'c2a3a61e408026e908521ffc626f7429', 'doctor', 'active', '22_1751546845.jpg', '2025-07-01 16:11:44', '2025-07-03 12:47:25'),
+(24, 'HW - Leo', 'hcleo@gmail.com', '09787676566', 'hwleo', '40496d7b1e3df268628fa14e3959f58a', 'health_worker', 'active', 'default_profile.jpg', '2025-07-03 11:48:02', '2025-07-03 11:48:02');
 
 -- --------------------------------------------------------
 
@@ -727,7 +757,8 @@ ALTER TABLE `appointments`
   ADD UNIQUE KEY `unique_patient_appointment` (`patient_name`,`schedule_id`,`appointment_time`,`status`),
   ADD UNIQUE KEY `unique_active_appointment` (`schedule_id`,`appointment_time`,`status`),
   ADD KEY `idx_schedule_id` (`schedule_id`),
-  ADD KEY `idx_doctor_id` (`doctor_id`);
+  ADD KEY `idx_doctor_id` (`doctor_id`),
+  ADD KEY `fk_appointments_archived_by` (`archived_by`);
 
 --
 -- Indexes for table `appointment_slots`
@@ -926,7 +957,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `appointment_slots`
@@ -1016,13 +1047,13 @@ ALTER TABLE `medicine_stock`
 -- AUTO_INCREMENT for table `staff_appointment_slots`
 --
 ALTER TABLE `staff_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `staff_schedules`
 --
 ALTER TABLE `staff_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `stock_movement_log`
@@ -1052,11 +1083,17 @@ ALTER TABLE `time_out_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD CONSTRAINT `fk_appointments_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `appointment_slots`
