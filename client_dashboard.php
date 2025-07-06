@@ -284,11 +284,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             <section class="content-header">
                 <div class="container-fluid">
                     <div class="row align-items-center mb-4">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <h1>Client Dashboard</h1>
-                        </div>
-                        <div class="col-12 col-md-6 text-md-right mt-3 mt-md-0">
-                            <span id="datetime" class="d-inline-block"></span>
                         </div>
                     </div>
                 </div>
@@ -553,24 +550,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                     title: message
                 });
             }
-
-            // Modern datetime display with animation
-            function updateDateTime() {
-                var now = new Date();
-                var options = {
-                    month: 'long',
-                    day: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                };
-                var formattedDateTime = now.toLocaleString('en-US', options);
-                document.getElementById('datetime').innerHTML = formattedDateTime;
-            }
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
 
             // Handle delete appointment with enhanced confirmation dialog
             $('.delete-appointment').on('click', function(e) {

@@ -137,21 +137,31 @@ $current_page = basename($_SERVER['PHP_SELF']);
     flex-grow: 1;
 }
 
+/* Sidebar */
+.sidebar {
+    padding-top: 1.5rem;
+}
+
 /* User Panel */
 .user-panel {
-    padding: 1.5rem 1rem 1.5rem 0.5rem;
+    padding: 1.5rem 1rem 2rem 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
 }
 
 .user-info-container {
     display: flex;
     align-items: center;
     position: relative;
-    padding: 0.5rem;
-    padding-left:0.25rem;
+    padding: 0.75rem;
+    padding-left: 0.25rem;
+    padding-right: 1.5rem;
     background: rgba(255, 255, 255, 0.03);
     border-radius: var(--menu-item-radius);
+    margin-top: 0.5rem;
+    width: calc(100% + 1rem);
+    margin-right: -1rem;
 }
 
 .user-image-container {
@@ -197,6 +207,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 150px;
 }
 
 .user-display-name {
@@ -206,6 +217,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     margin-bottom: 0.4rem;
     transition: color var(--transition-speed);
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-display-name:hover {

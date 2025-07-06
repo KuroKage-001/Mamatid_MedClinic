@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 04:15 AM
+-- Generation Time: Jul 06, 2025 at 10:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,11 +60,11 @@ CREATE TABLE `admin_clients_appointments` (
 INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
 (58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
 (59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'completed', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-05 08:13:29', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
-(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'approved', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-03 16:11:55', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL),
-(61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'approved', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-05 03:25:39', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL),
-(62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'approved', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-05 03:28:26', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL),
-(63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'approved', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-05 03:44:47', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL),
-(64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'approved', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-05 04:05:00', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL);
+(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'completed', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-06 04:35:51', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL),
+(61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'completed', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-06 02:30:07', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL),
+(62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'completed', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-06 04:35:51', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL),
+(63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'completed', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-06 02:30:07', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL),
+(64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'completed', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-06 02:30:07', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL);
 
 --
 -- Triggers `admin_clients_appointments`
@@ -73,20 +73,20 @@ DELIMITER $$
 CREATE TRIGGER `after_doctor_appointment_insert` AFTER INSERT ON `admin_clients_appointments` FOR EACH ROW BEGIN
     DECLARE slot_id INT;
     
-    
-    IF NEW.schedule_id IN (SELECT id FROM doctor_schedules) THEN
-        
-        SELECT id INTO slot_id FROM appointment_slots 
+    -- Check if this is a doctor appointment
+    IF NEW.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN
+        -- Check if slot exists
+        SELECT id INTO slot_id FROM admin_doctor_appointment_slots 
         WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time
         LIMIT 1;
         
         IF slot_id IS NULL THEN
-            
-            INSERT INTO appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
+            -- Create slot if it doesn't exist
+            INSERT INTO admin_doctor_appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
             VALUES (NEW.schedule_id, NEW.appointment_time, 1, NEW.id);
         ELSE
-            
-            UPDATE appointment_slots 
+            -- Update existing slot
+            UPDATE admin_doctor_appointment_slots 
             SET is_booked = 1, appointment_id = NEW.id
             WHERE id = slot_id;
         END IF;
@@ -96,24 +96,24 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_doctor_appointment_update` AFTER UPDATE ON `admin_clients_appointments` FOR EACH ROW BEGIN
-    
-    IF NEW.schedule_id IN (SELECT id FROM doctor_schedules) THEN
-        
+    -- Check if this is a doctor appointment
+    IF NEW.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN
+        -- If status changed to cancelled, update the slot
         IF NEW.status = 'cancelled' AND OLD.status != 'cancelled' THEN
-            UPDATE appointment_slots
+            UPDATE admin_doctor_appointment_slots
             SET is_booked = 0, appointment_id = NULL
             WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
         END IF;
         
-        
+        -- If time slot changed, update both old and new slots
         IF NEW.appointment_time != OLD.appointment_time THEN
-            
-            UPDATE appointment_slots
+            -- Update old slot
+            UPDATE admin_doctor_appointment_slots
             SET is_booked = 0, appointment_id = NULL
             WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
             
-            
-            UPDATE appointment_slots
+            -- Update new slot
+            UPDATE admin_doctor_appointment_slots
             SET is_booked = 1, appointment_id = NEW.id
             WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
         END IF;
@@ -124,8 +124,8 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_staff_appointment_delete` AFTER DELETE ON `admin_clients_appointments` FOR EACH ROW BEGIN
     -- Update the staff slot when an appointment is deleted (only if it was a staff appointment)
-    IF OLD.schedule_id IN (SELECT id FROM staff_schedules) THEN
-        UPDATE staff_appointment_slots
+    IF OLD.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
+        UPDATE admin_hw_appointment_slots
         SET is_booked = 0, appointment_id = NULL
         WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
     END IF;
@@ -137,19 +137,19 @@ CREATE TRIGGER `after_staff_appointment_insert` AFTER INSERT ON `admin_clients_a
     DECLARE slot_id INT;
     
     -- Check if this is a staff appointment
-    IF NEW.schedule_id IN (SELECT id FROM staff_schedules) THEN
+    IF NEW.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
         -- Check if slot exists
-        SELECT id INTO slot_id FROM staff_appointment_slots 
+        SELECT id INTO slot_id FROM admin_hw_appointment_slots 
         WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time
         LIMIT 1;
         
         IF slot_id IS NULL THEN
             -- Create slot if it doesn't exist
-            INSERT INTO staff_appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
+            INSERT INTO admin_hw_appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
             VALUES (NEW.schedule_id, NEW.appointment_time, 1, NEW.id);
         ELSE
             -- Update existing slot
-            UPDATE staff_appointment_slots 
+            UPDATE admin_hw_appointment_slots 
             SET is_booked = 1, appointment_id = NEW.id
             WHERE id = slot_id;
         END IF;
@@ -160,10 +160,10 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_staff_appointment_update` AFTER UPDATE ON `admin_clients_appointments` FOR EACH ROW BEGIN
     -- Check if this is a staff appointment
-    IF NEW.schedule_id IN (SELECT id FROM staff_schedules) THEN
+    IF NEW.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
         -- If status changed to cancelled, update the slot
         IF NEW.status = 'cancelled' AND OLD.status != 'cancelled' THEN
-            UPDATE staff_appointment_slots
+            UPDATE admin_hw_appointment_slots
             SET is_booked = 0, appointment_id = NULL
             WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
         END IF;
@@ -171,12 +171,12 @@ CREATE TRIGGER `after_staff_appointment_update` AFTER UPDATE ON `admin_clients_a
         -- If time slot changed, update both old and new slots
         IF NEW.appointment_time != OLD.appointment_time THEN
             -- Update old slot
-            UPDATE staff_appointment_slots
+            UPDATE admin_hw_appointment_slots
             SET is_booked = 0, appointment_id = NULL
             WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
             
             -- Update new slot
-            UPDATE staff_appointment_slots
+            UPDATE admin_hw_appointment_slots
             SET is_booked = 1, appointment_id = NEW.id
             WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
         END IF;
@@ -295,9 +295,9 @@ CREATE TABLE `admin_time_in_attendance_logs` (
 --
 DELIMITER $$
 CREATE TRIGGER `after_time_in_insert` AFTER INSERT ON `admin_time_in_attendance_logs` FOR EACH ROW BEGIN
-  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
-  VALUES (NEW.user_id, NEW.log_date, NEW.time_in, NULL, 0.00)
-  ON DUPLICATE KEY UPDATE `time_in` = NEW.time_in;
+    INSERT INTO admin_time_logs (user_id, log_date, time_in, time_out, total_hours)
+    VALUES (NEW.user_id, NEW.log_date, NEW.time_in, NULL, NULL)
+    ON DUPLICATE KEY UPDATE time_in = NEW.time_in;
 END
 $$
 DELIMITER ;
@@ -335,18 +335,20 @@ CREATE TABLE `admin_time_out_attendance_logs` (
 --
 DELIMITER $$
 CREATE TRIGGER `after_time_out_insert` AFTER INSERT ON `admin_time_out_attendance_logs` FOR EACH ROW BEGIN
-  DECLARE v_time_in TIME;
-  -- Get the corresponding Time In
-  SELECT `time_in` INTO v_time_in
-  FROM `time_in_logs`
-  WHERE `user_id` = NEW.user_id AND `log_date` = NEW.log_date;
-  -- Update time_logs with Time Out and calculate total hours
-  INSERT INTO `time_logs` (`user_id`, `log_date`, `time_in`, `time_out`, `total_hours`)
-  VALUES (NEW.user_id, NEW.log_date, v_time_in, NEW.time_out, 
-          ROUND(TIMESTAMPDIFF(SECOND, v_time_in, NEW.time_out) / 3600, 2))
-  ON DUPLICATE KEY UPDATE 
-    `time_out` = NEW.time_out,
-    `total_hours` = ROUND(TIMESTAMPDIFF(SECOND, `time_in`, NEW.time_out) / 3600, 2);
+    DECLARE v_time_in TIME;
+    
+    -- Get the corresponding Time In from correct table
+    SELECT time_in INTO v_time_in
+    FROM admin_time_in_attendance_logs
+    WHERE user_id = NEW.user_id AND log_date = NEW.log_date;
+    
+    -- Update admin_time_logs with Time Out and calculate total hours
+    INSERT INTO admin_time_logs (user_id, log_date, time_in, time_out, total_hours)
+    VALUES (NEW.user_id, NEW.log_date, v_time_in, NEW.time_out, 
+            ROUND(TIMESTAMPDIFF(SECOND, v_time_in, NEW.time_out) / 3600, 2))
+    ON DUPLICATE KEY UPDATE 
+        time_out = NEW.time_out,
+        total_hours = ROUND(TIMESTAMPDIFF(SECOND, time_in, NEW.time_out) / 3600, 2);
 END
 $$
 DELIMITER ;
@@ -654,6 +656,16 @@ CREATE TABLE `medicine_dispensing` (
 -- (See below for the actual view)
 --
 CREATE TABLE `medicine_dispensing_history` (
+`id` int(11)
+,`dispensed_date` date
+,`medicine_name` varchar(100)
+,`generic_name` varchar(100)
+,`category_name` varchar(100)
+,`batch_number` varchar(50)
+,`quantity` int(11)
+,`patient_name` varchar(100)
+,`remarks` text
+,`dispensed_by` varchar(30)
 );
 
 -- --------------------------------------------------------
@@ -755,7 +767,7 @@ CREATE TABLE `stock_movement_log` (
 --
 DROP TABLE IF EXISTS `medicine_dispensing_history`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_dispensing_history`  AS SELECT `d`.`id` AS `id`, `d`.`dispensed_date` AS `dispensed_date`, `m`.`medicine_name` AS `medicine_name`, `m`.`generic_name` AS `generic_name`, `c`.`category_name` AS `category_name`, `s`.`batch_number` AS `batch_number`, `d`.`quantity` AS `quantity`, `d`.`patient_name` AS `patient_name`, `d`.`remarks` AS `remarks`, `u`.`display_name` AS `dispensed_by` FROM ((((`medicine_dispensing` `d` join `medicine_stock` `s` on(`d`.`stock_id` = `s`.`id`)) join `medicines` `m` on(`d`.`medicine_id` = `m`.`id`)) join `medicine_categories` `c` on(`m`.`category_id` = `c`.`id`)) left join `users` `u` on(`d`.`dispensed_by` = `u`.`id`)) ORDER BY `d`.`dispensed_date` DESC, `d`.`created_at` DESC ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `medicine_dispensing_history`  AS SELECT `d`.`id` AS `id`, `d`.`dispensed_date` AS `dispensed_date`, `m`.`medicine_name` AS `medicine_name`, `m`.`generic_name` AS `generic_name`, `c`.`category_name` AS `category_name`, `s`.`batch_number` AS `batch_number`, `d`.`quantity` AS `quantity`, `d`.`patient_name` AS `patient_name`, `d`.`remarks` AS `remarks`, `u`.`display_name` AS `dispensed_by` FROM ((((`medicine_dispensing` `d` join `medicine_stock` `s` on(`d`.`stock_id` = `s`.`id`)) join `medicines` `m` on(`d`.`medicine_id` = `m`.`id`)) join `medicine_categories` `c` on(`m`.`category_id` = `c`.`id`)) left join `admin_user_accounts` `u` on(`d`.`dispensed_by` = `u`.`id`)) ORDER BY `d`.`dispensed_date` DESC, `d`.`created_at` DESC ;
 
 -- --------------------------------------------------------
 
@@ -1016,19 +1028,19 @@ ALTER TABLE `admin_hw_schedules`
 -- AUTO_INCREMENT for table `admin_time_in_attendance_logs`
 --
 ALTER TABLE `admin_time_in_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `admin_time_logs`
 --
 ALTER TABLE `admin_time_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `admin_time_out_attendance_logs`
 --
 ALTER TABLE `admin_time_out_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `admin_user_accounts`

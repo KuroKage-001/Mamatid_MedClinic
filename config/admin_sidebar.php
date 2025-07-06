@@ -335,9 +335,12 @@ $role_display_name = getRoleDisplayName($user_role);
     align-items: center;
     position: relative;
     padding: 0.5rem;
-    padding-left:0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 1.5rem;
     background: rgba(255, 255, 255, 0.03);
     border-radius: var(--menu-item-radius);
+    width: calc(100% + 1rem);
+    margin-right: -1rem;
 }
 
 .user-image-container {
@@ -383,6 +386,7 @@ $role_display_name = getRoleDisplayName($user_role);
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 150px;
 }
 
 .user-display-name {
@@ -392,6 +396,9 @@ $role_display_name = getRoleDisplayName($user_role);
     margin-bottom: 0.4rem;
     transition: color var(--transition-speed);
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-display-name:hover {
@@ -409,6 +416,9 @@ $role_display_name = getRoleDisplayName($user_role);
     color: var(--primary-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Navigation */

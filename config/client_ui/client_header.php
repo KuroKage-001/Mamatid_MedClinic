@@ -42,6 +42,16 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+        <!-- Clock -->
+        <li class="nav-item clock-container">
+            <div class="clock-widget">
+                <i class="far fa-clock"></i>
+                <div class="clock-info">
+                    <div id="digital-clock"></div>
+                    <div id="date-display"></div>
+                </div>
+            </div>
+        </li>
         <!-- User Menu -->
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
@@ -370,6 +380,84 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
         height: 30px;
     }
 }
+
+/* Clock Styling */
+.clock-container {
+    margin-right: 1.5rem;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-top: 0.5rem;
+}
+
+.clock-widget {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    color: var(--text-primary);
+    height: 40px;
+}
+
+.clock-widget i {
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+    color: var(--accent-color);
+}
+
+.clock-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#digital-clock {
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--text-primary);
+}
+
+#date-display {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    margin-top: 2px;
+    text-align: center;
+}
+
+/* Ensure user menu alignment */
+.user-menu {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.user-panel {
+    height: 40px;
+}
+
+@media (max-width: 768px) {
+    .clock-container {
+        margin-right: 0.75rem;
+        padding-top: 0.25rem;
+    }
+    
+    .clock-widget {
+        padding: 0.5rem;
+        height: 40px;
+    }
+    
+    .clock-info {
+        display: none;
+    }
+    
+    .clock-widget i {
+        margin-right: 0;
+        font-size: 1.4rem;
+    }
+}
 </style>
 
 <script>
@@ -387,5 +475,33 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = src + '?v=' + timestamp;
         }
     });
+
+    // Clock functionality
+    function updateClock() {
+        const now = new Date();
+        
+        // Update time in 12-hour format
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Convert to 12-hour format without leading zeros
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert 0 to 12
+        
+        document.getElementById('digital-clock').textContent = `${hours}:${minutes} ${ampm}`;
+        
+        // Update date with shorter format
+        const options = { 
+            weekday: 'short',
+            month: 'short', 
+            day: 'numeric'
+        };
+        document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', options);
+    }
+
+    // Update clock immediately and then every second
+    updateClock();
+    setInterval(updateClock, 1000);
 });
 </script> 
