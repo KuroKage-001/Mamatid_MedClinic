@@ -363,42 +363,72 @@ try {
       font-weight: 500;
     }
 
-    /* Archive/Unarchive Button Styling */
-    .archive-btn {
+    /* Archive Button Styling */
+    .btn-archive {
       background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+      color: white !important;
       border: none;
-      color: white;
-      margin-left: 5px;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
     }
 
-    .archive-btn:hover {
-      background: linear-gradient(135deg, #F09000 0%, #E08000 100%);
-      color: white;
+    .btn-archive:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(255, 168, 0, 0.3);
+      box-shadow: 0 3px 10px rgba(255, 168, 0, 0.3);
+      color: white !important;
     }
 
-    .unarchive-btn {
+    .btn-unarchive {
       background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+      color: white !important;
       border: none;
-      color: white;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
     }
 
-    .unarchive-btn:hover {
-      background: linear-gradient(135deg, #17B8B0 0%, #15A8A0 100%);
-      color: white;
+    .btn-unarchive:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(27, 197, 189, 0.3);
+      box-shadow: 0 3px 10px rgba(27, 197, 189, 0.3);
+      color: white !important;
     }
 
-    /* Archived Records Styling */
+    /* Archive Filter Buttons */
+    .archive-filter-btn {
+      background: linear-gradient(135deg, #E1F0FF 0%, #F8FBFF 100%);
+      color: var(--primary-color) !important;
+      border: 2px solid var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      margin-right: 0.5rem;
+    }
+
+    .archive-filter-btn:hover {
+      background: var(--primary-color);
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+      text-decoration: none;
+    }
+
+    .archive-filter-btn.active {
+      background: var(--primary-color);
+      color: white !important;
+    }
+
+    /* Archived Row Styling */
     .archived-row {
-      background-color: rgba(108, 117, 125, 0.1);
-      opacity: 0.8;
-    }
-
-    .archived-row td {
-      color: #6c757d;
+      background-color: rgba(255, 168, 0, 0.05) !important;
+      border-left: 4px solid #FFA800;
     }
 
     /* Archive Filter Tabs Styling */
@@ -448,6 +478,214 @@ try {
       transform: translateY(-2px);
       box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
       color: white;
+    }
+
+    /* Modern Export Actions Inline CSS */
+    .dt-button-collection {
+      display: none !important;
+    }
+
+    .export-container {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    /* Elegant Export Options - Non-Button Design */
+    .export-action-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      padding: 12px 18px !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border-radius: 12px !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: pointer !important;
+      position: relative !important;
+      overflow: hidden !important;
+      border: 2px solid transparent !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+      text-transform: none !important;
+      letter-spacing: 0.3px !important;
+    }
+
+    .export-action-btn::before {
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: -100% !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+      transition: left 0.6s ease !important;
+    }
+
+    .export-action-btn:hover::before {
+      left: 100% !important;
+    }
+
+    .export-action-btn:hover {
+      transform: translateY(-3px) scale(1.02) !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+      border-color: currentColor !important;
+    }
+
+    .export-action-btn:active {
+      transform: translateY(-1px) scale(1.01) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .export-action-btn i {
+      font-size: 1rem !important;
+      transition: all 0.3s ease !important;
+      opacity: 0.9 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .export-action-btn:hover i {
+      transform: scale(1.15) rotate(5deg) !important;
+      opacity: 1 !important;
+    }
+
+    /* Sophisticated Color Schemes for Each Export Type */
+    .export-copy-btn {
+      color: #6366F1 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
+    }
+
+    .export-copy-btn:hover {
+      color: #4F46E5 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
+    }
+
+    .export-csv-btn {
+      color: #10B981 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
+    }
+
+    .export-csv-btn:hover {
+      color: #059669 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
+    }
+
+    .export-excel-btn {
+      color: #22C55E !important;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
+    }
+
+    .export-excel-btn:hover {
+      color: #16A34A !important;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
+    }
+
+    .export-pdf-btn {
+      color: #EF4444 !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
+    }
+
+    .export-pdf-btn:hover {
+      color: #DC2626 !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
+    }
+
+    .export-print-btn {
+      color: #8B5CF6 !important;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+    }
+
+    .export-print-btn:hover {
+      color: #7C3AED !important;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
+    }
+
+    /* Hide default DataTable buttons */
+    .dt-buttons {
+      display: none !important;
+    }
+
+    /* Custom layout for DataTable wrapper */
+    #all_blood_sugar_wrapper .row:first-child {
+      margin-bottom: 15px;
+    }
+
+    #all_blood_sugar_wrapper .dataTables_filter {
+      float: left !important;
+      text-align: left !important;
+    }
+
+    #all_blood_sugar_wrapper .dataTables_filter input {
+      width: 300px;
+      border-radius: 8px;
+      border: 2px solid #e4e6ef;
+      padding: 0.625rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    #all_blood_sugar_wrapper .dataTables_filter input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+    }
+
+    /* Responsive Design for Modern Export Options */
+    @media (max-width: 768px) {
+      .export-container {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .export-action-btn {
+        padding: 10px 14px !important;
+        font-size: 0.8125rem !important;
+        gap: 8px !important;
+        border-radius: 10px !important;
+      }
+
+      .export-action-btn i {
+        font-size: 0.9rem !important;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .export-container {
+        gap: 6px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .export-action-btn {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+        gap: 6px !important;
+        border-radius: 8px !important;
+        justify-content: center !important;
+      }
+
+      .export-action-btn i {
+        font-size: 0.85rem !important;
+      }
+
+      .export-action-btn:hover {
+        transform: translateY(-2px) scale(1.01) !important;
+      }
+
+      #all_blood_sugar_wrapper .dataTables_filter input {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -537,56 +775,47 @@ try {
 
       <section class="content">
         <div class="card card-outline card-primary">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">
-              <?php echo $showArchived ? 'Archived Random Blood Sugar Records' : 'Active Random Blood Sugar Records'; ?>
-            </h3>
-            <div class="d-flex gap-2">
-              <div class="archive-filter-tabs">
-                <a href="general_rbs.php" class="btn <?php echo !$showArchived ? 'btn-primary' : 'btn-secondary'; ?>">
-                  <i class="fas fa-users"></i> Active Records
+          <div class="card-header">
+            <h3 class="card-title"><?php echo $showArchived ? 'Archived Random Blood Sugar Records' : 'Active Random Blood Sugar Records'; ?></h3>
+            <div class="card-tools">
+              <div class="d-flex align-items-center">
+                <a href="general_rbs.php" 
+                   class="archive-filter-btn <?php echo !$showArchived ? 'active' : ''; ?>">
+                  <i class="fas fa-list"></i> Active Records
                 </a>
-                <a href="general_rbs.php?show_archived=1" class="btn <?php echo $showArchived ? 'btn-warning' : 'btn-secondary'; ?>">
+                <a href="general_rbs.php?show_archived=1" 
+                   class="archive-filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
                   <i class="fas fa-archive"></i> Archived Records
                 </a>
+                <button type="button" class="btn btn-tool ml-2" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
               </div>
-              <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
             </div>
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <div class="mb-3">
-                <div class="row align-items-center">
-                  <div class="col-md-6">
-                    <div class="chart-actions">
-                      <button class="btn btn-gradient btn-sm export-btn" id="btnCopy">
-                        <i class="fas fa-copy"></i> Copy
-                      </button>
-                      <button class="btn btn-gradient btn-sm export-btn" id="btnCSV">
-                        <i class="fas fa-file-csv"></i> CSV
-                      </button>
-                      <button class="btn btn-gradient btn-sm export-btn" id="btnExcel">
-                        <i class="fas fa-file-excel"></i> Excel
-                      </button>
-                      <button class="btn btn-gradient btn-sm export-btn" id="btnPDF">
-                        <i class="fas fa-file-pdf"></i> PDF
-                      </button>
-                      <button class="btn btn-gradient btn-sm export-btn" id="btnPrint">
-                        <i class="fas fa-print"></i> Print
-                      </button>
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-gradient btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                          <i class="fas fa-columns"></i> Columns
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" id="columnVisibility">
-                          <!-- Column visibility options will be added dynamically -->
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="export-container mt-4" id="exportContainer">
+                <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                  <i class="fas fa-copy"></i>
+                  <span>Copy</span>
+                </a>
+                <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                  <i class="fas fa-file-csv"></i>
+                  <span>CSV</span>
+                </a>
+                <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                  <i class="fas fa-file-excel"></i>
+                  <span>Excel</span>
+                </a>
+                <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                  <i class="fas fa-file-pdf"></i>
+                  <span>PDF</span>
+                </a>
+                <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                  <i class="fas fa-print"></i>
+                  <span>Print</span>
+                </a>
               </div>
               <table id="all_blood_sugar" class="table table-striped table-hover">
                 <thead>
@@ -628,7 +857,7 @@ try {
                     <td>
                       <?php if ($showArchived): ?>
                         <!-- Unarchive Button -->
-                        <button type="button" class="btn btn-success btn-sm" 
+                        <button type="button" class="btn btn-unarchive btn-sm" 
                                 onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
                           <i class="fas fa-undo"></i> Unarchive
                         </button>
@@ -639,7 +868,7 @@ try {
                           <i class="fa fa-edit"></i> Edit
                         </a>
                         <!-- Archive Button -->
-                        <button type="button" class="btn btn-warning btn-sm" 
+                        <button type="button" class="btn btn-archive btn-sm ml-1" 
                                 onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['name']); ?>')">
                           <i class="fas fa-archive"></i> Archive
                         </button>
@@ -670,77 +899,63 @@ try {
         responsive: true,
         lengthChange: false,
         autoWidth: false,
+        pageLength: 5,
+        pagingType: "simple_numbers",
+        dom: 'Bfrtip',
         buttons: [
-          {
-            extend: 'copy',
-            text: '<i class="fas fa-copy"></i> Copy',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'csv',
-            text: '<i class="fas fa-file-csv"></i> CSV',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'excel',
-            text: '<i class="fas fa-file-excel"></i> Excel',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'pdf',
-            text: '<i class="fas fa-file-pdf"></i> PDF',
-            className: 'btn btn-gradient btn-sm'
-          },
-          {
-            extend: 'print',
-            text: '<i class="fas fa-print"></i> Print',
-            className: 'btn btn-gradient btn-sm'
-          }
+          'copy', 'csv', 'excel', 'pdf', 'print'
         ],
         language: {
           search: "",
-          searchPlaceholder: "Search records..."
+          searchPlaceholder: "Search records...",
+          paginate: {
+            previous: "<i class='fas fa-chevron-left'></i>",
+            next: "<i class='fas fa-chevron-right'></i>"
+          }
         }
       });
 
-      // Custom button click handlers
-      $('#btnCopy').on('click', function() {
+      // Hide default buttons
+      $('.dt-buttons').hide();
+
+      // Custom export button handlers
+      $('#btnCopy').click(function(e) {
+        e.preventDefault();
         table.button('.buttons-copy').trigger();
+        
+        // Show toast notification
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true
+        });
+        
+        Toast.fire({
+          icon: 'success',
+          title: 'Data copied to clipboard!'
+        });
       });
 
-      $('#btnCSV').on('click', function() {
+      $('#btnCSV').click(function(e) {
+        e.preventDefault();
         table.button('.buttons-csv').trigger();
       });
 
-      $('#btnExcel').on('click', function() {
+      $('#btnExcel').click(function(e) {
+        e.preventDefault();
         table.button('.buttons-excel').trigger();
       });
 
-      $('#btnPDF').on('click', function() {
+      $('#btnPDF').click(function(e) {
+        e.preventDefault();
         table.button('.buttons-pdf').trigger();
       });
 
-      $('#btnPrint').on('click', function() {
+      $('#btnPrint').click(function(e) {
+        e.preventDefault();
         table.button('.buttons-print').trigger();
-      });
-
-      // Initialize column visibility menu
-      var columnVisibility = $('#columnVisibility');
-      table.columns().every(function(index) {
-        var column = this;
-        var title = $(column.header()).text();
-        
-        var menuItem = $('<div class="dropdown-item">' +
-          '<input type="checkbox" checked="checked" id="col_' + index + '">' +
-          '<label for="col_' + index + '">' + title + '</label>' +
-          '</div>');
-          
-        $('input', menuItem).on('click', function() {
-          var isVisible = column.visible();
-          column.visible(!isVisible);
-        });
-        
-        columnVisibility.append(menuItem);
       });
 
       // Initialize Date Picker
@@ -845,8 +1060,8 @@ try {
           html: `
             <p>Are you sure you want to archive <strong>${name}</strong>?</p>
             <div class="form-group mt-3">
-              <label for="archive_reason">Reason for archiving:</label>
-              <textarea class="form-control" id="archive_reason" rows="3" placeholder="Enter reason for archiving (optional)"></textarea>
+              <label for="archiveReason" class="form-label">Archive Reason (Optional):</label>
+              <textarea id="archiveReason" class="form-control" rows="3" placeholder="Enter reason for archiving..."></textarea>
             </div>
           `,
           icon: 'warning',
@@ -854,33 +1069,67 @@ try {
           confirmButtonColor: '#FFA800',
           cancelButtonColor: '#6c757d',
           confirmButtonText: '<i class="fas fa-archive"></i> Archive',
-          cancelButtonText: 'Cancel',
-          focusConfirm: false,
+          cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+          customClass: {
+            container: 'swal-archive-container'
+          },
           preConfirm: () => {
-            const reason = document.getElementById('archive_reason').value;
+            const reason = document.getElementById('archiveReason').value.trim();
             return { reason: reason };
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            // Create form and submit
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'actions/archive_general_rbs.php';
-            
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = 'archive_id';
-            idInput.value = id;
-            
-            const reasonInput = document.createElement('input');
-            reasonInput.type = 'hidden';
-            reasonInput.name = 'archive_reason';
-            reasonInput.value = result.value.reason;
-            
-            form.appendChild(idInput);
-            form.appendChild(reasonInput);
-            document.body.appendChild(form);
-            form.submit();
+            // Show loading
+            Swal.fire({
+              title: 'Archiving...',
+              text: 'Please wait while we archive the record.',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
+            // Send archive request
+            fetch('actions/archive_rbs.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: id,
+                reason: result.value.reason
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Archived Successfully!',
+                  text: data.message,
+                  confirmButtonColor: '#1BC5BD'
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Archive Failed',
+                  text: data.message,
+                  confirmButtonColor: '#F64E60'
+                });
+              }
+            })
+            .catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#F64E60'
+              });
+            });
           }
         });
       }
@@ -889,28 +1138,65 @@ try {
       function unarchiveRecord(id, name) {
         Swal.fire({
           title: 'Unarchive Random Blood Sugar Record',
-          text: `Are you sure you want to unarchive ${name}?`,
+          text: `Are you sure you want to unarchive the record for ${name}?`,
           icon: 'question',
           showCancelButton: true,
           confirmButtonColor: '#1BC5BD',
           cancelButtonColor: '#6c757d',
-          confirmButtonText: '<i class="fas fa-undo"></i> Unarchive',
-          cancelButtonText: 'Cancel'
+          confirmButtonText: '<i class="fas fa-undo"></i> Unarchive Record',
+          cancelButtonText: '<i class="fas fa-times"></i> Cancel'
         }).then((result) => {
           if (result.isConfirmed) {
-            // Create form and submit
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'actions/unarchive_general_rbs.php';
-            
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = 'unarchive_id';
-            idInput.value = id;
-            
-            form.appendChild(idInput);
-            document.body.appendChild(form);
-            form.submit();
+            // Show loading
+            Swal.fire({
+              title: 'Unarchiving...',
+              text: 'Please wait while we unarchive the record.',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
+            // Send unarchive request
+            fetch('actions/unarchive_rbs.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: id
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Unarchived Successfully!',
+                  text: data.message,
+                  confirmButtonColor: '#1BC5BD'
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Unarchive Failed',
+                  text: data.message,
+                  confirmButtonColor: '#F64E60'
+                });
+              }
+            })
+            .catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#F64E60'
+              });
+            });
           }
         });
       }
