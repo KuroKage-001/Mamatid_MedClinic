@@ -842,28 +842,45 @@ if (empty($calendarEvents)) {
          
          .time-period-filter {
              display: flex;
-             gap: 5px;
-             margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
          }
          
          .time-period-btn {
-             padding: 5px 10px;
-             border-radius: 20px;
-             background-color: #f8f9fa;
-             border: 1px solid #e2e8f0;
-             font-size: 0.85rem;
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: white;
+            color: #4a5568;
+            font-weight: 500;
              cursor: pointer;
-             transition: all 0.2s;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
          }
          
          .time-period-btn:hover {
-             background-color: #e9ecef;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
          }
          
          .time-period-btn.active {
              background-color: var(--primary-color);
-             color: white;
              border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(54, 153, 255, 0.2);
+        }
+        
+        .time-period-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .search-filtered {
+            display: none !important;
          }
          
          /* Count animation */
@@ -1415,22 +1432,6 @@ if (empty($calendarEvents)) {
 
             <section class="content">
                 <div class="container-fluid">
-                    <?php if ($message): ?>
-                        <div class="alert alert-info alert-dismissible fade show">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            <?php echo $message; ?>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <?php if ($error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            <?php echo $error; ?>
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        </div>
-                    <?php endif; ?>
-
                     <div class="row">
                         <div class="col-md-8">
                             <div class="card card-outline card-primary">
@@ -1440,8 +1441,8 @@ if (empty($calendarEvents)) {
                                         Available Doctor Schedules
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" id="refresh-calendar" class="btn btn-sm btn-info">
-                                            <i class="fas fa-sync-alt mr-1"></i> Refresh Calendar
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -1587,6 +1588,21 @@ if (empty($calendarEvents)) {
                 }
             });
 
+            // Show messages if they exist
+            <?php if ($message): ?>
+            Toast.fire({
+                icon: 'success',
+                title: '<?php echo addslashes($message); ?>'
+            });
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+            Toast.fire({
+                icon: 'error',
+                title: '<?php echo addslashes($error); ?>'
+            });
+            <?php endif; ?>
+
             // Show success message if redirected from successful booking
             const urlParams = new URLSearchParams(window.location.search);
             const message = urlParams.get('message');
@@ -1605,28 +1621,6 @@ if (empty($calendarEvents)) {
                     title: error
                 });
             }
-            
-            // Handle refresh calendar button
-            $('#refresh-calendar').click(function() {
-                const $btn = $(this);
-                
-                // Show loading spinner
-                $btn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Refreshing...').prop('disabled', true);
-                
-                // Refresh calendar events
-                calendar.refetchEvents();
-                
-                // Reset button after a delay
-                setTimeout(function() {
-                    $btn.html('<i class="fas fa-sync-alt mr-1"></i> Refresh Calendar').prop('disabled', false);
-                    
-                    // Show success message
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Calendar refreshed successfully'
-                    });
-                }, 1000);
-            });
 
             // Modern datetime display with animation
             function updateDateTime() {
@@ -1883,7 +1877,8 @@ if (empty($calendarEvents)) {
                         dataType: 'json',
                         success: function(response) {
                             if (response.error) {
-                                timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' + response.error + '</div>');
+                                showError(response.error);
+                                timeSlotContainer.empty();
                                 return;
                             }
                             
@@ -1901,7 +1896,8 @@ if (empty($calendarEvents)) {
                             );
                         },
                         error: function() {
-                            timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading schedule details. Please try again.</div>');
+                            showError('Error loading schedule details. Please try again.');
+                            timeSlotContainer.empty();
                         }
                     });
                     return;
@@ -1923,7 +1919,7 @@ if (empty($calendarEvents)) {
                         
                         // Check for error in response
                         if (response.error) {
-                            timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' + response.error + '</div>');
+                            showError(response.error);
                             $('#bookBtn').prop('disabled', true);
                             return;
                         }
@@ -2075,7 +2071,7 @@ if (empty($calendarEvents)) {
                         timeSlotContainer.append(slotsWrapper);
                         
                         if (!hasAvailableSlots) {
-                            timeSlotContainer.prepend('<div class="alert alert-warning"><i class="fas fa-exclamation-triangle mr-2"></i>No available time slots for this schedule.</div>');
+                            showWarning('No available time slots for this schedule.');
                             $('#bookBtn').prop('disabled', true);
                         } else {
                             // Initialize tooltips
@@ -2113,7 +2109,7 @@ if (empty($calendarEvents)) {
                     error: function(xhr, status, error) {
                         console.log('AJAX error:', status, error);
                         console.log('Response:', xhr.responseText);
-                        timeSlotContainer.html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading time slots. Please try again.</div>');
+                        showError('Error loading time slots. Please try again.');
                         $('#bookBtn').prop('disabled', true);
                     }
                 });
@@ -2199,16 +2195,25 @@ if (empty($calendarEvents)) {
                 const showSelected = $('.legend-item.selected').hasClass('active');
                 const showBooked = $('.legend-item.booked').hasClass('active');
                 
+                // Get active time period filter
+                const activePeriod = $('.time-period-btn.active').data('period');
+                
                 // First fade out all slots that will be filtered
                 $('.time-slot').each(function() {
                     const $slot = $(this);
                     let shouldShow = true;
                     
+                    // Check status filters
                     if ($slot.hasClass('booked') && !showBooked) {
                         shouldShow = false;
                     } else if ($slot.hasClass('selected') && !showSelected) {
                         shouldShow = false;
                     } else if (!$slot.hasClass('booked') && !$slot.hasClass('selected') && !showAvailable) {
+                        shouldShow = false;
+                    }
+                    
+                    // Check time period filter
+                    if (activePeriod !== 'all' && $slot.data('period') !== activePeriod) {
                         shouldShow = false;
                     }
                     
@@ -2220,42 +2225,70 @@ if (empty($calendarEvents)) {
                                 $slot.removeClass('filtered');
                                 $slot.css('opacity', '1');
                                 $slot.css('transform', 'translateY(0)');
-                            }, 300);
+                            }, 50);
                         }
                     } else {
                         // If the slot should be hidden
+                        if (!$slot.hasClass('filtered')) {
                         $slot.css('opacity', '0');
                         $slot.css('transform', 'translateY(-10px)');
                         setTimeout(function() {
                             $slot.addClass('filtered');
                         }, 300);
                     }
+                    }
                 });
                 
-                // Check if any slots are visible after a short delay
-                setTimeout(function() {
-                    const visibleSlots = $('.time-slot:not(.filtered)').length;
-                    if (visibleSlots === 0) {
-                        // If no slots are visible, show a message
-                        if ($('#no-visible-slots-message').length === 0) {
-                            const message = $('<p id="no-visible-slots-message" class="text-warning">No time slots are currently visible. Use the legend above to show slots.</p>');
-                            message.css('opacity', '0');
-                            $('#timeSlots').prepend(message);
-                            setTimeout(function() {
-                                message.css('opacity', '1');
-                            }, 100);
-                        }
-                    } else {
-                        // Remove the message if slots are visible
-                        $('#no-visible-slots-message').fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }
-                }, 350);
-                
-                // Update the legend item counts
+                // Update legend counts after filtering
                 updateLegendCounts();
+                
+                // Show/hide time period dividers based on visible slots
+                $('.time-period-divider').each(function() {
+                    const $divider = $(this);
+                    const period = $divider.text().trim().toLowerCase();
+                    const hasVisibleSlots = $divider.nextUntil('.time-period-divider').not('.search-filtered').not('.filtered').length > 0;
+                    $divider.toggle(hasVisibleSlots);
+                });
             }
+
+            // Initialize time period filter buttons
+            $('.time-period-btn').click(function() {
+                $('.time-period-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                // Apply filters
+                applyFilters();
+                
+                // Show toast notification
+                const period = $(this).data('period');
+                Toast.fire({
+                    icon: 'info',
+                    title: period === 'all' ? 'Showing all time periods' : `Showing ${period} time slots`
+                });
+            });
+
+            // Initialize time slot search
+            $('#timeSlotSearch').on('input', function() {
+                const searchText = $(this).val().toLowerCase();
+                
+                $('.time-slot').each(function() {
+                    const $slot = $(this);
+                    const timeText = $slot.find('.time-label').text().toLowerCase();
+                    
+                    if (timeText.includes(searchText)) {
+                        $slot.removeClass('search-filtered');
+                    } else {
+                        $slot.addClass('search-filtered');
+                    }
+                });
+                
+                // Show/hide time period dividers based on visible slots
+                $('.time-period-divider').each(function() {
+                    const $divider = $(this);
+                    const hasVisibleSlots = $divider.nextUntil('.time-period-divider').not('.search-filtered').not('.filtered').length > 0;
+                    $divider.toggle(hasVisibleSlots);
+                });
+            });
 
             // Form validation
             $('#appointmentForm').submit(function(e) {
@@ -2263,20 +2296,14 @@ if (empty($calendarEvents)) {
                 
                 if (!$('#scheduleId').val()) {
                     e.preventDefault();
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Please select a schedule from the calendar'
-                    });
+                    showError('Please select a schedule from the calendar');
                     console.log('No schedule ID');
                     return false;
                 }
                 
                 if (!$('#appointmentTime').val()) {
                     e.preventDefault();
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Please select a time slot'
-                    });
+                    showError('Please select a time slot');
                     console.log('No appointment time');
                     return false;
                 }
@@ -2290,197 +2317,46 @@ if (empty($calendarEvents)) {
                     showConfirmButton: false
                 });
                 
-                // Check real-time availability before submitting
-                e.preventDefault();
-                console.log('Checking availability...');
-                console.log('Schedule ID:', $('#scheduleId').val());
-                console.log('Appointment Time:', $('#appointmentTime').val());
-                
-                $.ajax({
-                    url: 'ajax/client_check_timeslot_availability.php',
-                    type: 'POST',
-                    data: {
-                        schedule_id: $('#scheduleId').val(),
-                        appointment_time: $('#appointmentTime').val(),
-                        schedule_type: $('input[name="schedule_type"]').val(),
-                        client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        console.log('Availability response:', response);
-                        
-                        // Close loading indicator
-                        Swal.close();
-                        
-                        if (response.error) {
-                            Toast.fire({
-                                icon: 'error',
-                                title: response.error
-                            });
-                            console.log('Error:', response.error);
-                            return;
-                        }
-                        
-                        if (!response.is_available) {
-                            Swal.fire({
-                                icon: 'error',
-                                html: '<i class="fas fa-exclamation-circle text-danger fa-2x mb-3"></i><br><strong>Time slot no longer available</strong><br>' + 
-                                      (response.client_has_appointment ? 
-                                       'You already have an appointment booked for this time slot.' : 
-                                       'This time slot has been booked by someone else. Please select another time.'),
-                                confirmButtonText: 'Select another time'
-                            });
-                            console.log('Slot not available');
-                            
-                            // Refresh the time slots
-                            var scheduleId = $('#scheduleId').val();
-                            var events = calendar.getEvents();
-                            var originalEvent = events.find(function(event) {
-                                return event.extendedProps.schedule_id == scheduleId;
-                            });
-                            
-                            // Refresh the time slots with a slight delay to allow the user to see the message
-                            setTimeout(function() {
-                                if (originalEvent) {
-                                    console.log('Original event found:', originalEvent);
-                                    generateTimeSlots(
-                                        originalEvent.start,
-                                        originalEvent.end,
-                                        30,
-                                        $('#scheduleId').val(),
-                                        response.max_patients
-                                    );
-                                } else {
-                                    console.log('Original event not found, using fallback');
-                                    // Fallback if event not found
-                                    generateTimeSlots(
-                                        null,
-                                        null,
-                                        30,
-                                        $('#scheduleId').val(),
-                                        response.max_patients
-                                    );
-                                }
-                            }, 500);
-                            return;
-                        }
-                        
-                        // If available, show confirmation and submit
-                        Swal.fire({
-                            html: '<i class="fas fa-question-circle text-primary fa-2x mb-3"></i><br><strong>Confirm Booking</strong><br>Would you like to book this appointment?',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, book it!',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#3699FF',
-                            reverseButtons: true
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Show loading indicator during form submission
-                                Swal.fire({
-                                    html: '<i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br><strong>Booking appointment</strong><br>Please wait...',
-                                    allowOutsideClick: false,
-                                    allowEscapeKey: false,
-                                    showConfirmButton: false
-                                });
-                                
-                                // Use the original form but ensure it has the correct values
-                                $('#scheduleId').val($('#scheduleId').val());
-                                $('#appointmentTime').val($('#appointmentTime').val());
-                                
-                                // Add a hidden input for the book_appointment flag if it doesn't exist
-                                if ($('input[name="book_appointment"]').length === 0) {
-                                    $('#appointmentForm').append(
-                                        $('<input>').attr({
-                                            type: 'hidden',
-                                            name: 'book_appointment',
-                                            value: '1'
-                                        })
-                                    );
-                                }
-                                
-                                // Submit the original form
-                                $('#appointmentForm').off('submit').submit();
-                            }
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('AJAX error:', status, error);
-                        console.log('Response:', xhr.responseText);
-                        
-                        // Close loading indicator
-                        Swal.close();
-                        
-                        // Show error message
-                        Swal.fire({
-                            html: '<i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i><br><strong>Connection Error</strong><br>Could not verify slot availability. Please try again.',
-                            confirmButtonText: 'Try Again'
-                        });
-                    }
-                });
-                return false;
+                return true;
             });
-
-            // Function to add a summary of available slots
+            
+            // Function to add slots summary
             function addSlotsSummary() {
-                const availableCount = $('.time-slot:not(.booked)').length;
+                const availableCount = $('.time-slot:not(.booked):not(.selected)').length;
                 const totalCount = $('.time-slot').length;
-                const doctorName = $('#selectedDoctor').val();
-                const selectedDate = $('#selectedDate').val();
+                const summaryContainer = $('<div class="slot-summary mb-3"></div>');
                 
-                // Create a summary element
-                const summaryEl = $('<div class="slot-summary mb-3"></div>');
-                
-                // Add availability information
-                if (availableCount > 0) {
-                    summaryEl.append(`
-                        <div class="alert alert-info mb-2">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                <div>
-                                    <strong>${doctorName}</strong> has <strong>${availableCount}</strong> available time slots on <strong>${selectedDate}</strong>.
-                                    <div class="mt-1">
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-info" role="progressbar" 
-                                                style="width: ${Math.round((availableCount / totalCount) * 100)}%" 
-                                                aria-valuenow="${availableCount}" aria-valuemin="0" aria-valuemax="${totalCount}">
-                                            </div>
-                                        </div>
-                                        <small class="text-muted">${availableCount} of ${totalCount} slots available</small>
-                                    </div>
-                                </div>
-                            </div>
+                if (availableCount === 0) {
+                    summaryContainer.append(`
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
+                            <span>No available time slots for this schedule</span>
                         </div>
                     `);
                 } else {
-                    summaryEl.append(`
-                        <div class="alert alert-warning mb-2">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                <div>
-                                    <strong>${doctorName}</strong> has no available time slots on <strong>${selectedDate}</strong>.
-                                    <div class="mt-1">Please select another date from the calendar.</div>
-                                </div>
-                            </div>
+                    summaryContainer.append(`
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-info-circle text-info mr-2"></i>
+                            <span>${availableCount} of ${totalCount} time slots available</span>
                         </div>
                     `);
                 }
                 
-                // Add instructions
-                summaryEl.append(`
-                    <div class="small text-muted">
-                        <i class="fas fa-mouse-pointer mr-1"></i> Click on an available time slot to select it.
-                        <br>
-                        <i class="fas fa-filter mr-1"></i> Use the legend above to filter time slots.
+                // Add progress bar
+                const percentage = Math.round((availableCount / totalCount) * 100);
+                summaryContainer.append(`
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: ${percentage}%;" 
+                             aria-valuenow="${availableCount}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="${totalCount}">
                     </div>
+                    </div>
+                    <small class="text-muted">${availableCount} of ${totalCount} slots available</small>
                 `);
                 
-                // Add to the container with a fade-in effect
-                summaryEl.css('opacity', '0');
-                $('#timeSlots').prepend(summaryEl);
-                setTimeout(() => {
-                    summaryEl.css('transition', 'opacity 0.5s ease');
-                    summaryEl.css('opacity', '1');
-                }, 100);
+                $('#timeSlots').prepend(summaryContainer);
             }
 
             // Add click handler for locked slots to show a message
@@ -2503,6 +2379,30 @@ if (empty($calendarEvents)) {
                         'This time slot is fully booked and cannot be selected.'
                 });
             });
+
+            // Function to show error message
+            function showError(message) {
+                Toast.fire({
+                    icon: 'error',
+                    title: message
+                });
+            }
+
+            // Function to show warning message
+            function showWarning(message) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: message
+                });
+            }
+
+            // Function to show info message
+            function showInfo(message) {
+                Toast.fire({
+                    icon: 'info',
+                    title: message
+                });
+            }
         });
     </script>
 </body>

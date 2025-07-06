@@ -298,7 +298,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 <div class="container-fluid">
                     <!-- Stats Overview -->
                     <div class="row">
-                        <div class="col-lg-3 col-md-6 col-12 mb-4">
+                        <div class="col-lg-4 col-md-6 col-12 mb-4">
                             <div class="small-box bg-success">
                                 <div class="inner">
                                     <h3><?php echo count($appointments); ?></h3>
@@ -310,41 +310,28 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                             </div>
                         </div>
                         <?php
-                        $pendingCount = 0;
                         $approvedCount = 0;
                         $completedCount = 0;
                         $today = date('Y-m-d');
                         
                         foreach ($appointments as $appointment) {
-                            if ($appointment['status'] == 'pending') $pendingCount++;
                             if ($appointment['status'] == 'approved') $approvedCount++;
                             if ($appointment['status'] == 'completed') $completedCount++;
                         }
                         ?>
-                        <div class="col-lg-3 col-md-6 col-12 mb-4">
-                            <div class="small-box bg-warning">
-                                <div class="inner">
-                                    <h3><?php echo $pendingCount; ?></h3>
-                                    <p>Pending Appointments</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-12 mb-4">
+                        <div class="col-lg-4 col-md-6 col-12 mb-4">
                             <div class="small-box bg-primary">
                                 <div class="inner">
                                     <h3><?php echo $approvedCount; ?></h3>
-                                    <p>Approved Appointments</p>
+                                    <p>Upcoming Appointments</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-12 mb-4">
-                            <div class="small-box bg-danger">
+                        <div class="col-lg-4 col-md-6 col-12 mb-4">
+                            <div class="small-box bg-info">
                                 <div class="inner">
                                     <h3><?php echo $completedCount; ?></h3>
                                     <p>Completed Appointments</p>
@@ -502,7 +489,6 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                                                 <td>
                                                     <span class="badge badge-<?php 
                                                         echo match($appointment['status']) {
-                                                            'pending' => 'warning',
                                                             'approved' => 'success',
                                                             'cancelled' => 'danger',
                                                             'completed' => 'info',
@@ -514,18 +500,14 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                                                 </td>
                                                 <td><?php echo $appointment['notes'] ?? 'No notes'; ?></td>
                                                 <td>
-                                                    <?php if ($appointment['status'] == 'pending'): ?>
+                                                    <?php if ($appointment['appointment_date'] > date('Y-m-d')): ?>
                                                     <div class="btn-group">
-                                                        <a href="update_appointment.php?id=<?php echo $appointment['id']; ?>" 
-                                                           class="btn btn-primary btn-sm">
-                                                            <i class="fas fa-edit"></i> Edit
-                                                        </a>
                                                         <button type="button" 
                                                                 class="btn btn-danger btn-sm delete-appointment" 
                                                                 data-id="<?php echo $appointment['id']; ?>"
                                                                 data-date="<?php echo $appointment['formatted_date']; ?>"
                                                                 data-time="<?php echo $appointment['formatted_time']; ?>">
-                                                            <i class="fas fa-trash"></i> Delete
+                                                            <i class="fas fa-times"></i> Cancel
                                                         </button>
                                                     </div>
                                                     <?php endif; ?>

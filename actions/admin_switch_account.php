@@ -24,7 +24,7 @@ try {
     
     // Check if user exists and verify credentials
     $query = "SELECT id, display_name, user_name, email, phone, role, status, profile_picture 
-              FROM users 
+              FROM admin_user_accounts 
               WHERE user_name = :username AND password = :password";
     
     $stmt = $con->prepare($query);
@@ -68,24 +68,6 @@ try {
     $_SESSION['profile_picture_timestamp'] = time();
     $_SESSION['logged_in'] = true;
     $_SESSION['login_time'] = time();
-    
-    // Log the account switch (optional - for audit trail)
-    try {
-        $log_query = "INSERT INTO user_activity_log (user_id, action, details, ip_address, created_at) 
-                      VALUES (:user_id, 'account_switch', :details, :ip_address, NOW())";
-        
-        $log_stmt = $con->prepare($log_query);
-        $log_details = "Switched from user ID: $previous_user_id ($previous_username) to user ID: {$user['id']} ({$user['user_name']})";
-        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-        
-        $log_stmt->bindParam(':user_id', $user['id']);
-        $log_stmt->bindParam(':details', $log_details);
-        $log_stmt->bindParam(':ip_address', $ip_address);
-        $log_stmt->execute();
-    } catch (Exception $e) {
-        // Log error but don't fail the switch operation
-        error_log("Failed to log account switch: " . $e->getMessage());
-    }
     
     // All users redirect to admin dashboard after account switch
     $redirect_url = 'admin_dashboard.php';

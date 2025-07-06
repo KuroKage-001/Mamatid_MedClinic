@@ -669,6 +669,214 @@ $roleDisplay = ucfirst($staffRole);
             border-left: 4px solid #17a2b8;
             background-color: #ffffff !important;
         }
+
+        /* Custom layout for DataTable wrapper */
+        #schedules_table_wrapper .row:first-child {
+            margin-bottom: 15px;
+        }
+
+        #schedules_table_wrapper .dataTables_filter {
+            float: left !important;
+            text-align: left !important;
+        }
+
+        #schedules_table_wrapper .dataTables_filter input {
+            width: 300px;
+            border-radius: 8px;
+            border: 2px solid #e4e6ef;
+            padding: 0.625rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #schedules_table_wrapper .dataTables_filter input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+        }
+
+        /* Responsive Design for Modern Export Options */
+        @media (max-width: 768px) {
+            .export-container {
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .export-action-btn {
+                padding: 10px 14px !important;
+                font-size: 0.8125rem !important;
+                gap: 8px !important;
+                border-radius: 10px !important;
+            }
+
+            .export-action-btn i {
+                font-size: 0.9rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .export-container {
+                gap: 6px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .export-action-btn {
+                padding: 8px 12px !important;
+                font-size: 0.75rem !important;
+                gap: 6px !important;
+                border-radius: 8px !important;
+                justify-content: center !important;
+            }
+
+            .export-action-btn i {
+                font-size: 0.85rem !important;
+            }
+
+            .export-action-btn:hover {
+                transform: translateY(-2px) scale(1.01) !important;
+            }
+
+            #schedules_table_wrapper .dataTables_filter input {
+                width: 100%;
+            }
+        }
+
+        /* Modern Export Actions CSS */
+        .dt-button-collection {
+            display: none !important;
+        }
+
+        .export-container {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Elegant Export Options - Non-Button Design */
+        .export-action-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 12px 18px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            border-radius: 12px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            border: 2px solid transparent !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+            text-transform: none !important;
+            letter-spacing: 0.3px !important;
+        }
+
+        .export-action-btn::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+            transition: left 0.6s ease !important;
+        }
+
+        .export-action-btn:hover::before {
+            left: 100% !important;
+        }
+
+        .export-action-btn:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+            border-color: currentColor !important;
+        }
+
+        .export-action-btn:active {
+            transform: translateY(-1px) scale(1.01) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        .export-action-btn i {
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            opacity: 0.9 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .export-action-btn:hover i {
+            transform: scale(1.15) rotate(5deg) !important;
+            opacity: 1 !important;
+        }
+
+        /* Sophisticated Color Schemes for Each Export Type */
+        .export-copy-btn {
+            color: #6366F1 !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
+        }
+
+        .export-copy-btn:hover {
+            color: #4F46E5 !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
+        }
+
+        .export-csv-btn {
+            color: #10B981 !important;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
+        }
+
+        .export-csv-btn:hover {
+            color: #059669 !important;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .export-excel-btn {
+            color: #22C55E !important;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
+        }
+
+        .export-excel-btn:hover {
+            color: #16A34A !important;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
+        }
+
+        .export-pdf-btn {
+            color: #EF4444 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
+        }
+
+        .export-pdf-btn:hover {
+            color: #DC2626 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
+        }
+
+        .export-print-btn {
+            color: #8B5CF6 !important;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+        }
+
+        .export-print-btn:hover {
+            color: #7C3AED !important;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
+        }
+
+        /* Hide default DataTable buttons */
+        .dt-buttons {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -836,54 +1044,78 @@ $roleDisplay = ucfirst($staffRole);
                                     <h3 class="card-title">Your Schedules</h3>
                                 </div>
                                 <div class="card-body">
-                                    <table id="schedules_table" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Slot Duration</th>
-                                                <th>Max Patients</th>
-                                                <th>Notes</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($schedules as $schedule) { ?>
+                                    <div class="export-container mt-4" id="exportContainer">
+                                        <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                                            <i class="fas fa-copy"></i>
+                                            <span>Copy</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                                            <i class="fas fa-file-csv"></i>
+                                            <span>CSV</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                                            <i class="fas fa-file-excel"></i>
+                                            <span>Excel</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span>PDF</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                                            <i class="fas fa-print"></i>
+                                            <span>Print</span>
+                                        </a>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="schedules_table" class="table table-bordered table-striped">
+                                            <thead>
                                                 <tr>
-                                                    <td><?= date('M d, Y', strtotime($schedule['schedule_date'])) ?></td>
-                                                    <td><?= date('h:i A', strtotime($schedule['start_time'])) ?> - <?= date('h:i A', strtotime($schedule['end_time'])) ?></td>
-                                                    <td><?= $schedule['time_slot_minutes'] ?> minutes</td>
-                                                    <td><?= $schedule['max_patients'] ?></td>
-                                                    <td><?= $schedule['notes'] ?></td>
-                                                    <td>
-                                                        <?php 
-                                                        // Check if schedule has appointments
-                                                        $checkQuery = "SELECT COUNT(*) as appt_count FROM admin_clients_appointments WHERE schedule_id = ?";
-                                                        $checkStmt = $con->prepare($checkQuery);
-                                                        $checkStmt->execute([$schedule['id']]);
-                                                        $hasAppointments = ($checkStmt->fetch(PDO::FETCH_ASSOC)['appt_count'] > 0);
-                                                        
-                                                        if (!$hasAppointments) {
-                                                            ?>
-                                                            <a href="actions/delete_schedule.php?id=<?= $schedule['id'] ?>" 
-                                                               class="btn btn-sm btn-danger" 
-                                                               onclick="return confirm('Are you sure you want to delete this schedule?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                            <?php
-                                                        } else {
-                                                            ?>
-                                                            <button class="btn btn-sm btn-secondary" disabled title="Cannot delete: Has booked appointments">
-                                                                <i class="fas fa-lock"></i>
-                                                            </button>
-                                                            <?php
-                                                        }
-                                                        ?>
-                                                    </td>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Slot Duration</th>
+                                                    <th>Max Patients</th>
+                                                    <th>Notes</th>
+                                                    <th>Action</th>
                                                 </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($schedules as $schedule) { ?>
+                                                    <tr>
+                                                        <td><?= date('M d, Y', strtotime($schedule['schedule_date'])) ?></td>
+                                                        <td><?= date('h:i A', strtotime($schedule['start_time'])) ?> - <?= date('h:i A', strtotime($schedule['end_time'])) ?></td>
+                                                        <td><?= $schedule['time_slot_minutes'] ?> minutes</td>
+                                                        <td><?= $schedule['max_patients'] ?></td>
+                                                        <td><?= $schedule['notes'] ?></td>
+                                                        <td>
+                                                            <?php 
+                                                            // Check if schedule has appointments
+                                                            $checkQuery = "SELECT COUNT(*) as appt_count FROM admin_clients_appointments WHERE schedule_id = ?";
+                                                            $checkStmt = $con->prepare($checkQuery);
+                                                            $checkStmt->execute([$schedule['id']]);
+                                                            $hasAppointments = ($checkStmt->fetch(PDO::FETCH_ASSOC)['appt_count'] > 0);
+                                                            
+                                                            if (!$hasAppointments) {
+                                                                ?>
+                                                                <a href="actions/delete_schedule.php?id=<?= $schedule['id'] ?>" 
+                                                                   class="btn btn-sm btn-danger" 
+                                                                   onclick="return confirm('Are you sure you want to delete this schedule?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                                <?php
+                                                            } else {
+                                                                ?>
+                                                                <button class="btn btn-sm btn-secondary" disabled title="Cannot delete: Has booked appointments">
+                                                                    <i class="fas fa-lock"></i>
+                                                                </button>
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -930,12 +1162,68 @@ $roleDisplay = ucfirst($staffRole);
                 });
             <?php endif; ?>
             
-            // Initialize DataTable
-            $("#schedules_table").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "order": [[0, "asc"]]
+            // Initialize DataTable with export buttons
+            var table = $("#schedules_table").DataTable({
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                pageLength: 5,
+                pagingType: "simple_numbers",
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search records...",
+                    paginate: {
+                        previous: "<i class='fas fa-chevron-left'></i>",
+                        next: "<i class='fas fa-chevron-right'></i>"
+                    }
+                }
+            });
+
+            // Hide default buttons
+            $('.dt-buttons').hide();
+            
+            // Custom export button handlers
+            $('#btnCopy').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-copy').trigger();
+                
+                // Show toast notification
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Data copied to clipboard!'
+                });
+            });
+
+            $('#btnCSV').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-csv').trigger();
+            });
+
+            $('#btnExcel').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-excel').trigger();
+            });
+
+            $('#btnPDF').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-pdf').trigger();
+            });
+
+            $('#btnPrint').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-print').trigger();
             });
             
             // Handle send notification button click

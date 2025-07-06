@@ -135,66 +135,72 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             padding: 1.5rem;
         }
 
-        /* Archive Styling */
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #E8A317 100%);
+        /* Archive Button Styling */
+        .btn-archive {
+            background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+            color: white !important;
             border: none;
-            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 168, 0, 0.4);
-            color: white;
+        .btn-archive:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 168, 0, 0.3);
+            color: white !important;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color) 0%, #159C96 100%);
+        .btn-unarchive {
+            background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+            color: white !important;
             border: none;
-            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(27, 197, 189, 0.4);
-            color: white;
+        .btn-unarchive:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(27, 197, 189, 0.3);
+            color: white !important;
         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-            border: none;
-            color: white;
-        }
+            /* Archive Filter Buttons */
+    .archive-filter-btn {
+      background: linear-gradient(135deg, #E1F0FF 0%, #F8FBFF 100%);
+      color: var(--primary-color) !important;
+      border: 2px solid var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      margin-right: 0.5rem;
+    }
 
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
-            color: white;
-        }
+    .archive-filter-btn:hover {
+      background: var(--primary-color);
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+      text-decoration: none;
+    }
 
+    .archive-filter-btn.active {
+      background: var(--primary-color);
+      color: white !important;
+    }
+
+        /* Archived Row Styling */
         .archived-row {
-            background-color: rgba(255, 168, 0, 0.1) !important;
-        }
-
-        .archive-filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .archive-filter-tabs .btn {
-            border-radius: 20px;
-            padding: 8px 20px;
-            font-weight: 500;
-        }
-
-        .archive-filter-tabs .badge {
-            background-color: white;
-            color: inherit;
-            margin-left: 5px;
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
+            background-color: rgba(255, 168, 0, 0.05) !important;
+            border-left: 4px solid #FFA800;
         }
 
         .archived-tag {
@@ -735,6 +741,74 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 padding: 1rem;
             }
         }
+
+        /* Archive Button Styling */
+        .btn-archive {
+            background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+            color: white !important;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-archive:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 168, 0, 0.3);
+            color: white !important;
+        }
+
+        .btn-unarchive {
+            background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+            color: white !important;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-unarchive:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(27, 197, 189, 0.3);
+            color: white !important;
+        }
+
+        /* Archive Filter Buttons */
+        .archive-filter-btn {
+            background: linear-gradient(135deg, #E1F0FF 0%, #F8FBFF 100%);
+            color: var(--primary-color) !important;
+            border: 2px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .archive-filter-btn:hover {
+            background: var(--primary-color);
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+            text-decoration: none;
+        }
+
+        .archive-filter-btn.active {
+            background: var(--primary-color);
+            color: white !important;
+        }
+
+        /* Archived Row Styling */
+        .archived-row {
+            background-color: rgba(255, 168, 0, 0.05) !important;
+            border-left: 4px solid #FFA800;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -777,24 +851,24 @@ $archivedCount = $countResult['archived_count'] ?? 0;
 
                 <!-- Appointments Table Card -->
                 <div class="card card-outline card-primary">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h3 class="card-title">
                             <?php echo $showArchived ? 'Archived Appointments' : 'Active Appointments'; ?>
                         </h3>
-                        <div class="d-flex gap-2">
-                            <div class="archive-filter-tabs">
-                                <a href="?archived=0" class="btn <?php echo !$showArchived ? 'btn-primary' : 'btn-secondary'; ?>">
-                                    <i class="fas fa-calendar-check"></i> Active Records
-                                    <span class="badge"><?php echo $activeCount; ?></span>
+                        <div class="card-tools">
+                            <div class="d-flex align-items-center">
+                                <a href="?archived=0" 
+                                   class="archive-filter-btn <?php echo !$showArchived ? 'active' : ''; ?>">
+                                    <i class="fas fa-list"></i> Active Records
                                 </a>
-                                <a href="?archived=1" class="btn <?php echo $showArchived ? 'btn-warning' : 'btn-secondary'; ?>">
+                                <a href="?archived=1" 
+                                   class="archive-filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
                                     <i class="fas fa-archive"></i> Archived Records
-                                    <span class="badge"><?php echo $archivedCount; ?></span>
                                 </a>
+                                <button type="button" class="btn btn-tool ml-2" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -851,7 +925,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                         <td>
                                             <?php if ($showArchived): ?>
                                                 <!-- Unarchive Button -->
-                                                <button type="button" class="btn btn-success btn-sm" 
+                                                <button type="button" class="btn btn-unarchive btn-sm" 
                                                         onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
                                                     <i class="fas fa-undo"></i> Unarchive
                                                 </button>
@@ -864,7 +938,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                 </button>
                                                 
                                                 <!-- Archive Button -->
-                                                <button type="button" class="btn btn-warning btn-sm" 
+                                                <button type="button" class="btn btn-archive btn-sm ml-1" 
                                                         onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
                                                     <i class="fas fa-archive"></i> Archive
                                                 </button>
@@ -1064,23 +1138,37 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 html: `
                     <p>Are you sure you want to archive the appointment for <strong>${name}</strong>?</p>
                     <div class="form-group mt-3">
-                        <label for="archive_reason">Reason for archiving:</label>
-                        <textarea class="form-control" id="archive_reason" rows="3" placeholder="Enter reason for archiving (optional)"></textarea>
+                        <label for="archiveReason" class="form-label">Archive Reason (Optional):</label>
+                        <textarea id="archiveReason" class="form-control" rows="3" placeholder="Enter reason for archiving..."></textarea>
                     </div>
                 `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#FFA800',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fas fa-archive"></i> Archive',
-                cancelButtonText: 'Cancel',
-                focusConfirm: false,
+                confirmButtonText: '<i class="fas fa-archive"></i> Archive Record',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+                customClass: {
+                    container: 'swal-archive-container'
+                },
                 preConfirm: () => {
-                    const reason = document.getElementById('archive_reason').value;
+                    const reason = document.getElementById('archiveReason').value.trim();
                     return { reason: reason };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Archiving...',
+                        text: 'Please wait while we archive the record.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
                     // Create form and submit
                     const form = document.createElement('form');
                     form.method = 'POST';
@@ -1113,10 +1201,22 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 showCancelButton: true,
                 confirmButtonColor: '#1BC5BD',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fas fa-undo"></i> Unarchive',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: '<i class="fas fa-undo"></i> Unarchive Record',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Unarchiving...',
+                        text: 'Please wait while we unarchive the record.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
                     // Create form and submit
                     const form = document.createElement('form');
                     form.method = 'POST';
