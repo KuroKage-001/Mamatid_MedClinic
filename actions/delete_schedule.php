@@ -42,7 +42,7 @@ if ($scheduleId > 0) {
             $isPastSchedule = strtotime($scheduleData['schedule_date']) < strtotime(date('Y-m-d'));
             
             // Check if there are any appointments for this schedule
-            $apptQuery = "SELECT COUNT(*) as count FROM appointments WHERE schedule_id = ?";
+            $apptQuery = "SELECT COUNT(*) as count FROM admin_clients_appointments WHERE schedule_id = ?";
             $apptStmt = $con->prepare($apptQuery);
             $apptStmt->execute([$scheduleId]);
             $appointmentCount = $apptStmt->fetch(PDO::FETCH_ASSOC)['count'];
