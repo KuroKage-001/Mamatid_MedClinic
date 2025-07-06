@@ -29,7 +29,7 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link menu-trigger" data-widget="pushmenu" href="#" role="button">
-                <i class="fas fa-bars"></i>
+                <i class="fas fa-clinic-medical"></i>
             </a>
         </li>
     </ul>
@@ -53,7 +53,7 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
                     <span class="user-name"><?php echo $_SESSION['client_name']; ?></span>
                     <span class="user-role">Client</span>
                 </div>
-                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                <i class="fas fa-heartbeat dropdown-arrow"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
@@ -67,18 +67,18 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
                     <a href="<?php echo $base_path; ?>/account_client_settings.php" class="dropdown-item">
-                        <i class="fas fa-user-cog mr-2"></i>
+                        <i class="fas fa-hospital-user mr-2"></i>
                         <span>Account Settings</span>
                     </a>
                     <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="dropdown-item">
-                        <i class="fas fa-calendar-plus mr-2"></i>
+                        <i class="fas fa-stethoscope mr-2"></i>
                         <span>Book Appointment</span>
                     </a>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-footer">
                     <a href="<?php echo $base_path; ?>/client_logout.php" class="btn btn-danger btn-block">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        <i class="fas fa-hospital-symbol mr-2"></i>
                         <span>Logout</span>
                     </a>
                 </div>

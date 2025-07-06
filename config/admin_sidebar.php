@@ -238,7 +238,7 @@ $role_display_name = getRoleDisplayName($user_role);
                 <!-- Users Menu -->
                 <li class="nav-item <?php echo (in_array($current_page, ['admin_users_management.php', 'admin_employee_time_tracker.php']) ? 'menu-open' : ''); ?>" id="mnu_user_management">
                     <a href="#" class="nav-link <?php echo (in_array($current_page, ['admin_users_management.php', 'admin_employee_time_tracker.php']) ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-hospital-users"></i>
+                        <i class="nav-icon fas fa-user-md"></i>
                         <p>
                             User Management
                             <i class="fas fa-angle-left right"></i>

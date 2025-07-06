@@ -64,7 +64,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- Dashboard Menu Item -->
                 <li class="nav-item" id="mnu_dashboard">
                     <a href="<?php echo $base_path; ?>/client_dashboard.php" class="nav-link <?php echo ($current_page == 'client_dashboard.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <i class="nav-icon fas fa-clinic-medical"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
@@ -72,7 +72,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- Book Appointment Menu Item -->
                 <li class="nav-item" id="mnu_book_appointment">
                     <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-calendar-plus"></i>
+                        <i class="nav-icon fas fa-stethoscope"></i>
                         <p>Book Appointment</p>
                     </a>
                 </li>

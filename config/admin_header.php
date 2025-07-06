@@ -41,7 +41,7 @@ require_once $base_path . '/config/admin_session_fixer.php';
                 </div>
                 <!-- Switch Account Icon -->
                 <button class="switch-account-btn" onclick="openSwitchAccountModal(event)" title="Switch Account">
-                    <i class="fas fa-user-friends"></i>
+                    <i class="fas fa-user-nurse"></i>
                 </button>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </a>
@@ -57,28 +57,28 @@ require_once $base_path . '/config/admin_session_fixer.php';
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
                     <a href="#" class="dropdown-item" onclick="openSwitchAccountModal(event)">
-                        <i class="fas fa-user-friends mr-2"></i>
+                        <i class="fas fa-user-nurse mr-2"></i>
                         <span>Switch Account</span>
                     </a>
                     <?php if (isAdmin() || isDoctor() || isHealthWorker()): ?>
                     <a href="<?php echo $base_path; ?>/account_admin_settings.php" class="dropdown-item">
-                        <i class="fas fa-user-cog mr-2"></i>
+                        <i class="fas fa-user-md mr-2"></i>
                         <span>Account Settings</span>
                     </a>
                     <?php endif; ?>
                     <?php if (isAdmin()): ?>
                     <a href="<?php echo $base_path; ?>/admin_users_management.php" class="dropdown-item">
-                        <i class="fas fa-users mr-2"></i>
+                        <i class="fas fa-user-shield mr-2"></i>
                         <span>Manage Users</span>
                     </a>
                     <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="dropdown-item">
-                        <i class="fas fa-clock mr-2"></i>
+                        <i class="fas fa-user-clock mr-2"></i>
                         <span>My Attendance</span>
                     </a>
                     <?php endif; ?>
                     <?php if (isDoctor() || isHealthWorker()): ?>
                     <a href="<?php echo $base_path; ?>/admin_employee_time_tracker.php" class="dropdown-item">
-                        <i class="fas fa-clock mr-2"></i>
+                        <i class="fas fa-user-clock mr-2"></i>
                         <span>My Attendance</span>
                     </a>
                     <?php endif; ?>
@@ -102,7 +102,7 @@ require_once $base_path . '/config/admin_session_fixer.php';
             <div class="modal-header switch-account-header">
                 <div class="header-content">
                     <div class="switch-icon">
-                        <i class="fas fa-user-friends"></i>
+                        <i class="fas fa-user-nurse"></i>
                     </div>
                     <div class="header-text">
                         <h5 class="modal-title" id="switchAccountModalLabel">Switch Account</h5>
@@ -129,7 +129,7 @@ require_once $base_path . '/config/admin_session_fixer.php';
                     
                     <div class="form-group">
                         <label for="switch_username" class="form-label">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user-md"></i>
                             Username
                         </label>
                         <input type="text" class="form-control switch-input" id="switch_username" name="username" placeholder="Enter username" required autocomplete="username">
@@ -137,7 +137,7 @@ require_once $base_path . '/config/admin_session_fixer.php';
                     
                     <div class="form-group">
                         <label for="switch_password" class="form-label">
-                            <i class="fas fa-lock"></i>
+                            <i class="fas fa-key"></i>
                             Password
                         </label>
                         <div class="password-input-group">
