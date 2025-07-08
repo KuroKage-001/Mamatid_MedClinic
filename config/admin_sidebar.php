@@ -14,9 +14,9 @@ $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
 $base_path = $in_subdirectory ? '../..' : '.';
 
 // Include role functions
-require_once $base_path . '/common_service/role_functions.php';
-// Include session fix to prevent undefined variable errors
-require_once $base_path . '/config/admin_session_fixer.php';
+require_once $base_path . '/system/utilities/admin_client_role_functions_services.php';
+// Include session configuration to prevent undefined variable errors
+require_once $base_path . '/config/admin_session_config.php';
 
 // Get the current page filename for active state checking
 $current_page = basename($_SERVER['PHP_SELF']);

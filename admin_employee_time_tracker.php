@@ -1,7 +1,7 @@
 <?php
 include './config/db_connection.php';
-include './common_service/common_functions.php';
-include './common_service/role_functions.php';
+include './system/utilities/admin_client_common_functions_services.php';
+include './system/utilities/admin_client_role_functions_services.php';
 
 // Set the timezone to your local timezone
 date_default_timezone_set('Asia/Manila');
@@ -249,7 +249,7 @@ try {
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
-    <?php include './config/data_tables_css.php'; ?>
+    <?php include './config/data_tables_css_js.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <title><?php echo $isAdmin ? 'Employee Time Tracking' : 'My Attendance'; ?> - Mamatid Health Center System</title>
     <style>
@@ -1374,8 +1374,8 @@ try {
     </div>
 </div>
 
-<?php include './config/site_js_links.php'; ?>
-<?php include './config/data_tables_js.php'; ?>
+<?php include './config/site_css_js_links.php'; ?>
+
 
 <script>
     $(document).ready(function() {

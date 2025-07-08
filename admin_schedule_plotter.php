@@ -8,7 +8,7 @@
  */
 
 include './config/db_connection.php';
-require_once './common_service/role_functions.php';
+require_once './system/utilities/admin_client_role_functions_services.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -195,7 +195,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
-    <?php include './config/data_tables_css.php'; ?>
+    <?php include './config/data_tables_css_js.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
     <title>Appointment Plotter - Mamatid Health Center System</title>
@@ -1252,8 +1252,8 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         <?php include './config/admin_footer.php'; ?>
     </div>
 
-    <?php include './config/site_js_links.php'; ?>
-    <?php include './config/data_tables_js.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
+    
     <script src="plugins/fullcalendar/main.min.js"></script>
     
     <script>

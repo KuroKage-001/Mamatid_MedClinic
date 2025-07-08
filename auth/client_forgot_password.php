@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../config/db_connection.php';
+include '../system/database/db_connection.php';
 include '../system/phpmailer/system/mailer.php';
 
 // Initialize variables
@@ -77,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Generate reset link
         $resetLink = "http://" . $_SERVER['HTTP_HOST'] . 
-                    dirname(dirname($_SERVER['PHP_SELF'])) . 
-                    "/common_service/client_reset_password.php?token=" . $token;
+                    dirname($_SERVER['PHP_SELF']) . 
+                    "/client_reset_password.php?token=" . $token;
         
         // Prepare email content
         $emailBody = '

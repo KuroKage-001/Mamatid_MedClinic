@@ -1,7 +1,7 @@
 <?php
 include '../config/db_connection.php';
-include '../common_service/common_functions.php';
-require_once '../common_service/role_functions.php';
+include '../system/utilities/admin_client_common_functions_services.php';
+require_once '../system/utilities/admin_client_role_functions_services.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

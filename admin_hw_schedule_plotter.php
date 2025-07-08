@@ -1,6 +1,6 @@
 <?php
 include './config/db_connection.php';
-require_once './common_service/role_functions.php';
+require_once './system/utilities/admin_client_role_functions_services.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -226,7 +226,7 @@ $roleDisplay = ucfirst($staffRole);
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
-    <?php include './config/data_tables_css.php'; ?>
+    <?php include './config/data_tables_css_js.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
     <link href="plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet">
@@ -1127,8 +1127,8 @@ $roleDisplay = ucfirst($staffRole);
         <?php include './config/admin_footer.php'; ?>
     </div>
     
-    <?php include './config/site_js_links.php'; ?>
-    <?php include './config/data_tables_js.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
+    
     <script src="plugins/fullcalendar/main.min.js"></script>
     <script src="plugins/sweetalert2/sweetalert2.min.js"></script>
     

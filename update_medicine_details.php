@@ -1,7 +1,7 @@
 <?php
 // Include the database connection and common functions
 include './config/db_connection.php';
-include './common_service/common_functions.php';
+include './system/utilities/admin_client_common_functions_services.php';
 
 // Initialize message variable
 $message = '';
@@ -68,7 +68,7 @@ $inventoryData = $inventoryStmt->fetch(PDO::FETCH_ASSOC);
 <html lang="en">
 <head>
   <?php include './config/site_css_links.php'; ?>
-  <?php include './config/data_tables_css.php'; ?>
+  <?php include './config/data_tables_css_js.php'; ?>
   <!-- Logo for the tab bar -->
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Update Medicine Details - Mamatid Health Center System</title>
@@ -181,8 +181,8 @@ $inventoryData = $inventoryStmt->fetch(PDO::FETCH_ASSOC);
   </div>
   <!-- ./wrapper -->
 
-  <?php include './config/site_js_links.php'; ?>
-  <?php include './config/data_tables_js.php'; ?>
+  <?php include './config/site_css_js_links.php'; ?>
+  
 
   <script>
     // Highlight the proper menu in the sidebar

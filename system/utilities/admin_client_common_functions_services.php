@@ -204,4 +204,4 @@ function getCurrentUserType() {
     }
     return 'guest';
 }
-?>
+?> 

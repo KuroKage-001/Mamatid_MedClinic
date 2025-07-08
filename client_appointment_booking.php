@@ -3,7 +3,7 @@
 require_once './system/utilities/check_client_auth.php';
 
 include './config/db_connection.php';
-require_once './common_service/role_functions.php';
+require_once './system/utilities/admin_client_role_functions_services.php';
 
 // Restrict this page to clients only
 requireClient();
@@ -1578,7 +1578,7 @@ if (empty($calendarEvents)) {
         <?php include './config/client_ui/client_footer.php'; ?>
     </div>
     <!-- ./wrapper -->
-    <?php include './config/site_js_links.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
     
     <!-- FullCalendar JS -->
     <script src="plugins/fullcalendar/main.min.js"></script>

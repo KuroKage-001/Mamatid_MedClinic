@@ -138,7 +138,7 @@ try {
 </div>
 <!-- ./wrapper -->
 
-<?php include './config/site_js_links.php'; ?>
+<?php include './config/site_css_js_links.php'; ?>
 
 </body>
 </html>

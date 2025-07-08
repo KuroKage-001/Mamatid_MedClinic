@@ -26,7 +26,7 @@ Configuration files and UI components:
 - **db_db_connection.php**: Bridge file that includes the actual connection file from system/database.
 - **admin_header.php**, **admin_footer.php**: Admin UI components
 - **client_ui/**: Client-specific UI components
-- **site_css_links.php**, **site_js_links.php**: Centralized CSS/JS management
+- **site_css_js_links.php**: Centralized CSS/JS management including DataTables
 
 ### /system
 Core system files and utilities:

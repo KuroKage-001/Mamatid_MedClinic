@@ -3,8 +3,8 @@
 require_once './system/utilities/check_client_auth.php';
 
 require_once 'config/db_connection.php';
-require_once 'common_service/common_functions.php';
-require_once 'common_service/role_functions.php';
+require_once 'system/utilities/admin_client_common_functions_services.php';
+require_once 'system/utilities/admin_client_role_functions_services.php';
 
 // Check if this is a client-only page
 requireClient();
@@ -636,7 +636,7 @@ if (!file_exists($profile_pic_url)) {
 <?php include 'config/client_ui/client_footer.php'; ?>
 </div>
 
-<?php include 'config/site_js_links.php'; ?>
+<?php include 'config/site_css_js_links.php'; ?>
 
 <script>
 function previewImage(input) {

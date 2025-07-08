@@ -5,8 +5,8 @@ if (!isset($_SESSION['user_id'])) {
     header("location:index.php");
     exit;
 }
-require_once './common_service/common_functions.php';
-require_once './common_service/role_functions.php';
+require_once './system/utilities/admin_client_common_functions_services.php';
+require_once './system/utilities/admin_client_role_functions_services.php';
 
 // Check permission
 requireRole(['admin', 'health_worker', 'doctor']);
@@ -560,7 +560,7 @@ $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 <?php include './config/admin_footer.php'; ?>
 </div>
 
-<?php include './config/site_js_links.php'; ?>
+<?php include './config/site_css_js_links.php'; ?>
 
 <script>
 function previewImage(input) {

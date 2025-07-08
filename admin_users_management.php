@@ -5,8 +5,8 @@ ini_set('display_errors', 1);
 
 // Include the database connection (connection.php already calls session_start())
 include './config/db_connection.php';
-include './common_service/common_functions.php';
-require_once './common_service/role_functions.php';
+include './system/utilities/admin_client_common_functions_services.php';
+require_once './system/utilities/admin_client_role_functions_services.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("location:index.php");
@@ -128,7 +128,7 @@ try {
 <html lang="en">
 <head>
   <?php include './config/site_css_links.php'; ?>
-  <?php include './config/data_tables_css.php'; ?>
+  <?php include './config/data_tables_css_js.php'; ?>
   <link rel="stylesheet" href="dist/css/admin_system_styles/admin_users_management.css">
   <link rel="icon" type="image/png" href="dist/img/logo01.png">
   <title>Users Management - Mamatid Health Center System</title>
@@ -866,8 +866,8 @@ try {
     <?php include './config/admin_footer.php'; ?>
   </div>
 
-  <?php include './config/site_js_links.php'; ?>
-  <?php include './config/data_tables_js.php'; ?>
+  <?php include './config/site_css_js_links.php'; ?>
+  
   
   <script>
     $(document).ready(function() {

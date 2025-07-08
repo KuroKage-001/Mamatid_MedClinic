@@ -577,7 +577,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
             </form>
 
             <div class="register-link">
-                <p><a href="common_service/client_forgot_password.php" class="forgot-password-link">Forgot Password?</a></p>
+                <p><a href="auth/client_forgot_password.php" class="forgot-password-link">Forgot Password?</a></p>
                 <p>Don't have an account? <a href="client_register.php">Create One</a></p>
             </div>
         </div>

@@ -1,6 +1,6 @@
 <?php
 include '../config/db_connection.php';
-include '../common_service/common_functions.php';
+include '../system/utilities/admin_client_common_functions_services.php';
 require('../system/fpdf182/fpdf.php');
 
 // Create a custom PDF class without logo dependency

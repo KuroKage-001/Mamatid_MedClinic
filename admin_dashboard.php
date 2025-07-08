@@ -9,8 +9,8 @@ date_default_timezone_set('Asia/Manila');
 require_once './system/utilities/check_auth.php';
 
 include './config/db_connection.php';
-// Include session fix to prevent undefined variable errors
-require_once './config/admin_session_fixer.php';
+// Include session configuration to prevent undefined variable errors
+require_once './config/admin_session_config.php';
 
 // Set current date components used throughout the queries
 $date  = date('Y-m-d');
@@ -603,7 +603,7 @@ try {
     </div>
     <?php include './config/admin_footer.php'; ?>
   </div>
-  <?php include './config/site_js_links.php'; ?>
+  <?php include './config/site_css_js_links.php'; ?>
   <!-- Local Chart.js and jsPDF libraries -->
   <script src="dist/libs/chart.min.js"></script>
   <script src="dist/libs/jspdf.min.js"></script>

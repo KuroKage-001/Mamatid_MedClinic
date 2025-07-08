@@ -8,7 +8,7 @@ session_start();
 
 // Include necessary files
 require_once '../system/security/admin_client_session_isolation.php';
-require_once '../common_service/role_functions.php';
+require_once '../system/utilities/admin_client_role_functions_services.php';
 require_once '../config/db_connection.php';
 
 // Set JSON response header

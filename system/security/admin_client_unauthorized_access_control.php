@@ -6,7 +6,7 @@ $base_path = '../..';
 $common_service_path = "$base_path/common_service";
 
 // Include role functions using adjusted path
-require_once "$common_service_path/role_functions.php";
+require_once "$base_path/system/utilities/admin_client_role_functions_services.php";
 
 // Determine the type of access control needed
 $access_type = 'unauthorized'; // Default to 401 unauthorized

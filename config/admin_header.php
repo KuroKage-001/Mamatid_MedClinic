@@ -6,9 +6,9 @@ $base_path = $in_subdirectory ? '../..' : '.';
 // Include session isolation functions to prevent admin/client session conflicts
 require_once $base_path . '/system/security/admin_client_session_isolation.php';
 // Include role functions for access control
-require_once $base_path . '/common_service/role_functions.php';
-// Include session fix to prevent undefined variable errors
-require_once $base_path . '/config/admin_session_fixer.php';
+require_once $base_path . '/system/utilities/admin_client_role_functions_services.php';
+// Include session configuration to prevent undefined variable errors
+require_once $base_path . '/config/admin_session_config.php';
 
 // Initialize secure session
 initializeSecureSession();

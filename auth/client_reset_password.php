@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../system/database/public_db_connection.php';
+include '../system/database/db_connection.php';
 include '../system/phpmailer/system/mailer.php';
 
 // Initialize variables

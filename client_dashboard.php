@@ -524,7 +524,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         <?php include './config/client_ui/client_footer.php'; ?>
     </div>
 
-    <?php include './config/site_js_links.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
     
     <script>
         $(function() {

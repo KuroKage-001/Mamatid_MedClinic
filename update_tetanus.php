@@ -386,7 +386,7 @@ try {
         <?php include './config/footer.php'; ?>
     </div>
 
-    <?php include './config/site_js_links.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
     <script src="plugins/moment/moment.min.js"></script>
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>

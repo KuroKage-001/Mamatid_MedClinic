@@ -2,7 +2,7 @@
 // Include the PDF library and database connection
 include("../system/logics-builder-pdf.php");
 include '../config/db_connection.php';
-include '../common_service/common_functions.php';
+include '../system/utilities/admin_client_common_functions_services.php';
 
 // Set the report title and retrieve the date range from the query string
 $reportTitle = "Patients Visits";

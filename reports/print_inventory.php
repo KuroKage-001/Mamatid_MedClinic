@@ -1,6 +1,6 @@
 <?php
 include '../config/db_connection.php';
-include '../common_service/common_functions.php';
+include '../system/utilities/admin_client_common_functions_services.php';
 
 // Get the current inventory status using the medicine_stock_view
 $query = "SELECT 

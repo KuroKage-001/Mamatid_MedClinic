@@ -237,6 +237,6 @@ if (isset($_POST['update_appointment'])) {
         <?php include './config/admin_footer.php'; ?>
     </div>
 
-    <?php include './config/site_js_links.php'; ?>
+    <?php include './config/site_css_js_links.php'; ?>
 </body>
 </html> 

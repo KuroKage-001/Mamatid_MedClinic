@@ -4,7 +4,7 @@
 
 // Include admin-client session isolation if not already loaded
 if (!defined('SESSION_ISOLATION_INCLUDED')) {
-    require_once __DIR__ . '/../system/security/admin_client_session_isolation.php';
+    require_once __DIR__ . '/../security/admin_client_session_isolation.php';
 }
 
 /**
