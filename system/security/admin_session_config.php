@@ -47,10 +47,10 @@ if (session_status() === PHP_SESSION_NONE) {
  * This replaces the functionality from admin_session_fixer.php
  */
 function fixAdminSessionVariables() {
-    // Check if user is logged in
-    if (!isset($_SESSION['user_id'])) {
-        header("location:../../index.php");
-        exit;
+    // Only fix session variables if user is actually logged in
+    // Don't redirect here - let the page handle authentication
+    if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+        return false;
     }
 
     // Set default session variables if not set
@@ -69,10 +69,12 @@ function fixAdminSessionVariables() {
     if (!isset($_SESSION['profile_picture'])) {
         $_SESSION['profile_picture'] = 'default_profile.jpg';
     }
+    
+    return true;
 }
 
 // Fix admin session variables if admin is logged in
-if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     fixAdminSessionVariables();
 }
 
@@ -81,45 +83,53 @@ if (isset($_SESSION['user_id'])) {
  * Enhanced with session isolation logging
  */
 function checkSessionTimeout() {
-    $timeout = 3600; // 1 hour
+    $timeout = 7200; // 2 hours - increased from 1 hour to be less aggressive
     
     // Check admin/staff session timeout
-    if (isset($_SESSION['user_id'])) {
-        if (isset($_SESSION['last_activity'])) {
-            if (time() - $_SESSION['last_activity'] > $timeout) {
-                // Log admin session timeout
-                logSessionOperation('admin_session_timeout', [
-                    'user_id' => $_SESSION['user_id'],
-                    'last_activity' => $_SESSION['last_activity'],
-                    'timeout_duration' => $timeout,
-                    'has_client_session' => isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])
-                ]);
-                
-                // Admin session has expired - use safe admin logout
-                safeAdminLogout();
-                return false;
-            }
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        // Initialize last_activity if not set
+        if (!isset($_SESSION['last_activity'])) {
+            $_SESSION['last_activity'] = time();
+            return true;
         }
+        
+        if (time() - $_SESSION['last_activity'] > $timeout) {
+            // Log admin session timeout
+            logSessionOperation('admin_session_timeout', [
+                'user_id' => $_SESSION['user_id'],
+                'last_activity' => $_SESSION['last_activity'],
+                'timeout_duration' => $timeout,
+                'has_client_session' => isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])
+            ]);
+            
+            return false; // Don't auto-logout here, let the calling function handle it
+        }
+        
+        // Update last activity
         $_SESSION['last_activity'] = time();
     }
     
     // Check client session timeout
-    if (isset($_SESSION['client_id'])) {
-        if (isset($_SESSION['client_last_activity'])) {
-            if (time() - $_SESSION['client_last_activity'] > $timeout) {
-                // Log client session timeout
-                logSessionOperation('client_session_timeout', [
-                    'client_id' => $_SESSION['client_id'],
-                    'last_activity' => $_SESSION['client_last_activity'],
-                    'timeout_duration' => $timeout,
-                    'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
-                ]);
-                
-                // Client session has expired - use safe client logout
-                safeClientLogout();
-                return false;
-            }
+    if (isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])) {
+        // Initialize client_last_activity if not set
+        if (!isset($_SESSION['client_last_activity'])) {
+            $_SESSION['client_last_activity'] = time();
+            return true;
         }
+        
+        if (time() - $_SESSION['client_last_activity'] > $timeout) {
+            // Log client session timeout
+            logSessionOperation('client_session_timeout', [
+                'client_id' => $_SESSION['client_id'],
+                'last_activity' => $_SESSION['client_last_activity'],
+                'timeout_duration' => $timeout,
+                'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+            ]);
+            
+            return false; // Don't auto-logout here, let the calling function handle it
+        }
+        
+        // Update client last activity
         $_SESSION['client_last_activity'] = time();
     }
     
@@ -133,26 +143,40 @@ function handleSessionExpiry() {
     // Get the current script name
     $current_script = basename($_SERVER['SCRIPT_NAME']);
     
-    // Skip checking for login pages and assets
-    $skip_pages = ['index.php', 'client_login.php', 'client_register.php'];
+    // Skip checking for login pages, assets, and AJAX calls
+    $skip_pages = ['index.php', 'client_login.php', 'client_register.php', 'logout.php', 'client_logout.php'];
     if (in_array($current_script, $skip_pages)) {
         return;
     }
     
-    // Check admin session expiry
-    if (isset($_SESSION['user_id']) && !checkSessionTimeout()) {
-        $_SESSION['alert_message'] = "Your session has expired. Please login again.";
-        $_SESSION['alert_type'] = "warning";
-        header("location: ../../index.php");
-        exit;
+    // Skip AJAX requests and API calls
+    if (strpos($current_script, 'ajax/') === 0 || strpos($current_script, 'actions/') === 0 || 
+        isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        return;
     }
     
-    // Check client session expiry
-    if (isset($_SESSION['client_id']) && !checkSessionTimeout()) {
-        $_SESSION['alert_message'] = "Your session has expired. Please login again.";
-        $_SESSION['alert_type'] = "warning";
-        header("location: ../../client_login.php");
-        exit;
+    // Only check session expiry if we have an active session and the user should be logged in
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        // Check admin session expiry but be more lenient
+        if (!checkSessionTimeout()) {
+            // Clear session variables but don't redirect aggressively
+            clearAdminSession();
+            $_SESSION['alert_message'] = "Your session has expired. Please login again.";
+            $_SESSION['alert_type'] = "warning";
+            header("location: " . getBasePath() . "/index.php");
+            exit;
+        }
+    }
+    
+    // Only check client session expiry if client is actually supposed to be logged in
+    if (isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])) {
+        if (!checkSessionTimeout()) {
+            clearClientSession();
+            $_SESSION['alert_message'] = "Your session has expired. Please login again.";
+            $_SESSION['alert_type'] = "warning";
+            header("location: " . getBasePath() . "/client_login.php");
+            exit;
+        }
     }
 }
 
@@ -198,6 +222,24 @@ function safeLogout($userType = 'admin') {
     // Redirect
     header("location: $redirect_url");
     exit;
+}
+
+/**
+ * Get base path for redirects
+ */
+function getBasePath() {
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    $path_parts = explode('/', $script_path);
+    
+    // Count how many directories deep we are
+    $depth = count($path_parts) - 2; // -2 for script name and empty first element
+    
+    // If we're in a subdirectory, go up
+    if ($depth > 1) {
+        return str_repeat('../', $depth - 1);
+    }
+    
+    return '.';
 }
 
 // Check session timeout on every request

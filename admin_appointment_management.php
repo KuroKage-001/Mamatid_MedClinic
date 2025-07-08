@@ -824,6 +824,418 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             background-color: rgba(255, 168, 0, 0.05) !important;
             border-left: 4px solid #FFA800;
         }
+
+        /* Walk-in Appointment Form Styling - Dark Theme */
+        .walkin-form-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideInUp 0.5s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .walkin-form-header {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2rem;
+            color: white;
+        }
+
+        .walkin-icon-container {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .walkin-icon-container i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .walkin-form-title {
+            color: #ecf0f1;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .walkin-form-subtitle {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-close-walkin {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-walkin:hover {
+            background: rgba(231, 76, 60, 0.8);
+            transform: scale(1.1);
+        }
+
+        .walkin-form-body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 2rem;
+        }
+
+        /* Progress Steps */
+        .walkin-progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: #7f8c8d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .step-item.active .step-icon {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            transform: scale(1.1);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .step-item.completed .step-icon {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            box-shadow: 0 8px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .step-icon i {
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .step-label {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .step-item.active .step-label {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .step-item.completed .step-label {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .step-divider {
+            width: 80px;
+            height: 2px;
+            background: #7f8c8d;
+            margin: 0 1rem;
+            position: relative;
+            top: -25px;
+        }
+
+        .step-item.completed ~ .step-divider {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+        }
+
+        /* Form Steps */
+        .walkin-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .walkin-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-title {
+            color: #ecf0f1;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: #bdc3c7;
+            font-size: 0.95rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Form Grid */
+        .walkin-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .walkin-form-grid.single-column {
+            grid-template-columns: 1fr;
+        }
+
+        .walkin-form-grid .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .walkin-form-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        /* Form Controls */
+        .walkin-label {
+            display: block;
+            color: #ecf0f1;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .walkin-label i {
+            color: #3498db;
+            width: 20px;
+        }
+
+        .walkin-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .walkin-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .walkin-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .walkin-input option {
+            background: #34495e;
+            color: white;
+        }
+
+        .walkin-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Navigation Buttons */
+        .walkin-form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-buttons-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-walkin-prev,
+        .btn-walkin-next,
+        .btn-walkin-cancel,
+        .btn-walkin-submit {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-walkin-prev {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-walkin-prev:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-walkin-next {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-walkin-next:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-walkin-cancel {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-walkin-cancel:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-walkin-submit {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-walkin-submit:hover {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .walkin-form-header {
+                padding: 1rem;
+            }
+
+            .walkin-form-body {
+                padding: 1rem;
+            }
+
+            .walkin-form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .walkin-progress-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .step-divider {
+                width: 2px;
+                height: 30px;
+                top: 0;
+            }
+
+            .walkin-form-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-buttons-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .btn-walkin-prev,
+            .btn-walkin-next,
+            .btn-walkin-cancel,
+            .btn-walkin-submit {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        /* Loading States */
+        .walkin-input:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+        }
+
+        /* Custom Scrollbar for Dark Theme */
+        .walkin-form-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .walkin-form-body::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .walkin-form-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .walkin-form-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -1016,62 +1428,96 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                         <!-- Walk-in Appointment Form (Initially Hidden) -->
                         <?php if (!$showArchived): ?>
                         <div id="walkinFormContainer" class="mt-4" style="display: none;">
-                            <div class="card card-outline card-success">
-                                <div class="card-header bg-success">
-                                    <h5 class="card-title text-white mb-0">
-                                        <i class="fas fa-user-plus mr-2"></i>Add Walk-in Appointment
-                                    </h5>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool text-white" onclick="toggleWalkinForm()">
+                            <div class="card walkin-form-card">
+                                <div class="card-header walkin-form-header">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="walkin-icon-container">
+                                                <i class="fas fa-walking"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="walkin-form-title mb-0">Quick Walk-in Appointment</h4>
+                                                <p class="walkin-form-subtitle mb-0">Book immediate appointment without registration</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-close-walkin" onclick="toggleWalkinForm()">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        Walk-in appointments are booked immediately without requiring patient registration or approval.
+                                <div class="card-body walkin-form-body">
+                                    <!-- Progress Steps -->
+                                    <div class="walkin-progress-steps mb-4">
+                                        <div class="step-item active" data-step="1">
+                                            <div class="step-icon">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span class="step-label">Patient Info</span>
+                                        </div>
+                                        <div class="step-divider"></div>
+                                        <div class="step-item" data-step="2">
+                                            <div class="step-icon">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </div>
+                                            <span class="step-label">Appointment</span>
+                                        </div>
+                                        <div class="step-divider"></div>
+                                        <div class="step-item" data-step="3">
+                                            <div class="step-icon">
+                                                <i class="fas fa-notes-medical"></i>
+                                            </div>
+                                            <span class="step-label">Details</span>
+                                        </div>
                                     </div>
                                     
                                     <form id="walkinForm">
-                                        <!-- Patient Information -->
-                                        <h6 class="text-primary font-weight-bold mb-3">
-                                            <i class="fas fa-user mr-2"></i>Patient Information
-                                        </h6>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="walkin_patient_name" class="form-label">Full Name *</label>
-                                                    <input type="text" class="form-control" id="walkin_patient_name" name="patient_name" required>
-                                                </div>
+                                        <!-- Step 1: Patient Information -->
+                                        <div class="walkin-step active" data-step="1">
+                                            <div class="step-header">
+                                                <h5 class="step-title">
+                                                    <i class="fas fa-user mr-2"></i>Patient Information
+                                                </h5>
+                                                <p class="step-description">Enter basic patient details</p>
                                             </div>
-                                            <div class="col-md-6">
+                                            
+                                            <div class="walkin-form-grid">
                                                 <div class="form-group">
-                                                    <label for="walkin_phone_number" class="form-label">Phone Number *</label>
-                                                    <input type="tel" class="form-control" id="walkin_phone_number" name="phone_number" required>
+                                                    <label for="walkin_patient_name" class="walkin-label">
+                                                        <i class="fas fa-user-circle mr-2"></i>Full Name *
+                                                    </label>
+                                                    <input type="text" class="walkin-input" id="walkin_patient_name" name="patient_name" 
+                                                           placeholder="Enter patient's full name" required>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
+                                                
                                                 <div class="form-group">
-                                                    <label for="walkin_address" class="form-label">Address *</label>
-                                                    <input type="text" class="form-control" id="walkin_address" name="address" required>
+                                                    <label for="walkin_phone_number" class="walkin-label">
+                                                        <i class="fas fa-phone mr-2"></i>Phone Number *
+                                                    </label>
+                                                    <input type="tel" class="walkin-input" id="walkin_phone_number" name="phone_number" 
+                                                           placeholder="e.g., 09123456789" required>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="walkin_date_of_birth" class="form-label">Date of Birth *</label>
-                                                    <input type="date" class="form-control" id="walkin_date_of_birth" name="date_of_birth" required>
+                                                
+                                                <div class="form-group full-width">
+                                                    <label for="walkin_address" class="walkin-label">
+                                                        <i class="fas fa-map-marker-alt mr-2"></i>Address *
+                                                    </label>
+                                                    <input type="text" class="walkin-input" id="walkin_address" name="address" 
+                                                           placeholder="Complete address" required>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
+                                                
                                                 <div class="form-group">
-                                                    <label for="walkin_gender" class="form-label">Gender *</label>
-                                                    <select class="form-control" id="walkin_gender" name="gender" required>
-                                                        <option value="">Select Gender</option>
+                                                    <label for="walkin_date_of_birth" class="walkin-label">
+                                                        <i class="fas fa-birthday-cake mr-2"></i>Date of Birth *
+                                                    </label>
+                                                    <input type="date" class="walkin-input" id="walkin_date_of_birth" name="date_of_birth" required>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="walkin_gender" class="walkin-label">
+                                                        <i class="fas fa-venus-mars mr-2"></i>Gender *
+                                                    </label>
+                                                    <select class="walkin-input" id="walkin_gender" name="gender" required>
+                                                        <option value="">Choose gender</option>
                                                         <option value="Male">Male</option>
                                                         <option value="Female">Female</option>
                                                     </select>
@@ -1079,62 +1525,100 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                             </div>
                                         </div>
                                         
-                                        <!-- Appointment Details -->
-                                        <h6 class="text-primary font-weight-bold mb-3 mt-4">
-                                            <i class="fas fa-calendar-check mr-2"></i>Appointment Details
-                                        </h6>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="walkin_appointment_date" class="form-label">Appointment Date *</label>
-                                                    <input type="date" class="form-control" id="walkin_appointment_date" name="appointment_date" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>" required>
-                                                </div>
+                                        <!-- Step 2: Appointment Details -->
+                                        <div class="walkin-step" data-step="2">
+                                            <div class="step-header">
+                                                <h5 class="step-title">
+                                                    <i class="fas fa-calendar-check mr-2"></i>Appointment Scheduling
+                                                </h5>
+                                                <p class="step-description">Select date, provider, and time slot</p>
                                             </div>
-                                            <div class="col-md-6">
+                                            
+                                            <div class="walkin-form-grid">
                                                 <div class="form-group">
-                                                    <label for="walkin_provider_type" class="form-label">Provider Type *</label>
-                                                    <select class="form-control" id="walkin_provider_type" name="provider_type" required>
-                                                        <option value="">Select Provider Type</option>
+                                                    <label for="walkin_appointment_date" class="walkin-label">
+                                                        <i class="fas fa-calendar-alt mr-2"></i>Appointment Date *
+                                                    </label>
+                                                    <input type="date" class="walkin-input" id="walkin_appointment_date" name="appointment_date" 
+                                                           min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>" required>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="walkin_provider_type" class="walkin-label">
+                                                        <i class="fas fa-user-md mr-2"></i>Provider Type *
+                                                    </label>
+                                                    <select class="walkin-input" id="walkin_provider_type" name="provider_type" required>
+                                                        <option value="">Choose provider type</option>
                                                         <option value="health_worker">Health Worker</option>
                                                         <option value="doctor">Doctor</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
+                                                
                                                 <div class="form-group">
-                                                    <label for="walkin_provider" class="form-label">Select Provider *</label>
-                                                    <select class="form-control" id="walkin_provider" name="provider_id" required disabled>
+                                                    <label for="walkin_provider" class="walkin-label">
+                                                        <i class="fas fa-stethoscope mr-2"></i>Select Provider *
+                                                    </label>
+                                                    <select class="walkin-input" id="walkin_provider" name="provider_id" required disabled>
                                                         <option value="">First select provider type</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
+                                                
                                                 <div class="form-group">
-                                                    <label for="walkin_appointment_time" class="form-label">Available Time Slots *</label>
-                                                    <select class="form-control" id="walkin_appointment_time" name="appointment_time" required disabled>
+                                                    <label for="walkin_appointment_time" class="walkin-label">
+                                                        <i class="fas fa-clock mr-2"></i>Available Time Slots *
+                                                    </label>
+                                                    <select class="walkin-input" id="walkin_appointment_time" name="appointment_time" required disabled>
                                                         <option value="">First select provider and date</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="walkin_reason" class="form-label">Reason for Visit *</label>
-                                            <textarea class="form-control" id="walkin_reason" name="reason" rows="3" placeholder="Describe the reason for this appointment..." required></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="walkin_notes" class="form-label">Notes (Optional)</label>
-                                            <textarea class="form-control" id="walkin_notes" name="notes" rows="2" placeholder="Any additional notes..."></textarea>
+                                        
+                                        <!-- Step 3: Visit Details -->
+                                        <div class="walkin-step" data-step="3">
+                                            <div class="step-header">
+                                                <h5 class="step-title">
+                                                    <i class="fas fa-notes-medical mr-2"></i>Visit Details
+                                                </h5>
+                                                <p class="step-description">Describe the reason for this appointment</p>
+                                            </div>
+                                            
+                                            <div class="walkin-form-grid single-column">
+                                                <div class="form-group">
+                                                    <label for="walkin_reason" class="walkin-label">
+                                                        <i class="fas fa-clipboard-list mr-2"></i>Reason for Visit *
+                                                    </label>
+                                                    <textarea class="walkin-input walkin-textarea" id="walkin_reason" name="reason" rows="4" 
+                                                              placeholder="Describe the main reason for this appointment..." required></textarea>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="walkin_notes" class="walkin-label">
+                                                        <i class="fas fa-sticky-note mr-2"></i>Additional Notes
+                                                    </label>
+                                                    <textarea class="walkin-input walkin-textarea" id="walkin_notes" name="notes" rows="3" 
+                                                              placeholder="Any additional notes or special instructions..."></textarea>
+                                                </div>
+                                            </div>
                                         </div>
                                         
-                                        <div class="row">
-                                            <div class="col-md-12 text-right">
-                                                <button type="button" class="btn btn-secondary mr-2" onclick="toggleWalkinForm()">
+                                        <!-- Navigation Buttons -->
+                                        <div class="walkin-form-navigation">
+                                            <button type="button" class="btn-walkin-prev" id="walkin_prev_btn" onclick="previousStep()" style="display: none;">
+                                                <i class="fas fa-chevron-left mr-2"></i>Previous
+                                            </button>
+                                            
+                                            <div class="nav-buttons-right">
+                                                <button type="button" class="btn-walkin-cancel" onclick="toggleWalkinForm()">
                                                     <i class="fas fa-times mr-2"></i>Cancel
                                                 </button>
-                                                <button type="submit" class="btn btn-success" id="walkin_submit_btn">
-                                                    <i class="fas fa-plus-circle mr-2"></i>Book Walk-in Appointment
+                                                
+                                                <button type="button" class="btn-walkin-next" id="walkin_next_btn" onclick="nextStep()">
+                                                    Next<i class="fas fa-chevron-right ml-2"></i>
+                                                </button>
+                                                
+                                                <button type="submit" class="btn-walkin-submit" id="walkin_submit_btn" style="display: none;">
+                                                    <i class="fas fa-plus-circle mr-2"></i>Book Appointment
                                                 </button>
                                             </div>
                                         </div>
@@ -1389,25 +1873,174 @@ $archivedCount = $countResult['archived_count'] ?? 0;
         }
 
         // Walk-in Appointment JavaScript
+        let currentStep = 1;
+        const totalSteps = 3;
+        
         // Toggle walk-in form visibility
         function toggleWalkinForm() {
             const formContainer = $('#walkinFormContainer');
             if (formContainer.is(':visible')) {
                 formContainer.slideUp(300);
                 // Reset form when hiding
-                $('#walkinForm')[0].reset();
-                $('#walkin_provider').prop('disabled', true).html('<option value="">First select provider type</option>');
-                $('#walkin_appointment_time').prop('disabled', true).html('<option value="">First select provider and date</option>');
+                resetWalkinForm();
             } else {
                 formContainer.slideDown(300);
-                // Set default date to today
-                $('#walkin_appointment_date').val('<?= date('Y-m-d') ?>');
+                // Initialize form
+                initializeWalkinForm();
                 // Focus on first input
                 setTimeout(() => {
                     $('#walkin_patient_name').focus();
                 }, 350);
             }
         }
+        
+        // Initialize walk-in form
+        function initializeWalkinForm() {
+            // Set default date to today
+            $('#walkin_appointment_date').val('<?= date('Y-m-d') ?>');
+            // Reset to first step
+            currentStep = 1;
+            showStep(1);
+            // Clear any validation errors
+            $('.walkin-input').removeClass('is-invalid');
+            // Reset progress indicators
+            $('.step-item').removeClass('active completed');
+            $('.step-item[data-step="1"]').addClass('active');
+        }
+        
+        // Reset form to initial state
+        function resetWalkinForm() {
+            $('#walkinForm')[0].reset();
+            $('#walkin_provider').prop('disabled', true).html('<option value="">First select provider type</option>');
+            $('#walkin_appointment_time').prop('disabled', true).html('<option value="">First select provider and date</option>');
+            currentStep = 1;
+            showStep(1);
+            // Reset progress indicators
+            $('.step-item').removeClass('active completed');
+            $('.step-item[data-step="1"]').addClass('active');
+        }
+        
+        // Show specific step
+        function showStep(step) {
+            // Hide all steps
+            $('.walkin-step').removeClass('active');
+            // Show current step
+            $(`.walkin-step[data-step="${step}"]`).addClass('active');
+            
+            // Update progress indicators
+            $('.step-item').removeClass('active completed');
+            for (let i = 1; i <= totalSteps; i++) {
+                if (i < step) {
+                    $(`.step-item[data-step="${i}"]`).addClass('completed');
+                } else if (i === step) {
+                    $(`.step-item[data-step="${i}"]`).addClass('active');
+                }
+            }
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+        }
+        
+        // Update navigation buttons visibility
+        function updateNavigationButtons() {
+            const prevBtn = $('#walkin_prev_btn');
+            const nextBtn = $('#walkin_next_btn');
+            const submitBtn = $('#walkin_submit_btn');
+            
+            if (currentStep === 1) {
+                prevBtn.hide();
+                nextBtn.show();
+                submitBtn.hide();
+            } else if (currentStep === totalSteps) {
+                prevBtn.show();
+                nextBtn.hide();
+                submitBtn.show();
+            } else {
+                prevBtn.show();
+                nextBtn.show();
+                submitBtn.hide();
+            }
+        }
+        
+        // Go to next step
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            }
+        }
+        
+        // Go to previous step
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+        
+        // Validate current step
+        function validateCurrentStep() {
+            const currentStepElement = $(`.walkin-step[data-step="${currentStep}"]`);
+            const requiredFields = currentStepElement.find('input[required], select[required], textarea[required]');
+            let isValid = true;
+            let firstInvalidField = null;
+            
+            requiredFields.each(function() {
+                const field = $(this);
+                const value = field.val().trim();
+                
+                if (!value) {
+                    isValid = false;
+                    field.addClass('is-invalid');
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                } else {
+                    field.removeClass('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                // Show error message
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Required Fields Missing',
+                    text: 'Please fill in all required fields before proceeding.',
+                    confirmButtonColor: '#3498db',
+                    background: '#2c3e50',
+                    color: '#ecf0f1'
+                });
+                
+                // Focus on first invalid field
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+            }
+            
+            return isValid;
+        }
+        
+        // Add CSS class for invalid fields and event handlers
+        $(document).ready(function() {
+            $('<style>').text(`
+                .walkin-input.is-invalid {
+                    border-color: #e74c3c !important;
+                    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3) !important;
+                }
+                
+                .walkin-input.is-invalid:focus {
+                    border-color: #e74c3c !important;
+                    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3) !important;
+                }
+            `).appendTo('head');
+            
+            // Clear validation errors when user starts typing
+            $(document).on('input change', '.walkin-input', function() {
+                $(this).removeClass('is-invalid');
+            });
+        });
         
         // Provider type change handler
         $('#walkin_provider_type').change(function() {
@@ -1486,6 +2119,11 @@ $archivedCount = $countResult['archived_count'] ?? 0;
         $('#walkinForm').submit(function(e) {
             e.preventDefault();
             
+            // Final validation before submission
+            if (!validateCurrentStep()) {
+                return;
+            }
+            
             const submitBtn = $('#walkin_submit_btn');
             const originalBtnText = submitBtn.html();
             
@@ -1519,7 +2157,10 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                             title: 'Walk-in Appointment Booked!',
                             text: response.message,
                             showConfirmButton: true,
-                            confirmButtonText: 'OK'
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#27ae60',
+                            background: '#2c3e50',
+                            color: '#ecf0f1'
                         }).then(() => {
                             // Hide the form and refresh the page
                             $('#walkinFormContainer').slideUp(300);
@@ -1531,7 +2172,10 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                         Swal.fire({
                             icon: 'error',
                             title: 'Booking Failed',
-                            text: response.message
+                            text: response.message,
+                            confirmButtonColor: '#e74c3c',
+                            background: '#2c3e50',
+                            color: '#ecf0f1'
                         });
                     }
                 },
@@ -1539,7 +2183,10 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'An error occurred while booking the appointment. Please try again.'
+                        text: 'An error occurred while booking the appointment. Please try again.',
+                        confirmButtonColor: '#e74c3c',
+                        background: '#2c3e50',
+                        color: '#ecf0f1'
                     });
                 },
                 complete: function() {

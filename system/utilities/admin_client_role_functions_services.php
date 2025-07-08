@@ -7,6 +7,9 @@ if (!defined('SESSION_ISOLATION_INCLUDED')) {
     require_once __DIR__ . '/../security/admin_client_session_isolation.php';
 }
 
+// Include session config for getBasePath() function
+require_once __DIR__ . '/../security/admin_session_config.php';
+
 /**
  * Check if user is logged in (any type)
  */
@@ -87,34 +90,24 @@ function requireRole($roles) {
         $roles = [$roles];
     }
     
-    if (!hasAnyRole($roles)) {
-        // Check if user is logged in but has wrong role
-        if (isLoggedIn()) {
-            header("Location: " . getBasePath() . "/system/security/admin_client_unauthorized_access_control.php?required_role=" . implode(',', $roles));
-        } else {
-            header("Location: " . getBasePath() . "/system/security/admin_client_unauthorized_access_control.php");
-        }
+    // Check if user has admin session
+    $adminUserId = getAdminSessionVar('user_id');
+    $adminRole = getAdminSessionVar('role');
+    
+    // If no admin session, redirect to login
+    if (empty($adminUserId)) {
+        header("Location: " . getBasePath() . "/index.php?message=" . urlencode("Please login to access this page"));
+        exit;
+    }
+    
+    // If admin has wrong role, show unauthorized page
+    if (!in_array($adminRole, $roles)) {
+        header("Location: " . getBasePath() . "/system/security/admin_client_unauthorized_access_control.php?required_role=" . implode(',', $roles));
         exit;
     }
 }
 
-/**
- * Get base path for redirects
- */
-function getBasePath() {
-    $script_path = $_SERVER['SCRIPT_NAME'];
-    $path_parts = explode('/', $script_path);
-    
-    // Count how many directories deep we are
-    $depth = count($path_parts) - 2; // -2 for script name and empty first element
-    
-    // If we're in a subdirectory, go up
-    if ($depth > 1) {
-        return str_repeat('../', $depth - 1);
-    }
-    
-    return '.';
-}
+// getBasePath() function is now available from admin_session_config.php
 
 /**
  * Require admin role

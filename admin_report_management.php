@@ -1,13 +1,45 @@
 <?php
-// Include database connection and common functions
+// Start output buffering to catch any accidental output
+ob_start();
+
+// Include session configuration first - before any HTML
+include './system/security/admin_session_config.php';
+
+// Then include database connection and common functions
 include './config/db_connection.php';
 include './system/utilities/admin_client_common_functions_services.php';
+
+// Check if user is logged in - if not, redirect to login
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header("location: index.php");
+    exit;
+}
+
+// Ensure session variables are properly set to avoid undefined variable warnings
+if (!isset($_SESSION['display_name']) || empty($_SESSION['display_name'])) {
+    $_SESSION['display_name'] = $_SESSION['user_name'] ?? 'Unknown User';
+}
+
+if (!isset($_SESSION['role']) || empty($_SESSION['role'])) {
+    $_SESSION['role'] = 'user';
+}
+
+if (!isset($_SESSION['profile_picture']) || empty($_SESSION['profile_picture'])) {
+    $_SESSION['profile_picture'] = 'default_profile.jpg';
+}
+
+// Clean any output that might have been generated
+ob_clean();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <?php include './config/site_css_links.php'; ?>
-  <?php include './config/data_tables_css_js.php'; ?>
+  
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
   <!-- Tempus Dominus Bootstrap 4 CSS for datetimepicker -->
   <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">

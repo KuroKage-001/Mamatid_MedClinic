@@ -7,7 +7,10 @@
  * or other administrator accounts.
  */
 
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json');
 
 // Check if user is logged in and is admin

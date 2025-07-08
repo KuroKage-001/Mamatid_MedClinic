@@ -4,7 +4,10 @@
  * Safely switches admin accounts without affecting client sessions
  */
 
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include necessary files
 require_once '../system/security/admin_client_session_isolation.php';
