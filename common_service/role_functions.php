@@ -1,165 +1,181 @@
 <?php
-// Role-based access control functions
+// Enhanced Role Functions with Session Isolation
+// Protects client sessions from admin session operations
 
-// Check if user is logged in
+// Include admin-client session isolation if not already loaded
+if (!defined('SESSION_ISOLATION_INCLUDED')) {
+    require_once __DIR__ . '/../system/security/admin_client_session_isolation.php';
+}
+
+/**
+ * Check if user is logged in (any type)
+ */
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    $adminId = getAdminSessionVar('user_id');
+    $clientId = getClientSessionVar('client_id');
+    return (isset($adminId) && !empty($adminId)) || (isset($clientId) && !empty($clientId));
 }
 
-// Check if client is logged in
+/**
+ * Check if client is logged in
+ */
 function isClientLoggedIn() {
-    return isset($_SESSION['client_id']);
+    $clientId = getClientSessionVar('client_id');
+    return isset($clientId) && !empty($clientId);
 }
 
-// Get user role
+/**
+ * Get current user role (admin side)
+ */
 function getUserRole() {
-    return isset($_SESSION['role']) ? $_SESSION['role'] : null;
+    return getAdminSessionVar('role');
 }
 
-// Check if user has specific role
+/**
+ * Check if user has specific role
+ */
 function hasRole($role) {
-    return getUserRole() === $role;
+    $userRole = getAdminSessionVar('role');
+    return isset($userRole) && $userRole === $role;
 }
 
-// Check if user is admin
+/**
+ * Check if user is admin
+ */
 function isAdmin() {
     return hasRole('admin');
 }
 
-// Check if user is health worker
+/**
+ * Check if user is health worker
+ */
 function isHealthWorker() {
     return hasRole('health_worker');
 }
 
-// Check if user is doctor
+/**
+ * Check if user is doctor
+ */
 function isDoctor() {
     return hasRole('doctor');
 }
 
-// Check if user is client
+/**
+ * Check if user is client
+ */
 function isClient() {
     return isClientLoggedIn();
 }
 
-// Check if user has any of the specified roles
+/**
+ * Check if user has any of the specified roles
+ */
 function hasAnyRole($roles) {
-    // Handle special case for 'client' role
-    if (in_array('client', $roles) && isClientLoggedIn()) {
-        return true;
+    if (!is_array($roles)) {
+        $roles = [$roles];
     }
     
-    // Handle staff roles
     $userRole = getUserRole();
     return in_array($userRole, $roles);
 }
 
-// Restrict access based on roles
+/**
+ * Require specific role(s) or redirect
+ */
 function requireRole($roles) {
     if (!is_array($roles)) {
         $roles = [$roles];
     }
-
-    // Special handling for client pages
-    if (in_array('client', $roles)) {
-        // If this is a client-only page and a client is logged in, allow access
-        if (isClientLoggedIn()) {
-            return true;
-        }
-        
-        // If a staff member is trying to access a client page
+    
+    if (!hasAnyRole($roles)) {
+        // Check if user is logged in but has wrong role
         if (isLoggedIn()) {
-            header("Location: system/security/access_denied.php?required_role=client");
-            exit();
+            header("Location: " . getBasePath() . "/system/security/admin_client_unauthorized_access_control.php?required_role=" . implode(',', $roles));
+        } else {
+            header("Location: " . getBasePath() . "/system/security/admin_client_unauthorized_access_control.php");
         }
-        
-        // Not logged in at all
-        header("Location: client_login.php");
-        exit();
+        exit;
     }
-    
-    // For staff roles
-    if (!isLoggedIn() || !hasAnyRole($roles)) {
-        // Build the required role string for display
-        $required_role = implode(' or ', $roles);
-        
-        header("Location: system/security/access_denied.php?required_role=$required_role");
-        exit();
-    }
-    
-    return true;
 }
 
-// Restrict page to admin only
+/**
+ * Get base path for redirects
+ */
+function getBasePath() {
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    $path_parts = explode('/', $script_path);
+    
+    // Count how many directories deep we are
+    $depth = count($path_parts) - 2; // -2 for script name and empty first element
+    
+    // If we're in a subdirectory, go up
+    if ($depth > 1) {
+        return str_repeat('../', $depth - 1);
+    }
+    
+    return '.';
+}
+
+/**
+ * Require admin role
+ */
 function requireAdmin() {
-    requireRole(['admin']);
+    requireRole('admin');
 }
 
-// Restrict page to health workers and doctors
+/**
+ * Require health staff (admin, doctor, or health_worker)
+ */
 function requireHealthStaff() {
-    requireRole(['health_worker', 'doctor']);
+    requireRole(['admin', 'doctor', 'health_worker']);
 }
 
-// Restrict page to clients only
+/**
+ * Require client role
+ */
 function requireClient() {
-    requireRole(['client']);
+    if (!isClientLoggedIn()) {
+        header("Location: " . getBasePath() . "/client_login.php");
+        exit;
+    }
 }
 
-// Get role display name
+/**
+ * Get display name for role
+ */
 function getRoleDisplayName($role) {
     $roleNames = [
         'admin' => 'Administrator',
-        'health_worker' => 'Health Worker',
         'doctor' => 'Doctor',
-        'client' => 'Client/Patient',
-        'appropriate' => 'Appropriate'
+        'health_worker' => 'Health Worker',
+        'client' => 'Client'
     ];
-    return isset($roleNames[$role]) ? $roleNames[$role] : 'Unknown';
+    
+    return $roleNames[$role] ?? ucfirst($role);
 }
 
-// Check if user can access specific feature
+/**
+ * Check if user can access a specific feature
+ */
 function canAccess($feature) {
+    // Define feature permissions
     $permissions = [
-        'admin' => [
-            'users_management',
-            'health_worker_management',
-            'doctor_management',
-            'reports_full',
-            'inventory_management',
-            'patient_management',
-            'appointments_management',
-            'time_tracking',
-            'account_settings'
-        ],
-        'health_worker' => [
-            'patient_management',
-            'appointments_management',
-            'inventory_view',
-            'reports_limited',
-            'account_settings',
-            'time_tracking'
-        ],
-        'doctor' => [
-            'patient_management',
-            'appointments_management',
-            'inventory_management',
-            'reports_full',
-            'account_settings',
-            'time_tracking'
-        ],
-        'client' => [
-            'book_appointment',
-            'view_appointments',
-            'client_account_settings'
-        ]
+        'admin_panel' => ['admin'],
+        'user_management' => ['admin'],
+        'appointments' => ['admin', 'doctor', 'health_worker'],
+        'client_appointments' => ['client'],
+        'schedules' => ['admin', 'doctor', 'health_worker'],
+        'reports' => ['admin', 'doctor']
     ];
     
-    // Check client permissions if applicable
-    if (isClientLoggedIn() && isset($permissions['client'])) {
-        return in_array($feature, $permissions['client']);
+    if (!isset($permissions[$feature])) {
+        return false;
     }
     
-    // Check staff permissions
-    $userRole = getUserRole();
-    return isset($permissions[$userRole]) && in_array($feature, $permissions[$userRole]);
+    if (isClient()) {
+        return in_array('client', $permissions[$feature]);
+    }
+    
+    return hasAnyRole($permissions[$feature]);
 }
 ?> 

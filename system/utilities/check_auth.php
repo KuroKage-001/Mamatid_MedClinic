@@ -19,7 +19,7 @@ if (!isset($_SESSION['user_id'])) {
     $current_page = basename($_SERVER['PHP_SELF']);
     
     // Redirect to unauthorized access page
-    header("location: system/security/unauthorized_access.php?page=" . urlencode($current_page));
+    header("location: system/security/admin_client_unauthorized_access_control.php?page=" . urlencode($current_page));
     exit;
 }
 ?> 

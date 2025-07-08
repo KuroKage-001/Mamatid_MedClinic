@@ -21,7 +21,7 @@ $excludeFiles = [
     'client_register.php',
     'client_logout.php',
     'system/utilities/congratulation.php',
-    'system/security/unauthorized_access.php',
+    'system/security/admin_client_unauthorized_access_control.php',
     'system/utilities/add_auth_check.php'
 ];
 

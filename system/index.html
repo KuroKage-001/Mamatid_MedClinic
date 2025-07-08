@@ -1,11 +1,300 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Access Denied</title>
+    <title>Access Denied - System Protected</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
     <meta http-equiv="refresh" content="0;url=../index.php">
+    
+    <!-- Advanced Security Headers -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="*">
+    
+    <!-- Strict Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; child-src 'none'; form-action 'self'; base-uri 'self';">
+    
+    <!-- Permissions Policy (Feature Policy) -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=()">
+    
+    <!-- Additional Security Meta Tags -->
+    <meta http-equiv="X-DNS-Prefetch-Control" content="off">
+    <meta http-equiv="X-Download-Options" content="noopen">
+    <meta http-equiv="X-Permitted-Cross-Domain-Policies" content="none">
+    
+    <style>
+        /* Security-focused styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+                 .security-container {
+             max-width: 500px;
+             margin: 0 auto;
+             padding: 40px 30px;
+             border-radius: 15px;
+             background: rgba(255, 255, 255, 0.95);
+             color: #333;
+             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+             -webkit-backdrop-filter: blur(10px);
+             backdrop-filter: blur(10px);
+             border: 1px solid rgba(255, 255, 255, 0.2);
+             position: relative;
+             overflow: hidden;
+         }
+        
+        .security-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc3545, #fd7e14, #ffc107, #198754, #0dcaf0, #6f42c1);
+        }
+        
+        .shield-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #dc3545;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .error-code {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .main-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        
+        .description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .security-notice {
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .redirect-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #0066cc;
+        }
+        
+        .countdown {
+            font-weight: 600;
+            color: #dc3545;
+            font-size: 18px;
+        }
+        
+        .manual-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+        }
+        
+        .manual-link:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,123,255,0.3);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .footer-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .security-container {
+                padding: 30px 20px;
+            }
+            
+            .shield-icon {
+                font-size: 48px;
+            }
+            
+            .main-title {
+                font-size: 20px;
+            }
+        }
+        
+        /* Security: Disable text selection and right-click */
+        .security-container {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
 </head>
 <body>
-    <p>Access Denied. Redirecting...</p>
+    <div class="security-container" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+        <div class="shield-icon">🛡️</div>
+        <div class="error-code">HTTP 403 - FORBIDDEN</div>
+        <h1 class="main-title">System Directory Protected</h1>
+        
+        <p class="description">
+            Access to this system directory is strictly prohibited for security reasons.
+            Your request has been logged and monitored.
+        </p>
+        
+        <div class="security-notice">
+            <strong>Security Notice:</strong> This area contains sensitive system files and configurations. 
+            Unauthorized access attempts are tracked and may result in account suspension.
+        </div>
+        
+        <div class="redirect-info">
+            <strong>Auto-redirect in:</strong> <span class="countdown" id="countdown">3</span> seconds<br>
+            Redirecting to main application...
+        </div>
+        
+        <!-- Advanced JavaScript redirect with logging -->
+        <script>
+            // Security monitoring
+            (function() {
+                'use strict';
+                
+                // Log access attempt (client-side tracking)
+                var accessData = {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer || 'direct',
+                    viewport: window.innerWidth + 'x' + window.innerHeight,
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    cookieEnabled: navigator.cookieEnabled,
+                    url: window.location.href
+                };
+                
+                // Store in sessionStorage for potential server-side logging
+                try {
+                    sessionStorage.setItem('security_access_attempt', JSON.stringify(accessData));
+                } catch(e) {
+                    // Silently handle storage errors
+                }
+                
+                // Countdown timer
+                var countdown = 3;
+                var countdownElement = document.getElementById('countdown');
+                
+                function updateCountdown() {
+                    if (countdown > 0) {
+                        countdownElement.textContent = countdown;
+                        countdown--;
+                        setTimeout(updateCountdown, 1000);
+                    } else {
+                        // Multiple redirect methods for reliability
+                        window.location.replace('../index.php');
+                    }
+                }
+                
+                updateCountdown();
+                
+                // Immediate redirect (backup)
+                setTimeout(function() {
+                    window.location.href = '../index.php';
+                }, 3000);
+                
+                // Disable common developer tools shortcuts
+                document.addEventListener('keydown', function(e) {
+                    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                    if (e.keyCode === 123 || 
+                        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+                        (e.ctrlKey && e.keyCode === 85)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                
+                // Disable right-click context menu
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Clear any potential sensitive data from browser
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, document.title, window.location.href);
+                }
+                
+            })();
+        </script>
+        
+        <!-- Noscript fallback with enhanced messaging -->
+        <noscript>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0; border-radius: 5px; color: #856404;">
+                <strong>JavaScript Disabled:</strong> For security reasons, this page requires JavaScript. 
+                Please enable JavaScript or use the manual link below.
+            </div>
+            <a href="../index.php" class="manual-link">Continue to Main Application</a>
+        </noscript>
+        
+        <div class="footer-info">
+            <strong>System Security Notice:</strong><br>
+            This is a protected system area. All access attempts are monitored and logged.<br>
+            If you believe you should have access, please contact your system administrator.
+        </div>
+    </div>
 </body>
 </html>

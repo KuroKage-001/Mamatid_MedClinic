@@ -61,7 +61,7 @@ try {
     
     // Get all appointments for this schedule
     $appointmentsQuery = "SELECT appointment_time, COUNT(*) as count 
-                         FROM appointments 
+                         FROM admin_clients_appointments 
                          WHERE schedule_id = ? AND status != 'cancelled' 
                          GROUP BY appointment_time";
     $appointmentsStmt = $con->prepare($appointmentsQuery);
@@ -117,7 +117,7 @@ try {
             $clientName = $client['full_name'];
             
             // Get all appointments for this client on this date
-            $clientAptsQuery = "SELECT appointment_time FROM appointments 
+            $clientAptsQuery = "SELECT appointment_time FROM admin_clients_appointments 
                              WHERE appointment_date = ? 
                                AND patient_name = ? 
                                AND status != 'cancelled'";

@@ -2,11 +2,16 @@
 /**
  * Admin Session Configuration for Concurrent Users
  * This file ensures multiple users can login simultaneously without conflicts
+ * Now includes enhanced session isolation to prevent admin/client conflicts
+ * Also includes session variable fixing to prevent undefined variable errors
  * 
  * @package    Mamatid Health Center System
  * @subpackage Security
- * @version    1.0
+ * @version    2.1
  */
+
+// Include admin-client session isolation functions
+require_once __DIR__ . '/admin_client_session_isolation.php';
 
 // Only configure session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -38,39 +43,80 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /**
+ * Fix and set default session variables to prevent undefined variable errors
+ * This replaces the functionality from admin_session_fixer.php
+ */
+function fixAdminSessionVariables() {
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        header("location:../../index.php");
+        exit;
+    }
+
+    // Set default session variables if not set
+    if (!isset($_SESSION['user_name'])) {
+        $_SESSION['user_name'] = 'Unknown User';
+    }
+
+    if (!isset($_SESSION['display_name'])) {
+        $_SESSION['display_name'] = $_SESSION['user_name'];
+    }
+
+    if (!isset($_SESSION['role'])) {
+        $_SESSION['role'] = 'user';
+    }
+
+    if (!isset($_SESSION['profile_picture'])) {
+        $_SESSION['profile_picture'] = 'default_profile.jpg';
+    }
+}
+
+// Fix admin session variables if admin is logged in
+if (isset($_SESSION['user_id'])) {
+    fixAdminSessionVariables();
+}
+
+/**
  * Check session timeout for inactive sessions
+ * Enhanced with session isolation logging
  */
 function checkSessionTimeout() {
     $timeout = 3600; // 1 hour
     
     // Check admin/staff session timeout
     if (isset($_SESSION['user_id'])) {
-        if (isset($_SESSION['admin_last_activity'])) {
-            if (time() - $_SESSION['admin_last_activity'] > $timeout) {
-                // Admin session has expired - only clear admin session variables
-                $admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role', 'admin_last_activity'];
-                foreach ($admin_session_vars as $var) {
-                    if (isset($_SESSION[$var])) {
-                        unset($_SESSION[$var]);
-                    }
-                }
+        if (isset($_SESSION['last_activity'])) {
+            if (time() - $_SESSION['last_activity'] > $timeout) {
+                // Log admin session timeout
+                logSessionOperation('admin_session_timeout', [
+                    'user_id' => $_SESSION['user_id'],
+                    'last_activity' => $_SESSION['last_activity'],
+                    'timeout_duration' => $timeout,
+                    'has_client_session' => isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])
+                ]);
+                
+                // Admin session has expired - use safe admin logout
+                safeAdminLogout();
                 return false;
             }
         }
-        $_SESSION['admin_last_activity'] = time();
+        $_SESSION['last_activity'] = time();
     }
     
     // Check client session timeout
     if (isset($_SESSION['client_id'])) {
         if (isset($_SESSION['client_last_activity'])) {
             if (time() - $_SESSION['client_last_activity'] > $timeout) {
-                // Client session has expired - only clear client session variables
-                $client_session_vars = ['client_id', 'client_name', 'client_email', 'client_last_activity'];
-                foreach ($client_session_vars as $var) {
-                    if (isset($_SESSION[$var])) {
-                        unset($_SESSION[$var]);
-                    }
-                }
+                // Log client session timeout
+                logSessionOperation('client_session_timeout', [
+                    'client_id' => $_SESSION['client_id'],
+                    'last_activity' => $_SESSION['client_last_activity'],
+                    'timeout_duration' => $timeout,
+                    'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+                ]);
+                
+                // Client session has expired - use safe client logout
+                safeClientLogout();
                 return false;
             }
         }
@@ -112,6 +158,7 @@ function handleSessionExpiry() {
 
 /**
  * Safely destroy user session without affecting other concurrent sessions
+ * Now uses enhanced session isolation functions
  */
 function safeLogout($userType = 'admin') {
     // Store session info for logging
@@ -122,32 +169,31 @@ function safeLogout($userType = 'admin') {
         $user_name = $_SESSION['client_name'] ?? 'unknown';
         $redirect_url = '../../client_login.php?message=logged_out';
         
-        // Only unset client session variables
-        $client_session_vars = ['client_id', 'client_name', 'client_email'];
-        foreach ($client_session_vars as $var) {
-            if (isset($_SESSION[$var])) {
-                unset($_SESSION[$var]);
-            }
-        }
+        // Log the logout attempt
+        logSessionOperation('legacy_client_logout', [
+            'user_id' => $user_id,
+            'user_name' => $user_name,
+            'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+        ]);
+        
+        // Use enhanced safe client logout
+        safeClientLogout();
+        
     } else {
         $user_id = $_SESSION['user_id'] ?? 'unknown';
         $user_name = $_SESSION['user_name'] ?? 'unknown';
         $redirect_url = '../../index.php?message=logged_out';
         
-        // Only unset admin/staff session variables
-        $admin_session_vars = ['user_id', 'display_name', 'user_name', 'profile_picture', 'role'];
-        foreach ($admin_session_vars as $var) {
-            if (isset($_SESSION[$var])) {
-                unset($_SESSION[$var]);
-            }
-        }
+        // Log the logout attempt
+        logSessionOperation('legacy_admin_logout', [
+            'user_id' => $user_id,
+            'user_name' => $user_name,
+            'has_client_session' => isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])
+        ]);
+        
+        // Use enhanced safe admin logout
+        safeAdminLogout();
     }
-    
-    // Log the logout action
-    error_log("$userType logout: ID=$user_id, Name=$user_name, Session=$session_id, Time=" . date('Y-m-d H:i:s'));
-    
-    // Regenerate session ID for security
-    session_regenerate_id(true);
     
     // Redirect
     header("location: $redirect_url");

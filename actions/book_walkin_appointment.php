@@ -1,0 +1,284 @@
+<?php
+/**
+ * Book Walk-in Appointment
+ * 
+ * This file handles booking walk-in appointments directly from the admin interface.
+ * Walk-in appointments are automatically approved and booked immediately.
+ */
+
+include '../config/db_connection.php';
+require_once '../common_service/role_functions.php';
+
+// Set content type to JSON
+header('Content-Type: application/json');
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit;
+}
+
+// Check permission
+try {
+    requireRole(['admin', 'health_worker', 'doctor']);
+} catch (Exception $e) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    exit;
+}
+
+// Check if request method is POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit;
+}
+
+// Get form data
+$patientName = trim($_POST['patient_name'] ?? '');
+$phoneNumber = trim($_POST['phone_number'] ?? '');
+$address = trim($_POST['address'] ?? '');
+$dateOfBirth = $_POST['date_of_birth'] ?? '';
+$gender = $_POST['gender'] ?? '';
+$appointmentDate = $_POST['appointment_date'] ?? '';
+$appointmentTime = $_POST['appointment_time'] ?? '';
+$providerId = $_POST['provider_id'] ?? '';
+$providerType = $_POST['provider_type'] ?? '';
+$reason = trim($_POST['reason'] ?? '');
+$notes = trim($_POST['notes'] ?? '');
+
+// Validate required fields
+$errors = [];
+
+if (empty($patientName)) {
+    $errors[] = 'Patient name is required';
+}
+
+if (empty($phoneNumber)) {
+    $errors[] = 'Phone number is required';
+}
+
+if (empty($address)) {
+    $errors[] = 'Address is required';
+}
+
+if (empty($dateOfBirth)) {
+    $errors[] = 'Date of birth is required';
+}
+
+if (empty($gender)) {
+    $errors[] = 'Gender is required';
+}
+
+if (empty($appointmentDate)) {
+    $errors[] = 'Appointment date is required';
+}
+
+if (empty($appointmentTime)) {
+    $errors[] = 'Appointment time is required';
+}
+
+if (empty($providerId)) {
+    $errors[] = 'Provider is required';
+}
+
+if (empty($providerType)) {
+    $errors[] = 'Provider type is required';
+}
+
+if (empty($reason)) {
+    $errors[] = 'Reason for visit is required';
+}
+
+// Validate date formats
+if (!empty($dateOfBirth) && !DateTime::createFromFormat('Y-m-d', $dateOfBirth)) {
+    $errors[] = 'Invalid date of birth format';
+}
+
+if (!empty($appointmentDate) && !DateTime::createFromFormat('Y-m-d', $appointmentDate)) {
+    $errors[] = 'Invalid appointment date format';
+}
+
+// Validate appointment date is not in the past
+if (!empty($appointmentDate) && $appointmentDate < date('Y-m-d')) {
+    $errors[] = 'Appointment date cannot be in the past';
+}
+
+// Validate provider type
+if (!in_array($providerType, ['health_worker', 'doctor'])) {
+    $errors[] = 'Invalid provider type';
+}
+
+// Return validation errors
+if (!empty($errors)) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Validation failed: ' . implode(', ', $errors)
+    ]);
+    exit;
+}
+
+try {
+    $con->beginTransaction();
+    
+    // Get the appropriate schedule ID
+    $scheduleId = null;
+    
+    if ($providerType == 'health_worker') {
+        $scheduleQuery = "SELECT id FROM admin_hw_schedules 
+                         WHERE staff_id = ? AND schedule_date = ? AND is_approved = 1
+                         LIMIT 1";
+        $scheduleStmt = $con->prepare($scheduleQuery);
+        $scheduleStmt->execute([$providerId, $appointmentDate]);
+        $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$schedule) {
+            throw new Exception('No approved schedule found for the selected health worker on this date');
+        }
+        
+        $scheduleId = $schedule['id'];
+        
+        // Check if the time slot is still available
+        $checkSlotQuery = "SELECT id FROM admin_clients_appointments 
+                          WHERE schedule_id = ? AND appointment_time = ? 
+                          AND status != 'cancelled' AND is_archived = 0";
+        $checkStmt = $con->prepare($checkSlotQuery);
+        $checkStmt->execute([$scheduleId, $appointmentTime]);
+        
+        if ($checkStmt->rowCount() > 0) {
+            throw new Exception('The selected time slot is no longer available');
+        }
+        
+    } elseif ($providerType == 'doctor') {
+        $scheduleQuery = "SELECT id FROM admin_doctor_schedules 
+                         WHERE doctor_id = ? AND schedule_date = ? AND is_approved = 1 
+                         AND (is_deleted = 0 OR is_deleted IS NULL)
+                         LIMIT 1";
+        $scheduleStmt = $con->prepare($scheduleQuery);
+        $scheduleStmt->execute([$providerId, $appointmentDate]);
+        $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$schedule) {
+            throw new Exception('No approved schedule found for the selected doctor on this date');
+        }
+        
+        $scheduleId = $schedule['id'];
+        
+        // Check if the time slot is still available
+        $checkSlotQuery = "SELECT id FROM admin_clients_appointments 
+                          WHERE schedule_id = ? AND appointment_time = ? 
+                          AND status != 'cancelled' AND is_archived = 0";
+        $checkStmt = $con->prepare($checkSlotQuery);
+        $checkStmt->execute([$scheduleId, $appointmentTime]);
+        
+        if ($checkStmt->rowCount() > 0) {
+            throw new Exception('The selected time slot is no longer available');
+        }
+    }
+    
+    // Prepare notes for walk-in appointment
+    $appointmentNotes = $notes;
+    if (!empty($appointmentNotes)) {
+        $appointmentNotes = "[Walk-in Appointment] " . $appointmentNotes;
+    } else {
+        $appointmentNotes = "[Walk-in Appointment] Booked by " . $_SESSION['display_name'] . " on " . date('Y-m-d H:i:s');
+    }
+    
+    // Insert the walk-in appointment
+    $insertQuery = "INSERT INTO admin_clients_appointments 
+                   (patient_name, phone_number, address, date_of_birth, gender, 
+                    appointment_date, appointment_time, reason, status, notes, 
+                    schedule_id, doctor_id, is_walkin, created_at) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?, 1, NOW())";
+    
+    $insertStmt = $con->prepare($insertQuery);
+    $insertStmt->execute([
+        $patientName,
+        $phoneNumber,
+        $address,
+        $dateOfBirth,
+        $gender,
+        $appointmentDate,
+        $appointmentTime,
+        $reason,
+        $appointmentNotes,
+        $scheduleId,
+        $providerId
+    ]);
+    
+    $appointmentId = $con->lastInsertId();
+    
+    // Update the appointment slot to mark it as booked
+    if ($providerType == 'health_worker') {
+        // Check if slot exists in admin_hw_appointment_slots
+        $slotExistsQuery = "SELECT id FROM admin_hw_appointment_slots 
+                           WHERE schedule_id = ? AND slot_time = ?";
+        $slotExistsStmt = $con->prepare($slotExistsQuery);
+        $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
+        
+        if ($slotExistsStmt->rowCount() > 0) {
+            // Update existing slot
+            $updateSlotQuery = "UPDATE admin_hw_appointment_slots 
+                               SET is_booked = 1, appointment_id = ? 
+                               WHERE schedule_id = ? AND slot_time = ?";
+            $updateSlotStmt = $con->prepare($updateSlotQuery);
+            $updateSlotStmt->execute([$appointmentId, $scheduleId, $appointmentTime]);
+        } else {
+            // Create new slot
+            $createSlotQuery = "INSERT INTO admin_hw_appointment_slots 
+                               (schedule_id, slot_time, is_booked, appointment_id) 
+                               VALUES (?, ?, 1, ?)";
+            $createSlotStmt = $con->prepare($createSlotQuery);
+            $createSlotStmt->execute([$scheduleId, $appointmentTime, $appointmentId]);
+        }
+        
+    } elseif ($providerType == 'doctor') {
+        // Check if slot exists in admin_doctor_appointment_slots
+        $slotExistsQuery = "SELECT id FROM admin_doctor_appointment_slots 
+                           WHERE schedule_id = ? AND slot_time = ?";
+        $slotExistsStmt = $con->prepare($slotExistsQuery);
+        $slotExistsStmt->execute([$scheduleId, $appointmentTime]);
+        
+        if ($slotExistsStmt->rowCount() > 0) {
+            // Update existing slot
+            $updateSlotQuery = "UPDATE admin_doctor_appointment_slots 
+                               SET is_booked = 1, appointment_id = ? 
+                               WHERE schedule_id = ? AND slot_time = ?";
+            $updateSlotStmt = $con->prepare($updateSlotQuery);
+            $updateSlotStmt->execute([$appointmentId, $scheduleId, $appointmentTime]);
+        } else {
+            // Create new slot
+            $createSlotQuery = "INSERT INTO admin_doctor_appointment_slots 
+                               (schedule_id, slot_time, is_booked, appointment_id) 
+                               VALUES (?, ?, 1, ?)";
+            $createSlotStmt = $con->prepare($createSlotQuery);
+            $createSlotStmt->execute([$scheduleId, $appointmentTime, $appointmentId]);
+        }
+    }
+    
+    $con->commit();
+    
+    // Format appointment time for display
+    $formattedTime = date('h:i A', strtotime($appointmentTime));
+    $formattedDate = date('M d, Y', strtotime($appointmentDate));
+    
+    echo json_encode([
+        'success' => true,
+        'message' => "Walk-in appointment successfully booked for {$patientName} on {$formattedDate} at {$formattedTime}",
+        'appointment_id' => $appointmentId
+    ]);
+    
+} catch (Exception $e) {
+    if ($con->inTransaction()) {
+        $con->rollBack();
+    }
+    
+    error_log("Walk-in appointment booking error: " . $e->getMessage());
+    
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
+}
+?> 

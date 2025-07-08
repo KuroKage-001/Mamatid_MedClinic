@@ -2,6 +2,9 @@
 // Start session
 session_start();
 
+// Include admin-client session isolation functions
+require_once './system/security/admin_client_session_isolation.php';
+
 // Check if client is logged in
 if (!isset($_SESSION['client_id'])) {
     header("location: client_login.php");
@@ -13,21 +16,15 @@ $session_id = session_id();
 $client_id = $_SESSION['client_id'] ?? 'unknown';
 $client_name = $_SESSION['client_name'] ?? 'unknown';
 
-// Log the logout action (optional - for audit trail)
-error_log("Client logout: ID=$client_id, Name=$client_name, Session=$session_id, Time=" . date('Y-m-d H:i:s'));
+// Log the logout action with session state
+logSessionOperation('client_logout', [
+    'client_id' => $client_id,
+    'client_name' => $client_name,
+    'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+]);
 
-// Only unset client session variables instead of clearing the entire session
-// This preserves any admin/staff session that might be active
-$client_session_vars = ['client_id', 'client_name', 'client_email'];
-foreach ($client_session_vars as $var) {
-    if (isset($_SESSION[$var])) {
-        unset($_SESSION[$var]);
-    }
-}
-
-// No need to destroy the entire session or delete cookies
-// Just regenerate the session ID for security
-session_regenerate_id(true);
+// Use safe client logout to preserve any admin/staff session that might be active
+safeClientLogout();
 
 // Redirect to client login page with logout message
 header("location: client_login.php?message=logged_out");

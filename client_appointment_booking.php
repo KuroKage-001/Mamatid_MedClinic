@@ -1,5 +1,5 @@
 <?php
-// Include client authentication check
+// Include client authentication check (this handles session isolation automatically)
 require_once './system/utilities/check_client_auth.php';
 
 include './config/db_connection.php';
@@ -510,6 +510,16 @@ if (empty($calendarEvents)) {
             border-color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .time-slot:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+        }
+        
+        .time-slot[aria-disabled="true"]:focus {
+            outline-color: #F64E60;
         }
         
         .time-slot.selected {
@@ -1816,33 +1826,49 @@ if (empty($calendarEvents)) {
                     
                     // Handle "Book This Schedule" button click
                     $('.book-this-schedule').click(function() {
-                        // Close the modal
+                        // Store the button for focus management
+                        var $button = $(this);
+                        
+                        // Close the modal and handle focus properly
                         $('#' + modalId).modal('hide');
                         
-                        // Set form values
-                        $('#selectedDoctor').val(staffName);
-                        $('#scheduleId').val(scheduleId);
-                        
-                        // Set the schedule type properly
-                        console.log('Schedule type:', scheduleType);
-                        $('input[name="schedule_type"]').val(scheduleType);
-                        
-                        // Update label based on schedule type
-                        if (scheduleType === 'staff') {
-                            $('label[for="selectedDoctor"]').text('Healthcare Provider');
-                        } else {
-                            $('label[for="selectedDoctor"]').text('Doctor');
-                        }
-                        
-                        $('#selectedDate').val(formattedDate);
-                        
-                        // Generate time slots
-                        generateTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
-                        
-                        // Scroll to the booking form
-                        $('html, body').animate({
-                            scrollTop: $("#timeSlots").offset().top - 100
-                        }, 500);
+                        // Wait for modal to be fully hidden before proceeding
+                        $('#' + modalId).on('hidden.bs.modal', function() {
+                            // Set form values
+                            $('#selectedDoctor').val(staffName);
+                            $('#scheduleId').val(scheduleId);
+                            
+                            // Set the schedule type properly
+                            console.log('Schedule type:', scheduleType);
+                            $('input[name="schedule_type"]').val(scheduleType);
+                            
+                            // Update label based on schedule type
+                            if (scheduleType === 'staff') {
+                                $('label[for="selectedDoctor"]').text('Healthcare Provider');
+                            } else {
+                                $('label[for="selectedDoctor"]').text('Doctor');
+                            }
+                            
+                            $('#selectedDate').val(formattedDate);
+                            
+                            // Generate time slots
+                            generateTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
+                            
+                            // Scroll to the booking form and focus on the first time slot
+                            $('html, body').animate({
+                                scrollTop: $("#timeSlots").offset().top - 100
+                            }, 500, function() {
+                                // Focus on the first available time slot after scrolling
+                                setTimeout(function() {
+                                    var $firstSlot = $('.time-slot:not(.booked)').first();
+                                    if ($firstSlot.length) {
+                                        $firstSlot.focus();
+                                    } else {
+                                        $('#reason').focus(); // Focus on reason field if no slots available
+                                    }
+                                }, 200);
+                            });
+                        });
                     });
                     
                     // Remove modal from DOM when hidden
@@ -2011,7 +2037,7 @@ if (empty($calendarEvents)) {
                             if (!isBooked && !clientHasAppointment) {
                                 hasAvailableSlots = true;
                                 
-                                slotElement = $('<div class="time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '" data-period="' + timePeriod + '">' +
+                                slotElement = $('<div class="time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="Select appointment time ' + formattedTime + ', ' + remainingSlots + ' slots available">' +
                                     '<div class="time-label"><i class="far fa-clock"></i>' + formattedTime + '</div>' +
                                     '<span class="badge badge-info">' + remainingSlots + ' available</span>' +
                                     '<div class="slot-status">Open</div>' +
@@ -2019,14 +2045,14 @@ if (empty($calendarEvents)) {
                                 
                             } else if (clientHasAppointment) {
                                 // Client already has an appointment at this time
-                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '">' +
+                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + formattedTime + ' - You already have an appointment at this time" aria-disabled="true">' +
                                     '<div class="time-label"><i class="fas fa-calendar-check"></i>' + formattedTime + '</div>' +
                                     '<span class="badge badge-primary">Your appointment</span>' +
                                     '<div class="slot-status">Booked by you</div>' +
                                     '</div>');
                                 
                             } else {
-                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '">' +
+                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + formattedTime + ' - This time slot is unavailable" aria-disabled="true">' +
                                     '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + '</div>' +
                                     '<span class="badge badge-danger">Booked</span>' +
                                     '<div class="slot-status">Unavailable</div>' +
@@ -2077,21 +2103,44 @@ if (empty($calendarEvents)) {
                             // Initialize tooltips
                             $('[data-toggle="tooltip"]').tooltip();
                             
-                            // Handle time slot selection
+                            // Handle time slot selection with mouse
                             $('.time-slot:not(.booked)').click(function() {
+                                selectTimeSlot($(this));
+                            });
+                            
+                            // Handle time slot selection with keyboard
+                            $('.time-slot:not(.booked)').keydown(function(e) {
+                                if (e.which === 13 || e.which === 32) { // Enter or Space key
+                                    e.preventDefault();
+                                    selectTimeSlot($(this));
+                                }
+                            });
+                            
+                            // Function to select a time slot
+                            function selectTimeSlot($slot) {
                                 $('.time-slot').removeClass('selected');
-                                $(this).addClass('selected');
-                                $('#appointmentTime').val($(this).data('time'));
+                                $slot.addClass('selected');
+                                $('#appointmentTime').val($slot.data('time'));
                                 $('#bookBtn').prop('disabled', false);
                                 
+                                // Update ARIA attributes
+                                $('.time-slot').attr('aria-pressed', 'false');
+                                $slot.attr('aria-pressed', 'true');
+                                
                                 // Update tooltip
-                                $(this).attr('title', 'Selected time slot')
-                                       .tooltip('dispose')
-                                       .tooltip();
+                                $slot.attr('title', 'Selected time slot')
+                                     .tooltip('dispose')
+                                     .tooltip();
                                 
                                 // Update legend counts
                                 updateLegendCounts();
-                            });
+                                
+                                // Show success message
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Time slot selected: ' + $slot.find('.time-label').text()
+                                });
+                            }
                             
                             // Add lock effect to booked slots
                             $('.time-slot.locked').append('<div class="lock-overlay"><i class="fas fa-lock"></i></div>');

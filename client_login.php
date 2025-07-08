@@ -1,5 +1,13 @@
 <?php
-session_start();
+// Include admin-client session isolation functions first (before any session operations)
+require_once './system/security/admin_client_session_isolation.php';
+
+// Initialize secure session using the isolation functions
+if (!initializeSecureSession()) {
+    die('Failed to initialize session. Please try again.');
+}
+
+// Include database connection after session is properly initialized
 include './config/db_connection.php';
 
 // Alert Handler Code
@@ -53,64 +61,93 @@ $message = '';
 
 // Handle login submission
 if (isset($_POST['login'])) {
+    
     // Get form inputs
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Encrypt password with MD5 (note: MD5 is not recommended for production use)
-    $encryptedPassword = md5($password);
-
-    // Prepare query to fetch client details
-    $query = "SELECT `id`, `full_name`, `email`
-              FROM `clients_user_accounts`
-              WHERE `email` = ? AND `password` = ?";
-
-    try {
-        // Execute the query with prepared statement
-        $stmtLogin = $con->prepare($query);
-        $stmtLogin->execute([$email, $encryptedPassword]);
-
-        // Check if exactly one client was found
-        $count = $stmtLogin->rowCount();
-        if ($count == 1) {
-            // Fetch client data
-            $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
-
-            // Store client data in session
-            $_SESSION['client_id'] = $row['id'];
-            $_SESSION['client_name'] = $row['full_name'];
-            $_SESSION['client_email'] = $row['email'];
-            $_SESSION['client_last_activity'] = time(); // Set client activity timestamp
-            
-            // Fetch client profile picture
-            $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
-            $profileStmt = $con->prepare($profileQuery);
-            $profileStmt->execute([$row['id']]);
-            $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
-            
-            // Set profile picture in session
-            $_SESSION['client_profile_picture'] = !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png';
-
-            // Handle "Remember Me" functionality
-            if (isset($_POST['remember_me'])) {
-                // Set cookie to remember the email for 30 days
-                setcookie("remembered_client_email", $email, time() + (30 * 24 * 60 * 60), "/");
-            } else {
-                // Clear the cookie if "Remember Me" is unchecked
-                setcookie("remembered_client_email", "", time() - 3600, "/");
-            }
-
-            // Redirect to client dashboard
-            header("location:client_dashboard.php");
-            exit;
-        } else {
-            // Invalid credentials
-            $_SESSION['alert_type'] = 'error';
-            $_SESSION['alert_message'] = 'Access Denied: Incorrect email or password. Please check your credentials and try again.';
-        }
-    } catch(PDOException $ex) {
+    // Basic validation
+    if (empty($email) || empty($password)) {
         $_SESSION['alert_type'] = 'error';
-        $_SESSION['alert_message'] = 'An error occurred. Please try again later.';
+        $_SESSION['alert_message'] = 'Please fill in all required fields.';
+    } else {
+        // Encrypt password with MD5 (note: MD5 is not recommended for production use)
+        $encryptedPassword = md5($password);
+
+        // Prepare query to fetch client details
+        $query = "SELECT `id`, `full_name`, `email`
+                  FROM `clients_user_accounts`
+                  WHERE `email` = ? AND `password` = ?";
+
+        try {
+            // Execute the query with prepared statement
+            $stmtLogin = $con->prepare($query);
+            $stmtLogin->execute([$email, $encryptedPassword]);
+
+            // Check if exactly one client was found
+            $count = $stmtLogin->rowCount();
+            if ($count == 1) {
+                // Fetch client data
+                $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
+
+                // Store client data in session using safe functions
+                setClientSessionVar('client_id', $row['id']);
+                setClientSessionVar('client_name', $row['full_name']);
+                setClientSessionVar('client_email', $row['email']);
+                setClientSessionVar('client_last_activity', time()); // Set client activity timestamp
+                
+                // Fetch client profile picture
+                $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
+                $profileStmt = $con->prepare($profileQuery);
+                $profileStmt->execute([$row['id']]);
+                $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
+                
+                // Set profile picture in session
+                setClientSessionVar('client_profile_picture', !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png');
+
+                // Handle "Remember Me" functionality
+                if (isset($_POST['remember_me'])) {
+                    // Set cookie to remember the email for 30 days
+                    setcookie("remembered_client_email", $email, time() + (30 * 24 * 60 * 60), "/");
+                } else {
+                    // Clear the cookie if "Remember Me" is unchecked
+                    setcookie("remembered_client_email", "", time() - 3600, "/");
+                }
+
+                // Log successful client login
+                logSessionOperation('client_login_success', [
+                    'client_id' => $row['id'],
+                    'client_name' => $row['full_name'],
+                    'client_email' => $row['email'],
+                    'has_concurrent_admin' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+                ]);
+
+                // Redirect to client dashboard
+                header("Location: client_dashboard.php");
+                exit;
+            } else {
+                // Invalid credentials
+                $_SESSION['alert_type'] = 'error';
+                $_SESSION['alert_message'] = 'Access Denied: Incorrect email or password. Please check your credentials and try again.';
+                
+                // Log failed login attempt
+                logSessionOperation('client_login_failed', [
+                    'email' => $email,
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+            }
+        } catch(PDOException $ex) {
+            $_SESSION['alert_type'] = 'error';
+            $_SESSION['alert_message'] = 'An error occurred. Please try again later.';
+            
+            // Log database error
+            error_log("Client login database error: " . $ex->getMessage());
+            logSessionOperation('client_login_db_error', [
+                'error' => $ex->getMessage(),
+                'email' => $email ?? 'unknown'
+            ]);
+        }
     }
 }
 

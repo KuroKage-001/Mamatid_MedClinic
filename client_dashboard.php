@@ -1,5 +1,5 @@
 <?php
-// Include client authentication check
+// Include client authentication check (this handles session isolation automatically)
 require_once './system/utilities/check_client_auth.php';
 
 include './config/db_connection.php';

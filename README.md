@@ -67,16 +67,16 @@ The system includes a comprehensive authentication mechanism to protect pages fr
 
 1. **check_auth.php**: Located in the system/utilities folder, this file checks if a user is logged in before allowing access to protected pages.
 
-2. **unauthorized_access.php**: Located in the system/security folder, this page is displayed when someone tries to access a protected page without logging in.
+2. **admin_client_unauthorized_access_control.php**: Located in the system/security folder, this unified page handles both unauthorized access (401) and access denied (403) scenarios.
 
 3. **add_auth_check.php**: Located in the system/utilities folder, this script can be used to add authentication checks to all PHP files in the system.
 
-4. **.htaccess**: Contains rules to redirect unauthorized access attempts to the unauthorized_access.php page.
+4. **.htaccess**: Contains rules to redirect unauthorized access attempts to the admin_client_unauthorized_access_control.php page.
 
 ### How Authentication Works
 
-- When a user tries to access a protected page without logging in, they are redirected to the unauthorized_access.php page.
-- The unauthorized_access.php page displays a 401 error and provides links to the login page.
+- When a user tries to access a protected page without proper authentication or authorization, they are redirected to the admin_client_unauthorized_access_control.php page.
+- This unified page displays either a 401 error (unauthorized access) or 403 error (access denied) based on the user's login status and permissions.
 - The check_auth.php file is included in all protected pages to ensure that only authenticated users can access them.
 
 ### Adding Authentication to New Pages
@@ -108,7 +108,7 @@ The following files are excluded from authentication checks:
 - client_login.php
 - client_register.php
 - client_logout.php
-- unauthorized_access.php
+- admin_client_unauthorized_access_control.php
 - congratulation.php
 
 ### Excluded Directories

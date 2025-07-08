@@ -47,6 +47,21 @@ if (isset($_POST['update_notes'])) {
 // Handle archive filter
 $showArchived = isset($_GET['archived']) ? (int)$_GET['archived'] : 0;
 
+// Add is_walkin column if it doesn't exist
+try {
+    $checkColumnQuery = "SHOW COLUMNS FROM admin_clients_appointments LIKE 'is_walkin'";
+    $checkStmt = $con->prepare($checkColumnQuery);
+    $checkStmt->execute();
+    
+    if ($checkStmt->rowCount() == 0) {
+        $alterQuery = "ALTER TABLE admin_clients_appointments ADD COLUMN is_walkin TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is a walk-in appointment'";
+        $alterStmt = $con->prepare($alterQuery);
+        $alterStmt->execute();
+    }
+} catch (PDOException $ex) {
+    // Column might already exist, continue
+}
+
 // Fetch all appointments with archive metadata
 try {
     if ($showArchived) {
@@ -857,6 +872,11 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                         </h3>
                         <div class="card-tools">
                             <div class="d-flex align-items-center">
+                                <?php if (!$showArchived): ?>
+                                    <button type="button" class="btn btn-success btn-sm mr-2" onclick="toggleWalkinForm()">
+                                        <i class="fas fa-plus-circle mr-1"></i> Add Walk-in Appointment
+                                    </button>
+                                <?php endif; ?>
                                 <a href="?archived=0" 
                                    class="archive-filter-btn <?php echo !$showArchived ? 'active' : ''; ?>">
                                     <i class="fas fa-list"></i> Active Records
@@ -900,6 +920,9 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                         <td><?php echo isset($row['formatted_time']) ? $row['formatted_time'] : date('h:i A', strtotime($row['appointment_time'])); ?></td>
                                         <td>
                                             <?php echo htmlspecialchars($row['patient_name']); ?>
+                                            <?php if (isset($row['is_walkin']) && $row['is_walkin']): ?>
+                                                <span class="badge badge-info ml-1"><i class="fas fa-walking fa-xs"></i> Walk-in</span>
+                                            <?php endif; ?>
                                             <?php if ($row['is_archived']): ?>
                                                 <span class="archived-tag"><i class="fas fa-archive fa-xs"></i> Archived</span>
                                             <?php endif; ?>
@@ -989,6 +1012,137 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <!-- Walk-in Appointment Form (Initially Hidden) -->
+                        <?php if (!$showArchived): ?>
+                        <div id="walkinFormContainer" class="mt-4" style="display: none;">
+                            <div class="card card-outline card-success">
+                                <div class="card-header bg-success">
+                                    <h5 class="card-title text-white mb-0">
+                                        <i class="fas fa-user-plus mr-2"></i>Add Walk-in Appointment
+                                    </h5>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool text-white" onclick="toggleWalkinForm()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Walk-in appointments are booked immediately without requiring patient registration or approval.
+                                    </div>
+                                    
+                                    <form id="walkinForm">
+                                        <!-- Patient Information -->
+                                        <h6 class="text-primary font-weight-bold mb-3">
+                                            <i class="fas fa-user mr-2"></i>Patient Information
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_patient_name" class="form-label">Full Name *</label>
+                                                    <input type="text" class="form-control" id="walkin_patient_name" name="patient_name" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_phone_number" class="form-label">Phone Number *</label>
+                                                    <input type="tel" class="form-control" id="walkin_phone_number" name="phone_number" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="walkin_address" class="form-label">Address *</label>
+                                                    <input type="text" class="form-control" id="walkin_address" name="address" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_date_of_birth" class="form-label">Date of Birth *</label>
+                                                    <input type="date" class="form-control" id="walkin_date_of_birth" name="date_of_birth" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_gender" class="form-label">Gender *</label>
+                                                    <select class="form-control" id="walkin_gender" name="gender" required>
+                                                        <option value="">Select Gender</option>
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female">Female</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Appointment Details -->
+                                        <h6 class="text-primary font-weight-bold mb-3 mt-4">
+                                            <i class="fas fa-calendar-check mr-2"></i>Appointment Details
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_appointment_date" class="form-label">Appointment Date *</label>
+                                                    <input type="date" class="form-control" id="walkin_appointment_date" name="appointment_date" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_provider_type" class="form-label">Provider Type *</label>
+                                                    <select class="form-control" id="walkin_provider_type" name="provider_type" required>
+                                                        <option value="">Select Provider Type</option>
+                                                        <option value="health_worker">Health Worker</option>
+                                                        <option value="doctor">Doctor</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_provider" class="form-label">Select Provider *</label>
+                                                    <select class="form-control" id="walkin_provider" name="provider_id" required disabled>
+                                                        <option value="">First select provider type</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="walkin_appointment_time" class="form-label">Available Time Slots *</label>
+                                                    <select class="form-control" id="walkin_appointment_time" name="appointment_time" required disabled>
+                                                        <option value="">First select provider and date</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="walkin_reason" class="form-label">Reason for Visit *</label>
+                                            <textarea class="form-control" id="walkin_reason" name="reason" rows="3" placeholder="Describe the reason for this appointment..." required></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="walkin_notes" class="form-label">Notes (Optional)</label>
+                                            <textarea class="form-control" id="walkin_notes" name="notes" rows="2" placeholder="Any additional notes..."></textarea>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-12 text-right">
+                                                <button type="button" class="btn btn-secondary mr-2" onclick="toggleWalkinForm()">
+                                                    <i class="fas fa-times mr-2"></i>Cancel
+                                                </button>
+                                                <button type="submit" class="btn btn-success" id="walkin_submit_btn">
+                                                    <i class="fas fa-plus-circle mr-2"></i>Book Walk-in Appointment
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                         
                         <div class="export-container mt-4" id="appointmentExportContainer">
                             <a href="#" class="export-action-btn export-copy-btn" id="btnAppointmentCopy">
@@ -1233,6 +1387,167 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 }
             });
         }
+
+        // Walk-in Appointment JavaScript
+        // Toggle walk-in form visibility
+        function toggleWalkinForm() {
+            const formContainer = $('#walkinFormContainer');
+            if (formContainer.is(':visible')) {
+                formContainer.slideUp(300);
+                // Reset form when hiding
+                $('#walkinForm')[0].reset();
+                $('#walkin_provider').prop('disabled', true).html('<option value="">First select provider type</option>');
+                $('#walkin_appointment_time').prop('disabled', true).html('<option value="">First select provider and date</option>');
+            } else {
+                formContainer.slideDown(300);
+                // Set default date to today
+                $('#walkin_appointment_date').val('<?= date('Y-m-d') ?>');
+                // Focus on first input
+                setTimeout(() => {
+                    $('#walkin_patient_name').focus();
+                }, 350);
+            }
+        }
+        
+        // Provider type change handler
+        $('#walkin_provider_type').change(function() {
+            const providerType = $(this).val();
+            const providerSelect = $('#walkin_provider');
+            
+            providerSelect.prop('disabled', true).html('<option value="">Loading providers...</option>');
+            $('#walkin_appointment_time').prop('disabled', true).html('<option value="">First select provider and date</option>');
+            
+            if (providerType) {
+                $.ajax({
+                    url: 'ajax/get_providers.php',
+                    type: 'POST',
+                    data: { provider_type: providerType },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            let options = '<option value="">Select Provider</option>';
+                            response.providers.forEach(function(provider) {
+                                options += `<option value="${provider.id}">${provider.display_name}</option>`;
+                            });
+                            providerSelect.html(options).prop('disabled', false);
+                        } else {
+                            providerSelect.html('<option value="">No providers available</option>');
+                        }
+                    },
+                    error: function() {
+                        providerSelect.html('<option value="">Error loading providers</option>');
+                    }
+                });
+            } else {
+                providerSelect.html('<option value="">First select provider type</option>');
+            }
+        });
+        
+        // Provider and date change handler
+        $('#walkin_provider, #walkin_appointment_date').change(function() {
+            const providerId = $('#walkin_provider').val();
+            const providerType = $('#walkin_provider_type').val();
+            const appointmentDate = $('#walkin_appointment_date').val();
+            const timeSelect = $('#walkin_appointment_time');
+            
+            if (providerId && appointmentDate && providerType) {
+                timeSelect.prop('disabled', true).html('<option value="">Loading available slots...</option>');
+                
+                $.ajax({
+                    url: 'ajax/get_available_slots.php',
+                    type: 'POST',
+                    data: { 
+                        provider_id: providerId,
+                        provider_type: providerType,
+                        appointment_date: appointmentDate
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.slots.length > 0) {
+                            let options = '<option value="">Select Available Time</option>';
+                            response.slots.forEach(function(slot) {
+                                options += `<option value="${slot.time}">${slot.formatted_time}</option>`;
+                            });
+                            timeSelect.html(options).prop('disabled', false);
+                        } else {
+                            timeSelect.html('<option value="">No available slots for this date</option>');
+                        }
+                    },
+                    error: function() {
+                        timeSelect.html('<option value="">Error loading time slots</option>');
+                    }
+                });
+            } else {
+                timeSelect.prop('disabled', true).html('<option value="">First select provider and date</option>');
+            }
+        });
+        
+        // Walk-in appointment form submission
+        $('#walkinForm').submit(function(e) {
+            e.preventDefault();
+            
+            const submitBtn = $('#walkin_submit_btn');
+            const originalBtnText = submitBtn.html();
+            
+            // Show loading state
+            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Booking Appointment...');
+            
+            // Prepare form data
+            const formData = {
+                patient_name: $('#walkin_patient_name').val(),
+                phone_number: $('#walkin_phone_number').val(),
+                address: $('#walkin_address').val(),
+                date_of_birth: $('#walkin_date_of_birth').val(),
+                gender: $('#walkin_gender').val(),
+                appointment_date: $('#walkin_appointment_date').val(),
+                appointment_time: $('#walkin_appointment_time').val(),
+                provider_id: $('#walkin_provider').val(),
+                provider_type: $('#walkin_provider_type').val(),
+                reason: $('#walkin_reason').val(),
+                notes: $('#walkin_notes').val()
+            };
+            
+            $.ajax({
+                url: 'actions/book_walkin_appointment.php',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Walk-in Appointment Booked!',
+                            text: response.message,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Hide the form and refresh the page
+                            $('#walkinFormContainer').slideUp(300);
+                            setTimeout(() => {
+                                location.reload(); // Refresh to show new appointment
+                            }, 400);
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Booking Failed',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while booking the appointment. Please try again.'
+                    });
+                },
+                complete: function() {
+                    // Reset button
+                    submitBtn.prop('disabled', false).html(originalBtnText);
+                }
+            });
+        });
 
         // Highlight current menu
         showMenuSelected("#mnu_appointments", "#mi_appointments");

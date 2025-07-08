@@ -4,8 +4,67 @@
     <title>Access Denied</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="0;url=../../index.php">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none';">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f8f9fa;
+            color: #dc3545;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <p>Access Denied. Redirecting...</p>
+    <div class="container">
+        <div class="icon">🚫</div>
+        <h2>Access Denied</h2>
+        <p>Database directory access is strictly forbidden.</p>
+        <p>Redirecting to main page...</p>
+        
+        <!-- Fallback JavaScript redirect -->
+        <script>
+            setTimeout(function() {
+                window.location.href = '../../index.php';
+            }, 1000);
+        </script>
+        
+        <!-- Noscript fallback -->
+        <noscript>
+            <p><a href="../../index.php">Click here if you are not redirected automatically</a></p>
+        </noscript>
+    </div>
 </body>
 </html> 
