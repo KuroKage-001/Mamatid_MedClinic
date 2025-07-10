@@ -1215,399 +1215,9 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             z-index: 1000;
         }
 
-        /* Bulk Actions Styling */
-        .bulk-actions-container {
-            position: relative;
-        }
 
-        .btn-bulk-actions {
-            background: linear-gradient(135deg, #8950FC 0%, #7C3AED 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(137, 80, 252, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
 
-        .btn-bulk-actions::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s ease;
-        }
 
-        .btn-bulk-actions:hover::before {
-            left: 100%;
-        }
-
-        .btn-bulk-actions:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(137, 80, 252, 0.4);
-            background: linear-gradient(135deg, #7C3AED 0%, #8950FC 100%);
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-bulk-actions:focus {
-            color: white;
-            text-decoration: none;
-            box-shadow: 0 0 0 3px rgba(137, 80, 252, 0.5);
-        }
-
-        .btn-bulk-actions i {
-            font-size: 1rem;
-            z-index: 2;
-            position: relative;
-        }
-
-        .btn-text {
-            z-index: 2;
-            position: relative;
-        }
-
-        .pending-count {
-            background: rgba(255, 255, 255, 0.9);
-            color: #8950FC;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-            animation: pulse-count 2s infinite;
-            z-index: 2;
-            position: relative;
-        }
-
-        @keyframes pulse-count {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
-            }
-            70% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-            }
-        }
-
-        /* Bulk Dropdown Menu Styling */
-        .bulk-dropdown-menu {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 0.5rem 0;
-            min-width: 280px;
-            backdrop-filter: blur(10px);
-            animation: dropdownSlide 0.3s ease;
-        }
-
-        @keyframes dropdownSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .bulk-dropdown-menu .dropdown-header {
-            color: #ecf0f1;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 0.75rem 1rem 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 0.25rem;
-        }
-
-        .bulk-dropdown-menu .dropdown-divider {
-            border-color: rgba(255, 255, 255, 0.1);
-            margin: 0.5rem 0;
-        }
-
-        .bulk-action-item {
-            background: transparent;
-            border: none;
-            color: #ecf0f1;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            width: 100%;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .bulk-action-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ecf0f1;
-            text-decoration: none;
-            backdrop-filter: blur(5px);
-        }
-
-        .bulk-action-item:focus {
-            color: #ecf0f1;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .bulk-action-item i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .action-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .action-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-            line-height: 1.2;
-        }
-
-        .action-description {
-            font-size: 0.75rem;
-            color: #bdc3c7;
-            line-height: 1.2;
-            margin-top: 0.1rem;
-        }
-
-        /* All Approved Indicator */
-        .all-approved-indicator {
-            display: flex;
-            align-items: center;
-        }
-
-        .success-badge {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            animation: successPulse 3s infinite;
-        }
-
-        @keyframes successPulse {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            }
-            50% {
-                box-shadow: 0 4px 20px rgba(39, 174, 96, 0.5);
-            }
-        }
-
-        /* Select Mode Styling */
-        .select-mode-active {
-            position: relative;
-        }
-
-        .select-mode-active::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            background: linear-gradient(45deg, #3498db, #e67e22, #e74c3c, #9b59b6);
-            border-radius: 15px;
-            z-index: -1;
-            animation: selectModeGlow 2s linear infinite;
-        }
-
-        @keyframes selectModeGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .schedule-row-checkbox {
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.3s ease;
-        }
-
-        .select-mode-active .schedule-row-checkbox {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .schedule-row-selected {
-            background: rgba(52, 152, 219, 0.1) !important;
-            border-left: 4px solid #3498db;
-        }
-
-        /* Bulk Action Bar */
-        .bulk-action-bar {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1050;
-            animation: slideUpBar 0.3s ease;
-        }
-
-        @keyframes slideUpBar {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .bulk-action-bar.active {
-            display: flex;
-        }
-
-        .selected-count {
-            background: rgba(52, 152, 219, 0.2);
-            color: #3498db;
-            padding: 0.3rem 0.8rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .bulk-action-buttons {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn-approve-selected,
-        .btn-cancel-selection {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-approve-selected {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-
-        .btn-approve-selected:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-cancel-selection {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-            color: white;
-        }
-
-        .btn-cancel-selection:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
-        }
-
-                 /* Gap utility for flex containers */
-         .gap-2 {
-             gap: 0.5rem;
-         }
-
-         /* Card header bulk actions positioning */
-         .card-header .bulk-actions-container {
-             margin-right: 0.5rem;
-         }
-
-         /* Responsive Design for Bulk Actions */
-         @media (max-width: 768px) {
-             .btn-bulk-actions {
-                 padding: 0.6rem 1rem;
-                 font-size: 0.85rem;
-             }
-
-             .btn-bulk-actions .btn-text {
-                 display: none;
-             }
-
-             .bulk-dropdown-menu {
-                 min-width: 250px;
-                 margin-left: -50px;
-             }
-
-             .bulk-action-bar {
-                 left: 10px;
-                 right: 10px;
-                 transform: none;
-                 padding: 0.75rem 1rem;
-             }
-
-             .bulk-action-buttons {
-                 flex-direction: column;
-                 gap: 0.5rem;
-                 width: 100%;
-             }
-
-             .btn-approve-selected,
-             .btn-cancel-selection {
-                 width: 100%;
-                 justify-content: center;
-             }
-
-             .card-header .d-flex {
-                 flex-direction: column;
-                 align-items: flex-start !important;
-             }
-
-             .card-header .bulk-actions-container {
-                 margin-top: 0.75rem;
-                 margin-right: 0;
-                 align-self: flex-end;
-             }
-
-             .success-badge {
-                 font-size: 0.8rem;
-                 padding: 0.5rem 1rem;
-             }
-         }
 
         /* Modern Export Actions CSS */
         .dt-button-collection {
@@ -1817,40 +1427,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             }
         }
 
-        /* SweetAlert Custom Styling */
-        .swal-bulk-container .swal2-popup {
-            border-radius: 20px !important;
-            backdrop-filter: blur(10px) !important;
-        }
 
-        .swal2-popup .swal2-title {
-            font-weight: 600 !important;
-            margin-bottom: 1rem !important;
-        }
-
-        .swal2-popup .swal2-content {
-            font-size: 0.95rem !important;
-            line-height: 1.5 !important;
-        }
-
-        .swal2-popup .swal2-actions {
-            gap: 0.75rem !important;
-        }
-
-        .swal2-popup .swal2-confirm,
-        .swal2-popup .swal2-cancel {
-            border-radius: 10px !important;
-            font-weight: 500 !important;
-            padding: 0.75rem 1.5rem !important;
-            font-size: 0.9rem !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .swal2-popup .swal2-confirm:hover,
-        .swal2-popup .swal2-cancel:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
-        }
 
         /* Modern Export Actions CSS */
     </style>
@@ -2027,52 +1604,17 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                 Doctor Schedules
                             </h3>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="bulk-actions-container">
-                                    <?php if ($pendingApprovals > 0): ?>
-                                    <div class="dropdown">
-                                        <button class="btn-bulk-actions dropdown-toggle" type="button" id="bulkActionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-tasks mr-2"></i>
-                                            <span class="btn-text">Bulk Actions</span>
-                                            <span class="pending-count"><?php echo $pendingApprovals; ?></span>
-                                        </button>
-                                        <div class="dropdown-menu bulk-dropdown-menu dropdown-menu-right" aria-labelledby="bulkActionsDropdown">
-                                            <div class="dropdown-header">
-                                                <i class="fas fa-clipboard-list mr-2"></i>Schedule Management
-                                            </div>
-                                            <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item bulk-action-item" onclick="approveAllPending()">
-                                                <i class="fas fa-check-circle text-success mr-2"></i>
-                                                <div class="action-content">
-                                                    <span class="action-title">Approve All Pending</span>
-                                                    <small class="action-description">Approve all <?php echo $pendingApprovals; ?> pending schedule<?php echo $pendingApprovals > 1 ? 's' : ''; ?></small>
-                                                </div>
-                                            </button>
-                                            <button class="dropdown-item bulk-action-item" onclick="toggleSelectMode()">
-                                                <i class="fas fa-check-square text-info mr-2"></i>
-                                                <div class="action-content">
-                                                    <span class="action-title">Select Multiple</span>
-                                                    <small class="action-description">Choose specific schedules to approve</small>
-                                                </div>
-                                            </button>
-                                            <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item bulk-action-item" onclick="refreshSchedules()">
-                                                <i class="fas fa-sync-alt text-primary mr-2"></i>
-                                                <div class="action-content">
-                                                    <span class="action-title">Refresh Data</span>
-                                                    <small class="action-description">Reload schedule information</small>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <?php else: ?>
-                                    <div class="all-approved-indicator">
-                                        <div class="success-badge">
-                                            <i class="fas fa-check-circle mr-2"></i>
-                                            <span>All Schedules Approved</span>
-                                        </div>
-                                    </div>
-                                    <?php endif; ?>
+                                <?php if ($pendingApprovals > 0): ?>
+                                <button class="btn btn-success" onclick="approveAllPending()">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Approve All Pending (<?php echo $pendingApprovals; ?>)
+                                </button>
+                                <?php else: ?>
+                                <div class="alert alert-success mb-0 py-2 px-3">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    All Schedules Approved
                                 </div>
+                                <?php endif; ?>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                         <i class="fas fa-minus"></i>
@@ -2086,12 +1628,6 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             <table id="doctorSchedules" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th width="40">
-                                            <div class="custom-control custom-checkbox schedule-row-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="selectAllSchedules">
-                                                <label class="custom-control-label" for="selectAllSchedules"></label>
-                                            </div>
-                                        </th>
                                         <th>Doctor</th>
                                         <th>Date</th>
                                         <th>Time</th>
@@ -2107,15 +1643,6 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                     <tr data-schedule-id="<?php echo $schedule['id']; ?>" 
                                         data-schedule-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"
                                         class="schedule-row <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved-row' : 'pending-row'; ?>">
-                                        <td>
-                                            <div class="custom-control custom-checkbox schedule-row-checkbox">
-                                                <input type="checkbox" class="custom-control-input schedule-checkbox" 
-                                                       id="schedule_<?php echo $schedule['id']; ?>" 
-                                                       value="<?php echo $schedule['id']; ?>"
-                                                       data-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>">
-                                                <label class="custom-control-label" for="schedule_<?php echo $schedule['id']; ?>"></label>
-                                            </div>
-                                        </td>
                                         <td><?php echo htmlspecialchars($schedule['doctor_name']); ?></td>
                                         <td><?php echo date('M d, Y (D)', strtotime($schedule['schedule_date'])); ?></td>
                                         <td>
@@ -2340,23 +1867,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     </div>
                 </div>
 
-                <!-- Bulk Action Bar (Initially Hidden) -->
-                <div class="bulk-action-bar" id="bulkActionBar">
-                    <div class="d-flex align-items-center gap-3">
-                        <i class="fas fa-check-square fa-lg text-info"></i>
-                        <span class="selected-count" id="selectedCount">0 selected</span>
-                        <div class="bulk-action-buttons">
-                            <button class="btn-approve-selected" onclick="approveSelectedSchedules()">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Approve Selected</span>
-                            </button>
-                            <button class="btn-cancel-selection" onclick="exitSelectMode()">
-                                <i class="fas fa-times"></i>
-                                <span>Cancel</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+
                 
                 <!-- Staff Schedules Card -->
                 <div class="card card-outline card-success mb-4">
@@ -2847,135 +2358,16 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                  }, 5000);
              });
 
-             // Bulk Actions JavaScript
-             
-             // Global variables for bulk operations
-             let isSelectModeActive = false;
-             let selectedSchedules = new Set();
-             
-             // Initialize bulk action functionality
-             initializeBulkActions();
+                         // Simple approve all pending functionality
+             $(document).on('click', '[onclick="approveAllPending()"]', function(e) {
+                 e.preventDefault();
+                 window.approveAllPending();
+                 return false;
+             });
          });
 
-         // Initialize bulk action functionality
-         function initializeBulkActions() {
-             // Handle individual checkbox changes
-             $(document).on('change', '.schedule-checkbox', function() {
-                 const scheduleId = $(this).val();
-                 const isChecked = $(this).is(':checked');
-                 const $row = $(this).closest('tr');
-                 
-                 if (isChecked) {
-                     selectedSchedules.add(scheduleId);
-                     $row.addClass('schedule-row-selected');
-                 } else {
-                     selectedSchedules.delete(scheduleId);
-                     $row.removeClass('schedule-row-selected');
-                 }
-                 
-                 updateBulkActionBar();
-                 updateSelectAllCheckbox();
-             });
-             
-             // Handle select all checkbox
-             $('#selectAllSchedules').change(function() {
-                 const isChecked = $(this).is(':checked');
-                 $('.schedule-checkbox').each(function() {
-                     const $checkbox = $(this);
-                     const $row = $checkbox.closest('tr');
-                     const scheduleId = $checkbox.val();
-                     
-                     $checkbox.prop('checked', isChecked);
-                     
-                     if (isChecked) {
-                         selectedSchedules.add(scheduleId);
-                         $row.addClass('schedule-row-selected');
-                     } else {
-                         selectedSchedules.delete(scheduleId);
-                         $row.removeClass('schedule-row-selected');
-                     }
-                 });
-                 
-                 updateBulkActionBar();
-             });
-         }
-         
-         // Toggle select mode
-         function toggleSelectMode() {
-             isSelectModeActive = !isSelectModeActive;
-             const $doctorSchedulesCard = $('#doctorSchedules').closest('.card');
-             
-             if (isSelectModeActive) {
-                 $doctorSchedulesCard.addClass('select-mode-active');
-                 
-                 // Show success message
-                 Swal.fire({
-                     icon: 'info',
-                     title: 'Select Mode Activated',
-                     text: 'Click checkboxes to select schedules for bulk approval.',
-                     toast: true,
-                     position: 'top-end',
-                     showConfirmButton: false,
-                     timer: 3000,
-                     background: '#2c3e50',
-                     color: '#ecf0f1'
-                 });
-             } else {
-                 exitSelectMode();
-             }
-         }
-         
-         // Exit select mode
-         function exitSelectMode() {
-             isSelectModeActive = false;
-             selectedSchedules.clear();
-             
-             const $doctorSchedulesCard = $('#doctorSchedules').closest('.card');
-             $doctorSchedulesCard.removeClass('select-mode-active');
-             
-             // Clear all selections
-             $('.schedule-checkbox').prop('checked', false);
-             $('#selectAllSchedules').prop('checked', false);
-             $('.schedule-row').removeClass('schedule-row-selected');
-             
-             // Hide bulk action bar
-             $('#bulkActionBar').removeClass('active');
-         }
-         
-         // Update bulk action bar
-         function updateBulkActionBar() {
-             const count = selectedSchedules.size;
-             const $bulkActionBar = $('#bulkActionBar');
-             const $selectedCount = $('#selectedCount');
-             
-             if (count > 0) {
-                 $selectedCount.text(`${count} selected`);
-                 $bulkActionBar.addClass('active');
-             } else {
-                 $bulkActionBar.removeClass('active');
-             }
-         }
-         
-         // Update select all checkbox state
-         function updateSelectAllCheckbox() {
-             const totalCheckboxes = $('.schedule-checkbox').length;
-             const checkedCheckboxes = $('.schedule-checkbox:checked').length;
-             const $selectAll = $('#selectAllSchedules');
-             
-             if (checkedCheckboxes === 0) {
-                 $selectAll.prop('indeterminate', false);
-                 $selectAll.prop('checked', false);
-             } else if (checkedCheckboxes === totalCheckboxes) {
-                 $selectAll.prop('indeterminate', false);
-                 $selectAll.prop('checked', true);
-             } else {
-                 $selectAll.prop('indeterminate', true);
-                 $selectAll.prop('checked', false);
-             }
-         }
-         
-         // Approve all pending schedules
-         function approveAllPending() {
+         // Approve all pending schedules - Make this function globally accessible
+         window.approveAllPending = function() {
              const pendingCount = $('.schedule-row[data-schedule-status="pending"]').length;
              
              if (pendingCount === 0) {
@@ -2983,9 +2375,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                      icon: 'info',
                      title: 'No Pending Schedules',
                      text: 'All doctor schedules are already approved.',
-                     confirmButtonColor: '#3498db',
-                     background: '#2c3e50',
-                     color: '#ecf0f1'
+                     confirmButtonColor: '#3498db'
                  });
                  return;
              }
@@ -3009,173 +2399,68 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                  confirmButtonColor: '#27ae60',
                  cancelButtonColor: '#95a5a6',
                  confirmButtonText: '<i class="fas fa-check-circle mr-2"></i>Yes, Approve All',
-                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
-                 background: '#2c3e50',
-                 color: '#ecf0f1',
-                 customClass: {
-                     container: 'swal-bulk-container'
-                 }
+                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel'
              }).then((result) => {
                  if (result.isConfirmed) {
-                     performBulkApproval('all');
-                 }
-             });
-         }
-         
-         // Approve selected schedules
-         function approveSelectedSchedules() {
-             if (selectedSchedules.size === 0) {
-                 Swal.fire({
-                     icon: 'warning',
-                     title: 'No Schedules Selected',
-                     text: 'Please select at least one schedule to approve.',
-                     confirmButtonColor: '#f39c12',
-                     background: '#2c3e50',
-                     color: '#ecf0f1'
-                 });
-                 return;
-             }
-             
-             const selectedArray = Array.from(selectedSchedules);
-             const pendingSelected = selectedArray.filter(id => {
-                 return $(`.schedule-checkbox[value="${id}"]`).data('status') === 'pending';
-             });
-             
-             if (pendingSelected.length === 0) {
-                 Swal.fire({
-                     icon: 'info',
-                     title: 'No Pending Schedules Selected',
-                     text: 'All selected schedules are already approved.',
-                     confirmButtonColor: '#3498db',
-                     background: '#2c3e50',
-                     color: '#ecf0f1'
-                 });
-                 return;
-             }
-             
-             Swal.fire({
-                 title: 'Approve Selected Schedules?',
-                 html: `
-                     <div class="text-center">
-                         <div class="mb-3">
-                             <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
-                         </div>
-                         <p>Are you sure you want to approve <strong>${pendingSelected.length}</strong> selected schedule${pendingSelected.length > 1 ? 's' : ''}?</p>
-                         <div class="alert alert-info mt-3">
-                             <i class="fas fa-info-circle mr-2"></i>
-                             This action will make the selected schedules available for patient booking.
-                         </div>
-                     </div>
-                 `,
-                 icon: 'question',
-                 showCancelButton: true,
-                 confirmButtonColor: '#27ae60',
-                 cancelButtonColor: '#95a5a6',
-                 confirmButtonText: '<i class="fas fa-check-circle mr-2"></i>Yes, Approve Selected',
-                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
-                 background: '#2c3e50',
-                 color: '#ecf0f1'
-             }).then((result) => {
-                 if (result.isConfirmed) {
-                     performBulkApproval('selected', pendingSelected);
-                 }
-             });
-         }
-         
-         // Perform bulk approval
-         function performBulkApproval(type, scheduleIds = null) {
-             // Show loading
-             Swal.fire({
-                 title: 'Processing...',
-                 html: `
-                     <div class="text-center">
-                         <div class="spinner-border text-primary mb-3" role="status">
-                             <span class="sr-only">Loading...</span>
-                         </div>
-                         <p>Approving schedules, please wait...</p>
-                     </div>
-                 `,
-                 allowOutsideClick: false,
-                 allowEscapeKey: false,
-                 showConfirmButton: false,
-                 background: '#2c3e50',
-                 color: '#ecf0f1'
-             });
-             
-             // Prepare form data
-             const formData = new FormData();
-             formData.append('bulk_approve', '1');
-             formData.append('type', type);
-             
-             if (type === 'selected' && scheduleIds) {
-                 scheduleIds.forEach(id => {
-                     formData.append('schedule_ids[]', id);
-                 });
-             }
-             
-             // Submit form
-             fetch('actions/bulk_approve_schedules.php', {
-                 method: 'POST',
-                 body: formData
-             })
-             .then(response => response.json())
-             .then(data => {
-                 if (data.success) {
+                     // Show loading
                      Swal.fire({
-                         icon: 'success',
-                         title: 'Schedules Approved!',
-                         text: data.message,
-                         confirmButtonColor: '#27ae60',
-                         background: '#2c3e50',
-                         color: '#ecf0f1'
-                     }).then(() => {
-                         // Reload page to reflect changes
-                         location.reload();
+                         title: 'Processing...',
+                         html: `
+                             <div class="text-center">
+                                 <div class="spinner-border text-primary mb-3" role="status">
+                                     <span class="sr-only">Loading...</span>
+                                 </div>
+                                 <p>Approving schedules, please wait...</p>
+                             </div>
+                         `,
+                         allowOutsideClick: false,
+                         allowEscapeKey: false,
+                         showConfirmButton: false
                      });
-                 } else {
-                     Swal.fire({
-                         icon: 'error',
-                         title: 'Approval Failed',
-                         text: data.message || 'An error occurred while approving schedules.',
-                         confirmButtonColor: '#e74c3c',
-                         background: '#2c3e50',
-                         color: '#ecf0f1'
+                     
+                     // Prepare form data
+                     const formData = new FormData();
+                     formData.append('bulk_approve', '1');
+                     formData.append('type', 'all');
+                     
+                     // Submit form
+                     fetch('actions/bulk_approve_schedules.php', {
+                         method: 'POST',
+                         body: formData
+                     })
+                     .then(response => response.json())
+                     .then(data => {
+                         if (data.success) {
+                             Swal.fire({
+                                 icon: 'success',
+                                 title: 'Schedules Approved!',
+                                 text: data.message,
+                                 confirmButtonColor: '#27ae60'
+                             }).then(() => {
+                                 // Reload page to reflect changes
+                                 location.reload();
+                             });
+                         } else {
+                             Swal.fire({
+                                 icon: 'error',
+                                 title: 'Approval Failed',
+                                 text: data.message || 'An error occurred while approving schedules.',
+                                 confirmButtonColor: '#e74c3c'
+                             });
+                         }
+                     })
+                     .catch(error => {
+                         console.error('Error:', error);
+                         Swal.fire({
+                             icon: 'error',
+                             title: 'Error',
+                             text: 'An unexpected error occurred. Please try again.',
+                             confirmButtonColor: '#e74c3c'
+                         });
                      });
                  }
-             })
-             .catch(error => {
-                 console.error('Error:', error);
-                 Swal.fire({
-                     icon: 'error',
-                     title: 'Error',
-                     text: 'An unexpected error occurred. Please try again.',
-                     confirmButtonColor: '#e74c3c',
-                     background: '#2c3e50',
-                     color: '#ecf0f1'
-                 });
              });
-         }
-         
-         // Refresh schedules
-         function refreshSchedules() {
-             Swal.fire({
-                 title: 'Refreshing...',
-                 text: 'Updating schedule information...',
-                 allowOutsideClick: false,
-                 allowEscapeKey: false,
-                 showConfirmButton: false,
-                 didOpen: () => {
-                     Swal.showLoading();
-                 },
-                 background: '#2c3e50',
-                 color: '#ecf0f1'
-             });
-             
-             // Reload the page
-             setTimeout(() => {
-                 location.reload();
-             }, 1000);
-         }
+         };
 
         // Highlight current menu
         showMenuSelected("#mnu_appointments", "#mi_appointment_plotter");

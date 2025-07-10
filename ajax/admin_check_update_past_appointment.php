@@ -25,34 +25,61 @@ try {
     // Start a transaction
     $con->beginTransaction();
     
-    // Update past appointments to completed status
-    $query = "UPDATE appointments 
-              SET status = 'completed', 
-                  updated_at = NOW() 
-              WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
-              AND status = 'approved'";
+    $totalUpdated = 0;
+    
+    // Update past client appointments to completed status
+    $clientQuery = "UPDATE admin_clients_appointments 
+                    SET status = 'completed', 
+                        updated_at = NOW() 
+                    WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
+                    AND status = 'approved'
+                    AND is_archived = 0";
     
     // Add doctor_id filter if provided
     if ($doctorId !== null && $doctorId > 0) {
-        $query .= " AND doctor_id = :doctor_id";
+        $clientQuery .= " AND doctor_id = :doctor_id";
     }
     
-    $stmt = $con->prepare($query);
+    $clientStmt = $con->prepare($clientQuery);
     
     // Bind doctor_id if provided
     if ($doctorId !== null && $doctorId > 0) {
-        $stmt->bindParam(':doctor_id', $doctorId, PDO::PARAM_INT);
+        $clientStmt->bindParam(':doctor_id', $doctorId, PDO::PARAM_INT);
     }
     
-    $stmt->execute();
-    $updatedCount = $stmt->rowCount();
+    $clientStmt->execute();
+    $clientUpdated = $clientStmt->rowCount();
+    $totalUpdated += $clientUpdated;
+    
+    // Update past walk-in appointments to completed status
+    $walkinQuery = "UPDATE admin_walkin_appointments 
+                    SET status = 'completed', 
+                        updated_at = NOW() 
+                    WHERE CONCAT(appointment_date, ' ', appointment_time) < NOW() 
+                    AND status = 'approved'";
+    
+    // Add provider filter if provided (for walk-ins, we check both doctor and staff)
+    if ($doctorId !== null && $doctorId > 0) {
+        $walkinQuery .= " AND provider_id = :provider_id";
+    }
+    
+    $walkinStmt = $con->prepare($walkinQuery);
+    
+    // Bind provider_id if provided
+    if ($doctorId !== null && $doctorId > 0) {
+        $walkinStmt->bindParam(':provider_id', $doctorId, PDO::PARAM_INT);
+    }
+    
+    $walkinStmt->execute();
+    $walkinUpdated = $walkinStmt->rowCount();
+    $totalUpdated += $walkinUpdated;
     
     // Commit the transaction
     $con->commit();
     
     // Set success response
     $response['success'] = true;
-    $response['updated'] = $updatedCount;
+    $response['updated'] = $totalUpdated;
     $response['message'] = 'Past appointments updated successfully';
     
 } catch(PDOException $ex) {

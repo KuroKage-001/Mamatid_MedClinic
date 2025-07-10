@@ -1135,23 +1135,7 @@ if (empty($calendarEvents)) {
             margin: 0;
         }
 
-        /* DateTime Badge Styling */
-        #datetime {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
-            animation: pulse 2s infinite;
-        }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
-            50% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
-            100% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
-        }
 
         /* Calendar Styling */
         .fc {
@@ -1258,11 +1242,6 @@ if (empty($calendarEvents)) {
             .btn {
                 width: 100%;
                 margin-bottom: 0.5rem;
-            }
-
-            #datetime {
-                font-size: 1rem;
-                padding: 8px 15px;
             }
         }
 
@@ -1437,12 +1416,9 @@ if (empty($calendarEvents)) {
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
-                    <div class="row align-items-center mb-4">
-                        <div class="col-12 col-md-6">
+                    <div class="row mb-4">
+                        <div class="col-12">
                             <h1>Book Appointment</h1>
-                        </div>
-                        <div class="col-12 col-md-6 text-md-right mt-3 mt-md-0">
-                            <span id="datetime" class="d-inline-block"></span>
                         </div>
                     </div>
                 </div>
@@ -1640,23 +1616,7 @@ if (empty($calendarEvents)) {
                 });
             }
 
-            // Modern datetime display with animation
-            function updateDateTime() {
-                var now = new Date();
-                var options = {
-                    month: 'long',
-                    day: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                };
-                var formattedDateTime = now.toLocaleString('en-US', options);
-                document.getElementById('datetime').innerHTML = formattedDateTime;
-            }
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+
 
             // Initialize Calendar
             var calendarEl = document.getElementById('calendar');

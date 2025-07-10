@@ -150,13 +150,24 @@ $stmt = $con->prepare($query);
 $stmt->execute([$staffId]);
 $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get booked appointments for this staff member
-$appointmentsQuery = "SELECT a.*, ss.time_slot_minutes 
+// Get booked appointments for this staff member (both regular and walk-in)
+$appointmentsQuery = "SELECT a.*, ss.time_slot_minutes, 'regular' as appointment_type
                      FROM admin_clients_appointments a 
                      JOIN admin_hw_schedules ss ON a.schedule_id = ss.id 
-                     WHERE a.doctor_id = ? AND a.status != 'cancelled'";
+                     WHERE a.doctor_id = ? AND a.status != 'cancelled' AND a.is_archived = 0
+                     UNION ALL
+                     SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                            w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
+                            w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
+                            0 as email_sent, 0 as reminder_sent, w.is_archived, 
+                            NULL as view_token, NULL as token_expiry, NULL as archived_at, NULL as archived_by, NULL as archive_reason,
+                            1 as is_walkin, ss2.time_slot_minutes, 'walk-in' as appointment_type
+                     FROM admin_walkin_appointments w
+                     JOIN admin_hw_schedules ss2 ON w.schedule_id = ss2.id 
+                     WHERE (w.provider_id = ? AND (w.provider_type = 'admin' OR w.provider_type = 'health_worker')) 
+                     AND w.status != 'cancelled' AND w.is_archived = 0";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
-$appointmentsStmt->execute([$staffId]);
+$appointmentsStmt->execute([$staffId, $staffId]);
 $appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Format schedules for calendar
@@ -189,8 +200,9 @@ foreach ($appointments as $appointment) {
     $appointmentTime = strtotime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
     $endTime = $appointmentTime + ($appointment['time_slot_minutes'] * 60);
     $isPast = $appointmentTime < time();
+    $isWalkIn = isset($appointment['appointment_type']) && $appointment['appointment_type'] == 'walk-in';
     
-    // Set color based on status and whether it's past
+    // Set color based on status, whether it's past, and if it's a walk-in
     $color = '#F64E60'; // Default red for active appointments
     if ($isPast) {
         if ($appointment['status'] == 'completed') {
@@ -198,11 +210,19 @@ foreach ($appointments as $appointment) {
         } else {
             $color = '#6c757d'; // Gray for past but not completed
         }
+    } else if ($isWalkIn) {
+        $color = '#FF8F00'; // Orange for active walk-in appointments
+    }
+    
+    // Create appointment title with walk-in indicator
+    $appointmentTitle = ($isWalkIn ? 'Walk-in: ' : 'Booked: ') . $appointment['patient_name'];
+    if ($isPast) {
+        $appointmentTitle .= ' [Past]';
     }
     
     $calendarEvents[] = [
-        'id' => 'appointment_' . $appointment['id'],
-        'title' => 'Booked: ' . $appointment['patient_name'] . ($isPast ? ' [Past]' : ''),
+        'id' => ($isWalkIn ? 'walkin_' : 'appointment_') . $appointment['id'],
+        'title' => $appointmentTitle,
         'start' => date('Y-m-d\TH:i:s', $appointmentTime),
         'end' => date('Y-m-d\TH:i:s', $endTime),
         'backgroundColor' => $color,
@@ -213,6 +233,8 @@ foreach ($appointments as $appointment) {
             'status' => $appointment['status'],
             'type' => 'appointment',
             'is_past' => $isPast,
+            'is_walk_in' => $isWalkIn,
+            'appointment_type' => $isWalkIn ? 'walk-in' : 'regular',
             'appointment_id' => $appointment['id']
         ]
     ];
@@ -575,6 +597,10 @@ $roleDisplay = ucfirst($staffRole);
         
         .bg-danger-light {
             background-color: rgba(246, 78, 96, 0.1);
+        }
+        
+        .bg-warning-light {
+            background-color: rgba(255, 143, 0, 0.1);
         }
         
         .event-date h4 {
@@ -1013,7 +1039,11 @@ $roleDisplay = ucfirst($staffRole);
                                             </div>
                                                 <div class="legend-item">
                                                     <span class="legend-color" style="background-color: #F64E60"></span>
-                                                    <span class="legend-text">Active Appointments</span>
+                                                    <span class="legend-text">Regular Appointments</span>
+                                            </div>
+                                                <div class="legend-item">
+                                                    <span class="legend-color" style="background-color: #FF8F00"></span>
+                                                    <span class="legend-text">Walk-in Appointments</span>
                                             </div>
                                                 <div class="legend-item">
                                                     <span class="legend-color" style="background-color: #28a745"></span>
@@ -1322,13 +1352,20 @@ $roleDisplay = ucfirst($staffRole);
                 },
                 eventDidMount: function(info) {
                     // Add tooltip for all events
-                        $(info.el).tooltip({
-                        title: info.event.extendedProps.type.charAt(0).toUpperCase() + info.event.extendedProps.type.slice(1) + 
-                              (info.event.extendedProps.is_past ? ' (Past)' : ''),
-                            placement: 'top',
-                            trigger: 'hover',
-                            container: 'body'
-                        });
+                    var tooltipTitle = '';
+                    if (info.event.extendedProps.type === 'schedule') {
+                        tooltipTitle = 'Schedule' + (info.event.extendedProps.is_past ? ' (Past)' : '');
+                    } else {
+                        var appointmentType = info.event.extendedProps.is_walk_in ? 'Walk-in Appointment' : 'Regular Appointment';
+                        tooltipTitle = appointmentType + (info.event.extendedProps.is_past ? ' (Past)' : '');
+                    }
+                    
+                    $(info.el).tooltip({
+                        title: tooltipTitle,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
                 },
                 eventClick: function(info) {
                     var event = info.event;
@@ -1421,15 +1458,17 @@ $roleDisplay = ucfirst($staffRole);
                         </div>`;
                     } else {
                         // Appointment event
-                        modalTitle = '<i class="fas fa-user-clock mr-2"></i> Appointment Information';
+                        modalTitle = '<i class="fas fa-user-clock mr-2"></i> ' + (props.is_walk_in ? 'Walk-in' : 'Regular') + ' Appointment Information';
                         
-                        // Set header class based on appointment status and whether it's past
+                        // Set header class based on appointment status, whether it's past, and if it's walk-in
                         if (props.is_past) {
                             if (props.status == 'completed') {
                                 headerClass = 'bg-success text-white';
                             } else {
                                 headerClass = 'bg-secondary text-white';
                             }
+                        } else if (props.is_walk_in) {
+                            headerClass = 'bg-warning text-white'; // Orange for walk-in appointments
                         } else {
                             headerClass = 'bg-danger text-white';
                         }
@@ -1458,26 +1497,38 @@ $roleDisplay = ucfirst($staffRole);
                                 statusClass = 'badge-warning';
                         }
                         
+                        // Set background color class based on appointment type and status
+                        var bgClass = props.is_past ? 
+                            (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 
+                            (props.is_walk_in ? 'bg-warning-light' : 'bg-danger-light');
+                        
+                        var iconColor = props.is_past ? 
+                            (props.status == 'completed' ? 'text-success' : 'text-secondary') : 
+                            (props.is_walk_in ? 'text-warning' : 'text-danger');
+                        
                         modalContent = `
                         <div class="appointment-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="patient-info p-4 ${props.is_past ? (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 'bg-danger-light'} border-bottom">
+                                    <div class="patient-info p-4 ${bgClass} border-bottom">
                                         <div class="d-flex align-items-center">
                                             <div class="patient-icon mr-3">
                                                 <div class="patient-avatar bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                                    <i class="fas fa-user fa-2x ${props.is_past ? (props.status == 'completed' ? 'text-success' : 'text-secondary') : 'text-danger'}"></i>
+                                                    <i class="fas fa-${props.is_walk_in ? 'walking' : 'user'} fa-2x ${iconColor}"></i>
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1">
-                                                <h4 class="mb-1 font-weight-bold">${props.patient_name}</h4>
+                                                <h4 class="mb-1 font-weight-bold">
+                                                    ${props.patient_name}
+                                                    ${props.is_walk_in ? '<span class="badge badge-warning ml-2"><i class="fas fa-walking fa-xs"></i> Walk-in</span>' : ''}
+                                                </h4>
                                                 <p class="mb-1 text-muted">
                                                     <i class="fas fa-calendar-alt mr-1"></i>
                                                     ${formattedDate}
                                                 </p>
                                                 <p class="mb-0 text-muted">
                                                     <i class="fas fa-user-md mr-1"></i>
-                                                    Appointment with ${<?= json_encode($staffRole) ?> === 'admin' ? 'Administrator' : 'Health Worker'}
+                                                    ${props.is_walk_in ? 'Walk-in appointment' : 'Scheduled appointment'} with ${<?= json_encode($staffRole) ?> === 'admin' ? 'Administrator' : 'Health Worker'}
                                                 </p>
                                             </div>
                                         </div>
@@ -1518,13 +1569,21 @@ $roleDisplay = ucfirst($staffRole);
                             </div>
                         </div>`;
                         
-                        // Add send notification button for active appointments
-                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                        // Add send notification button for active appointments (only for regular appointments)
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id && !props.is_walk_in) {
                             modalContent += `
                             <div class="text-center pb-3">
                                 <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
                                     <i class="fas fa-envelope mr-2"></i> Send Email Notification
                                 </button>
+                            </div>`;
+                        } else if (props.type === 'appointment' && !props.is_past && props.is_walk_in) {
+                            modalContent += `
+                            <div class="text-center pb-3">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Walk-in appointments do not require email notifications as the patient is already present.
+                                </div>
                             </div>`;
                         }
                     }
