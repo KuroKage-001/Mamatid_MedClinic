@@ -38,7 +38,7 @@ try {
     }
     
     // Validate provider type
-    if (!in_array($providerType, ['doctor', 'staff', 'health_worker'])) {
+    if (!in_array($providerType, ['doctor', 'staff', 'health_worker', 'admin'])) {
         throw new Exception('Invalid provider type');
     }
     
@@ -48,7 +48,7 @@ try {
                  FROM admin_doctor_schedules ds
                  JOIN admin_user_accounts u ON ds.doctor_id = u.id
                  WHERE ds.doctor_id = ? AND ds.schedule_date = ? AND ds.is_approved = 1 AND ds.is_deleted = 0";
-    } else { // staff, health_worker (includes health_worker and admin)
+    } else { // staff, health_worker, admin (includes health_worker and admin)
         $query = "SELECT ss.*, u.display_name as provider_name, u.role 
                  FROM admin_hw_schedules ss
                  JOIN admin_user_accounts u ON ss.staff_id = u.id

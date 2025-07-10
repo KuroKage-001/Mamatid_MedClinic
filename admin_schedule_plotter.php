@@ -634,6 +634,981 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             background-color: #8950FC !important;
         }
 
+        /* Modern Schedule Management Modal Styling - Dark Theme */
+        .schedule-manage-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideInUp 0.5s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .schedule-manage-header {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2rem;
+            color: white;
+        }
+
+        .schedule-icon-container {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .schedule-icon-container i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .schedule-manage-title {
+            color: #ecf0f1;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .schedule-manage-subtitle {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-close-schedule {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-schedule:hover {
+            background: rgba(231, 76, 60, 0.8);
+            transform: scale(1.1);
+        }
+
+        .schedule-manage-body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        /* Doctor Info Section */
+        .schedule-info-section {
+            margin-bottom: 2rem;
+        }
+
+        .doctor-info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .doctor-name {
+            color: #ecf0f1;
+            font-weight: 600;
+        }
+
+        .doctor-specialty {
+            color: #bdc3c7;
+        }
+
+        /* Schedule Details Grid */
+        .schedule-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .detail-icon i {
+            font-size: 1.2rem;
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: #ecf0f1;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-extra {
+            font-size: 0.75rem;
+            color: #95a5a6;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-approved {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Form Sections */
+        .approval-section,
+        .notes-section,
+        .doctor-notes-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            color: #ecf0f1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Custom Switch Enhanced */
+        .custom-switch-lg .custom-control-label::before {
+            height: 2rem;
+            width: 3.5rem;
+            border-radius: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .custom-switch-lg .custom-control-label::after {
+            width: calc(2rem - 6px);
+            height: calc(2rem - 6px);
+            border-radius: 50%;
+            background: #ecf0f1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-switch-lg .custom-control-input:checked ~ .custom-control-label::before {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3);
+        }
+
+        .approval-toggle-container {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .approve-switch-label {
+            padding-left: 4.5rem !important;
+            cursor: pointer;
+        }
+
+        .switch-text {
+            color: #ecf0f1;
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .switch-subtext {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+            font-weight: 400;
+            display: block;
+        }
+
+        /* Notes Input */
+        .notes-input-container {
+            position: relative;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+            backdrop-filter: blur(5px);
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .notes-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Doctor Notes Display */
+        .doctor-notes-display {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .doctor-notes-display p {
+            color: #ecf0f1;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-cancel-schedule,
+        .btn-save-schedule {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn-cancel-schedule {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-cancel-schedule:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-save-schedule {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-save-schedule:hover {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(39, 174, 96, 0.4);
+        }
+
+                 /* Responsive Design for Schedule Management */
+        @media (max-width: 768px) {
+            .schedule-manage-header {
+                padding: 1rem;
+            }
+
+            .schedule-manage-body {
+                padding: 1rem;
+            }
+
+            .schedule-details-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-cancel-schedule,
+            .btn-save-schedule {
+                width: 100%;
+            }
+        }
+
+        /* Modern Manage Button Styling */
+        .btn-manage-schedule {
+            position: relative;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+            overflow: hidden;
+        }
+
+        .btn-manage-schedule::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-manage-schedule:hover::before {
+            left: 100%;
+        }
+
+        .btn-manage-schedule:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        }
+
+        .btn-manage-schedule:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-manage-schedule i {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            z-index: 2;
+            position: relative;
+        }
+
+        .btn-text {
+            z-index: 2;
+            position: relative;
+        }
+
+        .btn-status-indicator {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            z-index: 3;
+        }
+
+        .btn-status-indicator.status-approved {
+            background: #27ae60;
+            box-shadow: 0 0 8px rgba(39, 174, 96, 0.6);
+            animation: pulse-green 2s infinite;
+        }
+
+        .btn-status-indicator.status-pending {
+            background: #f39c12;
+            box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
+            animation: pulse-orange 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(39, 174, 96, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+            }
+        }
+
+        @keyframes pulse-orange {
+            0% {
+                box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(243, 156, 18, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
+            }
+        }
+
+        /* Enhanced Table Styling */
+        .table tbody tr:hover {
+            background-color: rgba(54, 153, 255, 0.05);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        /* Badge enhancements for better visibility */
+        .badge-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3);
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 6px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Visual Feedback for Approval Actions */
+        .approval-granted {
+            animation: approvalGranted 0.6s ease;
+        }
+
+        .approval-revoked {
+            animation: approvalRevoked 0.6s ease;
+        }
+
+        @keyframes approvalGranted {
+            0% { transform: scale(1); }
+            50% { 
+                transform: scale(1.05); 
+                color: #2ecc71;
+                text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+            }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes approvalRevoked {
+            0% { transform: scale(1); }
+            50% { 
+                transform: scale(1.05); 
+                color: #e74c3c;
+                text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+            }
+            100% { transform: scale(1); }
+        }
+
+        /* Enhanced tooltip styling */
+        .btn-manage-schedule[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+                 .btn-manage-schedule[title]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        /* Bulk Actions Styling */
+        .bulk-actions-container {
+            position: relative;
+        }
+
+        .btn-bulk-actions {
+            background: linear-gradient(135deg, #8950FC 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(137, 80, 252, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-bulk-actions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-bulk-actions:hover::before {
+            left: 100%;
+        }
+
+        .btn-bulk-actions:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(137, 80, 252, 0.4);
+            background: linear-gradient(135deg, #7C3AED 0%, #8950FC 100%);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-bulk-actions:focus {
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 0 0 3px rgba(137, 80, 252, 0.5);
+        }
+
+        .btn-bulk-actions i {
+            font-size: 1rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .btn-text {
+            z-index: 2;
+            position: relative;
+        }
+
+        .pending-count {
+            background: rgba(255, 255, 255, 0.9);
+            color: #8950FC;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            animation: pulse-count 2s infinite;
+            z-index: 2;
+            position: relative;
+        }
+
+        @keyframes pulse-count {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+
+        /* Bulk Dropdown Menu Styling */
+        .bulk-dropdown-menu {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0;
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+            animation: dropdownSlide 0.3s ease;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bulk-dropdown-menu .dropdown-header {
+            color: #ecf0f1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 0.25rem;
+        }
+
+        .bulk-dropdown-menu .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .bulk-action-item {
+            background: transparent;
+            border: none;
+            color: #ecf0f1;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .bulk-action-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ecf0f1;
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .bulk-action-item:focus {
+            color: #ecf0f1;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .bulk-action-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .action-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        .action-description {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            line-height: 1.2;
+            margin-top: 0.1rem;
+        }
+
+        /* All Approved Indicator */
+        .all-approved-indicator {
+            display: flex;
+            align-items: center;
+        }
+
+        .success-badge {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            animation: successPulse 3s infinite;
+        }
+
+        @keyframes successPulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(39, 174, 96, 0.5);
+            }
+        }
+
+        /* Select Mode Styling */
+        .select-mode-active {
+            position: relative;
+        }
+
+        .select-mode-active::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #3498db, #e67e22, #e74c3c, #9b59b6);
+            border-radius: 15px;
+            z-index: -1;
+            animation: selectModeGlow 2s linear infinite;
+        }
+
+        @keyframes selectModeGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .schedule-row-checkbox {
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .select-mode-active .schedule-row-checkbox {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .schedule-row-selected {
+            background: rgba(52, 152, 219, 0.1) !important;
+            border-left: 4px solid #3498db;
+        }
+
+        /* Bulk Action Bar */
+        .bulk-action-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1050;
+            animation: slideUpBar 0.3s ease;
+        }
+
+        @keyframes slideUpBar {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .bulk-action-bar.active {
+            display: flex;
+        }
+
+        .selected-count {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            padding: 0.3rem 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .bulk-action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-approve-selected,
+        .btn-cancel-selection {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-approve-selected {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-approve-selected:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-cancel-selection {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .btn-cancel-selection:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
+        }
+
+                 /* Gap utility for flex containers */
+         .gap-2 {
+             gap: 0.5rem;
+         }
+
+         /* Card header bulk actions positioning */
+         .card-header .bulk-actions-container {
+             margin-right: 0.5rem;
+         }
+
+         /* Responsive Design for Bulk Actions */
+         @media (max-width: 768px) {
+             .btn-bulk-actions {
+                 padding: 0.6rem 1rem;
+                 font-size: 0.85rem;
+             }
+
+             .btn-bulk-actions .btn-text {
+                 display: none;
+             }
+
+             .bulk-dropdown-menu {
+                 min-width: 250px;
+                 margin-left: -50px;
+             }
+
+             .bulk-action-bar {
+                 left: 10px;
+                 right: 10px;
+                 transform: none;
+                 padding: 0.75rem 1rem;
+             }
+
+             .bulk-action-buttons {
+                 flex-direction: column;
+                 gap: 0.5rem;
+                 width: 100%;
+             }
+
+             .btn-approve-selected,
+             .btn-cancel-selection {
+                 width: 100%;
+                 justify-content: center;
+             }
+
+             .card-header .d-flex {
+                 flex-direction: column;
+                 align-items: flex-start !important;
+             }
+
+             .card-header .bulk-actions-container {
+                 margin-top: 0.75rem;
+                 margin-right: 0;
+                 align-self: flex-end;
+             }
+
+             .success-badge {
+                 font-size: 0.8rem;
+                 padding: 0.5rem 1rem;
+             }
+         }
+
         /* Modern Export Actions CSS */
         .dt-button-collection {
             display: none !important;
@@ -841,6 +1816,43 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 transform: translateY(-2px) scale(1.01) !important;
             }
         }
+
+        /* SweetAlert Custom Styling */
+        .swal-bulk-container .swal2-popup {
+            border-radius: 20px !important;
+            backdrop-filter: blur(10px) !important;
+        }
+
+        .swal2-popup .swal2-title {
+            font-weight: 600 !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .swal2-popup .swal2-content {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+        }
+
+        .swal2-popup .swal2-actions {
+            gap: 0.75rem !important;
+        }
+
+        .swal2-popup .swal2-confirm,
+        .swal2-popup .swal2-cancel {
+            border-radius: 10px !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 1.5rem !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-popup .swal2-confirm:hover,
+        .swal2-popup .swal2-cancel:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Modern Export Actions CSS */
     </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -1009,14 +2021,64 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 <!-- Doctor Schedules Card -->
                 <div class="card card-outline card-info mb-4">
                     <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            Doctor Schedules
-                        </h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Doctor Schedules
+                            </h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bulk-actions-container">
+                                    <?php if ($pendingApprovals > 0): ?>
+                                    <div class="dropdown">
+                                        <button class="btn-bulk-actions dropdown-toggle" type="button" id="bulkActionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-tasks mr-2"></i>
+                                            <span class="btn-text">Bulk Actions</span>
+                                            <span class="pending-count"><?php echo $pendingApprovals; ?></span>
+                                        </button>
+                                        <div class="dropdown-menu bulk-dropdown-menu dropdown-menu-right" aria-labelledby="bulkActionsDropdown">
+                                            <div class="dropdown-header">
+                                                <i class="fas fa-clipboard-list mr-2"></i>Schedule Management
+                                            </div>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item bulk-action-item" onclick="approveAllPending()">
+                                                <i class="fas fa-check-circle text-success mr-2"></i>
+                                                <div class="action-content">
+                                                    <span class="action-title">Approve All Pending</span>
+                                                    <small class="action-description">Approve all <?php echo $pendingApprovals; ?> pending schedule<?php echo $pendingApprovals > 1 ? 's' : ''; ?></small>
+                                                </div>
+                                            </button>
+                                            <button class="dropdown-item bulk-action-item" onclick="toggleSelectMode()">
+                                                <i class="fas fa-check-square text-info mr-2"></i>
+                                                <div class="action-content">
+                                                    <span class="action-title">Select Multiple</span>
+                                                    <small class="action-description">Choose specific schedules to approve</small>
+                                                </div>
+                                            </button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item bulk-action-item" onclick="refreshSchedules()">
+                                                <i class="fas fa-sync-alt text-primary mr-2"></i>
+                                                <div class="action-content">
+                                                    <span class="action-title">Refresh Data</span>
+                                                    <small class="action-description">Reload schedule information</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php else: ?>
+                                    <div class="all-approved-indicator">
+                                        <div class="success-badge">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            <span>All Schedules Approved</span>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -1024,6 +2086,12 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             <table id="doctorSchedules" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
+                                        <th width="40">
+                                            <div class="custom-control custom-checkbox schedule-row-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="selectAllSchedules">
+                                                <label class="custom-control-label" for="selectAllSchedules"></label>
+                                            </div>
+                                        </th>
                                         <th>Doctor</th>
                                         <th>Date</th>
                                         <th>Time</th>
@@ -1036,7 +2104,18 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($doctorSchedules as $schedule): ?>
-                                    <tr>
+                                    <tr data-schedule-id="<?php echo $schedule['id']; ?>" 
+                                        data-schedule-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"
+                                        class="schedule-row <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved-row' : 'pending-row'; ?>">
+                                        <td>
+                                            <div class="custom-control custom-checkbox schedule-row-checkbox">
+                                                <input type="checkbox" class="custom-control-input schedule-checkbox" 
+                                                       id="schedule_<?php echo $schedule['id']; ?>" 
+                                                       value="<?php echo $schedule['id']; ?>"
+                                                       data-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>">
+                                                <label class="custom-control-label" for="schedule_<?php echo $schedule['id']; ?>"></label>
+                                            </div>
+                                        </td>
                                         <td><?php echo htmlspecialchars($schedule['doctor_name']); ?></td>
                                         <td><?php echo date('M d, Y (D)', strtotime($schedule['schedule_date'])); ?></td>
                                         <td>
@@ -1056,77 +2135,178 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         </td>
                                         <td><?php echo htmlspecialchars($schedule['notes'] ?? ''); ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-info" 
+                                            <button type="button" class="btn-manage-schedule" 
                                                     data-toggle="modal" 
-                                                    data-target="#scheduleModal<?php echo $schedule['id']; ?>">
-                                                <i class="fas fa-check-circle mr-1"></i> Manage
+                                                    data-target="#scheduleModal<?php echo $schedule['id']; ?>"
+                                                    title="Manage Doctor Schedule">
+                                                <i class="fas fa-cog mr-2"></i>
+                                                <span class="btn-text">Manage</span>
+                                                <div class="btn-status-indicator status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"></div>
                                             </button>
                                         </td>
                                     </tr>
                                     
-                                    <!-- Schedule Management Modal -->
+                                    <!-- Modern Schedule Management Modal -->
                                     <div class="modal fade" id="scheduleModal<?php echo $schedule['id']; ?>">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                        <i class="fas fa-calendar-check mr-2"></i>
-                                                        Manage Doctor Schedule
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                </div>
-                                                <form method="post">
-                                                    <div class="modal-body">
-                                                        <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Doctor</label>
-                                                            <input type="text" class="form-control" 
-                                                                   value="<?php echo htmlspecialchars($schedule['doctor_name']); ?>" readonly>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Date</label>
-                                                            <input type="text" class="form-control" 
-                                                                   value="<?php echo date('F d, Y (l)', strtotime($schedule['schedule_date'])); ?>" readonly>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Time</label>
-                                                            <input type="text" class="form-control" 
-                                                                   value="<?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . 
-                                                                                date('h:i A', strtotime($schedule['end_time'])); ?>" readonly>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Approve Schedule</label>
-                                                            <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input" 
-                                                                       id="approveSwitch<?php echo $schedule['id']; ?>" 
-                                                                       name="is_approved" 
-                                                                       <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'checked' : ''; ?>>
-                                                                <label class="custom-control-label" 
-                                                                       for="approveSwitch<?php echo $schedule['id']; ?>">
-                                                                    <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Approved' : 'Not Approved'; ?>
-                                                                </label>
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content schedule-manage-card">
+                                                <div class="modal-header schedule-manage-header">
+                                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="schedule-icon-container">
+                                                                <i class="fas fa-user-md"></i>
+                                                            </div>
+                                                            <div class="ml-3">
+                                                                <h4 class="schedule-manage-title mb-0">Doctor Schedule Management</h4>
+                                                                <p class="schedule-manage-subtitle mb-0">Review and approve doctor availability</p>
                                                             </div>
                                                         </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Notes</label>
-                                                            <textarea name="approval_notes" class="form-control" rows="3" 
-                                                                      placeholder="Add notes about this schedule"><?php echo htmlspecialchars($schedule['approval_notes'] ?? ''); ?></textarea>
+                                                        <button type="button" class="btn-close-schedule" data-dismiss="modal">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-body schedule-manage-body">
+                                                    <!-- Doctor Info Section -->
+                                                    <div class="schedule-info-section">
+                                                        <div class="doctor-info-card">
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                <div class="doctor-avatar">
+                                                                    <i class="fas fa-user-md fa-2x text-primary"></i>
+                                                                </div>
+                                                                <div class="ml-3">
+                                                                    <h5 class="doctor-name mb-1">Dr. <?php echo htmlspecialchars($schedule['doctor_name']); ?></h5>
+                                                                    <p class="doctor-specialty mb-0 text-muted">Medical Professional</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                            <i class="fas fa-times mr-2"></i>Close
-                                                        </button>
-                                                        <button type="submit" name="approve_schedule" class="btn btn-primary">
-                                                            <i class="fas fa-save mr-2"></i>Save Changes
-                                                        </button>
+
+                                                    <!-- Schedule Details Grid -->
+                                                    <div class="schedule-details-grid">
+                                                        <div class="detail-card">
+                                                            <div class="detail-icon">
+                                                                <i class="fas fa-calendar-day text-info"></i>
+                                                            </div>
+                                                            <div class="detail-content">
+                                                                <label class="detail-label">Schedule Date</label>
+                                                                <p class="detail-value"><?php echo date('F d, Y', strtotime($schedule['schedule_date'])); ?></p>
+                                                                <small class="detail-extra"><?php echo date('l', strtotime($schedule['schedule_date'])); ?></small>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="detail-card">
+                                                            <div class="detail-icon">
+                                                                <i class="fas fa-clock text-warning"></i>
+                                                            </div>
+                                                            <div class="detail-content">
+                                                                <label class="detail-label">Time Range</label>
+                                                                <p class="detail-value"><?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])); ?></p>
+                                                                <small class="detail-extra"><?php echo $schedule['time_slot_minutes']; ?> min slots</small>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="detail-card">
+                                                            <div class="detail-icon">
+                                                                <i class="fas fa-users text-success"></i>
+                                                            </div>
+                                                            <div class="detail-content">
+                                                                <label class="detail-label">Capacity</label>
+                                                                <p class="detail-value"><?php echo $schedule['max_patients']; ?> patients</p>
+                                                                <small class="detail-extra">per time slot</small>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="detail-card">
+                                                            <div class="detail-icon">
+                                                                <i class="fas fa-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'check-circle text-success' : 'clock text-warning'; ?>"></i>
+                                                            </div>
+                                                            <div class="detail-content">
+                                                                <label class="detail-label">Current Status</label>
+                                                                <p class="detail-value">
+                                                                    <span class="status-badge status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>">
+                                                                        <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Approved' : 'Pending'; ?>
+                                                                    </span>
+                                                                </p>
+                                                                <small class="detail-extra"><?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Ready for booking' : 'Awaiting approval'; ?></small>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </form>
+
+                                                    <!-- Management Form -->
+                                                    <form method="post" class="schedule-manage-form">
+                                                        <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
+                                                        
+                                                        <!-- Approval Section -->
+                                                        <div class="approval-section">
+                                                            <div class="section-header">
+                                                                <h6 class="section-title">
+                                                                    <i class="fas fa-clipboard-check mr-2"></i>Approval Management
+                                                                </h6>
+                                                                <p class="section-description">Review and approve this doctor's schedule for patient booking</p>
+                                                            </div>
+                                                            
+                                                            <div class="approval-toggle-container">
+                                                                <div class="custom-control custom-switch custom-switch-lg">
+                                                                    <input type="checkbox" class="custom-control-input" 
+                                                                           id="approveSwitch<?php echo $schedule['id']; ?>" 
+                                                                           name="is_approved" 
+                                                                           <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'checked' : ''; ?>>
+                                                                    <label class="custom-control-label approve-switch-label" 
+                                                                           for="approveSwitch<?php echo $schedule['id']; ?>">
+                                                                        <span class="switch-text">
+                                                                            <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Schedule Approved' : 'Schedule Not Approved'; ?>
+                                                                        </span>
+                                                                        <small class="switch-subtext">
+                                                                            <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Patients can book appointments' : 'Schedule is hidden from patients'; ?>
+                                                                        </small>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Notes Section -->
+                                                        <div class="notes-section">
+                                                            <div class="section-header">
+                                                                <h6 class="section-title">
+                                                                    <i class="fas fa-sticky-note mr-2"></i>Administrative Notes
+                                                                </h6>
+                                                                <p class="section-description">Add any notes or comments about this schedule approval</p>
+                                                            </div>
+                                                            
+                                                            <div class="notes-input-container">
+                                                                <textarea name="approval_notes" class="notes-textarea" rows="4" 
+                                                                          placeholder="Enter your notes about this schedule approval..."><?php echo htmlspecialchars($schedule['approval_notes'] ?? ''); ?></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Doctor's Original Notes -->
+                                                        <?php if (!empty($schedule['notes'])): ?>
+                                                        <div class="doctor-notes-section">
+                                                            <div class="section-header">
+                                                                <h6 class="section-title">
+                                                                    <i class="fas fa-comment-medical mr-2"></i>Doctor's Notes
+                                                                </h6>
+                                                                <p class="section-description">Notes provided by the doctor</p>
+                                                            </div>
+                                                            
+                                                            <div class="doctor-notes-display">
+                                                                <p><?php echo htmlspecialchars($schedule['notes']); ?></p>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
+
+                                                        <!-- Action Buttons -->
+                                                        <div class="action-buttons">
+                                                            <button type="button" class="btn-cancel-schedule" data-dismiss="modal">
+                                                                <i class="fas fa-times mr-2"></i>Cancel
+                                                            </button>
+                                                            <button type="submit" name="approve_schedule" class="btn-save-schedule">
+                                                                <i class="fas fa-save mr-2"></i>Save Changes
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1156,6 +2336,24 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                 <i class="fas fa-print"></i>
                                 <span>Print</span>
                             </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Action Bar (Initially Hidden) -->
+                <div class="bulk-action-bar" id="bulkActionBar">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fas fa-check-square fa-lg text-info"></i>
+                        <span class="selected-count" id="selectedCount">0 selected</span>
+                        <div class="bulk-action-buttons">
+                            <button class="btn-approve-selected" onclick="approveSelectedSchedules()">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Approve Selected</span>
+                            </button>
+                            <button class="btn-cancel-selection" onclick="exitSelectMode()">
+                                <i class="fas fa-times"></i>
+                                <span>Cancel</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1594,15 +2792,390 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 $('.alert').alert('close');
             }, 5000);
             
-            // Toggle switch label text
+            // Enhanced toggle switch functionality
             $('.custom-switch .custom-control-input').change(function() {
+                const $label = $(this).next('label');
+                const $switchText = $label.find('.switch-text');
+                const $switchSubtext = $label.find('.switch-subtext');
+                
                 if($(this).is(':checked')) {
-                    $(this).next('label').text('Approved');
+                    if ($switchText.length > 0) {
+                        $switchText.text('Schedule Approved');
+                        $switchSubtext.text('Patients can book appointments');
+                    } else {
+                        $label.text('Approved');
+                    }
+                    
+                    // Add visual feedback
+                    $label.addClass('approval-granted');
+                    setTimeout(() => $label.removeClass('approval-granted'), 2000);
                 } else {
-                    $(this).next('label').text('Not Approved');
+                    if ($switchText.length > 0) {
+                        $switchText.text('Schedule Not Approved');
+                        $switchSubtext.text('Schedule is hidden from patients');
+                    } else {
+                        $label.text('Not Approved');
+                    }
+                    
+                    // Add visual feedback
+                    $label.addClass('approval-revoked');
+                    setTimeout(() => $label.removeClass('approval-revoked'), 2000);
                 }
             });
-        });
+            
+            // Add hover effects to manage buttons
+            $('.btn-manage-schedule').hover(
+                function() {
+                    $(this).find('i').addClass('fa-spin');
+                },
+                function() {
+                    $(this).find('i').removeClass('fa-spin');
+                }
+            );
+            
+            // Add loading state to form submission
+            $('.schedule-manage-form').on('submit', function() {
+                const $submitBtn = $(this).find('.btn-save-schedule');
+                const originalText = $submitBtn.html();
+                
+                $submitBtn.prop('disabled', true)
+                          .html('<i class="fas fa-spinner fa-spin mr-2"></i>Saving...');
+                
+                // Restore button after a delay (in case of same-page reload)
+                setTimeout(() => {
+                    $submitBtn.prop('disabled', false).html(originalText);
+                                 }, 5000);
+             });
+
+             // Bulk Actions JavaScript
+             
+             // Global variables for bulk operations
+             let isSelectModeActive = false;
+             let selectedSchedules = new Set();
+             
+             // Initialize bulk action functionality
+             initializeBulkActions();
+         });
+
+         // Initialize bulk action functionality
+         function initializeBulkActions() {
+             // Handle individual checkbox changes
+             $(document).on('change', '.schedule-checkbox', function() {
+                 const scheduleId = $(this).val();
+                 const isChecked = $(this).is(':checked');
+                 const $row = $(this).closest('tr');
+                 
+                 if (isChecked) {
+                     selectedSchedules.add(scheduleId);
+                     $row.addClass('schedule-row-selected');
+                 } else {
+                     selectedSchedules.delete(scheduleId);
+                     $row.removeClass('schedule-row-selected');
+                 }
+                 
+                 updateBulkActionBar();
+                 updateSelectAllCheckbox();
+             });
+             
+             // Handle select all checkbox
+             $('#selectAllSchedules').change(function() {
+                 const isChecked = $(this).is(':checked');
+                 $('.schedule-checkbox').each(function() {
+                     const $checkbox = $(this);
+                     const $row = $checkbox.closest('tr');
+                     const scheduleId = $checkbox.val();
+                     
+                     $checkbox.prop('checked', isChecked);
+                     
+                     if (isChecked) {
+                         selectedSchedules.add(scheduleId);
+                         $row.addClass('schedule-row-selected');
+                     } else {
+                         selectedSchedules.delete(scheduleId);
+                         $row.removeClass('schedule-row-selected');
+                     }
+                 });
+                 
+                 updateBulkActionBar();
+             });
+         }
+         
+         // Toggle select mode
+         function toggleSelectMode() {
+             isSelectModeActive = !isSelectModeActive;
+             const $doctorSchedulesCard = $('#doctorSchedules').closest('.card');
+             
+             if (isSelectModeActive) {
+                 $doctorSchedulesCard.addClass('select-mode-active');
+                 
+                 // Show success message
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'Select Mode Activated',
+                     text: 'Click checkboxes to select schedules for bulk approval.',
+                     toast: true,
+                     position: 'top-end',
+                     showConfirmButton: false,
+                     timer: 3000,
+                     background: '#2c3e50',
+                     color: '#ecf0f1'
+                 });
+             } else {
+                 exitSelectMode();
+             }
+         }
+         
+         // Exit select mode
+         function exitSelectMode() {
+             isSelectModeActive = false;
+             selectedSchedules.clear();
+             
+             const $doctorSchedulesCard = $('#doctorSchedules').closest('.card');
+             $doctorSchedulesCard.removeClass('select-mode-active');
+             
+             // Clear all selections
+             $('.schedule-checkbox').prop('checked', false);
+             $('#selectAllSchedules').prop('checked', false);
+             $('.schedule-row').removeClass('schedule-row-selected');
+             
+             // Hide bulk action bar
+             $('#bulkActionBar').removeClass('active');
+         }
+         
+         // Update bulk action bar
+         function updateBulkActionBar() {
+             const count = selectedSchedules.size;
+             const $bulkActionBar = $('#bulkActionBar');
+             const $selectedCount = $('#selectedCount');
+             
+             if (count > 0) {
+                 $selectedCount.text(`${count} selected`);
+                 $bulkActionBar.addClass('active');
+             } else {
+                 $bulkActionBar.removeClass('active');
+             }
+         }
+         
+         // Update select all checkbox state
+         function updateSelectAllCheckbox() {
+             const totalCheckboxes = $('.schedule-checkbox').length;
+             const checkedCheckboxes = $('.schedule-checkbox:checked').length;
+             const $selectAll = $('#selectAllSchedules');
+             
+             if (checkedCheckboxes === 0) {
+                 $selectAll.prop('indeterminate', false);
+                 $selectAll.prop('checked', false);
+             } else if (checkedCheckboxes === totalCheckboxes) {
+                 $selectAll.prop('indeterminate', false);
+                 $selectAll.prop('checked', true);
+             } else {
+                 $selectAll.prop('indeterminate', true);
+                 $selectAll.prop('checked', false);
+             }
+         }
+         
+         // Approve all pending schedules
+         function approveAllPending() {
+             const pendingCount = $('.schedule-row[data-schedule-status="pending"]').length;
+             
+             if (pendingCount === 0) {
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'No Pending Schedules',
+                     text: 'All doctor schedules are already approved.',
+                     confirmButtonColor: '#3498db',
+                     background: '#2c3e50',
+                     color: '#ecf0f1'
+                 });
+                 return;
+             }
+             
+             Swal.fire({
+                 title: 'Approve All Pending Schedules?',
+                 html: `
+                     <div class="text-center">
+                         <div class="mb-3">
+                             <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                         </div>
+                         <p>Are you sure you want to approve all <strong>${pendingCount}</strong> pending doctor schedule${pendingCount > 1 ? 's' : ''}?</p>
+                         <div class="alert alert-info mt-3">
+                             <i class="fas fa-info-circle mr-2"></i>
+                             This action will make all pending schedules available for patient booking.
+                         </div>
+                     </div>
+                 `,
+                 icon: 'question',
+                 showCancelButton: true,
+                 confirmButtonColor: '#27ae60',
+                 cancelButtonColor: '#95a5a6',
+                 confirmButtonText: '<i class="fas fa-check-circle mr-2"></i>Yes, Approve All',
+                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
+                 background: '#2c3e50',
+                 color: '#ecf0f1',
+                 customClass: {
+                     container: 'swal-bulk-container'
+                 }
+             }).then((result) => {
+                 if (result.isConfirmed) {
+                     performBulkApproval('all');
+                 }
+             });
+         }
+         
+         // Approve selected schedules
+         function approveSelectedSchedules() {
+             if (selectedSchedules.size === 0) {
+                 Swal.fire({
+                     icon: 'warning',
+                     title: 'No Schedules Selected',
+                     text: 'Please select at least one schedule to approve.',
+                     confirmButtonColor: '#f39c12',
+                     background: '#2c3e50',
+                     color: '#ecf0f1'
+                 });
+                 return;
+             }
+             
+             const selectedArray = Array.from(selectedSchedules);
+             const pendingSelected = selectedArray.filter(id => {
+                 return $(`.schedule-checkbox[value="${id}"]`).data('status') === 'pending';
+             });
+             
+             if (pendingSelected.length === 0) {
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'No Pending Schedules Selected',
+                     text: 'All selected schedules are already approved.',
+                     confirmButtonColor: '#3498db',
+                     background: '#2c3e50',
+                     color: '#ecf0f1'
+                 });
+                 return;
+             }
+             
+             Swal.fire({
+                 title: 'Approve Selected Schedules?',
+                 html: `
+                     <div class="text-center">
+                         <div class="mb-3">
+                             <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                         </div>
+                         <p>Are you sure you want to approve <strong>${pendingSelected.length}</strong> selected schedule${pendingSelected.length > 1 ? 's' : ''}?</p>
+                         <div class="alert alert-info mt-3">
+                             <i class="fas fa-info-circle mr-2"></i>
+                             This action will make the selected schedules available for patient booking.
+                         </div>
+                     </div>
+                 `,
+                 icon: 'question',
+                 showCancelButton: true,
+                 confirmButtonColor: '#27ae60',
+                 cancelButtonColor: '#95a5a6',
+                 confirmButtonText: '<i class="fas fa-check-circle mr-2"></i>Yes, Approve Selected',
+                 cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancel',
+                 background: '#2c3e50',
+                 color: '#ecf0f1'
+             }).then((result) => {
+                 if (result.isConfirmed) {
+                     performBulkApproval('selected', pendingSelected);
+                 }
+             });
+         }
+         
+         // Perform bulk approval
+         function performBulkApproval(type, scheduleIds = null) {
+             // Show loading
+             Swal.fire({
+                 title: 'Processing...',
+                 html: `
+                     <div class="text-center">
+                         <div class="spinner-border text-primary mb-3" role="status">
+                             <span class="sr-only">Loading...</span>
+                         </div>
+                         <p>Approving schedules, please wait...</p>
+                     </div>
+                 `,
+                 allowOutsideClick: false,
+                 allowEscapeKey: false,
+                 showConfirmButton: false,
+                 background: '#2c3e50',
+                 color: '#ecf0f1'
+             });
+             
+             // Prepare form data
+             const formData = new FormData();
+             formData.append('bulk_approve', '1');
+             formData.append('type', type);
+             
+             if (type === 'selected' && scheduleIds) {
+                 scheduleIds.forEach(id => {
+                     formData.append('schedule_ids[]', id);
+                 });
+             }
+             
+             // Submit form
+             fetch('actions/bulk_approve_schedules.php', {
+                 method: 'POST',
+                 body: formData
+             })
+             .then(response => response.json())
+             .then(data => {
+                 if (data.success) {
+                     Swal.fire({
+                         icon: 'success',
+                         title: 'Schedules Approved!',
+                         text: data.message,
+                         confirmButtonColor: '#27ae60',
+                         background: '#2c3e50',
+                         color: '#ecf0f1'
+                     }).then(() => {
+                         // Reload page to reflect changes
+                         location.reload();
+                     });
+                 } else {
+                     Swal.fire({
+                         icon: 'error',
+                         title: 'Approval Failed',
+                         text: data.message || 'An error occurred while approving schedules.',
+                         confirmButtonColor: '#e74c3c',
+                         background: '#2c3e50',
+                         color: '#ecf0f1'
+                     });
+                 }
+             })
+             .catch(error => {
+                 console.error('Error:', error);
+                 Swal.fire({
+                     icon: 'error',
+                     title: 'Error',
+                     text: 'An unexpected error occurred. Please try again.',
+                     confirmButtonColor: '#e74c3c',
+                     background: '#2c3e50',
+                     color: '#ecf0f1'
+                 });
+             });
+         }
+         
+         // Refresh schedules
+         function refreshSchedules() {
+             Swal.fire({
+                 title: 'Refreshing...',
+                 text: 'Updating schedule information...',
+                 allowOutsideClick: false,
+                 allowEscapeKey: false,
+                 showConfirmButton: false,
+                 didOpen: () => {
+                     Swal.showLoading();
+                 },
+                 background: '#2c3e50',
+                 color: '#ecf0f1'
+             });
+             
+             // Reload the page
+             setTimeout(() => {
+                 location.reload();
+             }, 1000);
+         }
 
         // Highlight current menu
         showMenuSelected("#mnu_appointments", "#mi_appointment_plotter");

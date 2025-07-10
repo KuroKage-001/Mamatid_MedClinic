@@ -106,7 +106,7 @@ if (!empty($appointmentDate) && $appointmentDate < date('Y-m-d')) {
 }
 
 // Validate provider type
-if (!in_array($providerType, ['health_worker', 'doctor'])) {
+if (!in_array($providerType, ['admin', 'health_worker', 'doctor'])) {
     $errors[] = 'Invalid provider type';
 }
 
@@ -125,7 +125,7 @@ try {
     // Get the appropriate schedule ID
     $scheduleId = null;
     
-    if ($providerType == 'health_worker') {
+    if ($providerType == 'admin' || $providerType == 'health_worker') {
         $scheduleQuery = "SELECT id FROM admin_hw_schedules 
                          WHERE staff_id = ? AND schedule_date = ? AND is_approved = 1
                          LIMIT 1";
@@ -134,7 +134,8 @@ try {
         $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$schedule) {
-            throw new Exception('No approved schedule found for the selected health worker on this date');
+            $providerLabel = ($providerType == 'admin') ? 'administrator' : 'health worker';
+            throw new Exception("No approved schedule found for the selected {$providerLabel} on this date");
         }
         
         $scheduleId = $schedule['id'];
@@ -221,7 +222,7 @@ try {
     $appointmentId = $con->lastInsertId();
     
     // Update the appointment slot to mark it as booked
-    if ($providerType == 'health_worker') {
+    if ($providerType == 'admin' || $providerType == 'health_worker') {
         // Check if slot exists in admin_hw_appointment_slots
         $slotExistsQuery = "SELECT id FROM admin_hw_appointment_slots 
                            WHERE schedule_id = ? AND slot_time = ?";

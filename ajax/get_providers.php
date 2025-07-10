@@ -36,7 +36,12 @@ if (empty($providerType)) {
 try {
     $providers = [];
     
-    if ($providerType == 'health_worker') {
+    if ($providerType == 'admin') {
+        // Get active administrators
+        $query = "SELECT id, display_name FROM admin_user_accounts 
+                  WHERE role = 'admin' AND status = 'active' 
+                  ORDER BY display_name ASC";
+    } elseif ($providerType == 'health_worker') {
         // Get active health workers
         $query = "SELECT id, display_name FROM admin_user_accounts 
                   WHERE role = 'health_worker' AND status = 'active' 

@@ -854,12 +854,6 @@ foreach ($appointments as $appointment) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mt-3">
-                                        <div class="alert alert-info p-3 rounded-lg shadow-sm">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            <span>Past appointments are automatically marked as completed. You can view all past and upcoming schedules in this calendar.</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

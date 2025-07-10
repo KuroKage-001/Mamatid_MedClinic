@@ -1914,6 +1914,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                     </label>
                                                     <select class="walkin-input" id="walkin_provider_type" name="provider_type" required>
                                                         <option value="">Choose provider type</option>
+                                                        <option value="admin">Administrator</option>
                                                         <option value="health_worker">Health Worker</option>
                                                         <option value="doctor">Doctor</option>
                                                     </select>
