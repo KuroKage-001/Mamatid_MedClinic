@@ -18,38 +18,26 @@ if (!isset($_POST['appointment_id'])) {
 $appointmentId = intval($_POST['appointment_id']);
 
 try {
-    // Get appointment details including provider information
-    $query = "SELECT a.*, u.display_name as provider_name, u.role as provider_role
-              FROM admin_clients_appointments a
-              LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
-              WHERE a.id = ?";
+    // Get walk-in appointment details including provider information
+    $query = "SELECT w.*, u.display_name as provider_name, u.role as provider_role
+              FROM admin_walkin_appointments w
+              LEFT JOIN admin_user_accounts u ON w.provider_id = u.id
+              WHERE w.id = ?";
     
     $stmt = $con->prepare($query);
     $stmt->execute([$appointmentId]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$appointment) {
-        echo json_encode(['success' => false, 'message' => 'Regular appointment not found']);
+        echo json_encode(['success' => false, 'message' => 'Walk-in appointment not found']);
         exit;
     }
-    
-    // For regular appointments, we need to find the patient's email from clients_user_accounts
-    // Try to match by patient name first, then by phone number
-    $clientEmailQuery = "SELECT email FROM clients_user_accounts 
-                        WHERE full_name = ? OR phone_number = ? 
-                        ORDER BY CASE WHEN full_name = ? THEN 0 ELSE 1 END
-                        LIMIT 1";
-    $clientEmailStmt = $con->prepare($clientEmailQuery);
-    $clientEmailStmt->execute([$appointment['patient_name'], $appointment['phone_number'], $appointment['patient_name']]);
-    $clientEmailResult = $clientEmailStmt->fetch(PDO::FETCH_ASSOC);
     
     // Check if patient email is available
-    if (!$clientEmailResult || empty($clientEmailResult['email'])) {
-        echo json_encode(['success' => false, 'message' => 'Patient email not found. Please ensure the patient has registered in the client portal or update their contact information.']);
+    if (empty($appointment['email'])) {
+        echo json_encode(['success' => false, 'message' => 'Patient email not found. Please update the walk-in appointment with an email address.']);
         exit;
     }
-    
-    $patientEmail = $clientEmailResult['email'];
     
     // Format appointment date and time
     $appointmentDate = date('l, F j, Y', strtotime($appointment['appointment_date']));
@@ -72,7 +60,7 @@ try {
     }
     
     // Prepare email content
-    $subject = "Appointment Information: " . $appointmentDate;
+    $subject = "Walk-in Appointment Information: " . $appointmentDate;
     
     $body = '
     <!DOCTYPE html>
@@ -80,7 +68,7 @@ try {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Appointment Information - Mamatid Health Center</title>
+        <title>Walk-in Appointment Information - Mamatid Health Center</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -98,11 +86,21 @@ try {
                 background-color: #ffffff;
             }
             .header {
-                background-color: #2D5A27;
+                background-color: #FFA800;
                 color: white;
                 padding: 20px;
                 text-align: center;
                 border-radius: 5px 5px 0 0;
+            }
+            .walkin-badge {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+                padding: 5px 15px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-top: 10px;
+                display: inline-block;
             }
             .content {
                 padding: 30px;
@@ -113,7 +111,7 @@ try {
                 padding: 20px;
                 border-radius: 5px;
                 margin: 20px 0;
-                border-left: 4px solid #2D5A27;
+                border-left: 4px solid #FFA800;
             }
             .footer {
                 text-align: center;
@@ -131,7 +129,7 @@ try {
             }
             .cta-button {
                 display: inline-block;
-                background-color: #2D5A27;
+                background-color: #FFA800;
                 color: white;
                 padding: 12px 25px;
                 text-decoration: none;
@@ -145,23 +143,32 @@ try {
         <div class="container">
             <div class="header">
                 <h2 style="margin:0;">Mamatid Health Center</h2>
-                <p style="margin:5px 0 0 0;">Appointment Information</p>
+                <p style="margin:5px 0 0 0;">Walk-in Appointment Information</p>
+                <div class="walkin-badge">
+                    <i class="fas fa-walking"></i> Walk-in Service
+                </div>
             </div>
             <div class="content">
                 <p>Dear ' . htmlspecialchars($appointment['patient_name']) . ',</p>
                 
-                <p>This is a notification regarding your appointment at Mamatid Health Center.</p>
+                <p>This is a notification regarding your walk-in appointment at Mamatid Health Center. Your walk-in appointment has been successfully processed and scheduled.</p>
                 
                 <div class="appointment-details">
-                    <h3 style="margin-top:0;color:#2D5A27;">Appointment Details</h3>
+                    <h3 style="margin-top:0;color:#FFA800;">Walk-in Appointment Details</h3>
                     <p><strong>Healthcare Provider:</strong> ' . htmlspecialchars($providerTitle . $appointment['provider_name']) . '</p>
                     <p><strong>Date:</strong> ' . htmlspecialchars($appointmentDate) . '</p>
                     <p><strong>Time:</strong> ' . htmlspecialchars($appointmentTime) . '</p>
                     <p><strong>Purpose of Visit:</strong> ' . htmlspecialchars($appointment['reason']) . '</p>
+                    <p><strong>Appointment Type:</strong> Walk-in Service</p>
                 </div>
                 
                 <div class="info-section">
-                    <h4 style="margin-top:0;color:#2D5A27;">Important Reminders</h4>
+                    <h4 style="margin-top:0;color:#FFA800;">What is a Walk-in Appointment?</h4>
+                    <p>A walk-in appointment means you can come to the clinic at your scheduled time without needing to book in advance. This appointment has been reserved for you by our staff to ensure you receive timely healthcare services.</p>
+                </div>
+                
+                <div class="info-section">
+                    <h4 style="margin-top:0;color:#FFA800;">Important Reminders</h4>
                     <ul style="padding-left:20px;margin:10px 0;">
                         <li>Please arrive 15 minutes before your scheduled time</li>
                         <li>Bring your valid ID and medical insurance card (if applicable)</li>
@@ -172,7 +179,7 @@ try {
                 </div>
                 
                 <div class="info-section">
-                    <h4 style="margin-top:0;color:#2D5A27;">Health and Safety Protocol</h4>
+                    <h4 style="margin-top:0;color:#FFA800;">Health and Safety Protocol</h4>
                     <p>If you are experiencing any of the following symptoms, please contact us before your visit:</p>
                     <ul style="padding-left:20px;margin:10px 0;">
                         <li>Fever or chills</li>
@@ -188,13 +195,13 @@ try {
                     <li>Email: mamatid.medclinic@gmail.com</li>
                 </ul>
                 
-                <p>Thank you for choosing Mamatid Health Center for your healthcare needs.</p>
+                <p>Thank you for choosing Mamatid Health Center for your healthcare needs. We look forward to serving you during your walk-in appointment.</p>
                 
                 <p>Best regards,<br>
                 <strong>Mamatid Health Center Team</strong></p>
             </div>
             <div class="footer">
-                <p>This is an automated message. Please do not reply to this email.</p>
+                <p>This is an automated message regarding your walk-in appointment. Please do not reply to this email.</p>
                 <p>&copy; ' . date('Y') . ' Mamatid Health Center. All rights reserved.</p>
                 <p>Address: 123 Mamatid Street, Cabuyao City, Laguna</p>
             </div>
@@ -204,45 +211,50 @@ try {
     ';
     
     // Plain text alternative
-    $plainText = "APPOINTMENT INFORMATION\n\n" .
+    $plainText = "WALK-IN APPOINTMENT INFORMATION\n\n" .
                  "Dear " . $appointment['patient_name'] . ",\n\n" .
-                 "This is a notification regarding your appointment at Mamatid Health Center.\n\n" .
-                 "APPOINTMENT DETAILS:\n" .
+                 "This is a notification regarding your walk-in appointment at Mamatid Health Center. Your walk-in appointment has been successfully processed and scheduled.\n\n" .
+                 "WALK-IN APPOINTMENT DETAILS:\n" .
                  "Healthcare Provider: " . $providerTitle . $appointment['provider_name'] . "\n" .
                  "Date: " . $appointmentDate . "\n" .
                  "Time: " . $appointmentTime . "\n" .
-                 "Purpose of Visit: " . $appointment['reason'] . "\n\n" .
+                 "Purpose of Visit: " . $appointment['reason'] . "\n" .
+                 "Appointment Type: Walk-in Service\n\n" .
+                 "WHAT IS A WALK-IN APPOINTMENT?\n" .
+                 "A walk-in appointment means you can come to the clinic at your scheduled time without needing to book in advance. This appointment has been reserved for you by our staff to ensure you receive timely healthcare services.\n\n" .
                  "IMPORTANT REMINDERS:\n" .
                  "- Please arrive 15 minutes before your scheduled time\n" .
                  "- Bring your valid ID and medical insurance card (if applicable)\n" .
                  "- Bring a list of your current medications\n" .
                  "- Bring any relevant medical records or test results\n" .
                  "- Wear a face mask within the facility\n\n" .
+                 "HEALTH AND SAFETY PROTOCOL:\n" .
+                 "If you are experiencing any of the following symptoms, please contact us before your visit:\n" .
+                 "- Fever or chills\n" .
+                 "- Cough or sore throat\n" .
+                 "- Difficulty breathing\n" .
+                 "- Loss of taste or smell\n\n" .
                  "For any questions or concerns, please contact us:\n" .
-                 "Phone: (02) 888-7777\n" .
-                 "Email: appointments@mamatidhealth.com\n\n" .
-                 "Thank you for choosing Mamatid Health Center for your healthcare needs.\n\n" .
+                 "Phone: 0991-871-9610\n" .
+                 "Email: mamatid.medclinic@gmail.com\n\n" .
+                 "Thank you for choosing Mamatid Health Center for your healthcare needs. We look forward to serving you during your walk-in appointment.\n\n" .
                  "Best regards,\n" .
                  "Mamatid Health Center Team\n\n" .
-                 "This is an automated message. Please do not reply to this email.\n" .
+                 "This is an automated message regarding your walk-in appointment. Please do not reply to this email.\n" .
                  "Mamatid Health Center | 123 Mamatid Street, Cabuyao City, Laguna";
     
     // Send the email
-    $emailSent = sendEmail($patientEmail, $subject, $body, $appointment['patient_name'], $plainText);
+    $emailSent = sendEmail($appointment['email'], $subject, $body, $appointment['patient_name'], $plainText);
     
     if ($emailSent) {
-        // Update the database to mark email as sent
-        $updateQuery = "UPDATE admin_clients_appointments SET email_sent = 1, updated_at = NOW() WHERE id = ?";
-        $updateStmt = $con->prepare($updateQuery);
-        $updateStmt->execute([$appointmentId]);
-        
-        echo json_encode(['success' => true, 'message' => 'Regular appointment notification sent successfully to ' . $patientEmail]);
+        echo json_encode(['success' => true, 'message' => 'Walk-in appointment notification sent successfully to ' . $appointment['email']]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to send regular appointment notification']);
+        echo json_encode(['success' => false, 'message' => 'Failed to send walk-in appointment notification']);
     }
     
 } catch (PDOException $ex) {
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $ex->getMessage()]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
-} 
+}
+?> 

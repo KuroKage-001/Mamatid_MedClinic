@@ -1444,71 +1444,8 @@ if (empty($calendarEvents)) {
             <section class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-4">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <h1>Book Appointment</h1>
-                        </div>
-                        <div class="col-md-6 d-flex justify-content-end">
-                            <div id="howToBookCard" class="card border-0 shadow-sm" style="max-width: 480px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <h6 class="card-title mb-0 text-white">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            How to Book Appointment
-                                        </h6>
-                                        <button type="button" class="btn btn-sm btn-outline-light" id="dismissHowToBook" title="Close">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="booking-instructions">
-                                        <div class="row">
-                                            <div class="col-md-4 mb-2">
-                                                <div class="text-center">
-                                                    <div class="step-number bg-white text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                        <span class="font-weight-bold">1</span>
-                                                    </div>
-                                                    <div class="step-content">
-                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">Select Schedule</h6>
-                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Click any event below</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-4 mb-2">
-                                                <div class="text-center">
-                                                    <div class="step-number bg-white text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                        <span class="font-weight-bold">2</span>
-                                                    </div>
-                                                    <div class="step-content">
-                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">View & Book</h6>
-                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Click book button</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-4 mb-2">
-                                                <div class="text-center">
-                                                    <div class="step-number bg-white text-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                        <span class="font-weight-bold">3</span>
-                                                    </div>
-                                                    <div class="step-content">
-                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">Complete</h6>
-                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Choose time & submit</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mt-3 p-2" style="background: rgba(255,255,255,0.1); border-radius: 6px;">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-lightbulb text-yellow mr-2"></i>
-                                                <small class="text-white mb-0" style="font-size: 0.75rem;">
-                                                    <strong>Quick Tip:</strong> Each time slot accepts only one patient!
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1551,10 +1488,73 @@ if (empty($calendarEvents)) {
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- How to Book Appointment Guide -->
+                                    <div class="mt-4">
+                                        <div id="howToBookCard" class="border rounded p-4" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); border-color: #007bff !important;">
+                                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                                <h5 class="mb-0 text-white">
+                                                    <i class="fas fa-info-circle mr-2"></i>
+                                                    How to Book Appointment
+                                                </h5>
+                                                <button type="button" class="btn btn-sm btn-outline-light" id="dismissHowToBook" title="Close">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="booking-instructions">
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-3">
+                                                        <div class="text-center">
+                                                            <div class="step-number bg-white text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 40px; height: 40px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                                                <span class="font-weight-bold">1</span>
+                                                            </div>
+                                                            <div class="step-content">
+                                                                <h6 class="mb-2 font-weight-bold text-white">Select Schedule</h6>
+                                                                <p class="text-white-75 mb-0">Click any colored event in the calendar above</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-4 mb-3">
+                                                        <div class="text-center">
+                                                            <div class="step-number bg-white text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 40px; height: 40px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                                                <span class="font-weight-bold">2</span>
+                                                            </div>
+                                                            <div class="step-content">
+                                                                <h6 class="mb-2 font-weight-bold text-white">View Details</h6>
+                                                                <p class="text-white-75 mb-0">Review schedule details and click book button</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-4 mb-3">
+                                                        <div class="text-center">
+                                                            <div class="step-number bg-white text-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 40px; height: 40px; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                                                <span class="font-weight-bold">3</span>
+                                                            </div>
+                                                            <div class="step-content">
+                                                                <h6 class="mb-2 font-weight-bold text-white">Complete Booking</h6>
+                                                                <p class="text-white-75 mb-0">Choose available time slot and submit</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.15);">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-lightbulb text-warning mr-3" style="font-size: 1.25rem;"></i>
+                                                        <div>
+                                                            <strong class="text-white d-block">Quick Tip:</strong>
+                                                            <span class="text-white-75">Each time slot accepts only one patient. Book early to secure your preferred time!</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                 </div>
             </section>
                         </div>

@@ -256,11 +256,7 @@ foreach ($appointments as $appointment) {
     // Set color based on status, whether it's past, and if it's a walk-in
     $color = '#F64E60'; // Default red for active appointments
     if ($isPast) {
-        if ($appointment['status'] == 'completed') {
-            $color = '#28a745'; // Green for completed
-        } else {
-            $color = '#6c757d'; // Gray for past but not completed
-        }
+        $color = '#000000'; // Black for all past appointments
     } else if ($isWalkIn) {
         $color = '#FF8F00'; // Orange for active walk-in appointments
     }
@@ -335,7 +331,7 @@ foreach ($appointments as $appointment) {
             margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--dark-color);
+            color: #2c3e50;
         }
 
         .card-body {
@@ -362,9 +358,10 @@ foreach ($appointments as $appointment) {
         }
 
         .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
+            font-weight: 600;
+            color: #2c3e50;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         /* Button Styling */
@@ -447,6 +444,89 @@ foreach ($appointments as $appointment) {
         .custom-control-label::before {
             border-radius: 4px;
             border: 2px solid #e4e6ef;
+        }
+
+        .custom-control-label {
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Form Text Improvements */
+        .form-text {
+            color: #6c757d !important;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        /* Input placeholder text */
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 0.8;
+        }
+
+        /* Improve text visibility in disabled fields */
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            color: #495057 !important;
+            font-weight: 500;
+        }
+
+        /* Select option text */
+        select.form-control option {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* Textarea text */
+        textarea.form-control {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+
+        /* Input text color */
+        .form-control {
+            color: #2c3e50 !important;
+            font-weight: 500;
+        }
+
+        /* Input Group Text Styling */
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 2px solid #e4e6ef;
+            color: #495057;
+            font-weight: 600;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-group-prepend .input-group-text {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group-append .input-group-text {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Availability Form Specific Styling */
+        #availability-form .card-body {
+            background-color: #ffffff;
+        }
+
+        #availability-form label,
+        #availability-form .form-label {
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+
+        #availability-form .custom-control-label {
+            color: #2c3e50 !important;
+            font-weight: 500 !important;
+        }
+
+        #availability-form .form-text {
+            color: #6c757d !important;
+            font-weight: 500 !important;
         }
 
         /* Calendar Styling */
@@ -649,6 +729,10 @@ foreach ($appointments as $appointment) {
             background-color: rgba(255, 143, 0, 0.1);
         }
         
+        .bg-dark-light {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
         .event-date h4 {
             font-weight: 600;
             color: #333;
@@ -696,6 +780,265 @@ foreach ($appointments as $appointment) {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        
+        /* Export Buttons and Column Visibility Styling */
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none !important;
+            padding: 8px 15px;
+            font-size: 0.875rem;
+            border-radius: 8px;
+        }
+
+        /* Gradient colors for each button */
+        #btnCopy {
+            background: linear-gradient(135deg, #3699FF 0%, #2684FF 100%);
+        }
+
+        #btnCSV {
+            background: linear-gradient(135deg, #1BC5BD 0%, #17B8B0 100%);
+        }
+
+        #btnExcel {
+            background: linear-gradient(135deg, #20C997 0%, #1CB984 100%);
+        }
+
+        #btnPDF {
+            background: linear-gradient(135deg, #F64E60 0%, #EE2D41 100%);
+        }
+
+        #btnPrint {
+            background: linear-gradient(135deg, #8950FC 0%, #7337EE 100%);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            filter: brightness(110%);
+        }
+
+        .export-btn i {
+            font-size: 0.875rem;
+        }
+
+        /* Modern Export Actions Inline CSS */
+        .dt-button-collection {
+            display: none !important;
+        }
+
+        .export-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Elegant Export Options - Non-Button Design */
+        .export-action-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 12px 18px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            border-radius: 12px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            border: 2px solid transparent !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+            text-transform: none !important;
+            letter-spacing: 0.3px !important;
+        }
+
+        .export-action-btn::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+            transition: left 0.6s ease !important;
+        }
+
+        .export-action-btn:hover::before {
+            left: 100% !important;
+        }
+
+        .export-action-btn:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+            border-color: currentColor !important;
+        }
+
+        .export-action-btn:active {
+            transform: translateY(-1px) scale(1.01) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        .export-action-btn i {
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            opacity: 0.9 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .export-action-btn:hover i {
+            transform: scale(1.15) rotate(5deg) !important;
+            opacity: 1 !important;
+        }
+
+        /* Sophisticated Color Schemes for Each Export Type */
+        .export-copy-btn {
+            color: #6366F1 !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
+        }
+
+        .export-copy-btn:hover {
+            color: #4F46E5 !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
+        }
+
+        .export-csv-btn {
+            color: #10B981 !important;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
+        }
+
+        .export-csv-btn:hover {
+            color: #059669 !important;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .export-excel-btn {
+            color: #22C55E !important;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
+        }
+
+        .export-excel-btn:hover {
+            color: #16A34A !important;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
+        }
+
+        .export-pdf-btn {
+            color: #EF4444 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
+        }
+
+        .export-pdf-btn:hover {
+            color: #DC2626 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
+        }
+
+        .export-print-btn {
+            color: #8B5CF6 !important;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+        }
+
+        .export-print-btn:hover {
+            color: #7C3AED !important;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
+        }
+
+        /* Hide default DataTable buttons */
+        .dt-buttons {
+            display: none !important;
+        }
+
+        /* Custom layout for DataTable wrapper */
+        #schedules_table_wrapper .row:first-child {
+            margin-bottom: 15px;
+        }
+
+        #schedules_table_wrapper .dataTables_filter {
+            float: left !important;
+            text-align: left !important;
+        }
+
+        #schedules_table_wrapper .dataTables_filter input {
+            width: 300px;
+            border-radius: 8px;
+            border: 2px solid #e4e6ef;
+            padding: 0.625rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #schedules_table_wrapper .dataTables_filter input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+        }
+
+        /* Responsive Design for Modern Export Options */
+        @media (max-width: 768px) {
+            .export-container {
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .export-action-btn {
+                padding: 10px 14px !important;
+                font-size: 0.8125rem !important;
+                gap: 8px !important;
+                border-radius: 10px !important;
+            }
+
+            .export-action-btn i {
+                font-size: 0.9rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .export-container {
+                gap: 6px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .export-action-btn {
+                padding: 8px 12px !important;
+                font-size: 0.75rem !important;
+                gap: 6px !important;
+                border-radius: 8px !important;
+                justify-content: center !important;
+            }
+
+            .export-action-btn i {
+                font-size: 0.85rem !important;
+            }
+
+            .export-action-btn:hover {
+                transform: translateY(-2px) scale(1.01) !important;
+            }
+
+            #schedules_table_wrapper .dataTables_filter input {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -708,6 +1051,13 @@ foreach ($appointments as $appointment) {
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1 class="m-0">Doctor Schedule Plotter</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="float-sm-right">
+                                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#availability-form" aria-expanded="false" aria-controls="availability-form">
+                                    <i class="fas fa-plus-circle mr-2"></i>Set Availability
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -731,100 +1081,134 @@ foreach ($appointments as $appointment) {
                         </div>
                     <?php endif; ?>
 
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <div class="card card-outline card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">Set Your Availability</h3>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post">
-                                        <!-- Add form token to prevent duplicate submissions -->
-                                        <input type="hidden" name="form_token" value="<?php echo $_SESSION['form_token']; ?>">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="start_date">Start Date</label>
-                                                    <input type="date" class="form-control" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="end_date">End Date</label>
-                                                    <input type="date" class="form-control" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="start_time">Start Time</label>
-                                                    <input type="time" class="form-control" id="start_time" name="start_time" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="end_time">End Time</label>
-                                                    <input type="time" class="form-control" id="end_time" name="end_time" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="time_slot">Time Slot (minutes)</label>
-                                                    <select class="form-control" id="time_slot" name="time_slot" required>
-                                                        <option value="15">15 minutes</option>
-                                                        <option value="30" selected>30 minutes</option>
-                                                        <option value="45">45 minutes</option>
-                                                        <option value="60">60 minutes</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="max_patients">Max Patients per Slot</label>
-                                                    <input type="hidden" id="max_patients" name="max_patients" value="1">
-                                                    <input type="text" class="form-control" value="1" readonly disabled>
-                                                    <small class="form-text text-muted">Each time slot can only accept one appointment</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="notes">Notes</label>
-                                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional information about your availability"></textarea>
-                                        </div>
-                                        
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="skip_weekends" name="skip_weekends" checked>
-                                            <label class="custom-control-label" for="skip_weekends">Skip Weekends</label>
-                                        </div>
-                                        
-                                        <div class="custom-control custom-checkbox mt-2">
-                                            <input type="checkbox" class="custom-control-input" id="replace_existing" name="replace_existing">
-                                            <label class="custom-control-label" for="replace_existing">Replace existing schedules in this date range</label>
-                                        </div>
-                                        
-                                        <div class="form-group mt-4">
-                                            <button type="submit" name="submit_schedule" class="btn btn-primary">
-                                                <i class="fas fa-save mr-2"></i> Save Schedule
-                                            </button>
-                                        </div>
-                                    </form>
+                    <!-- Set Your Availability Form -->
+                    <div class="collapse" id="availability-form">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Set Your Availability</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
                                 </div>
                             </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <!-- Add form token to prevent duplicate submissions -->
+                                    <input type="hidden" name="form_token" value="<?php echo $_SESSION['form_token']; ?>">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="start_time" name="start_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="end_time" name="end_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Time Slot Duration</label>
+                                                <select class="form-control" id="time_slot" name="time_slot" required>
+                                                    <option value="15">15 minutes</option>
+                                                    <option value="30" selected>30 minutes</option>
+                                                    <option value="45">45 minutes</option>
+                                                    <option value="60">60 minutes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Max Patients per Slot</label>
+                                                <input type="hidden" id="max_patients" name="max_patients" value="1">
+                                                <input type="text" class="form-control" value="1 Patient per slot" readonly disabled>
+                                                <small class="form-text text-muted">Each time slot accepts one appointment only</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="submit" name="submit_schedule" class="btn btn-primary w-100">
+                                                    <i class="fas fa-save mr-2"></i>Save Schedule
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Additional Notes</label>
+                                                <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Any additional information about your availability"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Options</label>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="skip_weekends" name="skip_weekends" checked>
+                                                    <label class="custom-control-label" for="skip_weekends">Skip Weekends</label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox mt-2">
+                                                    <input type="checkbox" class="custom-control-input" id="replace_existing" name="replace_existing">
+                                                    <label class="custom-control-label" for="replace_existing">Replace existing schedules</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        
-                        <div class="col-lg-7">
+                    </div>
+
+                    <!-- Calendar Section -->
+                    <div class="row">
+                        <div class="col-12">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Your Schedule Calendar</h3>
+                                    <h3 class="card-title">Calendar</h3>
                                     <div class="card-tools">
-                                        <button type="button" id="refresh-calendar" class="btn btn-sm btn-info">
-                                            <i class="fas fa-sync-alt mr-1"></i> Refresh Calendar
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -855,11 +1239,7 @@ foreach ($appointments as $appointment) {
                                                     <span class="legend-text">Walk-in Appointments</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #28a745;"></span>
-                                                    <span class="legend-text">Completed Appointments</span>
-                                            </div>
-                                                <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #6c757d;"></span>
+                                                    <span class="legend-color" style="background-color: #000000;"></span>
                                                     <span class="legend-text">Past Appointments</span>
                                                 </div>
                                             </div>
@@ -874,10 +1254,16 @@ foreach ($appointments as $appointment) {
                         <div class="col-12">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Your Schedules</h3>
+                                    <h3 class="card-title">Availability Schedules</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>  
                                 </div>
                                 <div class="card-body">
-                                    <table id="schedules_table" class="table table-bordered table-striped">
+                                    <div class="table-responsive">
+                                        <table id="schedules_table" class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
@@ -927,7 +1313,30 @@ foreach ($appointments as $appointment) {
                                                 </tr>
                                             <?php } ?>
                                         </tbody>
-                                    </table>
+                                        </table>
+                                        <div class="export-container mt-3 mb-3" id="exportContainer">
+                                            <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                                                <i class="fas fa-copy"></i>
+                                                <span>Copy</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                                                <i class="fas fa-file-csv"></i>
+                                                <span>CSV</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                                                <i class="fas fa-file-excel"></i>
+                                                <span>Excel</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                                <span>PDF</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                                                <i class="fas fa-print"></i>
+                                                <span>Print</span>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -945,12 +1354,139 @@ foreach ($appointments as $appointment) {
     
     <script>
         $(function() {
-            // Initialize DataTable
-            $("#schedules_table").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "order": [[0, "asc"]]
+            // Initialize DataTable with export buttons
+            var table = $("#schedules_table").DataTable({
+                responsive: true,
+                lengthChange: false,
+                autoWidth: false,
+                pageLength: 5,
+                pagingType: "simple_numbers",
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search schedules...",
+                    paginate: {
+                        previous: "<i class='fas fa-chevron-left'></i>",
+                        next: "<i class='fas fa-chevron-right'></i>"
+                    }
+                },
+                order: [[0, "asc"]],
+                columnDefs: [
+                    {
+                        // Target the Notes column (index 5)
+                        targets: 5,
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return data; // Return HTML for display
+                            } else if (type === 'type' || type === 'sort') {
+                                // Strip HTML tags for sorting
+                                return data.replace(/<[^>]*>/g, '').trim();
+                            } else if (type === 'filter') {
+                                // Strip HTML tags for searching/filtering
+                                return data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        // Target the Status column (index 4) for better searching
+                        targets: 4,
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return data; // Return HTML for display
+                            } else if (type === 'filter' || type === 'type' || type === 'sort') {
+                                // Extract text content from badge for searching/sorting
+                                var text = data.replace(/<[^>]*>/g, '').trim();
+                                return text;
+                            }
+                            return data;
+                        }
+                    }
+                ],
+                search: {
+                    // Enable smart searching
+                    smart: true,
+                    // Enable regex searching
+                    regex: false,
+                    // Case insensitive search
+                    caseInsensitive: true
+                }
+            });
+
+            // Hide default buttons
+            $('.dt-buttons').hide();
+
+
+
+            // Enhance search to work with all text content including HTML stripped content
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                if (settings.nTable.id !== 'schedules_table') {
+                    return true;
+                }
+                
+                var searchTerm = $('#schedules_table_filter input').val().toLowerCase();
+                if (!searchTerm) {
+                    return true;
+                }
+                
+                // Search through all columns including stripped HTML content
+                for (var i = 0; i < data.length; i++) {
+                    var columnData = data[i];
+                    // Strip HTML and normalize whitespace for searching
+                    var cleanData = columnData.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').toLowerCase();
+                    if (cleanData.indexOf(searchTerm) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            // Trigger table redraw when search input changes
+            $('#schedules_table_filter input').off('keyup.DT search.DT input.DT paste.DT cut.DT').on('keyup.DT search.DT input.DT paste.DT cut.DT', function() {
+                table.draw();
+            });
+
+            // Custom export button handlers
+            $('#btnCopy').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-copy').trigger();
+                
+                // Show toast notification
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Schedule data copied to clipboard!'
+                });
+            });
+
+            $('#btnCSV').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-csv').trigger();
+            });
+
+            $('#btnExcel').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-excel').trigger();
+            });
+
+            $('#btnPDF').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-pdf').trigger();
+            });
+
+            $('#btnPrint').click(function(e) {
+                e.preventDefault();
+                table.button('.buttons-print').trigger();
             });
             
             // Handle send notification button click
@@ -1016,6 +1552,69 @@ foreach ($appointments as $appointment) {
                 });
             });
             
+            // Handle walk-in notification sending
+            $(document).on('click', '.send-walkin-notification', function() {
+                const appointmentId = $(this).data('appointment-id');
+                const btn = $(this);
+                
+                // Disable button and show loading state
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Sending...');
+                
+                // Send AJAX request to send walk-in notification
+                $.ajax({
+                    url: 'ajax/admin_notif_walkin_appointment_sender.php',
+                    type: 'POST',
+                    data: {
+                        appointment_id: appointmentId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            const alertHtml = `
+                                <div class="alert alert-success alert-dismissible fade show mt-3">
+                                    <i class="fas fa-check-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Update button to show sent status
+                            btn.removeClass('btn-warning').addClass('btn-success')
+                               .html('<i class="fas fa-check mr-2"></i> Walk-in Notification Sent')
+                               .prop('disabled', true);
+                        } else {
+                            // Show error message
+                            const alertHtml = `
+                                <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Reset button
+                            btn.prop('disabled', false)
+                               .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
+                        }
+                    },
+                    error: function() {
+                        // Show error message
+                        const alertHtml = `
+                            <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the walk-in notification.
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        `;
+                        btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                        
+                        // Reset button
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
+                    }
+                });
+            });
+            
             // Function to automatically update past appointments to completed status
             function updatePastAppointments() {
                 $.ajax({
@@ -1070,21 +1669,7 @@ foreach ($appointments as $appointment) {
             // Set up periodic refresh (every 60 seconds)
             setInterval(refreshAppointmentsCalendar, 60000);
             
-            // Handle manual refresh button click
-            $('#refresh-calendar').click(function() {
-                const $btn = $(this);
-                
-                // Show loading spinner
-                $btn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Refreshing...').prop('disabled', true);
-                
-                // Call refresh function
-                refreshAppointmentsCalendar();
-                
-                // Reset button after a delay
-                setTimeout(function() {
-                    $btn.html('<i class="fas fa-sync-alt mr-1"></i> Refresh Calendar').prop('disabled', false);
-                }, 1000);
-            });
+
             
             // Refresh once when page loads (after calendar is initialized)
             setTimeout(refreshAppointmentsCalendar, 1000);
@@ -1222,11 +1807,7 @@ foreach ($appointments as $appointment) {
                         
                         // Set header class based on appointment status, whether it's past, and if it's walk-in
                         if (props.is_past) {
-                            if (props.status == 'completed') {
-                                headerClass = 'bg-success text-white';
-                            } else {
-                                headerClass = 'bg-secondary text-white';
-                            }
+                            headerClass = 'bg-dark text-white'; // Black for all past appointments
                         } else if (props.is_walk_in) {
                             headerClass = 'bg-warning text-white'; // Orange for walk-in appointments
                         } else {
@@ -1259,11 +1840,11 @@ foreach ($appointments as $appointment) {
                         
                         // Set background color class based on appointment type and status
                         var bgClass = props.is_past ? 
-                            (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 
+                            'bg-dark-light' : 
                             (props.is_walk_in ? 'bg-orange-light' : 'bg-danger-light');
                         
                         var iconColor = props.is_past ? 
-                            (props.status == 'completed' ? 'text-success' : 'text-secondary') : 
+                            'text-dark' : 
                             (props.is_walk_in ? 'text-warning' : 'text-danger');
                         
                         modalContent = `
@@ -1317,22 +1898,27 @@ foreach ($appointments as $appointment) {
                             </div>
                         </div>`;
                         
-                        // Add send notification button for active appointments (only for regular appointments)
-                        if (props.type === 'appointment' && !props.is_past && props.appointment_id && !props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
-                                    <i class="fas fa-envelope mr-2"></i> Send Email Notification
-                                </button>
-                            </div>`;
-                        } else if (props.type === 'appointment' && !props.is_past && props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <div class="alert alert-info mb-0">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Walk-in appointments do not require email notifications as the patient is already present.
-                                </div>
-                            </div>`;
+                        // Add send notification button for active appointments (both regular and walk-in)
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                            if (props.is_walk_in) {
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-warning send-walkin-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-walking mr-2"></i> Send Walk-in Notification
+                                    </button>
+                                    <small class="d-block text-muted mt-2">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Send email notification for this walk-in appointment
+                                    </small>
+                                </div>`;
+                            } else {
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                    </button>
+                                </div>`;
+                            }
                         }
                     }
                     

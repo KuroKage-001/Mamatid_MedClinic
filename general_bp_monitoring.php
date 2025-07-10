@@ -869,28 +869,6 @@ try {
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <div class="export-container mt-4" id="exportContainer">
-                <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
-                  <i class="fas fa-copy"></i>
-                  <span>Copy</span>
-                </a>
-                <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
-                  <i class="fas fa-file-csv"></i>
-                  <span>CSV</span>
-                </a>
-                <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
-                  <i class="fas fa-file-excel"></i>
-                  <span>Excel</span>
-                </a>
-                <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
-                  <i class="fas fa-file-pdf"></i>
-                  <span>PDF</span>
-                </a>
-                <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
-                  <i class="fas fa-print"></i>
-                  <span>Print</span>
-                </a>
-              </div>
               <table id="all_bp" class="table table-striped table-hover">
                 <thead>
                   <tr>
@@ -965,6 +943,28 @@ try {
                   <?php } ?>
                 </tbody>
               </table>
+              <div class="export-container mt-3 mb-3" id="exportContainer">
+                <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                  <i class="fas fa-copy"></i>
+                  <span>Copy</span>
+                </a>
+                <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                  <i class="fas fa-file-csv"></i>
+                  <span>CSV</span>
+                </a>
+                <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                  <i class="fas fa-file-excel"></i>
+                  <span>Excel</span>
+                </a>
+                <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                  <i class="fas fa-file-pdf"></i>
+                  <span>PDF</span>
+                </a>
+                <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                  <i class="fas fa-print"></i>
+                  <span>Print</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

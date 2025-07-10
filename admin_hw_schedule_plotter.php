@@ -205,11 +205,7 @@ foreach ($appointments as $appointment) {
     // Set color based on status, whether it's past, and if it's a walk-in
     $color = '#F64E60'; // Default red for active appointments
     if ($isPast) {
-        if ($appointment['status'] == 'completed') {
-            $color = '#28a745'; // Green for completed
-        } else {
-            $color = '#6c757d'; // Gray for past but not completed
-        }
+        $color = '#000000'; // Black for all past appointments
     } else if ($isWalkIn) {
         $color = '#FF8F00'; // Orange for active walk-in appointments
     }
@@ -288,7 +284,7 @@ $roleDisplay = ucfirst($staffRole);
             margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--dark-color);
+            color: #2c3e50;
         }
 
         .card-body {
@@ -315,9 +311,10 @@ $roleDisplay = ucfirst($staffRole);
         }
 
         .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
+            font-weight: 600;
+            color: #2c3e50;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         /* Button Styling */
@@ -400,6 +397,89 @@ $roleDisplay = ucfirst($staffRole);
         .custom-control-label::before {
             border-radius: 4px;
             border: 2px solid #e4e6ef;
+        }
+
+        .custom-control-label {
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Form Text Improvements */
+        .form-text {
+            color: #6c757d !important;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        /* Input placeholder text */
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 0.8;
+        }
+
+        /* Improve text visibility in disabled fields */
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            color: #495057 !important;
+            font-weight: 500;
+        }
+
+        /* Select option text */
+        select.form-control option {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* Textarea text */
+        textarea.form-control {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+
+        /* Input text color */
+        .form-control {
+            color: #2c3e50 !important;
+            font-weight: 500;
+        }
+
+        /* Input Group Text Styling */
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 2px solid #e4e6ef;
+            color: #495057;
+            font-weight: 600;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-group-prepend .input-group-text {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group-append .input-group-text {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Availability Form Specific Styling */
+        #availability-form .card-body {
+            background-color: #ffffff;
+        }
+
+        #availability-form label,
+        #availability-form .form-label {
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+
+        #availability-form .custom-control-label {
+            color: #2c3e50 !important;
+            font-weight: 500 !important;
+        }
+
+        #availability-form .form-text {
+            color: #6c757d !important;
+            font-weight: 500 !important;
         }
 
         /* Calendar Styling */
@@ -603,6 +683,10 @@ $roleDisplay = ucfirst($staffRole);
             background-color: rgba(255, 143, 0, 0.1);
         }
         
+        .bg-dark-light {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
         .event-date h4 {
             font-weight: 600;
             color: #333;
@@ -776,7 +860,7 @@ $roleDisplay = ucfirst($staffRole);
         .export-container {
             display: flex;
             gap: 12px;
-            justify-content: flex-end;
+            justify-content: center;
             flex-wrap: wrap;
             align-items: center;
             margin-bottom: 15px;
@@ -919,6 +1003,13 @@ $roleDisplay = ucfirst($staffRole);
                                 <span class="role-badge role-<?php echo $staffRole; ?>"><?php echo $roleDisplay; ?></span>
                             </h1>
                         </div>
+                        <div class="col-sm-6">
+                            <div class="float-sm-right">
+                                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#availability-form" aria-expanded="false" aria-controls="availability-form">
+                                    <i class="fas fa-plus-circle mr-2"></i>Set Availability
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -927,95 +1018,133 @@ $roleDisplay = ucfirst($staffRole);
                 <div class="container-fluid">
                     <!-- Messages will be handled by SweetAlert2 -->
 
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <div class="card card-outline card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">Set Your Availability</h3>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="start_date">Start Date</label>
-                                                    <input type="date" class="form-control" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="end_date">End Date</label>
-                                                    <input type="date" class="form-control" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="start_time">Start Time</label>
-                                                    <input type="time" class="form-control" id="start_time" name="start_time" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="end_time">End Time</label>
-                                                    <input type="time" class="form-control" id="end_time" name="end_time" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="time_slot">Time Slot (minutes)</label>
-                                                    <select class="form-control" id="time_slot" name="time_slot" required>
-                                                        <option value="15">15 minutes</option>
-                                                        <option value="30" selected>30 minutes</option>
-                                                        <option value="45">45 minutes</option>
-                                                        <option value="60">60 minutes</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="max_patients">Max Patients per Slot</label>
-                                                    <input type="hidden" id="max_patients" name="max_patients" value="1">
-                                                    <input type="text" class="form-control" value="1" readonly disabled>
-                                                    <small class="form-text text-muted">Each time slot can only accept one appointment</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="notes">Notes</label>
-                                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional information about your availability"></textarea>
-                                        </div>
-                                        
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="skip_weekends" name="skip_weekends" checked>
-                                            <label class="custom-control-label" for="skip_weekends">Skip Weekends</label>
-                                        </div>
-                                        
-                                        <div class="custom-control custom-checkbox mt-2">
-                                            <input type="checkbox" class="custom-control-input" id="replace_existing" name="replace_existing">
-                                            <label class="custom-control-label" for="replace_existing">Replace existing schedules in this date range</label>
-                                        </div>
-                                        
-                                        <div class="form-group mt-4">
-                                            <button type="submit" name="submit_schedule" class="btn btn-primary">
-                                                <i class="fas fa-save mr-2"></i> Save Schedule
-                                            </button>
-                                        </div>
-                                    </form>
+                    <!-- Set Your Availability Form -->
+                    <div class="collapse" id="availability-form">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Set Your Availability</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
                                 </div>
                             </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="start_time" name="start_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="end_time" name="end_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Time Slot Duration</label>
+                                                <select class="form-control" id="time_slot" name="time_slot" required>
+                                                    <option value="15">15 minutes</option>
+                                                    <option value="30" selected>30 minutes</option>
+                                                    <option value="45">45 minutes</option>
+                                                    <option value="60">60 minutes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Max Patients per Slot</label>
+                                                <input type="hidden" id="max_patients" name="max_patients" value="1">
+                                                <input type="text" class="form-control" value="1 Patient per slot" readonly disabled>
+                                                <small class="form-text text-muted">Each time slot accepts one appointment only</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="submit" name="submit_schedule" class="btn btn-primary w-100">
+                                                    <i class="fas fa-save mr-2"></i>Save Schedule
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Additional Notes</label>
+                                                <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Any additional information about your availability"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Options</label>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="skip_weekends" name="skip_weekends" checked>
+                                                    <label class="custom-control-label" for="skip_weekends">Skip Weekends</label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox mt-2">
+                                                    <input type="checkbox" class="custom-control-input" id="replace_existing" name="replace_existing">
+                                                    <label class="custom-control-label" for="replace_existing">Replace existing schedules</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        
-                        <div class="col-lg-7">
+                    </div>
+
+                    <!-- Calendar Section -->
+                    <div class="row">
+                        <div class="col-12">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Your Schedule Calendar</h3>
+                                    <h3 class="card-title">Calendar</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <div id="calendar"></div>
@@ -1040,11 +1169,7 @@ $roleDisplay = ucfirst($staffRole);
                                                     <span class="legend-text">Walk-in Appointments</span>
                                             </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #28a745"></span>
-                                                    <span class="legend-text">Completed Appointments</span>
-                                            </div>
-                                                <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #6c757d"></span>
+                                                    <span class="legend-color" style="background-color: #000000"></span>
                                                     <span class="legend-text">Past Appointments</span>
                                                 </div>
                                             </div>
@@ -1059,31 +1184,14 @@ $roleDisplay = ucfirst($staffRole);
                         <div class="col-12">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Your Schedules</h3>
+                                    <h3 class="card-title">Availability Schedules</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="export-container mt-4" id="exportContainer">
-                                        <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
-                                            <i class="fas fa-copy"></i>
-                                            <span>Copy</span>
-                                        </a>
-                                        <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
-                                            <i class="fas fa-file-csv"></i>
-                                            <span>CSV</span>
-                                        </a>
-                                        <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
-                                            <i class="fas fa-file-excel"></i>
-                                            <span>Excel</span>
-                                        </a>
-                                        <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                            <span>PDF</span>
-                                        </a>
-                                        <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
-                                            <i class="fas fa-print"></i>
-                                            <span>Print</span>
-                                        </a>
-                                    </div>
                                     <div class="table-responsive">
                                         <table id="schedules_table" class="table table-bordered table-striped">
                                             <thead>
@@ -1137,6 +1245,28 @@ $roleDisplay = ucfirst($staffRole);
                                                 <?php } ?>
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="export-container mt-3 mb-3" id="exportContainer">
+                                        <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                                            <i class="fas fa-copy"></i>
+                                            <span>Copy</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                                            <i class="fas fa-file-csv"></i>
+                                            <span>CSV</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                                            <i class="fas fa-file-excel"></i>
+                                            <span>Excel</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span>PDF</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                                            <i class="fas fa-print"></i>
+                                            <span>Print</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -1197,16 +1327,71 @@ $roleDisplay = ucfirst($staffRole);
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search records...",
+                    searchPlaceholder: "Search schedules...",
                     paginate: {
                         previous: "<i class='fas fa-chevron-left'></i>",
                         next: "<i class='fas fa-chevron-right'></i>"
                     }
+                },
+                order: [[0, "asc"]],
+                columnDefs: [
+                    {
+                        // Target the Notes column (index 4)
+                        targets: 4,
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                return data; // Return HTML for display
+                            } else if (type === 'type' || type === 'sort') {
+                                // Strip HTML tags for sorting
+                                return data.replace(/<[^>]*>/g, '').trim();
+                            } else if (type === 'filter') {
+                                // Strip HTML tags for searching/filtering
+                                return data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                            }
+                            return data;
+                        }
+                    }
+                ],
+                search: {
+                    // Enable smart searching
+                    smart: true,
+                    // Enable regex searching
+                    regex: false,
+                    // Case insensitive search
+                    caseInsensitive: true
                 }
             });
 
             // Hide default buttons
             $('.dt-buttons').hide();
+
+            // Enhance search to work with all text content including HTML stripped content
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                if (settings.nTable.id !== 'schedules_table') {
+                    return true;
+                }
+                
+                var searchTerm = $('#schedules_table_filter input').val().toLowerCase();
+                if (!searchTerm) {
+                    return true;
+                }
+                
+                // Search through all columns including stripped HTML content
+                for (var i = 0; i < data.length; i++) {
+                    var columnData = data[i];
+                    // Strip HTML and normalize whitespace for searching
+                    var cleanData = columnData.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').toLowerCase();
+                    if (cleanData.indexOf(searchTerm) !== -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            // Trigger table redraw when search input changes
+            $('#schedules_table_filter input').off('keyup.DT search.DT input.DT paste.DT cut.DT').on('keyup.DT search.DT input.DT paste.DT cut.DT', function() {
+                table.draw();
+            });
             
             // Custom export button handlers
             $('#btnCopy').click(function(e) {
@@ -1298,6 +1483,60 @@ $roleDisplay = ucfirst($staffRole);
                         // Reset button
                         btn.prop('disabled', false)
                            .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                    }
+                });
+            });
+            
+            // Handle send walk-in notification button click
+            $(document).on('click', '.send-walkin-notification', function() {
+                const appointmentId = $(this).data('appointment-id');
+                const btn = $(this);
+                
+                // Disable button and show loading state
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Sending...');
+                
+                // Send AJAX request to send walk-in notification
+                $.ajax({
+                    url: 'ajax/admin_notif_walkin_appointment_sender.php',
+                    type: 'POST',
+                    data: {
+                        appointment_id: appointmentId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success toast
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message
+                            });
+                            
+                            // Update button to show sent status
+                            btn.removeClass('btn-warning').addClass('btn-success')
+                               .html('<i class="fas fa-check mr-2"></i> Walk-in Notification Sent')
+                               .prop('disabled', true);
+                        } else {
+                            // Show error toast
+                            Toast.fire({
+                                icon: 'error',
+                                title: response.message
+                            });
+                            
+                            // Reset button
+                            btn.prop('disabled', false)
+                               .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
+                        }
+                    },
+                    error: function() {
+                        // Show error toast
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'An error occurred while sending the walk-in notification.'
+                        });
+                        
+                        // Reset button
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
                     }
                 });
             });
@@ -1456,11 +1695,7 @@ $roleDisplay = ucfirst($staffRole);
                         
                         // Set header class based on appointment status, whether it's past, and if it's walk-in
                         if (props.is_past) {
-                            if (props.status == 'completed') {
-                                headerClass = 'bg-success text-white';
-                            } else {
-                                headerClass = 'bg-secondary text-white';
-                            }
+                            headerClass = 'bg-dark text-white'; // Black for all past appointments
                         } else if (props.is_walk_in) {
                             headerClass = 'bg-warning text-white'; // Orange for walk-in appointments
                         } else {
@@ -1493,11 +1728,11 @@ $roleDisplay = ucfirst($staffRole);
                         
                         // Set background color class based on appointment type and status
                         var bgClass = props.is_past ? 
-                            (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 
+                            'bg-dark-light' : 
                             (props.is_walk_in ? 'bg-warning-light' : 'bg-danger-light');
                         
                         var iconColor = props.is_past ? 
-                            (props.status == 'completed' ? 'text-success' : 'text-secondary') : 
+                            'text-dark' : 
                             (props.is_walk_in ? 'text-warning' : 'text-danger');
                         
                         modalContent = `
@@ -1563,22 +1798,23 @@ $roleDisplay = ucfirst($staffRole);
                             </div>
                         </div>`;
                         
-                        // Add send notification button for active appointments (only for regular appointments)
-                        if (props.type === 'appointment' && !props.is_past && props.appointment_id && !props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
-                                    <i class="fas fa-envelope mr-2"></i> Send Email Notification
-                                </button>
-                            </div>`;
-                        } else if (props.type === 'appointment' && !props.is_past && props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <div class="alert alert-info mb-0">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Walk-in appointments do not require email notifications as the patient is already present.
-                                </div>
-                            </div>`;
+                        // Add send notification button for active appointments (both regular and walk-in)
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                            if (props.is_walk_in) {
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-warning send-walkin-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-walking mr-2"></i> Send Email Notification
+                                    </button>
+                                </div>`;
+                            } else {
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                    </button>
+                                </div>`;
+                            }
                         }
                     }
                     

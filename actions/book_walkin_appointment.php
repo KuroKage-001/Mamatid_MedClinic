@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get form data
 $patientName = trim($_POST['patient_name'] ?? '');
 $phoneNumber = trim($_POST['phone_number'] ?? '');
+$email = trim($_POST['email'] ?? '');
 $address = trim($_POST['address'] ?? '');
 $dateOfBirth = $_POST['date_of_birth'] ?? '';
 $gender = $_POST['gender'] ?? '';
@@ -108,6 +109,11 @@ if (!empty($appointmentDate) && $appointmentDate < date('Y-m-d')) {
 // Validate provider type
 if (!in_array($providerType, ['admin', 'health_worker', 'doctor'])) {
     $errors[] = 'Invalid provider type';
+}
+
+// Validate email format if provided
+if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Invalid email format';
 }
 
 // Return validation errors
@@ -196,15 +202,16 @@ try {
     
     // Insert the walk-in appointment into the dedicated table
     $insertQuery = "INSERT INTO admin_walkin_appointments 
-                   (patient_name, phone_number, address, date_of_birth, gender, 
+                   (patient_name, phone_number, email, address, date_of_birth, gender, 
                     appointment_date, appointment_time, reason, status, notes, 
                     schedule_id, provider_id, provider_type, booked_by) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $insertStmt = $con->prepare($insertQuery);
     $insertStmt->execute([
         $patientName,
         $phoneNumber,
+        $email ?: NULL, // Use NULL if email is empty
         $address,
         $dateOfBirth,
         $gender,

@@ -78,6 +78,21 @@ try {
     // Column might already exist, continue
 }
 
+// Add email column to admin_walkin_appointments if it doesn't exist
+try {
+    $checkEmailColumnQuery = "SHOW COLUMNS FROM admin_walkin_appointments LIKE 'email'";
+    $checkEmailStmt = $con->prepare($checkEmailColumnQuery);
+    $checkEmailStmt->execute();
+    
+    if ($checkEmailStmt->rowCount() == 0) {
+        $alterEmailQuery = "ALTER TABLE admin_walkin_appointments ADD COLUMN email VARCHAR(100) DEFAULT NULL COMMENT 'Patient email address for notifications' AFTER phone_number";
+        $alterEmailStmt = $con->prepare($alterEmailQuery);
+        $alterEmailStmt->execute();
+    }
+} catch (PDOException $ex) {
+    // Column might already exist, continue
+}
+
 // Fetch all appointments with archive metadata
 try {
     if ($showArchived) {
@@ -1801,8 +1816,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                 <i class="fas fa-walking"></i>
                                             </div>
                                             <div class="ml-3">
-                                                <h4 class="walkin-form-title mb-0">Quick Walk-in Appointment</h4>
-                                                <p class="walkin-form-subtitle mb-0">Book immediate appointment without registration</p>
+                                                <h4 class="walkin-form-title mb-0">Walk-in Appointment</h4>
                                             </div>
                                         </div>
                                         <button type="button" class="btn-close-walkin" onclick="toggleWalkinForm()">
@@ -1860,6 +1874,17 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                     </label>
                                                     <input type="tel" class="walkin-input" id="walkin_phone_number" name="phone_number" 
                                                            placeholder="e.g., 09123456789" required>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="walkin_email" class="walkin-label">
+                                                        <i class="fas fa-envelope mr-2"></i>Email Address
+                                                    </label>
+                                                    <input type="email" class="walkin-input" id="walkin_email" name="email" 
+                                                           placeholder="e.g., patient@email.com">
+                                                    <small class="form-text text-muted" style="color: rgba(255, 255, 255, 0.6) !important; margin-top: 5px;">
+                                                        <i class="fas fa-info-circle mr-1"></i>Optional: Provide email to send appointment notifications
+                                                    </small>
                                                 </div>
                                                 
                                                 <div class="form-group full-width">
@@ -2043,7 +2068,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 <div class="card card-outline card-primary">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <?php echo $showArchived ? 'Archived Appointments' : 'Active Appointments'; ?>
+                            <?php echo $showArchived ? 'Archived Appointments' : 'Appointments'; ?>
                         </h3>
                         <div class="card-tools">
                             <div class="d-flex align-items-center">
@@ -3100,6 +3125,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             const formData = {
                 patient_name: $('#walkin_patient_name').val(),
                 phone_number: $('#walkin_phone_number').val(),
+                email: $('#walkin_email').val(),
                 address: $('#walkin_address').val(),
                 date_of_birth: $('#walkin_date_of_birth').val(),
                 gender: $('#walkin_gender').val(),
