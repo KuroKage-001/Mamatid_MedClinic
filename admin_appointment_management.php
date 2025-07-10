@@ -28,17 +28,33 @@ if (isset($_GET['message'])) {
 if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
-
-// Handle appointment notes updates
+// Handle appointment notes updates (for both regular and walk-in appointments)
 if (isset($_POST['update_notes'])) {
     $appointmentId = $_POST['appointment_id'];
     $notes = $_POST['notes'];
 
     try {
-        $query = "UPDATE admin_clients_appointments SET notes = ? WHERE id = ?";
-        $stmt = $con->prepare($query);
-        $stmt->execute([$notes, $appointmentId]);
-        $message = "Appointment notes updated successfully!";
+        // First, try to update notes in admin_clients_appointments table
+        $query1 = "UPDATE admin_clients_appointments SET notes = ?, updated_at = NOW() WHERE id = ?";
+        $stmt1 = $con->prepare($query1);
+        $stmt1->execute([$notes, $appointmentId]);
+        $rowsAffected1 = $stmt1->rowCount();
+        
+        // If no rows affected, try admin_walkin_appointments table
+        if ($rowsAffected1 == 0) {
+            $query2 = "UPDATE admin_walkin_appointments SET notes = ?, updated_at = NOW() WHERE id = ?";
+            $stmt2 = $con->prepare($query2);
+            $stmt2->execute([$notes, $appointmentId]);
+            $rowsAffected2 = $stmt2->rowCount();
+            
+            if ($rowsAffected2 > 0) {
+                $message = "Walk-in appointment notes updated successfully!";
+            } else {
+                $error = "Appointment not found.";
+            }
+        } else {
+            $message = "Regular appointment notes updated successfully!";
+        }
     } catch (PDOException $ex) {
         $error = "Error updating appointment notes: " . $ex->getMessage();
     }
@@ -69,17 +85,46 @@ try {
                          DATE_FORMAT(a.appointment_date, '%M %d, %Y') as formatted_date,
                          DATE_FORMAT(a.appointment_time, '%h:%i %p') as formatted_time,
                          DATE_FORMAT(a.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
-                         u.display_name as archived_by_name
+                         u.display_name as archived_by_name,
+                         'regular' as appointment_type
                   FROM admin_clients_appointments a
                   LEFT JOIN admin_user_accounts u ON a.archived_by = u.id
                   WHERE a.is_archived = 1 
-                  ORDER BY a.archived_at DESC";
+                  UNION ALL
+                  SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                         w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
+                         w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
+                         0 as email_sent, 0 as reminder_sent, w.is_archived, 
+                         NULL as view_token, NULL as token_expiry, w.archived_at, w.archived_by, w.archive_reason,
+                         1 as is_walkin,
+                         DATE_FORMAT(w.appointment_date, '%M %d, %Y') as formatted_date,
+                         DATE_FORMAT(w.appointment_time, '%h:%i %p') as formatted_time,
+                         DATE_FORMAT(w.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
+                         u2.display_name as archived_by_name,
+                         'walk-in' as appointment_type
+                  FROM admin_walkin_appointments w
+                  LEFT JOIN admin_user_accounts u2 ON w.archived_by = u2.id
+                  WHERE w.is_archived = 1
+                  ORDER BY archived_at DESC";
     } else {
         $query = "SELECT *, 
                          DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
-                         DATE_FORMAT(appointment_time, '%h:%i %p') as formatted_time
+                         DATE_FORMAT(appointment_time, '%h:%i %p') as formatted_time,
+                         'regular' as appointment_type
                   FROM admin_clients_appointments 
                   WHERE is_archived = 0 
+                  UNION ALL
+                  SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                         w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
+                         w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
+                         0 as email_sent, 0 as reminder_sent, w.is_archived, 
+                         NULL as view_token, NULL as token_expiry, NULL as archived_at, NULL as archived_by, NULL as archive_reason,
+                         1 as is_walkin,
+                         DATE_FORMAT(w.appointment_date, '%M %d, %Y') as formatted_date,
+                         DATE_FORMAT(w.appointment_time, '%h:%i %p') as formatted_time,
+                         'walk-in' as appointment_type
+                  FROM admin_walkin_appointments w
+                  WHERE w.is_archived = 0
                   ORDER BY appointment_date DESC, appointment_time DESC";
     }
     $stmt = $con->prepare($query);
@@ -88,11 +133,15 @@ try {
     $error = "Error fetching appointments: " . $ex->getMessage();
 }
 
-// Count total archived and active appointments for the filter
+// Count total archived and active appointments for the filter (including walk-in appointments)
 $countQuery = "SELECT 
                 SUM(CASE WHEN is_archived = 0 THEN 1 ELSE 0 END) as active_count,
                 SUM(CASE WHEN is_archived = 1 THEN 1 ELSE 0 END) as archived_count
-               FROM admin_clients_appointments";
+               FROM (
+                   SELECT is_archived FROM admin_clients_appointments
+                   UNION ALL
+                   SELECT is_archived FROM admin_walkin_appointments
+               ) AS all_appointments";
 $countStmt = $con->prepare($countQuery);
 $countStmt->execute();
 $countResult = $countStmt->fetch(PDO::FETCH_ASSOC);
@@ -104,6 +153,19 @@ $archivedCount = $countResult['archived_count'] ?? 0;
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
+    <!-- Essential JavaScript Libraries (must be loaded before DataTables and custom scripts) -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    
+    <!-- Debug script to verify jQuery is loaded -->
+    <script>
+        console.log('Essential libraries loading status:');
+        console.log('jQuery available:', typeof jQuery !== 'undefined');
+        console.log('Bootstrap available:', typeof bootstrap !== 'undefined');
+        console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
+    </script>
+    
     <?php include './config/data_tables_css_js.php'; ?>
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <title>Manage Appointments - Mamatid Health Center System</title>
@@ -227,6 +289,25 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             font-size: 0.75rem;
             color: #6c757d;
             margin-left: 5px;
+        }
+
+        /* Walk-in Badge Styling */
+        .badge-warning {
+            background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+            color: white !important;
+            font-weight: 500;
+            border-radius: 12px;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* Walk-in Row Styling */
+        tr[data-appointment-type="walk-in"] {
+            background-color: rgba(255, 168, 0, 0.03) !important;
+            border-left: 3px solid #FFA800;
+        }
+
+        tr[data-appointment-type="walk-in"]:hover {
+            background-color: rgba(255, 168, 0, 0.08) !important;
         }
 
         /* Form Controls */
@@ -1236,6 +1317,430 @@ $archivedCount = $countResult['archived_count'] ?? 0;
         .walkin-form-body::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
         }
+
+        /* Walk-in Time Slot Selection Styling */
+        .time-slot-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .time-slot-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .time-slot-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .time-slot-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .walkin-time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .walkin-time-slot {
+            padding: 12px 8px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .walkin-time-slot:hover:not(.booked) {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .walkin-time-slot.selected {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.3);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transform: scale(1.05);
+        }
+
+        .walkin-time-slot.booked {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.5);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .walkin-time-slot.booked::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(231, 76, 60, 0.1),
+                rgba(231, 76, 60, 0.1) 10px,
+                rgba(231, 76, 60, 0.2) 10px,
+                rgba(231, 76, 60, 0.2) 20px
+            );
+            z-index: 1;
+        }
+
+        .walkin-time-slot .time-label {
+            font-weight: 600;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .walkin-time-slot .time-label i {
+            margin-right: 5px;
+            font-size: 0.8rem;
+        }
+
+        .walkin-time-slot.booked .time-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .walkin-time-slot .badge {
+            font-size: 0.65rem;
+            padding: 3px 6px;
+            border-radius: 15px;
+            z-index: 2;
+            margin-top: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .walkin-time-slot.selected .badge {
+            background: rgba(52, 152, 219, 0.8);
+            color: white;
+        }
+
+        .walkin-time-slot.booked .badge {
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+        }
+
+        .walkin-time-slot .slot-status {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3px;
+            text-align: center;
+            line-height: 1.2;
+            font-weight: 400;
+            z-index: 2;
+            position: relative;
+        }
+
+        .walkin-time-slot.booked .slot-status {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .walkin-time-period-divider {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #ecf0f1;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .walkin-time-period-divider i {
+            margin-right: 8px;
+            color: #3498db;
+        }
+
+        /* Walk-in Time Slot Filters */
+        .time-slot-filters {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .time-slot-search {
+            position: relative;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .time-slot-search input {
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .time-slot-search input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .time-slot-search input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .time-slot-search i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        .time-period-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .time-period-btn {
+            padding: 6px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .time-period-btn:hover {
+            border-color: #3498db;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-period-btn.active {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-color: #3498db;
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Walk-in Time Slot Legend */
+        .time-slot-legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 80px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .legend-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: rgba(52, 152, 219, 0.5);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .legend-item.active::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #3498db;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            margin-right: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend-color.available {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .legend-color.selected {
+            background: rgba(52, 152, 219, 0.5);
+            border: 2px solid #3498db;
+        }
+
+        .legend-color.booked {
+            background: rgba(231, 76, 60, 0.3);
+            border: 2px solid rgba(231, 76, 60, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .legend-color.booked::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(231, 76, 60, 0.1),
+                rgba(231, 76, 60, 0.1) 3px,
+                rgba(231, 76, 60, 0.2) 3px,
+                rgba(231, 76, 60, 0.2) 6px
+            );
+        }
+
+        .legend-item span {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .legend-item .count {
+            margin-left: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            min-width: 20px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .legend-item.active .count {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes walkin-pulse-once {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .count.pulse-once {
+            animation: walkin-pulse-once 0.5s ease-in-out;
+        }
+
+        .walkin-time-slot.filtered {
+            display: none;
+        }
+
+        .search-filtered {
+            display: none !important;
+        }
+
+        /* Full width styling for time slot interface */
+        .form-group.full-width {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        /* Responsive adjustments for walk-in time slots */
+        @media (max-width: 768px) {
+            .walkin-time-slots-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .walkin-time-slot {
+                padding: 10px 6px;
+                font-size: 0.85rem;
+            }
+
+            .time-slot-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .time-slot-search {
+                max-width: none;
+                width: 100%;
+            }
+
+            .time-period-filter {
+                justify-content: center;
+                gap: 6px;
+            }
+
+            .time-period-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .time-slot-legend {
+                gap: 8px;
+            }
+
+            .legend-item {
+                min-width: 70px;
+                padding: 5px 8px;
+            }
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -1252,6 +1757,15 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-md-6" style="padding-left: 20px;">
                             <h1>Manage Appointments</h1>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex justify-content-md-end justify-content-start" style="padding-right: 20px;">
+                                <?php if (!$showArchived): ?>
+                                    <button type="button" class="btn btn-success" onclick="toggleWalkinForm()">
+                                        <i class="fas fa-plus-circle mr-1"></i> Add Walk-in Appointment
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1275,159 +1789,10 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                 </div>
                 <?php endif; ?>
-
-                <!-- Appointments Table Card -->
-                <div class="card card-outline card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <?php echo $showArchived ? 'Archived Appointments' : 'Active Appointments'; ?>
-                        </h3>
-                        <div class="card-tools">
-                            <div class="d-flex align-items-center">
-                                <?php if (!$showArchived): ?>
-                                    <button type="button" class="btn btn-success btn-sm mr-2" onclick="toggleWalkinForm()">
-                                        <i class="fas fa-plus-circle mr-1"></i> Add Walk-in Appointment
-                                    </button>
-                                <?php endif; ?>
-                                <a href="?archived=0" 
-                                   class="archive-filter-btn <?php echo !$showArchived ? 'active' : ''; ?>">
-                                    <i class="fas fa-list"></i> Active Records
-                                </a>
-                                <a href="?archived=1" 
-                                   class="archive-filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
-                                    <i class="fas fa-archive"></i> Archived Records
-                                </a>
-                                <button type="button" class="btn btn-tool ml-2" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        
-                        <div class="table-responsive">
-                            <table id="appointments" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Patient Name</th>
-                                        <th>Phone</th>
-                                        <th>Gender</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                        <th>Notes</th>
-                                        <?php if ($showArchived): ?>
-                                            <th>Archived At</th>
-                                            <th>Archived By</th>
-                                            <th>Archive Reason</th>
-                                        <?php endif; ?>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-                                    <tr class="<?php echo $row['is_archived'] ? 'archived-row' : ''; ?>">
-                                        <td><?php echo isset($row['formatted_date']) ? $row['formatted_date'] : date('M d, Y', strtotime($row['appointment_date'])); ?></td>
-                                        <td><?php echo isset($row['formatted_time']) ? $row['formatted_time'] : date('h:i A', strtotime($row['appointment_time'])); ?></td>
-                                        <td>
-                                            <?php echo htmlspecialchars($row['patient_name']); ?>
-                                            <?php if (isset($row['is_walkin']) && $row['is_walkin']): ?>
-                                                <span class="badge badge-info ml-1"><i class="fas fa-walking fa-xs"></i> Walk-in</span>
-                                            <?php endif; ?>
-                                            <?php if ($row['is_archived']): ?>
-                                                <span class="archived-tag"><i class="fas fa-archive fa-xs"></i> Archived</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['reason']); ?></td>
-                                        <td>
-                                            <span class="badge badge-<?php 
-                                                echo $row['status'] == 'pending' ? 'warning' : 
-                                                    ($row['status'] == 'approved' ? 'success' : 
-                                                    ($row['status'] == 'completed' ? 'info' : 'danger')); 
-                                            ?>">
-                                                <?php echo ucfirst($row['status']); ?>
-                                            </span>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($row['notes'] ?? ''); ?></td>
-                                        <?php if ($showArchived): ?>
-                                            <td><?php echo $row['archived_at_formatted'] ?? 'N/A'; ?></td>
-                                            <td><?php echo htmlspecialchars($row['archived_by_name'] ?? 'Unknown'); ?></td>
-                                            <td><?php echo htmlspecialchars($row['archive_reason'] ?? 'No reason provided'); ?></td>
-                                        <?php endif; ?>
-                                        <td>
-                                            <?php if ($showArchived): ?>
-                                                <!-- Unarchive Button -->
-                                                <button type="button" class="btn btn-unarchive btn-sm" 
-                                                        onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
-                                                    <i class="fas fa-undo"></i> Unarchive
-                                                </button>
-                                            <?php else: ?>
-                                                <!-- Edit Button -->
-                                                <button type="button" class="btn btn-primary btn-sm" 
-                                                        data-toggle="modal" 
-                                                        data-target="#updateModal<?php echo $row['id']; ?>">
-                                                    <i class="fas fa-edit"></i> Notes
-                                                </button>
-                                                
-                                                <!-- Archive Button -->
-                                                <button type="button" class="btn btn-archive btn-sm ml-1" 
-                                                        onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
-                                                    <i class="fas fa-archive"></i> Archive
-                                                </button>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-
-                                    <!-- Update Notes Modal -->
-                                    <div class="modal fade" id="updateModal<?php echo $row['id']; ?>">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                        <i class="fas fa-calendar-check mr-2"></i>
-                                                        Update Appointment Notes
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                </div>
-                                                <form method="post">
-                                                    <div class="modal-body">
-                                                        <input type="hidden" name="appointment_id" value="<?php echo $row['id']; ?>">
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Current Status</label>
-                                                            <input type="text" class="form-control" value="<?php echo ucfirst($row['status']); ?>" readonly>
-                                                            <small class="text-muted">Appointments are automatically approved when booked by patients</small>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label class="form-label">Notes</label>
-                                                            <textarea name="notes" class="form-control" rows="3" 
-                                                                      placeholder="Enter notes about the appointment"><?php echo htmlspecialchars($row['notes'] ?? ''); ?></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                            <i class="fas fa-times mr-2"></i>Close
-                                                        </button>
-                                                        <button type="submit" name="update_notes" class="btn btn-primary">
-                                                            <i class="fas fa-save mr-2"></i>Update Notes
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endwhile; ?>
-                                </tbody>
-                            </table>
-                        </div>
                         
                         <!-- Walk-in Appointment Form (Initially Hidden) -->
                         <?php if (!$showArchived): ?>
-                        <div id="walkinFormContainer" class="mt-4" style="display: none;">
+                <div id="walkinFormContainer" class="mb-4" style="display: none;">
                             <div class="card walkin-form-card">
                                 <div class="card-header walkin-form-header">
                                     <div class="d-flex align-items-center justify-content-between">
@@ -1563,13 +1928,58 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                     </select>
                                                 </div>
                                                 
-                                                <div class="form-group">
+                                                                                        <div class="form-group full-width">
                                                     <label for="walkin_appointment_time" class="walkin-label">
                                                         <i class="fas fa-clock mr-2"></i>Available Time Slots *
                                                     </label>
-                                                    <select class="walkin-input" id="walkin_appointment_time" name="appointment_time" required disabled>
+                                                    
+                                                    <!-- Time Slot Selection Interface -->
+                                                    <div id="timeSlotInterface" style="display: none;">
+                                                        <div class="time-slot-filters mb-3">
+                                                            <div class="time-slot-search">
+                                                                <i class="fas fa-search"></i>
+                                                                <input type="text" id="walkinTimeSlotSearch" class="walkin-input" placeholder="Search time..." style="padding-left: 30px;">
+                                                            </div>
+                                                            <div class="time-period-filter">
+                                                                <button type="button" class="time-period-btn active" data-period="all">All</button>
+                                                                <button type="button" class="time-period-btn" data-period="morning">Morning</button>
+                                                                <button type="button" class="time-period-btn" data-period="afternoon">Afternoon</button>
+                                                                <button type="button" class="time-period-btn" data-period="evening">Evening</button>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="time-slot-legend mb-3">
+                                                            <div class="legend-item available active" data-filter="available">
+                                                                <div class="legend-color available"></div>
+                                                                <span>Available</span>
+                                                                <span class="count" id="walkin-available-count">0</span>
+                                                            </div>
+                                                            <div class="legend-item selected" data-filter="selected">
+                                                                <div class="legend-color selected"></div>
+                                                                <span>Selected</span>
+                                                                <span class="count" id="walkin-selected-count">0</span>
+                                                            </div>
+                                                            <div class="legend-item booked active" data-filter="booked">
+                                                                <div class="legend-color booked"></div>
+                                                                <span>Booked</span>
+                                                                <span class="count" id="walkin-booked-count">0</span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div id="walkinTimeSlots" class="time-slot-container">
+                                                            <p class="text-muted text-center">Please select provider, date and provider type to view available time slots.</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Fallback dropdown for when no slots are available -->
+                                                    <select class="walkin-input" id="walkin_appointment_time" name="appointment_time" required style="display: none;">
                                                         <option value="">First select provider and date</option>
                                                     </select>
+                                                    
+                                                    <!-- Hidden input to store selected time -->
+                                                    <input type="hidden" id="walkin_selected_time" name="selected_appointment_time">
+                                                    <!-- Hidden input to store schedule ID -->
+                                                    <input type="hidden" id="walkin_schedule_id" name="schedule_id">
                                                 </div>
                                             </div>
                                         </div>
@@ -1627,6 +2037,153 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                             </div>
                         </div>
                         <?php endif; ?>
+
+                <!-- Appointments Table Card -->
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <?php echo $showArchived ? 'Archived Appointments' : 'Active Appointments'; ?>
+                        </h3>
+                        <div class="card-tools">
+                            <div class="d-flex align-items-center">
+                                <a href="?archived=0" 
+                                   class="archive-filter-btn <?php echo !$showArchived ? 'active' : ''; ?>">
+                                    <i class="fas fa-list"></i> Active Records
+                                </a>
+                                <a href="?archived=1" 
+                                   class="archive-filter-btn <?php echo $showArchived ? 'active' : ''; ?>">
+                                    <i class="fas fa-archive"></i> Archived Records
+                                </a>
+                                <button type="button" class="btn btn-tool ml-2" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="table-responsive">
+                            <table id="appointments" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Patient Name</th>
+                                        <th>Phone</th>
+                                        <th>Gender</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Notes</th>
+                                        <?php if ($showArchived): ?>
+                                            <th>Archived At</th>
+                                            <th>Archived By</th>
+                                            <th>Archive Reason</th>
+                                        <?php endif; ?>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                                    <tr class="<?php echo $row['is_archived'] ? 'archived-row' : ''; ?>" 
+                                        data-appointment-type="<?php echo isset($row['appointment_type']) ? $row['appointment_type'] : 'regular'; ?>">
+                                        <td><?php echo isset($row['formatted_date']) ? $row['formatted_date'] : date('M d, Y', strtotime($row['appointment_date'])); ?></td>
+                                        <td><?php echo isset($row['formatted_time']) ? $row['formatted_time'] : date('h:i A', strtotime($row['appointment_time'])); ?></td>
+                                        <td>
+                                            <?php echo htmlspecialchars($row['patient_name']); ?>
+                                            <?php if (isset($row['appointment_type']) && $row['appointment_type'] == 'walk-in'): ?>
+                                                <span class="badge badge-warning ml-1"><i class="fas fa-walking fa-xs"></i> Walk-in</span>
+                                            <?php elseif (isset($row['is_walkin']) && $row['is_walkin']): ?>
+                                                <span class="badge badge-warning ml-1"><i class="fas fa-walking fa-xs"></i> Walk-in</span>
+                                            <?php endif; ?>
+                                            <?php if ($row['is_archived']): ?>
+                                                <span class="archived-tag"><i class="fas fa-archive fa-xs"></i> Archived</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['reason']); ?></td>
+                                        <td>
+                                            <span class="badge badge-<?php 
+                                                echo $row['status'] == 'pending' ? 'warning' : 
+                                                    ($row['status'] == 'approved' ? 'success' : 
+                                                    ($row['status'] == 'completed' ? 'info' : 'danger')); 
+                                            ?>">
+                                                <?php echo ucfirst($row['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($row['notes'] ?? ''); ?></td>
+                                        <?php if ($showArchived): ?>
+                                            <td><?php echo $row['archived_at_formatted'] ?? 'N/A'; ?></td>
+                                            <td><?php echo htmlspecialchars($row['archived_by_name'] ?? 'Unknown'); ?></td>
+                                            <td><?php echo htmlspecialchars($row['archive_reason'] ?? 'No reason provided'); ?></td>
+                                        <?php endif; ?>
+                                        <td>
+                                            <?php if ($showArchived): ?>
+                                                <!-- Unarchive Button -->
+                                                <button type="button" class="btn btn-unarchive btn-sm" 
+                                                        onclick="unarchiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
+                                                    <i class="fas fa-undo"></i> Unarchive
+                                                </button>
+                                            <?php else: ?>
+                                                <!-- Edit Button -->
+                                                <button type="button" class="btn btn-primary btn-sm" 
+                                                        data-toggle="modal" 
+                                                        data-target="#updateModal<?php echo $row['id']; ?>">
+                                                    <i class="fas fa-edit"></i> Notes
+                                                </button>
+                                                
+                                                <!-- Archive Button -->
+                                                <button type="button" class="btn btn-archive btn-sm ml-1" 
+                                                        onclick="archiveRecord(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['patient_name']); ?>')">
+                                                    <i class="fas fa-archive"></i> Archive
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Update Notes Modal -->
+                                    <div class="modal fade" id="updateModal<?php echo $row['id']; ?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">
+                                                        <i class="fas fa-calendar-check mr-2"></i>
+                                                        Update Appointment Notes
+                                                    </h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <form method="post">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="appointment_id" value="<?php echo $row['id']; ?>">
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Current Status</label>
+                                                            <input type="text" class="form-control" value="<?php echo ucfirst($row['status']); ?>" readonly>
+                                                            <small class="text-muted">Appointments are automatically approved when booked by patients</small>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="form-label">Notes</label>
+                                                            <textarea name="notes" class="form-control" rows="3" 
+                                                                      placeholder="Enter notes about the appointment"><?php echo htmlspecialchars($row['notes'] ?? ''); ?></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                            <i class="fas fa-times mr-2"></i>Close
+                                                        </button>
+                                                        <button type="submit" name="update_notes" class="btn btn-primary">
+                                                            <i class="fas fa-save mr-2"></i>Update Notes
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
                         
                         <div class="export-container mt-4" id="appointmentExportContainer">
                             <a href="#" class="export-action-btn export-copy-btn" id="btnAppointmentCopy">
@@ -1658,7 +2215,16 @@ $archivedCount = $countResult['archived_count'] ?? 0;
         <?php include './config/admin_footer.php'; ?>
     </div>
 
-    <?php include './config/site_css_js_links.php'; ?>
+    <!-- Additional JavaScript Libraries (excluding already loaded jQuery, Bootstrap, SweetAlert2) -->
+    <script src="dist/js/adminlte.min.js"></script>
+    <script src="dist/js/jquery_confirm/jquery-confirm.js"></script>
+    <script src="dist/js/common_javascript_functions.js"></script>
+    <script src="dist/js/sidebar.js"></script>
+    
+    <script>
+        $('.dataTable').find('td').addClass("px-2 py-1 align-middle")
+        $('.dataTable').find('th').addClass("p-1 align-middle")
+    </script>
     
     
     <script>
@@ -1989,13 +2555,32 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             
             requiredFields.each(function() {
                 const field = $(this);
-                const value = field.val().trim();
+                let value = field.val();
                 
-                if (!value) {
+                // Special handling for appointment time - check both dropdown and visual selection
+                if (field.attr('id') === 'walkin_appointment_time') {
+                    const selectedVisualTime = $('#walkin_selected_time').val();
+                    const timeSlotInterfaceVisible = $('#timeSlotInterface').is(':visible');
+                    
+                    if (timeSlotInterfaceVisible) {
+                        value = selectedVisualTime;
+                    }
+                }
+                
+                if (!value || value.trim() === '') {
                     isValid = false;
                     field.addClass('is-invalid');
                     if (!firstInvalidField) {
                         firstInvalidField = field;
+                    }
+                    
+                    // Special handling for time slot validation message
+                    if (field.attr('id') === 'walkin_appointment_time' && $('#timeSlotInterface').is(':visible')) {
+                        // Add visual indicator to time slots
+                        $('.walkin-time-slot:not(.booked)').addClass('validation-highlight');
+                        setTimeout(() => {
+                            $('.walkin-time-slot').removeClass('validation-highlight');
+                        }, 3000);
                     }
                 } else {
                     field.removeClass('is-invalid');
@@ -2003,11 +2588,18 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             });
             
             if (!isValid) {
+                let errorMessage = 'Please fill in all required fields before proceeding.';
+                
+                // Check if the issue is specifically with time slot selection
+                if ($('#timeSlotInterface').is(':visible') && !$('#walkin_selected_time').val()) {
+                    errorMessage = 'Please select an available time slot to continue.';
+                }
+                
                 // Show error message
                 Swal.fire({
                     icon: 'warning',
                     title: 'Required Fields Missing',
-                    text: 'Please fill in all required fields before proceeding.',
+                    text: errorMessage,
                     confirmButtonColor: '#3498db',
                     background: '#2c3e50',
                     color: '#ecf0f1'
@@ -2033,6 +2625,18 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 .walkin-input.is-invalid:focus {
                     border-color: #e74c3c !important;
                     box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3) !important;
+                }
+                
+                .walkin-time-slot.validation-highlight {
+                    animation: validation-pulse 1s infinite;
+                    border-color: #f39c12 !important;
+                    box-shadow: 0 0 15px rgba(243, 156, 18, 0.6) !important;
+                }
+                
+                @keyframes validation-pulse {
+                    0% { transform: scale(1); box-shadow: 0 0 15px rgba(243, 156, 18, 0.6); }
+                    50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(243, 156, 18, 0.8); }
+                    100% { transform: scale(1); box-shadow: 0 0 15px rgba(243, 156, 18, 0.6); }
                 }
             `).appendTo('head');
             
@@ -2076,18 +2680,45 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             }
         });
         
-        // Provider and date change handler
+        // Provider and date change handler - Updated for visual time slot selection
         $('#walkin_provider, #walkin_appointment_date').change(function() {
             const providerId = $('#walkin_provider').val();
             const providerType = $('#walkin_provider_type').val();
             const appointmentDate = $('#walkin_appointment_date').val();
-            const timeSelect = $('#walkin_appointment_time');
             
             if (providerId && appointmentDate && providerType) {
-                timeSelect.prop('disabled', true).html('<option value="">Loading available slots...</option>');
+                // Show time slot interface and hide dropdown
+                $('#timeSlotInterface').show();
+                $('#walkin_appointment_time').hide();
                 
+                // Generate visual time slots
+                generateWalkinTimeSlots(providerId, providerType, appointmentDate);
+            } else {
+                // Hide time slot interface and show dropdown
+                $('#timeSlotInterface').hide();
+                $('#walkin_appointment_time').show().prop('disabled', true).html('<option value="">First select provider and date</option>');
+                $('#walkin_selected_time').val(''); // Clear selected time
+                $('#walkin_schedule_id').val(''); // Clear schedule ID
+            }
+        });
+        
+        // Function to generate visual time slots for walk-in appointments
+        function generateWalkinTimeSlots(providerId, providerType, appointmentDate) {
+            const timeSlotContainer = $('#walkinTimeSlots');
+            
+            // Show loading indicator
+            timeSlotContainer.html(`
+                <div class="d-flex justify-content-center align-items-center py-4">
+                    <div class="spinner-border text-light mr-3" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="text-light mb-0">Loading available time slots...</p>
+                </div>
+            `);
+            
+            // First, get the schedule_id based on provider and date
                 $.ajax({
-                    url: 'ajax/get_available_slots.php',
+                url: 'ajax/get_provider_schedule_id.php',
                     type: 'POST',
                     data: { 
                         provider_id: providerId,
@@ -2095,25 +2726,359 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                         appointment_date: appointmentDate
                     },
                     dataType: 'json',
-                    success: function(response) {
-                        if (response.success && response.slots.length > 0) {
-                            let options = '<option value="">Select Available Time</option>';
-                            response.slots.forEach(function(slot) {
-                                options += `<option value="${slot.time}">${slot.formatted_time}</option>`;
-                            });
-                            timeSelect.html(options).prop('disabled', false);
-                        } else {
-                            timeSelect.html('<option value="">No available slots for this date</option>');
-                        }
+                success: function(scheduleResponse) {
+                    if (!scheduleResponse.success) {
+                        timeSlotContainer.html(`
+                            <div class="text-center py-4">
+                                <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                                <p class="text-light mb-0">${scheduleResponse.error}</p>
+                            </div>
+                        `);
+                        return;
+                    }
+                    
+                    // Get available slots using the schedule_id we just retrieved
+                    $.ajax({
+                        url: 'ajax/client_check_booked_appointment_slots.php',
+                        type: 'POST',
+                        data: {
+                            schedule_id: scheduleResponse.schedule_id,
+                            schedule_type: providerType,
+                            appointment_date: appointmentDate
+                        },
+                        dataType: 'json',
+                        success: function(availabilityResponse) {
+                            if (availabilityResponse.error) {
+                                timeSlotContainer.html(`
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                                        <p class="text-light mb-0">${availabilityResponse.error}</p>
+                                    </div>
+                                `);
+                                return;
+                            }
+                            
+                            // Store the schedule_id for form submission
+                            $('#walkin_schedule_id').val(scheduleResponse.schedule_id);
+                            
+                            // Generate time slots using the schedule data
+                            generateWalkinTimeSlotsVisual(
+                                scheduleResponse,
+                                availabilityResponse.booked_slots || {},
+                                availabilityResponse.slot_statuses || {}
+                            );
                     },
                     error: function() {
-                        timeSelect.html('<option value="">Error loading time slots</option>');
+                            timeSlotContainer.html(`
+                                <div class="text-center py-4">
+                                    <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                                    <p class="text-light mb-0">Error loading time slot availability. Please try again.</p>
+                                </div>
+                            `);
+                        }
+                    });
+                },
+                error: function() {
+                    timeSlotContainer.html(`
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                            <p class="text-light mb-0">Error loading provider schedule. Please try again.</p>
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        // Function to generate visual time slots
+        function generateWalkinTimeSlotsVisual(scheduleData, bookedSlots, slotStatuses) {
+            const timeSlotContainer = $('#walkinTimeSlots');
+            timeSlotContainer.empty();
+            
+            // Create slots container
+            const slotsContainer = $('<div class="walkin-time-slots-grid"></div>');
+            
+            // Parse schedule times
+            const startTime = new Date(`${scheduleData.schedule_date}T${scheduleData.start_time}`);
+            const endTime = new Date(`${scheduleData.schedule_date}T${scheduleData.end_time}`);
+            const slotMinutes = parseInt(scheduleData.time_slot_minutes);
+            const maxPatients = parseInt(scheduleData.max_patients);
+            
+            let currentTime = new Date(startTime);
+            let hasAvailableSlots = false;
+            
+            // Group slots by time period
+            let morningSlots = [];
+            let afternoonSlots = [];
+            let eveningSlots = [];
+            
+            while (currentTime < endTime) {
+                const timeString = currentTime.toTimeString().substring(0, 8); // HH:MM:SS format
+                const formattedTime = currentTime.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+                
+                // Check if this slot is in the past
+                const slotDateTime = new Date(currentTime);
+                const isPastTime = slotDateTime < new Date();
+                
+                if (isPastTime) {
+                    currentTime.setMinutes(currentTime.getMinutes() + slotMinutes);
+                    continue;
+                }
+                
+                // Determine time period
+                const hour = currentTime.getHours();
+                let timePeriod = 'morning';
+                if (hour >= 12 && hour < 17) {
+                    timePeriod = 'afternoon';
+                } else if (hour >= 17) {
+                    timePeriod = 'evening';
+                }
+                
+                // Check availability
+                let slotCount = 0;
+                let isBooked = false;
+                
+                if (slotStatuses && slotStatuses[timeString]) {
+                    isBooked = slotStatuses[timeString].is_booked === 1;
+                }
+                
+                let walkinCount = 0;
+                let regularCount = 0;
+                if (bookedSlots && bookedSlots[timeString]) {
+                    slotCount = parseInt(bookedSlots[timeString].count);
+                    walkinCount = parseInt(bookedSlots[timeString].walkin_count || 0);
+                    regularCount = parseInt(bookedSlots[timeString].regular_count || 0);
+                    isBooked = bookedSlots[timeString].is_full;
+                }
+                
+                const remainingSlots = maxPatients - slotCount;
+                
+                let slotElement;
+                if (!isBooked && remainingSlots > 0) {
+                    hasAvailableSlots = true;
+                    slotElement = $(`
+                        <div class="walkin-time-slot" data-time="${timeString}" data-period="${timePeriod}" tabindex="0" role="button">
+                            <div class="time-label">
+                                <i class="far fa-clock"></i>
+                                ${formattedTime}
+                            </div>
+                            <span class="badge">${remainingSlots} available</span>
+                        </div>
+                    `);
+            } else {
+                    // Create detailed status message for admin interface
+                    let statusMessage = 'Booked';
+                    let badgeText = 'Booked';
+                    let iconClass = 'fas fa-ban';
+                    let badgeClass = 'badge';
+                    
+                    if (walkinCount > 0 && regularCount > 0) {
+                        statusMessage = `${walkinCount} walk-in, ${regularCount} regular`;
+                        badgeText = `${slotCount} booked`;
+                        iconClass = 'fas fa-users';
+                        badgeClass = 'badge badge-warning';
+                    } else if (walkinCount > 0) {
+                        statusMessage = walkinCount === 1 ? 'Walk-in appointment' : `${walkinCount} walk-in appointments`;
+                        badgeText = 'Walk-in';
+                        iconClass = 'fas fa-walking';
+                        badgeClass = 'badge badge-info';
+                    } else if (regularCount > 0) {
+                        statusMessage = regularCount === 1 ? 'Regular appointment' : `${regularCount} regular appointments`;
+                        badgeText = 'Regular';
+                        iconClass = 'fas fa-calendar-check';
+                        badgeClass = 'badge badge-success';
+                    }
+                    
+                    slotElement = $(`
+                        <div class="walkin-time-slot booked" data-period="${timePeriod}" tabindex="0" role="button" aria-disabled="true">
+                            <div class="time-label">
+                                <i class="${iconClass}"></i>
+                                ${formattedTime}
+                            </div>
+                            <span class="${badgeClass}">${badgeText}</span>
+                            <div class="slot-status">${statusMessage}</div>
+                        </div>
+                    `);
+                }
+                
+                // Add to appropriate time period
+                if (timePeriod === 'morning') {
+                    morningSlots.push(slotElement);
+                } else if (timePeriod === 'afternoon') {
+                    afternoonSlots.push(slotElement);
+                } else {
+                    eveningSlots.push(slotElement);
+                }
+                
+                currentTime.setMinutes(currentTime.getMinutes() + slotMinutes);
+            }
+            
+            // Add time period dividers and slots
+            if (morningSlots.length > 0) {
+                slotsContainer.append('<div class="walkin-time-period-divider"><i class="fas fa-sun"></i> Morning</div>');
+                morningSlots.forEach(slot => slotsContainer.append(slot));
+            }
+            
+            if (afternoonSlots.length > 0) {
+                slotsContainer.append('<div class="walkin-time-period-divider"><i class="fas fa-cloud-sun"></i> Afternoon</div>');
+                afternoonSlots.forEach(slot => slotsContainer.append(slot));
+            }
+            
+            if (eveningSlots.length > 0) {
+                slotsContainer.append('<div class="walkin-time-period-divider"><i class="fas fa-moon"></i> Evening</div>');
+                eveningSlots.forEach(slot => slotsContainer.append(slot));
+            }
+            
+            timeSlotContainer.append(slotsContainer);
+            
+            if (!hasAvailableSlots) {
+                timeSlotContainer.html(`
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times text-warning mb-2" style="font-size: 2rem;"></i>
+                        <p class="text-light mb-0">No available time slots for this schedule.</p>
+                    </div>
+                `);
+            } else {
+                // Initialize time slot interactions
+                initializeWalkinTimeSlotInteractions();
+                updateWalkinLegendCounts();
+            }
+        }
+        
+        // Function to initialize time slot interactions
+        function initializeWalkinTimeSlotInteractions() {
+            // Handle time slot selection
+            $(document).off('click', '.walkin-time-slot:not(.booked)').on('click', '.walkin-time-slot:not(.booked)', function() {
+                selectWalkinTimeSlot($(this));
+            });
+            
+            // Handle keyboard navigation
+            $(document).off('keydown', '.walkin-time-slot:not(.booked)').on('keydown', '.walkin-time-slot:not(.booked)', function(e) {
+                if (e.which === 13 || e.which === 32) { // Enter or Space
+                    e.preventDefault();
+                    selectWalkinTimeSlot($(this));
+                }
+            });
+            
+            // Handle legend interactions
+            $('.time-slot-legend .legend-item').off('click').on('click', function() {
+                $(this).toggleClass('active');
+                applyWalkinTimeSlotFilters();
+            });
+            
+            // Handle time period filter buttons
+            $('.time-period-btn').off('click').on('click', function() {
+                $('.time-period-btn').removeClass('active');
+                $(this).addClass('active');
+                applyWalkinTimeSlotFilters();
+            });
+            
+            // Handle search functionality
+            $('#walkinTimeSlotSearch').off('input').on('input', function() {
+                const searchText = $(this).val().toLowerCase();
+                $('.walkin-time-slot').each(function() {
+                    const $slot = $(this);
+                    const timeText = $slot.find('.time-label').text().toLowerCase();
+                    
+                    if (timeText.includes(searchText)) {
+                        $slot.removeClass('search-filtered');
+                    } else {
+                        $slot.addClass('search-filtered');
                     }
                 });
-            } else {
-                timeSelect.prop('disabled', true).html('<option value="">First select provider and date</option>');
-            }
-        });
+                
+                // Show/hide time period dividers
+                $('.walkin-time-period-divider').each(function() {
+                    const $divider = $(this);
+                    const hasVisibleSlots = $divider.nextUntil('.walkin-time-period-divider').not('.search-filtered').not('.filtered').length > 0;
+                    $divider.toggle(hasVisibleSlots);
+                });
+            });
+        }
+        
+        // Function to select a walk-in time slot
+        function selectWalkinTimeSlot($slot) {
+            $('.walkin-time-slot').removeClass('selected');
+            $slot.addClass('selected');
+            
+            const selectedTime = $slot.data('time');
+            $('#walkin_selected_time').val(selectedTime);
+            
+            // Update legend counts
+            updateWalkinLegendCounts();
+            
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Time slot selected!',
+                text: 'Selected time: ' + $slot.find('.time-label').text(),
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                background: '#2c3e50',
+                color: '#ecf0f1'
+            });
+        }
+        
+        // Function to update legend counts
+        function updateWalkinLegendCounts() {
+            const availableCount = $('.walkin-time-slot:not(.booked):not(.selected)').length;
+            const selectedCount = $('.walkin-time-slot.selected').length;
+            const bookedCount = $('.walkin-time-slot.booked').length;
+            
+            $('#walkin-available-count').text(availableCount);
+            $('#walkin-selected-count').text(selectedCount);
+            $('#walkin-booked-count').text(bookedCount);
+            
+            // Add animation to count changes
+            $('.time-slot-legend .count').addClass('pulse-once');
+            setTimeout(() => {
+                $('.time-slot-legend .count').removeClass('pulse-once');
+            }, 500);
+        }
+        
+        // Function to apply filters to time slots
+        function applyWalkinTimeSlotFilters() {
+            const showAvailable = $('.legend-item.available').hasClass('active');
+            const showSelected = $('.legend-item.selected').hasClass('active');
+            const showBooked = $('.legend-item.booked').hasClass('active');
+            const activePeriod = $('.time-period-btn.active').data('period');
+            
+            $('.walkin-time-slot').each(function() {
+                const $slot = $(this);
+                let shouldShow = true;
+                
+                // Check status filters
+                if ($slot.hasClass('booked') && !showBooked) {
+                    shouldShow = false;
+                } else if ($slot.hasClass('selected') && !showSelected) {
+                    shouldShow = false;
+                } else if (!$slot.hasClass('booked') && !$slot.hasClass('selected') && !showAvailable) {
+                    shouldShow = false;
+                }
+                
+                // Check time period filter
+                if (activePeriod !== 'all' && $slot.data('period') !== activePeriod) {
+                    shouldShow = false;
+                }
+                
+                if (shouldShow) {
+                    $slot.removeClass('filtered');
+                } else {
+                    $slot.addClass('filtered');
+                }
+            });
+            
+            // Show/hide time period dividers
+            $('.walkin-time-period-divider').each(function() {
+                const $divider = $(this);
+                const hasVisibleSlots = $divider.nextUntil('.walkin-time-period-divider').not('.search-filtered').not('.filtered').length > 0;
+                $divider.toggle(hasVisibleSlots);
+            });
+        }
         
         // Walk-in appointment form submission
         $('#walkinForm').submit(function(e) {
@@ -2138,7 +3103,8 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 date_of_birth: $('#walkin_date_of_birth').val(),
                 gender: $('#walkin_gender').val(),
                 appointment_date: $('#walkin_appointment_date').val(),
-                appointment_time: $('#walkin_appointment_time').val(),
+                appointment_time: $('#walkin_selected_time').val() || $('#walkin_appointment_time').val(),
+                schedule_id: $('#walkin_schedule_id').val(),
                 provider_id: $('#walkin_provider').val(),
                 provider_type: $('#walkin_provider_type').val(),
                 reason: $('#walkin_reason').val(),

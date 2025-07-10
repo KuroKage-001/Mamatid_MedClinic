@@ -41,10 +41,14 @@ if ($scheduleId > 0) {
             $scheduleData = $scheduleStmt->fetch(PDO::FETCH_ASSOC);
             $isPastSchedule = strtotime($scheduleData['schedule_date']) < strtotime(date('Y-m-d'));
             
-            // Check if there are any appointments for this schedule
-            $apptQuery = "SELECT COUNT(*) as count FROM admin_clients_appointments WHERE schedule_id = ?";
+            // Check if there are any appointments for this schedule (including walk-in appointments)
+            $apptQuery = "SELECT (
+                            SELECT COUNT(*) FROM admin_clients_appointments WHERE schedule_id = ? AND is_archived = 0
+                        ) + (
+                            SELECT COUNT(*) FROM admin_walkin_appointments WHERE schedule_id = ?
+                        ) as count";
             $apptStmt = $con->prepare($apptQuery);
-            $apptStmt->execute([$scheduleId]);
+            $apptStmt->execute([$scheduleId, $scheduleId]);
             $appointmentCount = $apptStmt->fetch(PDO::FETCH_ASSOC)['count'];
             
             // Only check for appointments if it's not a past schedule

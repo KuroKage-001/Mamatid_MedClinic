@@ -452,8 +452,8 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
                     <h4 style="margin-top:0;color:#2D5A27;">Need to Reschedule?</h4>
                     <p>If you need to reschedule or cancel your appointment, please contact us at least 24 hours in advance through:</p>
                     <ul style="padding-left:20px;margin:10px 0;">
-                        <li>Phone: (02) 888-7777</li>
-                        <li>Email: appointments@mamatidhealth.com</li>
+                        <li>Phone: 0991-871-9610</li>
+                        <li>Email: mamatid.medclinic@gmail.com</li>
                     </ul>
                 </div>
 

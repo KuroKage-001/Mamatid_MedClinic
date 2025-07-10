@@ -1025,17 +1025,11 @@ $roleDisplay = ucfirst($staffRole);
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <div class="alert alert-info p-3 rounded-lg shadow-sm">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            <span>Unlike doctor schedules, your availability is automatically approved for patients to book.</span>
-                                        </div>
-                                    </div>
+                                    </div>                           
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>  
                     
                     <div class="row">
                         <div class="col-12">
@@ -1088,10 +1082,14 @@ $roleDisplay = ucfirst($staffRole);
                                                         <td><?= $schedule['notes'] ?></td>
                                                         <td>
                                                             <?php 
-                                                            // Check if schedule has appointments
-                                                            $checkQuery = "SELECT COUNT(*) as appt_count FROM admin_clients_appointments WHERE schedule_id = ?";
+                                                            // Check if schedule has appointments (including walk-in appointments)
+                                                            $checkQuery = "SELECT (
+                                                                            SELECT COUNT(*) FROM admin_clients_appointments WHERE schedule_id = ? AND is_archived = 0
+                                                                        ) + (
+                                                                            SELECT COUNT(*) FROM admin_walkin_appointments WHERE schedule_id = ?
+                                                                        ) as appt_count";
                                                             $checkStmt = $con->prepare($checkQuery);
-                                                            $checkStmt->execute([$schedule['id']]);
+                                                            $checkStmt->execute([$schedule['id'], $schedule['id']]);
                                                             $hasAppointments = ($checkStmt->fetch(PDO::FETCH_ASSOC)['appt_count'] > 0);
                                                             
                                                             if (!$hasAppointments) {

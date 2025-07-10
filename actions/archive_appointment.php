@@ -20,26 +20,51 @@ if (isset($_POST['archive_id']) && isset($_POST['archive_reason'])) {
     try {
         $con->beginTransaction();
         
-        // Update the appointment to archived status with metadata
-        $query = "UPDATE `appointments` 
-                  SET `is_archived` = 1, 
-                      `archived_at` = NOW(), 
-                      `archived_by` = :user_id,
-                      `archive_reason` = :reason,
-                      `updated_at` = NOW()
-                  WHERE `id` = :id AND `is_archived` = 0";
+        // First, try to archive from admin_clients_appointments table
+        $query1 = "UPDATE `admin_clients_appointments` 
+                   SET `is_archived` = 1, 
+                       `archived_at` = NOW(), 
+                       `archived_by` = :user_id,
+                       `archive_reason` = :reason,
+                       `updated_at` = NOW()
+                   WHERE `id` = :id AND `is_archived` = 0";
         
-        $stmt = $con->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(':reason', $reason, PDO::PARAM_STR);
+        $stmt1 = $con->prepare($query1);
+        $stmt1->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt1->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt1->bindParam(':reason', $reason, PDO::PARAM_STR);
+        $stmt1->execute();
         
-        if ($stmt->execute()) {
-            $con->commit();
-            $message = 'Appointment archived successfully.';
+        $rowsAffected1 = $stmt1->rowCount();
+        
+        // If no rows affected, try admin_walkin_appointments table
+        if ($rowsAffected1 == 0) {
+            $query2 = "UPDATE `admin_walkin_appointments` 
+                       SET `is_archived` = 1, 
+                           `archived_at` = NOW(), 
+                           `archived_by` = :user_id,
+                           `archive_reason` = :reason,
+                           `updated_at` = NOW()
+                       WHERE `id` = :id AND `is_archived` = 0";
+            
+            $stmt2 = $con->prepare($query2);
+            $stmt2->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt2->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt2->bindParam(':reason', $reason, PDO::PARAM_STR);
+            $stmt2->execute();
+            
+            $rowsAffected2 = $stmt2->rowCount();
+            
+            if ($rowsAffected2 > 0) {
+                $con->commit();
+                $message = 'Walk-in appointment archived successfully.';
+            } else {
+                $con->rollback();
+                $message = 'Appointment not found or already archived.';
+            }
         } else {
-            $con->rollback();
-            $message = 'Failed to archive appointment.';
+            $con->commit();
+            $message = 'Regular appointment archived successfully.';
         }
         
     } catch (PDOException $ex) {

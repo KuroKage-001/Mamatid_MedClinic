@@ -139,12 +139,16 @@ try {
         
         $scheduleId = $schedule['id'];
         
-        // Check if the time slot is still available
-        $checkSlotQuery = "SELECT id FROM admin_clients_appointments 
+        // Check if the time slot is still available (check both regular and walk-in appointments)
+        $checkSlotQuery = "SELECT 'regular' as type FROM admin_clients_appointments 
                           WHERE schedule_id = ? AND appointment_time = ? 
-                          AND status != 'cancelled' AND is_archived = 0";
+                          AND status != 'cancelled' AND is_archived = 0
+                          UNION ALL
+                          SELECT 'walkin' as type FROM admin_walkin_appointments 
+                          WHERE schedule_id = ? AND appointment_time = ? 
+                          AND status != 'cancelled'";
         $checkStmt = $con->prepare($checkSlotQuery);
-        $checkStmt->execute([$scheduleId, $appointmentTime]);
+        $checkStmt->execute([$scheduleId, $appointmentTime, $scheduleId, $appointmentTime]);
         
         if ($checkStmt->rowCount() > 0) {
             throw new Exception('The selected time slot is no longer available');
@@ -165,12 +169,16 @@ try {
         
         $scheduleId = $schedule['id'];
         
-        // Check if the time slot is still available
-        $checkSlotQuery = "SELECT id FROM admin_clients_appointments 
+        // Check if the time slot is still available (check both regular and walk-in appointments)
+        $checkSlotQuery = "SELECT 'regular' as type FROM admin_clients_appointments 
                           WHERE schedule_id = ? AND appointment_time = ? 
-                          AND status != 'cancelled' AND is_archived = 0";
+                          AND status != 'cancelled' AND is_archived = 0
+                          UNION ALL
+                          SELECT 'walkin' as type FROM admin_walkin_appointments 
+                          WHERE schedule_id = ? AND appointment_time = ? 
+                          AND status != 'cancelled'";
         $checkStmt = $con->prepare($checkSlotQuery);
-        $checkStmt->execute([$scheduleId, $appointmentTime]);
+        $checkStmt->execute([$scheduleId, $appointmentTime, $scheduleId, $appointmentTime]);
         
         if ($checkStmt->rowCount() > 0) {
             throw new Exception('The selected time slot is no longer available');
@@ -185,12 +193,12 @@ try {
         $appointmentNotes = "[Walk-in Appointment] Booked by " . $_SESSION['display_name'] . " on " . date('Y-m-d H:i:s');
     }
     
-    // Insert the walk-in appointment
-    $insertQuery = "INSERT INTO admin_clients_appointments 
+    // Insert the walk-in appointment into the dedicated table
+    $insertQuery = "INSERT INTO admin_walkin_appointments 
                    (patient_name, phone_number, address, date_of_birth, gender, 
                     appointment_date, appointment_time, reason, status, notes, 
-                    schedule_id, doctor_id, is_walkin, created_at) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?, 1, NOW())";
+                    schedule_id, provider_id, provider_type, booked_by) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $insertStmt = $con->prepare($insertQuery);
     $insertStmt->execute([
@@ -202,9 +210,12 @@ try {
         $appointmentDate,
         $appointmentTime,
         $reason,
+        'approved',
         $appointmentNotes,
         $scheduleId,
-        $providerId
+        $providerId,
+        $providerType,
+        $_SESSION['user_id']
     ]);
     
     $appointmentId = $con->lastInsertId();

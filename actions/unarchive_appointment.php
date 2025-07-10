@@ -18,24 +18,47 @@ if (isset($_POST['unarchive_id'])) {
     try {
         $con->beginTransaction();
         
-        // Update the appointment to unarchived status
-        $query = "UPDATE `appointments` 
-                  SET `is_archived` = 0, 
-                      `archived_at` = NULL, 
-                      `archived_by` = NULL,
-                      `archive_reason` = NULL,
-                      `updated_at` = NOW()
-                  WHERE `id` = :id AND `is_archived` = 1";
+        // First, try to unarchive from admin_clients_appointments table
+        $query1 = "UPDATE `admin_clients_appointments` 
+                   SET `is_archived` = 0, 
+                       `archived_at` = NULL, 
+                       `archived_by` = NULL,
+                       `archive_reason` = NULL,
+                       `updated_at` = NOW()
+                   WHERE `id` = :id AND `is_archived` = 1";
         
-        $stmt = $con->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt1 = $con->prepare($query1);
+        $stmt1->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt1->execute();
         
-        if ($stmt->execute()) {
-            $con->commit();
-            $message = 'Appointment unarchived successfully.';
+        $rowsAffected1 = $stmt1->rowCount();
+        
+        // If no rows affected, try admin_walkin_appointments table
+        if ($rowsAffected1 == 0) {
+            $query2 = "UPDATE `admin_walkin_appointments` 
+                       SET `is_archived` = 0, 
+                           `archived_at` = NULL, 
+                           `archived_by` = NULL,
+                           `archive_reason` = NULL,
+                           `updated_at` = NOW()
+                       WHERE `id` = :id AND `is_archived` = 1";
+            
+            $stmt2 = $con->prepare($query2);
+            $stmt2->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt2->execute();
+            
+            $rowsAffected2 = $stmt2->rowCount();
+            
+            if ($rowsAffected2 > 0) {
+                $con->commit();
+                $message = 'Walk-in appointment unarchived successfully.';
+            } else {
+                $con->rollback();
+                $message = 'Appointment not found or not archived.';
+            }
         } else {
-            $con->rollback();
-            $message = 'Failed to unarchive appointment.';
+            $con->commit();
+            $message = 'Regular appointment unarchived successfully.';
         }
         
     } catch (PDOException $ex) {

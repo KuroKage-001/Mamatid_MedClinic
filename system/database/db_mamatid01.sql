@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 10:35 AM
+-- Generation Time: Jul 10, 2025 at 08:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,21 +50,26 @@ CREATE TABLE `admin_clients_appointments` (
   `token_expiry` datetime DEFAULT NULL,
   `archived_at` datetime DEFAULT NULL COMMENT 'Timestamp when appointment was archived',
   `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the appointment',
-  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving appointment'
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving appointment',
+  `is_walkin` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is a walk-in appointment'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admin_clients_appointments`
 --
 
-INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`) VALUES
-(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1'),
-(59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'completed', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-05 08:13:29', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL),
-(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'completed', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-06 04:35:51', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL),
-(61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'completed', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-06 02:30:07', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL),
-(62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'completed', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-06 04:35:51', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL),
-(63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'completed', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-06 02:30:07', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL),
-(64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'completed', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-06 02:30:07', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL);
+INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`, `is_walkin`) VALUES
+(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1', 0),
+(59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'completed', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-05 08:13:29', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL, 0),
+(60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'completed', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-06 04:35:51', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL, 0),
+(61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'completed', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-06 02:30:07', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL, 0),
+(62, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '12:00:00', 'test 5', 'completed', NULL, 19, 24, '2025-07-05 03:28:26', '2025-07-06 04:35:51', 0, 0, 0, '196b4fc84bee58e9581989e6e9d0656578447424e08513d2338649b069821778', '2025-08-04 05:28:26', NULL, NULL, NULL, 0),
+(63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'completed', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-06 02:30:07', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL, 0),
+(64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'completed', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-06 02:30:07', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL, 0),
+(65, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-09', '06:30:00', 'test 8', 'completed', NULL, 22, 1, '2025-07-08 13:49:13', '2025-07-10 03:56:53', 1, 0, 0, 'f9b3866db5a3370ee783369599d2c2b6fce19a987fd5ee49e921ae2630aa281c', '2025-08-07 15:49:13', NULL, NULL, NULL, 0),
+(66, 'test 1', '09999999999', 'test 1', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 1', 'approved', '[Walk-in Appointment] test 1', 33, 24, '2025-07-10 05:05:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
+(67, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '05:30:00', 'test 8', 'approved', NULL, 33, 24, '2025-07-10 05:20:44', '2025-07-10 05:20:51', 1, 0, 0, '07a277e6edd1291715a76276716642c2e1c92ee0771806ce2cf45abee51a5df7', '2025-08-09 07:20:45', NULL, NULL, NULL, 0),
+(68, 'test 2', '09999999999', 'test 2', '2025-07-10', 'Male', '2025-07-11', '06:00:00', 'test 2', 'approved', '[Walk-in Appointment] test 2', 33, 24, '2025-07-10 05:59:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1);
 
 --
 -- Triggers `admin_clients_appointments`
@@ -221,6 +226,13 @@ CREATE TABLE `admin_doctor_schedules` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `admin_doctor_schedules`
+--
+
+INSERT INTO `admin_doctor_schedules` (`id`, `doctor_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`, `approval_notes`, `is_deleted`) VALUES
+(23, 22, '2025-07-08', '10:00:00', '16:00:00', 30, 1, 'Test doctor schedule for walk-in testing', '2025-07-08 13:22:56', '2025-07-08 13:22:56', 1, NULL, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -246,7 +258,11 @@ INSERT INTO `admin_hw_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_
 (9, 18, '10:30:00', 1, 61),
 (10, 19, '12:00:00', 1, 62),
 (11, 18, '11:00:00', 1, 63),
-(12, 18, '11:30:00', 1, 64);
+(12, 18, '11:30:00', 1, 64),
+(13, 22, '06:30:00', 1, 65),
+(14, 33, '05:00:00', 1, 66),
+(15, 33, '05:30:00', 1, 67),
+(16, 33, '06:00:00', 1, 68);
 
 -- --------------------------------------------------------
 
@@ -275,7 +291,29 @@ CREATE TABLE `admin_hw_schedules` (
 INSERT INTO `admin_hw_schedules` (`id`, `staff_id`, `schedule_date`, `start_time`, `end_time`, `time_slot_minutes`, `max_patients`, `notes`, `created_at`, `updated_at`, `is_approved`) VALUES
 (17, 1, '2025-07-04', '06:00:00', '18:00:00', 30, 1, '', '2025-07-03 10:53:39', '2025-07-03 10:53:39', 1),
 (18, 1, '2025-07-05', '08:00:00', '16:00:00', 30, 1, 'test 2', '2025-07-03 15:12:49', '2025-07-03 15:12:49', 1),
-(19, 24, '2025-07-05', '05:00:00', '17:00:00', 30, 1, 'test 1', '2025-07-03 16:09:43', '2025-07-03 16:09:43', 1);
+(19, 24, '2025-07-05', '05:00:00', '17:00:00', 30, 1, 'test 1', '2025-07-03 16:09:43', '2025-07-03 16:09:43', 1),
+(21, 24, '2025-07-08', '09:00:00', '17:00:00', 30, 1, 'Test schedule for walk-in testing', '2025-07-08 13:22:30', '2025-07-08 13:22:30', 1),
+(22, 1, '2025-07-09', '06:00:00', '17:00:00', 30, 1, 'test 4', '2025-07-08 13:32:43', '2025-07-08 13:32:43', 1),
+(23, 1, '2025-07-11', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(24, 1, '2025-07-12', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(25, 1, '2025-07-13', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(26, 1, '2025-07-14', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(27, 1, '2025-07-15', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(28, 1, '2025-07-16', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(29, 1, '2025-07-17', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(30, 1, '2025-07-18', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(31, 1, '2025-07-19', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(32, 1, '2025-07-20', '06:00:00', '17:00:00', 30, 1, 'test 5', '2025-07-10 04:11:43', '2025-07-10 04:11:43', 1),
+(33, 24, '2025-07-11', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(34, 24, '2025-07-12', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(35, 24, '2025-07-13', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(36, 24, '2025-07-14', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(37, 24, '2025-07-15', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(38, 24, '2025-07-16', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(39, 24, '2025-07-17', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(40, 24, '2025-07-18', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(41, 24, '2025-07-19', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1),
+(42, 24, '2025-07-20', '05:00:00', '17:00:00', 30, 1, 'test 2', '2025-07-10 04:28:20', '2025-07-10 04:28:20', 1);
 
 -- --------------------------------------------------------
 
@@ -385,6 +423,162 @@ INSERT INTO `admin_user_accounts` (`id`, `display_name`, `email`, `phone`, `user
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `admin_walkin_appointments`
+--
+
+CREATE TABLE `admin_walkin_appointments` (
+  `id` int(11) NOT NULL,
+  `patient_name` varchar(60) NOT NULL,
+  `phone_number` varchar(12) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `date_of_birth` date NOT NULL,
+  `gender` varchar(6) NOT NULL,
+  `appointment_date` date NOT NULL,
+  `appointment_time` time NOT NULL,
+  `reason` varchar(255) NOT NULL,
+  `status` enum('pending','approved','cancelled','completed') NOT NULL DEFAULT 'approved',
+  `notes` text DEFAULT NULL,
+  `schedule_id` int(11) DEFAULT NULL,
+  `provider_id` int(11) DEFAULT NULL COMMENT 'Doctor or Health Worker ID',
+  `provider_type` enum('doctor','health_worker','admin') NOT NULL DEFAULT 'health_worker',
+  `booked_by` int(11) NOT NULL COMMENT 'Admin/Health Worker who booked this walk-in',
+  `walk_in_time` timestamp NULL DEFAULT NULL COMMENT 'When patient actually walked in',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `is_archived` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is archived',
+  `archived_at` datetime DEFAULT NULL COMMENT 'Timestamp when appointment was archived',
+  `archived_by` int(11) DEFAULT NULL COMMENT 'User ID who archived the appointment',
+  `archive_reason` text DEFAULT NULL COMMENT 'Reason for archiving appointment'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Table for storing walk-in appointments separately from regular appointments';
+
+--
+-- Triggers `admin_walkin_appointments`
+--
+DELIMITER $$
+CREATE TRIGGER `after_walkin_appointment_delete` AFTER DELETE ON `admin_walkin_appointments` FOR EACH ROW BEGIN
+    -- Handle doctor appointments
+    IF OLD.provider_type = 'doctor' AND OLD.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN
+        UPDATE admin_doctor_appointment_slots
+        SET is_booked = 0, appointment_id = NULL
+        WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+    END IF;
+    
+    -- Handle health worker/admin appointments  
+    IF (OLD.provider_type = 'health_worker' OR OLD.provider_type = 'admin') 
+       AND OLD.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
+        UPDATE admin_hw_appointment_slots
+        SET is_booked = 0, appointment_id = NULL
+        WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_walkin_appointment_update` AFTER UPDATE ON `admin_walkin_appointments` FOR EACH ROW BEGIN
+    -- Handle doctor appointments
+    IF NEW.provider_type = 'doctor' AND NEW.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN
+        -- If status changed to cancelled, update the slot
+        IF NEW.status = 'cancelled' AND OLD.status != 'cancelled' THEN
+            UPDATE admin_doctor_appointment_slots
+            SET is_booked = 0, appointment_id = NULL
+            WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+        END IF;
+        
+        -- If time slot changed, update both old and new slots
+        IF NEW.appointment_time != OLD.appointment_time THEN
+            -- Update old slot
+            UPDATE admin_doctor_appointment_slots
+            SET is_booked = 0, appointment_id = NULL
+            WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+            
+            -- Update new slot
+            UPDATE admin_doctor_appointment_slots
+            SET is_booked = 1, appointment_id = NEW.id
+            WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+        END IF;
+    END IF;
+    
+    -- Handle health worker/admin appointments
+    IF (NEW.provider_type = 'health_worker' OR NEW.provider_type = 'admin') 
+       AND NEW.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
+        -- If status changed to cancelled, update the slot
+        IF NEW.status = 'cancelled' AND OLD.status != 'cancelled' THEN
+            UPDATE admin_hw_appointment_slots
+            SET is_booked = 0, appointment_id = NULL
+            WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+        END IF;
+        
+        -- If time slot changed, update both old and new slots
+        IF NEW.appointment_time != OLD.appointment_time THEN
+            -- Update old slot
+            UPDATE admin_hw_appointment_slots
+            SET is_booked = 0, appointment_id = NULL
+            WHERE schedule_id = OLD.schedule_id AND slot_time = OLD.appointment_time;
+            
+            -- Update new slot
+            UPDATE admin_hw_appointment_slots
+            SET is_booked = 1, appointment_id = NEW.id
+            WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time;
+        END IF;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_walkin_doctor_appointment_insert` AFTER INSERT ON `admin_walkin_appointments` FOR EACH ROW BEGIN
+    DECLARE slot_id INT;
+    
+    -- Check if this is a doctor walk-in appointment
+    IF NEW.provider_type = 'doctor' AND NEW.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN
+        -- Check if slot exists
+        SELECT id INTO slot_id FROM admin_doctor_appointment_slots 
+        WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time
+        LIMIT 1;
+        
+        IF slot_id IS NULL THEN
+            -- Create slot if it doesn't exist
+            INSERT INTO admin_doctor_appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
+            VALUES (NEW.schedule_id, NEW.appointment_time, 1, NEW.id);
+        ELSE
+            -- Update existing slot (this will handle multiple patients per slot based on max_patients)
+            UPDATE admin_doctor_appointment_slots 
+            SET is_booked = 1
+            WHERE id = slot_id;
+        END IF;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_walkin_hw_appointment_insert` AFTER INSERT ON `admin_walkin_appointments` FOR EACH ROW BEGIN
+    DECLARE slot_id INT;
+    
+    -- Check if this is a health worker/admin walk-in appointment
+    IF (NEW.provider_type = 'health_worker' OR NEW.provider_type = 'admin') 
+       AND NEW.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN
+        -- Check if slot exists
+        SELECT id INTO slot_id FROM admin_hw_appointment_slots 
+        WHERE schedule_id = NEW.schedule_id AND slot_time = NEW.appointment_time
+        LIMIT 1;
+        
+        IF slot_id IS NULL THEN
+            -- Create slot if it doesn't exist
+            INSERT INTO admin_hw_appointment_slots (schedule_id, slot_time, is_booked, appointment_id)
+            VALUES (NEW.schedule_id, NEW.appointment_time, 1, NEW.id);
+        ELSE
+            -- Update existing slot
+            UPDATE admin_hw_appointment_slots 
+            SET is_booked = 1
+            WHERE id = slot_id;
+        END IF;
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `clients_user_accounts`
 --
 
@@ -433,7 +627,8 @@ CREATE TABLE `client_password_resets` (
 
 INSERT INTO `client_password_resets` (`id`, `email`, `token`, `expiry`, `used`, `created_at`) VALUES
 (1, 'leomaresc853@gmail.com', '29b87ece0be011cb664ffebdf227471579ed8147600128063b4a35964b24a155', '2025-07-05 07:17:41', 0, '2025-07-05 04:17:41'),
-(2, 'leomaresc853@gmail.com', '693b53f5173953d4ab1c525589b54162bf7f05e65d49910c73be574d593414a3', '2025-07-05 07:54:12', 1, '2025-07-05 04:54:12');
+(2, 'leomaresc853@gmail.com', '693b53f5173953d4ab1c525589b54162bf7f05e65d49910c73be574d593414a3', '2025-07-05 07:54:12', 1, '2025-07-05 04:54:12'),
+(3, 'leomaresc853@gmail.com', '74fea088fb55cd3f403974040e43dd01901c6276eb4be28829f2575b75e6b52d', '2025-07-08 20:46:04', 1, '2025-07-08 17:46:04');
 
 -- --------------------------------------------------------
 
@@ -873,6 +1068,23 @@ ALTER TABLE `admin_user_accounts`
   ADD KEY `idx_status` (`status`);
 
 --
+-- Indexes for table `admin_walkin_appointments`
+--
+ALTER TABLE `admin_walkin_appointments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_schedule_id` (`schedule_id`),
+  ADD KEY `idx_provider_id` (`provider_id`),
+  ADD KEY `idx_booked_by` (`booked_by`),
+  ADD KEY `idx_appointment_date` (`appointment_date`),
+  ADD KEY `idx_appointment_time` (`appointment_time`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_provider_type` (`provider_type`),
+  ADD KEY `idx_is_archived` (`is_archived`),
+  ADD KEY `idx_created_at` (`created_at`),
+  ADD KEY `idx_walk_in_time` (`walk_in_time`),
+  ADD KEY `fk_walkin_archived_by` (`archived_by`);
+
+--
 -- Indexes for table `clients_user_accounts`
 --
 ALTER TABLE `clients_user_accounts`
@@ -998,7 +1210,7 @@ ALTER TABLE `stock_movement_log`
 -- AUTO_INCREMENT for table `admin_clients_appointments`
 --
 ALTER TABLE `admin_clients_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `admin_doctor_appointment_slots`
@@ -1010,19 +1222,19 @@ ALTER TABLE `admin_doctor_appointment_slots`
 -- AUTO_INCREMENT for table `admin_doctor_schedules`
 --
 ALTER TABLE `admin_doctor_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `admin_hw_appointment_slots`
 --
 ALTER TABLE `admin_hw_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `admin_hw_schedules`
 --
 ALTER TABLE `admin_hw_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `admin_time_in_attendance_logs`
@@ -1049,6 +1261,12 @@ ALTER TABLE `admin_user_accounts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
+-- AUTO_INCREMENT for table `admin_walkin_appointments`
+--
+ALTER TABLE `admin_walkin_appointments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `clients_user_accounts`
 --
 ALTER TABLE `clients_user_accounts`
@@ -1058,7 +1276,7 @@ ALTER TABLE `clients_user_accounts`
 -- AUTO_INCREMENT for table `client_password_resets`
 --
 ALTER TABLE `client_password_resets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `general_bp_monitoring`
@@ -1154,6 +1372,14 @@ ALTER TABLE `admin_doctor_appointment_slots`
 --
 ALTER TABLE `admin_doctor_schedules`
   ADD CONSTRAINT `admin_doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `admin_user_accounts` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `admin_walkin_appointments`
+--
+ALTER TABLE `admin_walkin_appointments`
+  ADD CONSTRAINT `fk_walkin_archived_by` FOREIGN KEY (`archived_by`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_walkin_booked_by` FOREIGN KEY (`booked_by`) REFERENCES `admin_user_accounts` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_walkin_provider_id` FOREIGN KEY (`provider_id`) REFERENCES `admin_user_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `general_bp_monitoring`

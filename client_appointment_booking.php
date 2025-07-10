@@ -594,6 +594,14 @@ if (empty($calendarEvents)) {
             color: #6c757d;
             margin-top: 5px;
             z-index: 2;
+            text-align: center;
+            line-height: 1.2;
+            font-weight: 500;
+        }
+
+        .time-slot.booked .slot-status {
+            color: #7E8299;
+            font-weight: 600;
         }
         
         .time-period-divider {
@@ -2006,8 +2014,12 @@ if (empty($calendarEvents)) {
                             }
                             
                             // Then check the actual appointments count and if it's past
+                            var walkinCount = 0;
+                            var regularCount = 0;
                             if (bookedSlots && bookedSlots[timeString + ':00']) {
                                 slotCount = parseInt(bookedSlots[timeString + ':00'].count);
+                                walkinCount = parseInt(bookedSlots[timeString + ':00'].walkin_count || 0);
+                                regularCount = parseInt(bookedSlots[timeString + ':00'].regular_count || 0);
                                 isBooked = bookedSlots[timeString + ':00'].is_full;
                                 isPast = bookedSlots[timeString + ':00'].is_past || false;
                             }
@@ -2052,10 +2064,29 @@ if (empty($calendarEvents)) {
                                     '</div>');
                                 
                             } else {
-                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + formattedTime + ' - This time slot is unavailable" aria-disabled="true">' +
+                                // Create detailed status message
+                                var statusMessage = 'Unavailable';
+                                var badgeText = 'Booked';
+                                var ariaLabel = formattedTime + ' - This time slot is unavailable';
+                                
+                                if (walkinCount > 0 && regularCount > 0) {
+                                    statusMessage = `${walkinCount} walk-in, ${regularCount} regular`;
+                                    badgeText = `${slotCount} booked`;
+                                    ariaLabel = formattedTime + ' - Booked by ' + walkinCount + ' walk-in and ' + regularCount + ' regular appointments';
+                                } else if (walkinCount > 0) {
+                                    statusMessage = walkinCount === 1 ? 'Walk-in appointment' : walkinCount + ' walk-in appointments';
+                                    badgeText = 'Walk-in';
+                                    ariaLabel = formattedTime + ' - Booked by ' + statusMessage;
+                                } else if (regularCount > 0) {
+                                    statusMessage = regularCount === 1 ? 'Regular appointment' : regularCount + ' regular appointments';
+                                    badgeText = 'Regular';
+                                    ariaLabel = formattedTime + ' - Booked by ' + statusMessage;
+                                }
+                                
+                                slotElement = $('<div class="time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + ariaLabel + '" aria-disabled="true">' +
                                     '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + '</div>' +
-                                    '<span class="badge badge-danger">Booked</span>' +
-                                    '<div class="slot-status">Unavailable</div>' +
+                                    '<span class="badge badge-danger">' + badgeText + '</span>' +
+                                    '<div class="slot-status">' + statusMessage + '</div>' +
                                     '</div>');
                             }
                             
