@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2025 at 11:35 AM
+-- Generation Time: Jul 10, 2025 at 12:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,8 @@ INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, 
 (65, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-09', '06:30:00', 'test 8', 'completed', NULL, 22, 1, '2025-07-08 13:49:13', '2025-07-10 03:56:53', 1, 0, 0, 'f9b3866db5a3370ee783369599d2c2b6fce19a987fd5ee49e921ae2630aa281c', '2025-08-07 15:49:13', NULL, NULL, NULL, 0),
 (66, 'test 1', '09999999999', 'test 1', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 1', 'approved', '[Walk-in Appointment] test 1', 33, 24, '2025-07-10 05:05:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
 (67, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '05:30:00', 'test 8', 'approved', NULL, 33, 24, '2025-07-10 05:20:44', '2025-07-10 05:20:51', 1, 0, 0, '07a277e6edd1291715a76276716642c2e1c92ee0771806ce2cf45abee51a5df7', '2025-08-09 07:20:45', NULL, NULL, NULL, 0),
-(68, 'test 2', '09999999999', 'test 2', '2025-07-10', 'Male', '2025-07-11', '06:00:00', 'test 2', 'approved', '[Walk-in Appointment] test 2', 33, 24, '2025-07-10 05:59:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1);
+(68, 'test 2', '09999999999', 'test 2', '2025-07-10', 'Male', '2025-07-11', '06:00:00', 'test 2', 'approved', '[Walk-in Appointment] test 2', 33, 24, '2025-07-10 05:59:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
+(69, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '06:00:00', 'test 9', 'approved', NULL, 24, 22, '2025-07-10 10:03:51', '2025-07-10 10:03:57', 1, 0, 0, '0bdaf9578ceb8a4ff93faeb0c31a0a2e8b571aa61248f3e615ebfc2c4be09bbb', '2025-08-09 12:03:51', NULL, NULL, NULL, 0);
 
 --
 -- Triggers `admin_clients_appointments`
@@ -209,10 +210,10 @@ CREATE TABLE `admin_doctor_appointment_slots` (
 --
 
 INSERT INTO `admin_doctor_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_booked`, `appointment_id`) VALUES
-(171, 24, '05:00:00', 0, NULL),
-(172, 24, '05:30:00', 0, NULL),
-(173, 24, '06:00:00', 0, NULL),
-(174, 24, '06:30:00', 0, NULL),
+(171, 24, '05:00:00', 1, 7),
+(172, 24, '05:30:00', 1, 8),
+(173, 24, '06:00:00', 1, 69),
+(174, 24, '06:30:00', 1, 9),
 (175, 24, '07:00:00', 0, NULL),
 (176, 24, '07:30:00', 0, NULL),
 (177, 24, '08:00:00', 0, NULL),
@@ -520,7 +521,8 @@ INSERT INTO `admin_hw_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_
 (15, 33, '05:30:00', 1, 67),
 (16, 33, '06:00:00', 1, 68),
 (17, 33, '06:30:00', 1, 2),
-(18, 23, '06:00:00', 1, 3);
+(18, 23, '06:00:00', 1, 3),
+(19, 24, '06:00:00', 1, 69);
 
 -- --------------------------------------------------------
 
@@ -715,7 +717,10 @@ CREATE TABLE `admin_walkin_appointments` (
 
 INSERT INTO `admin_walkin_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `provider_id`, `provider_type`, `booked_by`, `walk_in_time`, `created_at`, `updated_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
 (2, 'test 3', '09999999999', 'test 3', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 3', 'approved', '[Walk-in Appointment] test 3', 33, 24, 'health_worker', 24, NULL, '2025-07-10 06:50:04', NULL, 0, NULL, NULL, NULL),
-(3, 'test 4', '09999999999', 'test 4', '2025-07-10', 'Female', '2025-07-11', '06:00:00', 'test 4', 'approved', '[Walk-in Appointment] test 4', 23, 1, 'admin', 1, NULL, '2025-07-10 07:29:40', NULL, 0, NULL, NULL, NULL);
+(3, 'test 4', '09999999999', 'test 4', '2025-07-10', 'Female', '2025-07-11', '06:00:00', 'test 4', 'approved', '[Walk-in Appointment] test 4', 23, 1, 'admin', 1, NULL, '2025-07-10 07:29:40', NULL, 0, NULL, NULL, NULL),
+(7, 'test 5', '09999999999', 'test 5', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 5', 'approved', '[Walk-in Appointment] test 5', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:52:14', NULL, 0, NULL, NULL, NULL),
+(8, 'test 6', '09999999999', 'test 6', '2025-07-10', 'Female', '2025-07-11', '05:30:00', 'test 6', 'approved', '[Walk-in Appointment] test 6', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:53:57', NULL, 0, NULL, NULL, NULL),
+(9, 'test 7', '09787878777', 'test 7', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 7', 'approved', '[Walk-in Appointment] test 7', 24, 22, 'doctor', 24, NULL, '2025-07-10 10:05:48', NULL, 0, NULL, NULL, NULL);
 
 --
 -- Triggers `admin_walkin_appointments`
@@ -1476,7 +1481,7 @@ ALTER TABLE `stock_movement_log`
 -- AUTO_INCREMENT for table `admin_clients_appointments`
 --
 ALTER TABLE `admin_clients_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `admin_doctor_appointment_slots`
@@ -1494,7 +1499,7 @@ ALTER TABLE `admin_doctor_schedules`
 -- AUTO_INCREMENT for table `admin_hw_appointment_slots`
 --
 ALTER TABLE `admin_hw_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `admin_hw_schedules`
@@ -1530,7 +1535,7 @@ ALTER TABLE `admin_user_accounts`
 -- AUTO_INCREMENT for table `admin_walkin_appointments`
 --
 ALTER TABLE `admin_walkin_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `clients_user_accounts`
@@ -1630,8 +1635,7 @@ ALTER TABLE `admin_clients_appointments`
 -- Constraints for table `admin_doctor_appointment_slots`
 --
 ALTER TABLE `admin_doctor_appointment_slots`
-  ADD CONSTRAINT `admin_doctor_appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `admin_doctor_schedules` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `admin_doctor_appointment_slots_ibfk_2` FOREIGN KEY (`appointment_id`) REFERENCES `admin_clients_appointments` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `admin_doctor_appointment_slots_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `admin_doctor_schedules` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `admin_doctor_schedules`

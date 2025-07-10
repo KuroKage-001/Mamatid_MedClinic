@@ -1308,6 +1308,33 @@ if (empty($calendarEvents)) {
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
+        /* How to Book Card Styling */
+        #howToBookCard {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        #howToBookCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .text-yellow {
+            color: #ffc107 !important;
+        }
+        
+        .text-white-50 {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        #howToBookCard .step-number {
+            transition: transform 0.2s ease;
+        }
+        
+        #howToBookCard .step-number:hover {
+            transform: scale(1.1);
+        }
+
         /* Event Modal Styling */
         .modal-content {
             border: none;
@@ -1417,8 +1444,71 @@ if (empty($calendarEvents)) {
             <section class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-4">
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <h1>Book Appointment</h1>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end">
+                            <div id="howToBookCard" class="card border-0 shadow-sm" style="max-width: 480px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h6 class="card-title mb-0 text-white">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            How to Book Appointment
+                                        </h6>
+                                        <button type="button" class="btn btn-sm btn-outline-light" id="dismissHowToBook" title="Close">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="booking-instructions">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <div class="text-center">
+                                                    <div class="step-number bg-white text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                        <span class="font-weight-bold">1</span>
+                                                    </div>
+                                                    <div class="step-content">
+                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">Select Schedule</h6>
+                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Click any event below</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-4 mb-2">
+                                                <div class="text-center">
+                                                    <div class="step-number bg-white text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                        <span class="font-weight-bold">2</span>
+                                                    </div>
+                                                    <div class="step-content">
+                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">View & Book</h6>
+                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Click book button</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-4 mb-2">
+                                                <div class="text-center">
+                                                    <div class="step-number bg-white text-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 32px; height: 32px; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                        <span class="font-weight-bold">3</span>
+                                                    </div>
+                                                    <div class="step-content">
+                                                        <h6 class="mb-1 font-weight-bold text-white" style="font-size: 0.85rem;">Complete</h6>
+                                                        <p class="text-white-50 small mb-0" style="font-size: 0.7rem;">Choose time & submit</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-3 p-2" style="background: rgba(255,255,255,0.1); border-radius: 6px;">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-lightbulb text-yellow mr-2"></i>
+                                                <small class="text-white mb-0" style="font-size: 0.75rem;">
+                                                    <strong>Quick Tip:</strong> Each time slot accepts only one patient!
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1427,12 +1517,12 @@ if (empty($calendarEvents)) {
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
                                     <h3 class="card-title">
                                         <i class="fas fa-calendar-alt mr-2"></i>
-                                        Available Doctor Schedules
+                                        Available Health Worker Schedules
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -1461,29 +1551,43 @@ if (empty($calendarEvents)) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mt-3">
-                                        <div class="alert alert-info p-3 rounded-lg shadow-sm">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            <span>Only future dates are available for booking. Past appointments are automatically removed from view.</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                </div>
+            </section>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="card card-outline card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">
+        <?php include './config/client_ui/client_footer.php'; ?>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- Book Appointment Modal -->
+    <div class="modal fade" id="bookAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="bookAppointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="bookAppointmentModalLabel">
                                         <i class="fas fa-calendar-plus mr-2"></i>
                                         Book Your Appointment
-                                    </h3>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Time Slots Section -->
+                        <div class="col-md-8">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        Available Time Slots
+                                    </h6>
                                 </div>
                                 <div class="card-body">
-                                    <div id="calendar"></div>
-                                    
-                                    <div class="mt-4">
-                                        <h5 class="mb-3">Available Time Slots</h5>
                                         <div class="alert alert-info mb-3">
                                             <i class="fas fa-info-circle mr-2"></i>
                                             Each time slot can only be booked by one patient.
@@ -1492,7 +1596,7 @@ if (empty($calendarEvents)) {
                                         <div class="time-slot-filters">
                                             <div class="time-slot-search">
                                                 <i class="fas fa-search"></i>
-                                                <input type="text" id="timeSlotSearch" class="form-control" placeholder="Search time...">
+                                            <input type="text" id="modalTimeSlotSearch" class="form-control" placeholder="Search time...">
                                             </div>
                                             <div class="time-period-filter">
                                                 <button type="button" class="time-period-btn active" data-period="all">All</button>
@@ -1506,49 +1610,85 @@ if (empty($calendarEvents)) {
                                             <div class="legend-item available active" data-filter="available">
                                                 <div class="legend-color available"></div>
                                                 <span>Available</span>
-                                                <span class="count" id="available-count">0</span>
+                                            <span class="count" id="modal-available-count">0</span>
                                             </div>
                                             <div class="legend-item selected" data-filter="selected">
                                                 <div class="legend-color selected"></div>
                                                 <span>Selected</span>
-                                                <span class="count" id="selected-count">0</span>
+                                            <span class="count" id="modal-selected-count">0</span>
                                             </div>
                                             <div class="legend-item booked active" data-filter="booked">
                                                 <div class="legend-color booked"></div>
                                                 <span>Booked</span>
-                                                <span class="count" id="booked-count">0</span>
+                                            <span class="count" id="modal-booked-count">0</span>
                                             </div>
                                         </div>
                                         
-                                        <div id="timeSlots" class="time-slot-container">
-                                            <p class="text-muted">Please select a schedule from the calendar to view available time slots.</p>
+                                    <div id="modalTimeSlots" class="time-slot-container">
+                                        <div class="text-center text-muted py-4">
+                                            <i class="fas fa-calendar-alt fa-3x mb-3 text-light"></i>
+                                            <p>Loading available time slots...</p>
+                                        </div>
+                                    </div>
+                                </div>
                                         </div>
                                                 </div>
 
-                                    <form id="appointmentForm" method="post" action="" class="mt-4">
-                                        <input type="hidden" id="scheduleId" name="schedule_id">
-                                        <input type="hidden" id="appointmentTime" name="appointment_time">
-                                        <input type="hidden" name="schedule_type" value="doctor">
+                        <!-- Booking Form Section -->
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-user-md mr-2"></i>
+                                        Appointment Details
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="modalAppointmentForm" method="post" action="">
+                                        <input type="hidden" id="modalScheduleId" name="schedule_id">
+                                        <input type="hidden" id="modalAppointmentTime" name="appointment_time">
+                                        <input type="hidden" id="modalScheduleType" name="schedule_type" value="doctor">
                                         
                                         <div class="form-group">
-                                            <label for="selectedDoctor">Doctor</label>
-                                            <input type="text" class="form-control" id="selectedDoctor" readonly>
+                                            <label for="modalSelectedDoctor">Healthcare Provider</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-user-md"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control" id="modalSelectedDoctor" readonly>
+                                            </div>
                                         </div>
                                         
                                         <div class="form-group">
-                                            <label for="selectedDate">Date</label>
-                                            <input type="text" class="form-control" id="selectedDate" readonly>
+                                            <label for="modalSelectedDate">Date</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control" id="modalSelectedDate" readonly>
+                                            </div>
                                         </div>
                                         
                                         <div class="form-group">
-                                            <label for="reason">Reason for Visit</label>
-                                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                                            <label for="modalSelectedTime">Selected Time</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-clock"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control" id="modalSelectedTime" readonly placeholder="Select a time slot">
+                                            </div>
                                         </div>
                                         
-                                        <div class="text-center">
-                                            <button type="submit" id="bookBtn" name="book_appointment" class="btn btn-primary" disabled>
-                                                <i class="fas fa-calendar-check mr-2"></i> Book Appointment
-                                        </button>
+                                        <div class="form-group">
+                                            <label for="modalReason">Reason for Visit <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="modalReason" name="reason" rows="4" required placeholder="Please describe the reason for your visit..."></textarea>
+                                            <small class="form-text text-muted">Providing a detailed reason helps us prepare for your visit.</small>
                                     </div>
                                     </form>
                                 </div>
@@ -1556,12 +1696,17 @@ if (empty($calendarEvents)) {
                         </div>
                     </div>
                 </div>
-            </section>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit" id="modalBookBtn" form="modalAppointmentForm" name="book_appointment" class="btn btn-primary" disabled>
+                        <i class="fas fa-calendar-check mr-2"></i>Book Appointment
+                    </button>
         </div>
-
-        <?php include './config/client_ui/client_footer.php'; ?>
     </div>
-    <!-- ./wrapper -->
+        </div>
+    </div>
     <?php include './config/site_css_js_links.php'; ?>
     
     <!-- FullCalendar JS -->
@@ -1648,6 +1793,9 @@ if (empty($calendarEvents)) {
                     });
                 },
                 eventClick: function(info) {
+                    // Hide the "How to Book" section when a schedule is selected
+                    $('#howToBookCard').fadeOut(300);
+                    
                     // Get event details
                     const event = info.event;
                     const props = event.extendedProps;
@@ -1780,7 +1928,7 @@ if (empty($calendarEvents)) {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary book-this-schedule">Book This Schedule</button>
+                                    <button type="button" class="btn btn-primary book-this-schedule">Book an Appointment</button>
                                 </div>
                             </div>
                         </div>
@@ -1797,45 +1945,30 @@ if (empty($calendarEvents)) {
                         // Store the button for focus management
                         var $button = $(this);
                         
-                        // Close the modal and handle focus properly
+                        // Close the schedule details modal
                         $('#' + modalId).modal('hide');
                         
                         // Wait for modal to be fully hidden before proceeding
                         $('#' + modalId).on('hidden.bs.modal', function() {
-                            // Set form values
-                            $('#selectedDoctor').val(staffName);
-                            $('#scheduleId').val(scheduleId);
+                            // Set modal form values
+                            $('#modalSelectedDoctor').val(staffName);
+                            $('#modalScheduleId').val(scheduleId);
+                            $('#modalScheduleType').val(scheduleType);
+                            $('#modalSelectedDate').val(formattedDate);
                             
-                            // Set the schedule type properly
+                            // Clear previous selections
+                            $('#modalAppointmentTime').val('');
+                            $('#modalSelectedTime').val('');
+                            $('#modalReason').val('');
+                            $('#modalBookBtn').prop('disabled', true);
+                            
                             console.log('Schedule type:', scheduleType);
-                            $('input[name="schedule_type"]').val(scheduleType);
                             
-                            // Update label based on schedule type
-                            if (scheduleType === 'staff') {
-                                $('label[for="selectedDoctor"]').text('Healthcare Provider');
-                            } else {
-                                $('label[for="selectedDoctor"]').text('Doctor');
-                            }
+                            // Show the booking modal
+                            $('#bookAppointmentModal').modal('show');
                             
-                            $('#selectedDate').val(formattedDate);
-                            
-                            // Generate time slots
-                            generateTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
-                            
-                            // Scroll to the booking form and focus on the first time slot
-                            $('html, body').animate({
-                                scrollTop: $("#timeSlots").offset().top - 100
-                            }, 500, function() {
-                                // Focus on the first available time slot after scrolling
-                                setTimeout(function() {
-                                    var $firstSlot = $('.time-slot:not(.booked)').first();
-                                    if ($firstSlot.length) {
-                                        $firstSlot.focus();
-                                    } else {
-                                        $('#reason').focus(); // Focus on reason field if no slots available
-                                    }
-                                }, 200);
-                            });
+                            // Generate time slots in the modal
+                            generateModalTimeSlots(event.start, event.end, timeSlot, scheduleId, maxPatients);
                         });
                     });
                     
@@ -1846,6 +1979,440 @@ if (empty($calendarEvents)) {
                 }
             });
             calendar.render();
+
+            // Handle "How to Book" section dismiss
+            $('#dismissHowToBook').click(function() {
+                $('#howToBookCard').fadeOut(300);
+            });
+
+            // Optional: Add a way to show "How to Book" again (you can call this function if needed)
+            window.showHowToBook = function() {
+                $('#howToBookCard').fadeIn(300);
+            };
+
+            // Generate time slots for modal based on schedule
+            function generateModalTimeSlots(start, end, slotMinutes, scheduleId, maxPatients) {
+                const timeSlotContainer = $('#modalTimeSlots');
+                timeSlotContainer.empty();
+                
+                // If no end time is provided, fetch schedule details
+                if (!end) {
+                    // Get the schedule date from the start parameter
+                    var scheduleDate = start.toISOString().split('T')[0];
+                    
+                    // Show loading indicator
+                    timeSlotContainer.html('<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="ml-2 text-info">Loading available time slots...</p></div>');
+                    
+                    // Fetch schedule details
+                    $.ajax({
+                        url: 'ajax/get_schedule_details.php',
+                        type: 'POST',
+                        data: {
+                            schedule_id: scheduleId,
+                            schedule_type: $('#modalScheduleType').val()
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.error) {
+                                showError(response.error);
+                                timeSlotContainer.empty();
+                                return;
+                            }
+                            
+                            // Create end time from schedule data
+                            var startTime = new Date(scheduleDate + 'T' + response.start_time);
+                            var endTime = new Date(scheduleDate + 'T' + response.end_time);
+                            
+                            // Call generateModalTimeSlots again with complete parameters
+                            generateModalTimeSlots(
+                                startTime, 
+                                endTime, 
+                                response.time_slot_minutes, 
+                                scheduleId, 
+                                response.max_patients
+                            );
+                        },
+                        error: function() {
+                            showError('Error loading schedule details. Please try again.');
+                            timeSlotContainer.empty();
+                        }
+                    });
+                    return;
+                }
+                
+                // Get available slots from the server
+                $.ajax({
+                    url: 'ajax/client_check_booked_appointment_slots.php',
+                    type: 'POST',
+                    data: {
+                        schedule_id: scheduleId,
+                        schedule_type: $('#modalScheduleType').val(),
+                        client_id: <?php echo isset($_SESSION['client_id']) ? $_SESSION['client_id'] : 'null'; ?>
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        // Clear previous time slots
+                        timeSlotContainer.empty();
+                        
+                        // Check for error in response
+                        if (response.error) {
+                            showError(response.error);
+                            $('#modalBookBtn').prop('disabled', true);
+                            return;
+                        }
+                        
+                        var bookedSlots = response.booked_slots;
+                        var slotStatuses = response.slot_statuses || {};
+                        var serverMaxPatients = response.max_patients;
+                        var clientAppointments = response.client_appointments || [];
+                        
+                        // Use server-provided max_patients if available
+                        if (serverMaxPatients) {
+                            maxPatients = serverMaxPatients;
+                        }
+                        
+                        // Generate time slots based on schedule
+                        var currentTime = new Date(start);
+                        var endTime = new Date(end);
+                        var hasAvailableSlots = false;
+                        
+                        // Create a wrapper for scrollable time slots
+                        const slotsWrapper = $('<div class="time-slots-wrapper"></div>');
+                        // Create a grid container for time slots
+                        const slotsContainer = $('<div class="time-slots-grid"></div>');
+                        
+                        // Group time slots by period (morning, afternoon, evening)
+                        let morningSlots = [];
+                        let afternoonSlots = [];
+                        let eveningSlots = [];
+                        let allTimeSlots = [];
+                        
+                        while (currentTime < endTime) {
+                            var timeString = currentTime.toTimeString().substring(0, 5);
+                            var formattedTime = currentTime.toLocaleTimeString('en-US', { 
+                                hour: '2-digit', 
+                                minute: '2-digit'
+                            });
+                            
+                            // Check if this time slot is in the past (current day but earlier time)
+                            var slotDateTime = new Date(start);
+                            slotDateTime.setHours(currentTime.getHours(), currentTime.getMinutes());
+                            var isPastTime = slotDateTime < new Date();
+                            
+                            // Skip if the slot is in the past
+                            if (isPastTime) {
+                                currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
+                                continue;
+                            }
+                            
+                            // Check if this slot is fully booked
+                            var slotCount = 0;
+                            var isBooked = false;
+                            var isPast = false;
+                            
+                            // First check the appointment_slots table status
+                            if (slotStatuses && slotStatuses[timeString + ':00']) {
+                                isBooked = slotStatuses[timeString + ':00'].is_booked === 1;
+                            }
+                            
+                            // Then check the actual appointments count and if it's past
+                            var walkinCount = 0;
+                            var regularCount = 0;
+                            if (bookedSlots && bookedSlots[timeString + ':00']) {
+                                slotCount = parseInt(bookedSlots[timeString + ':00'].count);
+                                walkinCount = parseInt(bookedSlots[timeString + ':00'].walkin_count || 0);
+                                regularCount = parseInt(bookedSlots[timeString + ':00'].regular_count || 0);
+                                isBooked = bookedSlots[timeString + ':00'].is_full;
+                                isPast = bookedSlots[timeString + ':00'].is_past || false;
+                            }
+                            
+                            // Skip if the slot is in the past
+                            if (isPast) {
+                                currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
+                                continue;
+                            }
+                            
+                            // Check if client already has an appointment at this time
+                            var clientHasAppointment = clientAppointments.includes(timeString + ':00');
+                            
+                            var remainingSlots = maxPatients - slotCount;
+                            
+                            // Determine time period (morning, afternoon, evening)
+                            const hour = currentTime.getHours();
+                            let timePeriod = 'morning';
+                            if (hour >= 12 && hour < 17) {
+                                timePeriod = 'afternoon';
+                            } else if (hour >= 17) {
+                                timePeriod = 'evening';
+                            }
+                            
+                            let slotElement;
+                            
+                            if (!isBooked && !clientHasAppointment) {
+                                hasAvailableSlots = true;
+                                
+                                slotElement = $('<div class="time-slot modal-time-slot" data-time="' + timeString + ':00" data-schedule-id="' + scheduleId + '" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="Select appointment time ' + formattedTime + ', ' + remainingSlots + ' slots available">' +
+                                    '<div class="time-label"><i class="far fa-clock"></i>' + formattedTime + '</div>' +
+                                    '<span class="badge badge-info">' + remainingSlots + ' available</span>' +
+                                    '<div class="slot-status">Open</div>' +
+                                    '</div>');
+                                
+                            } else if (clientHasAppointment) {
+                                // Client already has an appointment at this time
+                                slotElement = $('<div class="time-slot modal-time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + formattedTime + ' - You already have an appointment at this time" aria-disabled="true">' +
+                                    '<div class="time-label"><i class="fas fa-calendar-check"></i>' + formattedTime + '</div>' +
+                                    '<span class="badge badge-primary">Your appointment</span>' +
+                                    '<div class="slot-status">Booked by you</div>' +
+                                    '</div>');
+                                
+                            } else {
+                                // Create detailed status message
+                                var statusMessage = 'Unavailable';
+                                var badgeText = 'Booked';
+                                var ariaLabel = formattedTime + ' - This time slot is unavailable';
+                                
+                                if (walkinCount > 0 && regularCount > 0) {
+                                    statusMessage = `${walkinCount} walk-in, ${regularCount} regular`;
+                                    badgeText = `${slotCount} booked`;
+                                    ariaLabel = formattedTime + ' - Booked by ' + walkinCount + ' walk-in and ' + regularCount + ' regular appointments';
+                                } else if (walkinCount > 0) {
+                                    statusMessage = walkinCount === 1 ? 'Walk-in appointment' : walkinCount + ' walk-in appointments';
+                                    badgeText = 'Walk-in';
+                                    ariaLabel = formattedTime + ' - Booked by ' + statusMessage;
+                                } else if (regularCount > 0) {
+                                    statusMessage = regularCount === 1 ? 'Regular appointment' : regularCount + ' regular appointments';
+                                    badgeText = 'Regular';
+                                    ariaLabel = formattedTime + ' - Booked by ' + statusMessage;
+                                }
+                                
+                                slotElement = $('<div class="time-slot modal-time-slot booked locked" data-period="' + timePeriod + '" tabindex="0" role="button" aria-label="' + ariaLabel + '" aria-disabled="true">' +
+                                    '<div class="time-label"><i class="fas fa-ban"></i>' + formattedTime + '</div>' +
+                                    '<span class="badge badge-danger">' + badgeText + '</span>' +
+                                    '<div class="slot-status">' + statusMessage + '</div>' +
+                                    '</div>');
+                            }
+                            
+                            // Add to the appropriate time period array
+                            if (timePeriod === 'morning') {
+                                morningSlots.push(slotElement);
+                            } else if (timePeriod === 'afternoon') {
+                                afternoonSlots.push(slotElement);
+                            } else {
+                                eveningSlots.push(slotElement);
+                            }
+                            
+                            allTimeSlots.push(slotElement);
+                            
+                            // Add minutes to current time
+                            currentTime.setMinutes(currentTime.getMinutes() + parseInt(slotMinutes));
+                        }
+                        
+                        // Add time period dividers and slots to the container
+                        if (morningSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-sun"></i> Morning</div>');
+                            morningSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        if (afternoonSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-cloud-sun"></i> Afternoon</div>');
+                            afternoonSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        if (eveningSlots.length > 0) {
+                            slotsContainer.append('<div class="time-period-divider"><i class="fas fa-moon"></i> Evening</div>');
+                            eveningSlots.forEach(slot => slotsContainer.append(slot));
+                        }
+                        
+                        // Add the slots container to the wrapper
+                        slotsWrapper.append(slotsContainer);
+                        
+                        // Add the wrapper to the main container
+                        timeSlotContainer.append(slotsWrapper);
+                        
+                        if (!hasAvailableSlots) {
+                            showWarning('No available time slots for this schedule.');
+                            $('#modalBookBtn').prop('disabled', true);
+                                    } else {
+                            // Initialize tooltips
+                            $('[data-toggle="tooltip"]').tooltip();
+                            
+                            // Handle time slot selection with mouse (for modal)
+                            $('.modal-time-slot:not(.booked)').click(function() {
+                                selectModalTimeSlot($(this));
+                            });
+                            
+                            // Handle time slot selection with keyboard (for modal)
+                            $('.modal-time-slot:not(.booked)').keydown(function(e) {
+                                if (e.which === 13 || e.which === 32) { // Enter or Space key
+                                    e.preventDefault();
+                                    selectModalTimeSlot($(this));
+                                }
+                            });
+                            
+                            // Add lock effect to booked slots
+                            $('.modal-time-slot.locked').append('<div class="lock-overlay"><i class="fas fa-lock"></i></div>');
+                            
+                            // Update legend counts initially
+                            updateModalLegendCounts();
+                            
+                            // Initialize legend functionality for modal
+                            initializeModalLegend();
+                            
+                            // Add a summary of available slots
+                            addModalSlotsSummary();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('AJAX error:', status, error);
+                        console.log('Response:', xhr.responseText);
+                        showError('Error loading time slots. Please try again.');
+                        $('#modalBookBtn').prop('disabled', true);
+                    }
+                });
+            }
+
+            // Function to select a modal time slot
+            function selectModalTimeSlot($slot) {
+                $('.modal-time-slot').removeClass('selected');
+                $slot.addClass('selected');
+                $('#modalAppointmentTime').val($slot.data('time'));
+                $('#modalSelectedTime').val($slot.find('.time-label').text().trim());
+                $('#modalBookBtn').prop('disabled', false);
+                
+                // Update ARIA attributes
+                $('.modal-time-slot').attr('aria-pressed', 'false');
+                $slot.attr('aria-pressed', 'true');
+                
+                // Update tooltip
+                $slot.attr('title', 'Selected time slot')
+                     .tooltip('dispose')
+                     .tooltip();
+                
+                // Update legend counts
+                updateModalLegendCounts();
+                
+                // Show success message
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Time slot selected: ' + $slot.find('.time-label').text()
+                });
+            }
+
+            // Function to update modal legend counts
+            function updateModalLegendCounts() {
+                const availableCount = $('.modal-time-slot:not(.booked):not(.selected)').length;
+                const selectedCount = $('.modal-time-slot.selected').length;
+                const bookedCount = $('.modal-time-slot.booked').length;
+                
+                // Update count badges
+                $('#modal-available-count').text(availableCount);
+                $('#modal-selected-count').text(selectedCount);
+                $('#modal-booked-count').text(bookedCount);
+                
+                // Animate count changes
+                $('#bookAppointmentModal .legend-item .count').each(function() {
+                    $(this).addClass('pulse-once');
+                    setTimeout(() => {
+                        $(this).removeClass('pulse-once');
+                    }, 500);
+                });
+            }
+
+            // Function to initialize modal legend functionality
+            function initializeModalLegend() {
+                $('#bookAppointmentModal .legend-item').click(function() {
+                    const filterType = $(this).data('filter');
+                    $(this).toggleClass('active');
+                    
+                    // Apply filters based on active legend items
+                    applyModalFilters();
+                    
+                    // Show toast notification
+                    const isActive = $(this).hasClass('active');
+                    const actionText = isActive ? 'showing' : 'hiding';
+                    const itemText = $(this).find('span').first().text();
+                    
+                    Toast.fire({
+                        icon: 'info',
+                        title: `Now ${actionText} ${itemText} time slots`
+                    });
+                });
+            }
+
+            // Function to apply modal filters
+            function applyModalFilters() {
+                // Get active filters
+                const showAvailable = $('#bookAppointmentModal .legend-item.available').hasClass('active');
+                const showSelected = $('#bookAppointmentModal .legend-item.selected').hasClass('active');
+                const showBooked = $('#bookAppointmentModal .legend-item.booked').hasClass('active');
+                
+                // Get active time period filter
+                const activePeriod = $('#bookAppointmentModal .time-period-btn.active').data('period');
+                
+                $('.modal-time-slot').each(function() {
+                    const $slot = $(this);
+                    let shouldShow = true;
+                    
+                    // Check status filters
+                    if ($slot.hasClass('booked') && !showBooked) {
+                        shouldShow = false;
+                    } else if ($slot.hasClass('selected') && !showSelected) {
+                        shouldShow = false;
+                    } else if (!$slot.hasClass('booked') && !$slot.hasClass('selected') && !showAvailable) {
+                        shouldShow = false;
+                    }
+                    
+                    // Check time period filter
+                    if (activePeriod !== 'all' && $slot.data('period') !== activePeriod) {
+                        shouldShow = false;
+                    }
+                    
+                    if (shouldShow) {
+                        $slot.removeClass('filtered');
+                    } else {
+                        $slot.addClass('filtered');
+                    }
+                });
+            }
+
+            // Function to add modal slots summary
+            function addModalSlotsSummary() {
+                const availableCount = $('.modal-time-slot:not(.booked):not(.selected)').length;
+                const totalCount = $('.modal-time-slot').length;
+                const summaryContainer = $('<div class="slot-summary mb-3"></div>');
+                
+                if (availableCount === 0) {
+                    summaryContainer.append(`
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
+                            <span>No available time slots for this schedule</span>
+                        </div>
+                    `);
+                } else {
+                    summaryContainer.append(`
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-info-circle text-info mr-2"></i>
+                            <span>${availableCount} of ${totalCount} time slots available</span>
+                        </div>
+                    `);
+                }
+                
+                // Add progress bar
+                const percentage = Math.round((availableCount / totalCount) * 100);
+                summaryContainer.append(`
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: ${percentage}%;" 
+                             aria-valuenow="${availableCount}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="${totalCount}">
+                    </div>
+                    </div>
+                    <small class="text-muted">${availableCount} of ${totalCount} slots available</small>
+                `);
+                
+                $('#modalTimeSlots').prepend(summaryContainer);
+            }
 
             // Generate time slots based on schedule
             function generateTimeSlots(start, end, slotMinutes, scheduleId, maxPatients) {
@@ -2327,6 +2894,96 @@ if (empty($calendarEvents)) {
                     const $divider = $(this);
                     const hasVisibleSlots = $divider.nextUntil('.time-period-divider').not('.search-filtered').not('.filtered').length > 0;
                     $divider.toggle(hasVisibleSlots);
+                });
+            });
+
+            // Initialize modal time period filter buttons
+            $(document).on('click', '#bookAppointmentModal .time-period-btn', function() {
+                $('#bookAppointmentModal .time-period-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                // Apply filters
+                applyModalFilters();
+                
+                // Show toast notification
+                const period = $(this).data('period');
+                Toast.fire({
+                    icon: 'info',
+                    title: period === 'all' ? 'Showing all time periods' : `Showing ${period} time slots`
+                });
+            });
+
+            // Initialize modal time slot search
+            $(document).on('input', '#modalTimeSlotSearch', function() {
+                const searchText = $(this).val().toLowerCase();
+                
+                $('.modal-time-slot').each(function() {
+                    const $slot = $(this);
+                    const timeText = $slot.find('.time-label').text().toLowerCase();
+                    
+                    if (timeText.includes(searchText)) {
+                        $slot.removeClass('search-filtered');
+                    } else {
+                        $slot.addClass('search-filtered');
+                    }
+                });
+                
+                // Show/hide time period dividers based on visible slots
+                $('#modalTimeSlots .time-period-divider').each(function() {
+                    const $divider = $(this);
+                    const hasVisibleSlots = $divider.nextUntil('.time-period-divider').not('.search-filtered').not('.filtered').length > 0;
+                    $divider.toggle(hasVisibleSlots);
+                });
+            });
+
+            // Modal form validation
+            $('#modalAppointmentForm').submit(function(e) {
+                console.log('Modal form submitted');
+                
+                if (!$('#modalScheduleId').val()) {
+                    e.preventDefault();
+                    showError('Please select a schedule from the calendar');
+                    console.log('No schedule ID');
+                    return false;
+                }
+                
+                if (!$('#modalAppointmentTime').val()) {
+                    e.preventDefault();
+                    showError('Please select a time slot');
+                    console.log('No appointment time');
+                    return false;
+                }
+                
+                // Show loading indicator using FontAwesome instead of built-in icons
+                Swal.fire({
+                    title: 'Booking your appointment',
+                    html: '<i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Please wait while we book your appointment...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false
+                });
+                
+                return true;
+            });
+
+            // Add click handler for modal locked slots to show a message
+            $(document).on('click', '.modal-time-slot.locked', function() {
+                // Add shake animation
+                $(this).addClass('shake');
+                
+                // Remove shake class after animation completes
+                setTimeout(() => {
+                    $(this).removeClass('shake');
+                }, 500);
+                
+                // Show message
+                const isClientSlot = $(this).find('.badge-primary').length > 0;
+                
+                Toast.fire({
+                    icon: isClientSlot ? 'info' : 'error',
+                    title: isClientSlot ? 
+                        'You already have an appointment booked for this time slot.' : 
+                        'This time slot is fully booked and cannot be selected.'
                 });
             });
 

@@ -919,12 +919,6 @@ $roleDisplay = ucfirst($staffRole);
                                 <span class="role-badge role-<?php echo $staffRole; ?>"><?php echo $roleDisplay; ?></span>
                             </h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="admin_dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Schedule Plotter</li>
-                            </ol>
-                        </div>
                     </div>
                 </div>
             </div>
