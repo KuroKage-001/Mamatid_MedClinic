@@ -175,8 +175,8 @@ $calendarEvents = [];
 foreach ($schedules as $schedule) {
     $isPast = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
     
-    // Set color based on staff role
-    $backgroundColor = $isPast ? '#A0A0A0' : ($staffRole == 'admin' ? '#8950FC' : '#1BC5BD');
+    // Set color based on schedule status
+    $backgroundColor = $isPast ? '#495057' : '#1e3a8a'; // Dark grey for past, dark blue for available
     
     $calendarEvents[] = [
         'id' => 'schedule_' . $schedule['id'],
@@ -203,11 +203,11 @@ foreach ($appointments as $appointment) {
     $isWalkIn = isset($appointment['appointment_type']) && $appointment['appointment_type'] == 'walk-in';
     
     // Set color based on status, whether it's past, and if it's a walk-in
-    $color = '#F64E60'; // Default red for active appointments
+    $color = '#dc2626'; // Red for regular appointments
     if ($isPast) {
-        $color = '#000000'; // Black for all past appointments
+        $color = '#7c3aed'; // Violet for all past appointments
     } else if ($isWalkIn) {
-        $color = '#FF8F00'; // Orange for active walk-in appointments
+        $color = '#ea580c'; // Orange for active walk-in appointments
     }
     
     // Create appointment title with walk-in indicator
@@ -482,24 +482,274 @@ $roleDisplay = ucfirst($staffRole);
             font-weight: 500 !important;
         }
 
-        /* Calendar Styling */
-        .fc-event {
-            border-radius: 6px;
-            padding: 5px;
-            cursor: pointer;
+        /* Calendar Styling Enhancements */
+        .fc {
+            font-family: inherit;
         }
-
-        .fc-day-today {
-            background-color: rgba(54, 153, 255, 0.05) !important;
+        
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+            font-weight: 600;
+            color: var(--dark-color);
         }
-
+        
         .fc-button {
+            padding: 0.5rem 1rem !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: all 0.2s !important;
             background-color: var(--primary-color) !important;
             border-color: var(--primary-color) !important;
         }
-
+        
         .fc-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(54, 153, 255, 0.3) !important;
             background-color: var(--secondary-color) !important;
+        }
+        
+        .fc-day-today {
+            background-color: rgba(54, 153, 255, 0.05) !important;
+        }
+        
+        .fc-event {
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+        }
+        
+        .fc-event::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent) !important;
+            border-radius: inherit !important;
+            pointer-events: none !important;
+        }
+        
+        .fc-event:hover {
+            transform: scale(1.05) translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        .fc-daygrid-day-number {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .fc-col-header-cell-cushion {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        /* Enhanced Week View Styling for Better Activity Visibility */
+        .fc-timeGridWeek-view {
+            font-size: 0.9rem;
+        }
+        
+        .fc-timegrid-slot-label {
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+            color: #666 !important;
+        }
+        
+        .fc-timegrid-axis-cushion {
+            color: #666 !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timegrid-event {
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+            border-left: 3px solid rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-title {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-time {
+            font-size: 0.7rem !important;
+            opacity: 0.9 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .fc-event-title {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* Column styling for better separation */
+        .fc-col-header-cell {
+            background-color: #f8f9fa !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid #e9ecef !important;
+        }
+        
+        .fc-timegrid-col-frame {
+            position: relative;
+        }
+        
+        .fc-timegrid-col-bg .fc-timegrid-bg-harness {
+            border-right: 1px solid #e9ecef !important;
+        }
+        
+        /* Now indicator styling */
+        .fc-timegrid-now-indicator-line {
+            border-color: #dc3545 !important;
+            border-width: 2px !important;
+        }
+        
+        .fc-timegrid-now-indicator-arrow {
+            border-color: #dc3545 !important;
+        }
+        
+        /* Event stacking improvements */
+        .fc-timegrid-event-harness {
+            margin-right: 2px !important;
+        }
+        
+        .fc-timegrid-event-harness-inset .fc-timegrid-event {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .fc-timegrid-event:hover {
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+        
+        /* More link styling for overflow events */
+        .fc-more-link {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 4px !important;
+            padding: 2px 6px !important;
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-more-link:hover {
+            background-color: #e9ecef !important;
+            color: #212529 !important;
+        }
+        
+        /* Popover styling for overflow events */
+        .fc-popover {
+            border: none !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+        }
+        
+        .fc-popover-header {
+            background-color: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding: 8px 12px !important;
+            font-weight: 600 !important;
+        }
+        
+        .fc-popover-body {
+            padding: 8px !important;
+        }
+        
+        /* Enhanced Week View Styling */
+        .fc-timeGrid-view .fc-day-grid {
+            display: none;
+        }
+        
+        .fc-timeGrid-view .fc-axis {
+            width: 65px !important;
+        }
+        
+        .fc-timeGrid-view .fc-time {
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-minor {
+            border-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-major {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .fc-day-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            font-weight: 600 !important;
+            padding: 8px !important;
+            border-bottom: 2px solid #dee2e6 !important;
+        }
+        
+        .fc-today .fc-day-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            color: white !important;
+        }
+        
+        /* Week navigation enhancements */
+        .fc-button-group .fc-button {
+            margin: 0 2px !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timeGridWeek-button,
+        .fc-timeGridDay-button {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+        }
+        
+        .fc-timeGridWeek-button:hover,
+        .fc-timeGridDay-button:hover {
+            background: linear-gradient(135deg, #138496 0%, #0f6674 100%) !important;
+        }
+        
+        /* Responsive improvements for mobile */
+        @media (max-width: 768px) {
+            .fc-timeGrid-view {
+                font-size: 0.8rem;
+            }
+            
+            .fc-timegrid-event {
+                font-size: 0.7rem !important;
+                padding: 2px 4px !important;
+            }
+            
+            .fc-col-header-cell-cushion {
+                font-size: 0.8rem !important;
+            }
+            
+            .fc-timeGrid-view .fc-axis {
+                width: 45px !important;
+            }
+            
+            .fc-day-header {
+                padding: 6px !important;
+                font-size: 0.8rem !important;
+            }
         }
 
         .role-badge {
@@ -522,59 +772,131 @@ $roleDisplay = ucfirst($staffRole);
         }
         
         /* Calendar Legend Styling */
+        .calendar-legend-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+        
         .legend-container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            padding: 1.25rem;
-            margin-top: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            max-width: 1200px;
+            width: 100%;
+            border: 1px solid #e9ecef;
         }
         
         .legend-title {
             font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            color: #2c3e50;
             margin-bottom: 1rem;
             text-align: center;
-            border-bottom: 1px solid #eee;
+            position: relative;
             padding-bottom: 0.75rem;
         }
         
-        .legend-items {
+        .legend-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        .legend-grid {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid #f1f3f6;
+            flex: 0 1 calc(50% - 0.375rem);
+            min-width: 200px;
+            max-width: 250px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
         
         .legend-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-color: #e2e8f0;
         }
         
         .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
             margin-right: 0.75rem;
             display: inline-block;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
         
         .legend-text {
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #4a5568;
+            line-height: 1.3;
+        }
+        
+        /* Responsive Design for Legend */
+        @media (max-width: 768px) {
+            .legend-container {
+                padding: 1rem;
+                margin: 0.75rem;
+            }
+            
+            .legend-grid {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .legend-item {
+                flex: 1 1 100%;
+                min-width: auto;
+                max-width: none;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .legend-title {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            .legend-text {
+                font-size: 0.8rem;
+            }
+            
+            .legend-color {
+                width: 14px;
+                height: 14px;
+                margin-right: 0.6rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .legend-item {
+                flex: 0 1 calc(33.333% - 0.5rem);
+                min-width: 180px;
+            }
         }
         
         /* Calendar Styling Enhancements */
@@ -1148,29 +1470,39 @@ $roleDisplay = ucfirst($staffRole);
                                 </div>
                                 <div class="card-body">
                                     <div id="calendar"></div>
-                                    <div class="mt-4">
+                                    <div class="calendar-legend-wrapper">
                                         <div class="legend-container">
-                                            <h5 class="legend-title">Schedule Legend</h5>
-                                            <div class="legend-items">
+                                            <h5 class="legend-title">Calendar Legend</h5>
+                                            <div class="legend-grid">
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: <?php echo $staffRole == 'admin' ? '#8950FC' : '#1BC5BD'; ?>"></span>
+                                                    <span class="legend-color" style="background-color: #1e3a8a"></span>
                                                     <span class="legend-text">Available Schedules</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #A0A0A0"></span>
+                                                    <span class="legend-color" style="background-color: #495057"></span>
                                                     <span class="legend-text">Past Schedules</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #F64E60"></span>
+                                                    <span class="legend-color" style="background-color: #dc2626"></span>
                                                     <span class="legend-text">Regular Appointments</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #FF8F00"></span>
+                                                    <span class="legend-color" style="background-color: #ea580c"></span>
                                                     <span class="legend-text">Walk-in Appointments</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                    <span class="legend-color" style="background-color: #000000"></span>
+                                                    <span class="legend-color" style="background-color: #7c3aed"></span>
                                                     <span class="legend-text">Past Appointments</span>
+                                                </div>
+                                            </div>
+                                            <div class="legend-info mt-3">
+                                                <div class="alert alert-info mb-2 py-2 px-3">
+                                                    <i class="fas fa-info-circle mr-2"></i>
+                                                    <strong>Click on any event</strong> to view detailed information including patient details, appointment reasons, and schedule notes.
+                                                </div>
+                                                <div class="alert alert-success mb-0 py-2 px-3">
+                                                    <i class="fas fa-calendar-week mr-2"></i>
+                                                    <strong>Navigation Tips:</strong> Use Month/Week/Day buttons to switch views. Click on dates to jump to specific days. Week view shows detailed time slots from 6 AM to 10 PM.
                                                 </div>
                                             </div>
                                         </div>
@@ -1565,24 +1897,82 @@ $roleDisplay = ucfirst($staffRole);
             
             // Initialize Calendar
             var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            
+            if (!calendarEl) {
+                console.error('Calendar element not found');
+                return;
+            }
+            
+            try {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
-                    left: 'prev,next today',
+                    left: 'prevYear,prev,next,nextYear today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                 },
                 events: <?= json_encode($calendarEvents) ?>,
                 height: 'auto',
                 themeSystem: 'bootstrap',
-                dayMaxEvents: true,
-                navLinks: true,
+                dayMaxEvents: 6, // Show more events per day
+                moreLinkClick: 'popover', // Show popup for overflow events
+                // Responsive design
+                aspectRatio: 1.8,
+                expandRows: true,
+                handleWindowResize: true,
                 firstDay: 1, // Start week on Monday
                 eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
                     meridiem: 'short'
                 },
+                // Enhanced week and day view settings
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                slotDuration: '00:30:00',
+                slotLabelInterval: '01:00:00',
+                allDaySlot: false,
+                nowIndicator: true,
+                scrollTime: '08:00:00',
+                // Week view specific settings
+                weekNumbers: true,
+                weekText: 'Week',
+                // Enhanced navigation
+                navLinks: true,
+                navLinkDayClick: function(date, jsEvent) {
+                    calendar.changeView('timeGridDay', date);
+                },
+                navLinkWeekClick: function(weekStart, jsEvent) {
+                    calendar.changeView('timeGridWeek', weekStart);
+                },
+                // Custom buttons for better navigation
+                customButtons: {
+                    goToToday: {
+                        text: 'Today',
+                        click: function() {
+                            calendar.today();
+                        }
+                    },
+                    prevWeek: {
+                        text: '← Week',
+                        click: function() {
+                            calendar.changeView('timeGridWeek');
+                            calendar.prev();
+                        }
+                    },
+                    nextWeek: {
+                        text: 'Week →',
+                        click: function() {
+                            calendar.changeView('timeGridWeek');
+                            calendar.next();
+                        }
+                    }
+                },
+                // Improved event display
+                eventDisplay: 'block',
+                eventOrder: ['type', 'start', 'title'],
+                eventMinHeight: 25,
+                eventShortHeight: 20,
                 eventDidMount: function(info) {
                     // Add tooltip for all events
                     var tooltipTitle = '';
@@ -1850,8 +2240,12 @@ $roleDisplay = ucfirst($staffRole);
                         $(this).remove();
                     });
                 }
-            });
+                            });
             calendar.render();
+            } catch (error) {
+                console.error('Error initializing FullCalendar:', error);
+                $('#calendar').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading calendar. Please refresh the page.</div>');
+            }
             
             // Form validation
             $('#start_date, #end_date').on('change', function() {

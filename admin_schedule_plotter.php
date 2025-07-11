@@ -67,17 +67,35 @@ $staffStmt = $con->prepare($staffQuery);
 $staffStmt->execute();
 $staffSchedules = $staffStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch all appointments for calendar display
+// Fetch all appointments for calendar display (including walk-ins)
 $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as doctor_role,
                       CASE 
                           WHEN a.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN 'doctor'
                           WHEN a.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN 'staff'
                           ELSE 'unknown'
-                      END as schedule_type
+                      END as schedule_type,
+                      'regular' as appointment_type
                       FROM admin_clients_appointments a
                       LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
-                      WHERE a.status != 'cancelled'
-                      ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+                      WHERE a.status != 'cancelled' AND a.is_archived = 0
+                      UNION ALL
+                      SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                             w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
+                             w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
+                             0 as email_sent, 0 as reminder_sent, w.is_archived,
+                             NULL as view_token, NULL as token_expiry, NULL as archived_at, NULL as archived_by, NULL as archive_reason,
+                             1 as is_walkin,
+                             u2.display_name as doctor_name, u2.role as doctor_role,
+                             CASE 
+                                 WHEN w.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN 'doctor'
+                                 WHEN w.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN 'staff'
+                                 ELSE 'unknown'
+                             END as schedule_type,
+                             'walk-in' as appointment_type
+                      FROM admin_walkin_appointments w
+                      LEFT JOIN admin_user_accounts u2 ON w.provider_id = u2.id
+                      WHERE w.status != 'cancelled' AND w.is_archived = 0
+                      ORDER BY appointment_date ASC, appointment_time ASC";
 $appointmentsStmt = $con->prepare($appointmentsQuery);
 $appointmentsStmt->execute();
 $allAppointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -89,7 +107,7 @@ $calendarEvents = [];
 foreach ($doctorSchedules as $schedule) {
     $isPast = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
     $status = $schedule['is_approved'] ? 'Approved' : 'Pending';
-    $color = $isPast ? '#A0A0A0' : ($schedule['is_approved'] ? '#1BC5BD' : '#FFA800');
+    $color = $isPast ? 'rgba(108, 117, 125, 0.7)' : ($schedule['is_approved'] ? 'rgba(0, 123, 255, 0.7)' : 'rgba(253, 126, 20, 0.7)');
     
     $calendarEvents[] = [
         'id' => 'doctor_schedule_' . $schedule['id'],
@@ -100,7 +118,10 @@ foreach ($doctorSchedules as $schedule) {
         'borderColor' => $color,
         'extendedProps' => [
             'type' => 'doctor_schedule',
+            'schedule_id' => $schedule['id'],
             'doctor_name' => $schedule['doctor_name'],
+            'doctor_id' => $schedule['doctor_id'],
+            'schedule_date' => $schedule['schedule_date'],
             'max_patients' => $schedule['max_patients'],
             'time_slot' => $schedule['time_slot_minutes'],
             'notes' => $schedule['notes'],
@@ -114,7 +135,7 @@ foreach ($doctorSchedules as $schedule) {
 // Add staff schedules to calendar
 foreach ($staffSchedules as $schedule) {
     $isPast = strtotime($schedule['schedule_date']) < strtotime(date('Y-m-d'));
-    $color = $isPast ? '#A0A0A0' : ($schedule['staff_role'] == 'admin' ? '#8950FC' : '#17A2B8');
+    $color = $isPast ? 'rgba(108, 117, 125, 0.7)' : ($schedule['staff_role'] == 'admin' ? 'rgba(111, 66, 193, 0.7)' : 'rgba(32, 201, 151, 0.7)');
     $roleText = $schedule['staff_role'] == 'admin' ? 'Admin' : 'Health Worker';
     
     $calendarEvents[] = [
@@ -126,8 +147,11 @@ foreach ($staffSchedules as $schedule) {
         'borderColor' => $color,
         'extendedProps' => [
             'type' => 'staff_schedule',
+            'schedule_id' => $schedule['id'],
             'staff_name' => $schedule['staff_name'],
+            'staff_id' => $schedule['staff_id'],
             'staff_role' => $schedule['staff_role'],
+            'schedule_date' => $schedule['schedule_date'],
             'max_patients' => $schedule['max_patients'],
             'time_slot' => $schedule['time_slot_minutes'],
             'notes' => $schedule['notes'],
@@ -136,66 +160,73 @@ foreach ($staffSchedules as $schedule) {
     ];
 }
 
-// Add appointments to calendar
-foreach ($allAppointments as $appointment) {
-    $appointmentTime = strtotime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
-    $isPast = $appointmentTime < time();
-    
-    // Set color based on status and whether it's past
-    $color = '#F64E60'; // Default red for active appointments
-    if ($isPast) {
-        if ($appointment['status'] == 'completed') {
-            $color = '#28a745'; // Green for completed
-        } else {
-            $color = '#6c757d'; // Gray for past but not completed
-        }
-    } else {
-        switch($appointment['status']) {
-            case 'approved':
-                $color = '#007bff'; // Blue for approved
-                break;
-            case 'pending':
-                $color = '#ffc107'; // Yellow for pending
-                break;
-            default:
-                $color = '#F64E60'; // Red for others
-        }
-    }
-    
-    $calendarEvents[] = [
-        'id' => 'appointment_' . $appointment['id'],
-        'title' => 'Appointment: ' . $appointment['patient_name'],
-        'start' => $appointment['appointment_date'] . 'T' . $appointment['appointment_time'],
-        'end' => $appointment['appointment_date'] . 'T' . $appointment['appointment_time'],
-        'backgroundColor' => $color,
-        'borderColor' => $color,
-        'extendedProps' => [
-            'type' => 'appointment',
-            'patient_name' => $appointment['patient_name'],
-            'doctor_name' => $appointment['doctor_name'],
-            'doctor_role' => $appointment['doctor_role'],
-            'reason' => $appointment['reason'],
-            'status' => $appointment['status'],
-            'schedule_type' => $appointment['schedule_type'],
-            'is_past' => $isPast
-        ]
-    ];
-}
+// Note: Appointments are now displayed in popups when clicking on schedules
+// This improves calendar visibility by showing only schedules as main events
 
 // Get statistics for overview
 $totalDoctorSchedules = count($doctorSchedules);
 $totalStaffSchedules = count($staffSchedules);
+// Add is_walkin column if it doesn't exist (for compatibility)
+try {
+    $checkColumnQuery = "SHOW COLUMNS FROM admin_clients_appointments LIKE 'is_walkin'";
+    $checkStmt = $con->prepare($checkColumnQuery);
+    $checkStmt->execute();
+    
+    if ($checkStmt->rowCount() == 0) {
+        $alterQuery = "ALTER TABLE admin_clients_appointments ADD COLUMN is_walkin TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'If 1, appointment is a walk-in appointment'";
+        $alterStmt = $con->prepare($alterQuery);
+        $alterStmt->execute();
+    }
+} catch (PDOException $ex) {
+    // Column might already exist, continue
+}
+
 $totalAppointments = count($allAppointments);
 $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
     return !$schedule['is_approved'];
 }));
+
+// Additional meaningful statistics
+$approvedDoctorSchedules = $totalDoctorSchedules - $pendingApprovals;
+$todaysSchedules = 0;
+$upcomingSchedules = 0;
+$totalWalkIns = 0;
+$totalRegularAppointments = 0;
+
+// Count today's schedules and upcoming schedules
+$today = date('Y-m-d');
+foreach (array_merge($doctorSchedules, $staffSchedules) as $schedule) {
+    if ($schedule['schedule_date'] == $today) {
+        $todaysSchedules++;
+    } elseif ($schedule['schedule_date'] > $today) {
+        $upcomingSchedules++;
+    }
+}
+
+// Count walk-ins vs regular appointments
+foreach ($allAppointments as $appointment) {
+    if (isset($appointment['is_walkin']) && $appointment['is_walkin']) {
+        $totalWalkIns++;
+    } else {
+        $totalRegularAppointments++;
+    }
+}
+
+// Calculate active providers
+$activeProviders = count(array_unique(array_merge(
+    array_column($doctorSchedules, 'doctor_id'),
+    array_column($staffSchedules, 'staff_id')
+)));
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <?php include './config/site_css_links.php'; ?>
-    <?php include './config/data_tables_css_js.php'; ?>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="icon" type="image/png" href="dist/img/logo01.png">
     <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
     <title>Appointment Plotter - Mamatid Health Center System</title>
@@ -331,19 +362,44 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
 
         /* Badge Styling */
         .badge {
-            padding: 0.5rem 0.75rem;
+            padding: 0.4rem 0.8rem;
             font-weight: 500;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            letter-spacing: 0.025rem;
+            border: 1px solid transparent;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
         }
 
         .badge-success {
-            background-color: rgba(27, 197, 189, 0.1);
-            color: var(--success-color);
+            background-color: rgba(32, 201, 151, 0.15);
+            color: #0d7b57;
+            border-color: rgba(32, 201, 151, 0.25);
         }
 
         .badge-warning {
-            background-color: rgba(255, 168, 0, 0.1);
-            color: var(--warning-color);
+            background-color: rgba(253, 126, 20, 0.15);
+            color: #ad4e00;
+            border-color: rgba(253, 126, 20, 0.25);
+        }
+
+        .badge-primary {
+            background-color: rgba(0, 123, 255, 0.15);
+            color: #0056b3;
+            border-color: rgba(0, 123, 255, 0.25);
+        }
+
+        .badge-info {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #5a2d91;
+            border-color: rgba(111, 66, 193, 0.25);
+        }
+
+        .badge-secondary {
+            background-color: rgba(108, 117, 125, 0.15);
+            color: #495057;
+            border-color: rgba(108, 117, 125, 0.25);
         }
 
         /* Alert Styling */
@@ -457,69 +513,143 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         }
         
         .badge-admin {
-            background-color: rgba(137, 80, 252, 0.1);
-            color: var(--info-color);
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #5a2d91;
+            border-color: rgba(111, 66, 193, 0.25);
         }
         
         .badge-health-worker {
-            background-color: rgba(27, 197, 189, 0.1);
-            color: var(--success-color);
+            background-color: rgba(32, 201, 151, 0.15);
+            color: #0d7b57;
+            border-color: rgba(32, 201, 151, 0.25);
         }
 
         /* Calendar Legend Styling */
+        .calendar-legend-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+        
         .legend-container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            padding: 1.25rem;
-            margin-top: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            max-width: 1200px;
+            width: 100%;
+            border: 1px solid #e9ecef;
         }
         
         .legend-title {
             font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            color: #2c3e50;
             margin-bottom: 1rem;
             text-align: center;
-            border-bottom: 1px solid #eee;
+            position: relative;
             padding-bottom: 0.75rem;
         }
         
-        .legend-items {
+        .legend-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        .legend-grid {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid #f1f3f6;
+            flex: 0 1 calc(50% - 0.375rem);
+            min-width: 200px;
+            max-width: 250px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
         
         .legend-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-color: #e2e8f0;
         }
         
         .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
             margin-right: 0.75rem;
             display: inline-block;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
         
         .legend-text {
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #4a5568;
+            line-height: 1.3;
+        }
+        
+        /* Responsive Design for Legend */
+        @media (max-width: 768px) {
+            .legend-container {
+                padding: 1rem;
+                margin: 0.75rem;
+            }
+            
+            .legend-grid {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .legend-item {
+                flex: 1 1 100%;
+                min-width: auto;
+                max-width: none;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .legend-title {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            .legend-text {
+                font-size: 0.8rem;
+            }
+            
+            .legend-color {
+                width: 14px;
+                height: 14px;
+                margin-right: 0.6rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .legend-item {
+                flex: 0 1 calc(33.333% - 0.5rem);
+                min-width: 180px;
+            }
         }
 
         /* Calendar Styling Enhancements */
@@ -554,18 +684,34 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         }
         
         .fc-event {
-            border-radius: 6px !important;
-            padding: 3px 5px !important;
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
             font-size: 0.85rem !important;
             font-weight: 500 !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-            border: none !important;
-            transition: transform 0.2s !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             cursor: pointer !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+        }
+        
+        .fc-event::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent) !important;
+            border-radius: inherit !important;
+            pointer-events: none !important;
         }
         
         .fc-event:hover {
-            transform: scale(1.02);
+            transform: scale(1.05) translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
         }
         
         .fc-daygrid-day-number {
@@ -578,50 +724,498 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             color: var(--dark-color);
         }
 
-        /* Statistics Cards */
+        /* Enhanced Week View Styling for Better Activity Visibility */
+        .fc-timeGridWeek-view {
+            font-size: 0.9rem;
+        }
+        
+        .fc-timegrid-slot-label {
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+            color: #666 !important;
+        }
+        
+        .fc-timegrid-axis-cushion {
+            color: #666 !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timegrid-event {
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+            border-left: 3px solid rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-title {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-time {
+            font-size: 0.7rem !important;
+            opacity: 0.9 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .fc-event-title {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* Column styling for better separation */
+        .fc-col-header-cell {
+            background-color: #f8f9fa !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid #e9ecef !important;
+        }
+        
+        .fc-timegrid-col-frame {
+            position: relative;
+        }
+        
+        .fc-timegrid-col-bg .fc-timegrid-bg-harness {
+            border-right: 1px solid #e9ecef !important;
+        }
+        
+        /* Now indicator styling */
+        .fc-timegrid-now-indicator-line {
+            border-color: #dc3545 !important;
+            border-width: 2px !important;
+        }
+        
+        .fc-timegrid-now-indicator-arrow {
+            border-color: #dc3545 !important;
+        }
+        
+        /* Event stacking improvements */
+        .fc-timegrid-event-harness {
+            margin-right: 2px !important;
+        }
+        
+        .fc-timegrid-event-harness-inset .fc-timegrid-event {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .fc-timegrid-event:hover {
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+        
+        /* More link styling for overflow events */
+        .fc-more-link {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 4px !important;
+            padding: 2px 6px !important;
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-more-link:hover {
+            background-color: #e9ecef !important;
+            color: #212529 !important;
+        }
+        
+        /* Popover styling for overflow events */
+        .fc-popover {
+            border: none !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+        }
+        
+        .fc-popover-header {
+            background-color: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding: 8px 12px !important;
+            font-weight: 600 !important;
+        }
+        
+        .fc-popover-body {
+            padding: 8px !important;
+        }
+        
+        /* Enhanced Week View Styling */
+        .fc-timeGrid-view .fc-day-grid {
+            display: none;
+        }
+        
+        .fc-timeGrid-view .fc-axis {
+            width: 65px !important;
+        }
+        
+        .fc-timeGrid-view .fc-time {
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-minor {
+            border-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-major {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .fc-day-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            font-weight: 600 !important;
+            padding: 8px !important;
+            border-bottom: 2px solid #dee2e6 !important;
+        }
+        
+        .fc-today .fc-day-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            color: white !important;
+        }
+        
+        /* Week navigation enhancements */
+        .fc-button-group .fc-button {
+            margin: 0 2px !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timeGridWeek-button,
+        .fc-timeGridDay-button {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+        }
+        
+        .fc-timeGridWeek-button:hover,
+        .fc-timeGridDay-button:hover {
+            background: linear-gradient(135deg, #138496 0%, #0f6674 100%) !important;
+        }
+        
+        /* Responsive improvements for mobile */
+        @media (max-width: 768px) {
+            .fc-timeGrid-view {
+                font-size: 0.8rem;
+            }
+            
+            .fc-timegrid-event {
+                font-size: 0.7rem !important;
+                padding: 2px 4px !important;
+            }
+            
+            .fc-col-header-cell-cushion {
+                font-size: 0.8rem !important;
+            }
+            
+            .fc-timeGrid-view .fc-axis {
+                width: 45px !important;
+            }
+            
+            .fc-day-header {
+                padding: 6px !important;
+                font-size: 0.8rem !important;
+            }
+        }
+
+        /* Appointment Cards Styling */
+        .appointment-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid #e9ecef;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .appointment-card .card-body {
+            padding: 1rem;
+        }
+        
+        .appointment-card .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .appointment-card .card-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .appointment-card .badge-sm {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        /* Different border colors for appointment types */
+        .appointment-card[data-type="regular"] {
+            border-left-color: #2196F3;
+        }
+        
+        .appointment-card[data-type="walk-in"] {
+            border-left-color: #FF9800;
+        }
+        
+        .appointment-card[data-status="completed"] {
+            border-left-color: #4CAF50;
+        }
+        
+        .appointment-card[data-status="past"] {
+            border-left-color: #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+        /* Appointments section styling */
+        .appointments-section {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .appointments-section h6 {
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        
+        .appointments-list {
+            padding-top: 1rem;
+        }
+        
+        /* Empty state styling */
+        .appointments-section .alert {
+            border: none;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .appointments-section .alert-info {
+            background-color: rgba(54, 153, 255, 0.1);
+            color: #2196F3;
+        }
+        
+        .appointments-section .alert-warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .appointments-section .alert-danger {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        /* Modern Statistics Cards */
         .stats-card {
-            border-radius: 12px;
-            padding: 1.5rem;
-            color: white;
+            border-radius: 16px;
+            padding: 0;
             overflow: hidden;
             position: relative;
-            transition: transform 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .stats-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card .card-body {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
         }
 
         .stats-card .icon {
-            opacity: 0.8;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
         .stats-card h3 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .stats-card p {
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.95;
+        }
+
+        .stats-card small {
+            font-size: 0.9rem;
             font-weight: 500;
-            margin-bottom: 0;
+            opacity: 0.8;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+            z-index: 1;
         }
 
         .bg-gradient-info {
-            background: linear-gradient(135deg, var(--info-color), var(--primary-color));
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
         }
 
         .bg-gradient-success {
-            background: linear-gradient(135deg, var(--success-color), #0d7e66);
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+            color: white;
         }
 
         .bg-gradient-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%);
+            color: white;
         }
 
         .bg-gradient-warning {
-            background: linear-gradient(135deg, var(--warning-color), #cc8400);
+            background: linear-gradient(135deg, #fd7e14 0%, #e85d04 100%);
+            color: white;
+        }
+
+        .bg-gradient-teal {
+            background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+            color: white;
+        }
+
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #6f42c1 0%, #495057 100%);
+            color: white;
+        }
+
+        /* Stats card icons with floating animation */
+        .stats-icon {
+            position: absolute;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            opacity: 0.2;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        /* Modern metric cards grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-subtitle {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .metric-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .metric-badge.success {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: #20c997;
+        }
+
+        .metric-badge.warning {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+        }
+
+        .metric-badge.info {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
         }
 
         /* Additional badge styles */
@@ -815,22 +1409,26 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         /* Status Badge */
         .status-badge {
             padding: 0.4rem 0.8rem;
-            border-radius: 20px;
+            border-radius: 8px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 500;
             display: inline-block;
+            border: 1px solid transparent;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+            letter-spacing: 0.025rem;
         }
 
         .status-approved {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            background-color: rgba(0, 123, 255, 0.15);
+            color: #0056b3;
+            border-color: rgba(0, 123, 255, 0.25);
         }
 
         .status-pending {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+            background-color: rgba(253, 126, 20, 0.15);
+            color: #ad4e00;
+            border-color: rgba(253, 126, 20, 0.25);
         }
 
         /* Form Sections */
@@ -1139,7 +1737,6 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         /* Enhanced Table Styling */
         .table tbody tr:hover {
             background-color: rgba(54, 153, 255, 0.05);
-            transform: scale(1.01);
             transition: all 0.2s ease;
         }
 
@@ -1215,6 +1812,126 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             z-index: 1000;
         }
 
+        /* Schedule Management Tabs Styling */
+        .nav-tabs {
+            border: none;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .nav-tabs .nav-item {
+            margin: 0;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #7E8299;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #3699FF;
+            background: rgba(54, 153, 255, 0.1);
+            border-color: rgba(54, 153, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #3699FF;
+            background: rgba(54, 153, 255, 0.15);
+            border-color: rgba(54, 153, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(54, 153, 255, 0.2);
+        }
+
+        .nav-tabs .nav-link i {
+            font-size: 1rem;
+        }
+
+        .nav-tabs .nav-link .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+        }
+
+        /* Tab Content Styling */
+        .tab-content {
+            background: transparent;
+        }
+
+        .tab-pane {
+            border-radius: 12px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .schedule-tab-content {
+            background: transparent;
+        }
+
+        .schedule-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Tab Animation */
+        .tab-pane {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tab-pane.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design for Tabs */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-tabs .nav-link {
+                white-space: nowrap;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .schedule-section-title {
+                font-size: 1.25rem;
+            }
+        }
+
 
 
 
@@ -1227,7 +1944,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         .export-container {
             display: flex;
             gap: 12px;
-            justify-content: flex-end;
+            justify-content: center;
             flex-wrap: wrap;
             align-items: center;
             margin-bottom: 15px;
@@ -1470,9 +2187,10 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 </div>
                 <?php endif; ?>
 
-                <!-- Statistics Overview -->
+                <!-- Enhanced Statistics Overview -->
                 <div class="row mb-4">
-                    <div class="col-lg-4 col-md-6">
+                    <!-- Primary Statistics Cards -->
+                    <div class="col-lg-3 col-md-6">
                         <div class="card bg-gradient-info text-white stats-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -1480,12 +2198,12 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         <h3 class="mb-1"><?php echo $totalDoctorSchedules; ?></h3>
                                         <p class="mb-1 font-weight-bold">Doctor Schedules</p>
                                         <?php if ($pendingApprovals > 0): ?>
-                                            <small class="d-block opacity-75">
+                                            <small class="d-block">
                                                 <i class="fas fa-clock mr-1"></i>
                                                 <?php echo $pendingApprovals; ?> Pending Approval<?php echo $pendingApprovals > 1 ? 's' : ''; ?>
                                             </small>
                                         <?php else: ?>
-                                            <small class="d-block opacity-75">
+                                            <small class="d-block">
                                                 <i class="fas fa-check-circle mr-1"></i>
                                                 All Approved
                                             </small>
@@ -1495,17 +2213,19 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         <i class="fas fa-user-md fa-2x"></i>
                                     </div>
                                 </div>
+                                <i class="fas fa-user-md stats-icon"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
+                    
+                    <div class="col-lg-3 col-md-6">
                         <div class="card bg-gradient-success text-white stats-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h3 class="mb-1"><?php echo $totalStaffSchedules; ?></h3>
-                                        <p class="mb-1 font-weight-bold">Staff Schedules</p>
-                                        <small class="d-block opacity-75">
+                                        <p class="mb-1 font-weight-bold">Health Worker Schedules</p>
+                                        <small class="d-block">
                                             <i class="fas fa-check-circle mr-1"></i>
                                             Auto-Approved
                                         </small>
@@ -1514,17 +2234,19 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         <i class="fas fa-users fa-2x"></i>
                                     </div>
                                 </div>
+                                <i class="fas fa-users stats-icon"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-12">
+                    
+                    <div class="col-lg-3 col-md-6">
                         <div class="card bg-gradient-primary text-white stats-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h3 class="mb-1"><?php echo $totalAppointments; ?></h3>
                                         <p class="mb-1 font-weight-bold">Total Appointments</p>
-                                        <small class="d-block opacity-75">
+                                        <small class="d-block">
                                             <i class="fas fa-calendar-day mr-1"></i>
                                             All Providers
                                         </small>
@@ -1533,7 +2255,124 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         <i class="fas fa-calendar-check fa-2x"></i>
                                     </div>
                                 </div>
+                                <i class="fas fa-calendar-check stats-icon"></i>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card bg-gradient-warning text-white stats-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1"><?php echo $activeProviders; ?></h3>
+                                        <p class="mb-1 font-weight-bold">Active Providers</p>
+                                        <small class="d-block">
+                                            <i class="fas fa-heartbeat mr-1"></i>
+                                            Healthcare Staff
+                                        </small>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-user-friends fa-2x"></i>
+                                    </div>
+                                </div>
+                                <i class="fas fa-user-friends stats-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Today's Activity</div>
+                            <div class="metric-icon" style="background-color: #007bff;">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo $todaysSchedules; ?></div>
+                        <div class="metric-subtitle">Active schedules today</div>
+                        <div class="metric-badge info">
+                            <i class="fas fa-clock"></i>
+                            Current Day
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Upcoming Schedules</div>
+                            <div class="metric-icon" style="background-color: #20c997;">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo $upcomingSchedules; ?></div>
+                        <div class="metric-subtitle">Future scheduled slots</div>
+                        <div class="metric-badge success">
+                            <i class="fas fa-arrow-up"></i>
+                            Scheduled
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Walk-in Appointments</div>
+                            <div class="metric-icon" style="background-color: #fd7e14;">
+                                <i class="fas fa-walking"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo $totalWalkIns; ?></div>
+                        <div class="metric-subtitle">Immediate care visits</div>
+                        <div class="metric-badge warning">
+                            <i class="fas fa-bolt"></i>
+                            Urgent
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Regular Appointments</div>
+                            <div class="metric-icon" style="background-color: #6f42c1;">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo $totalRegularAppointments; ?></div>
+                        <div class="metric-subtitle">Pre-scheduled visits</div>
+                        <div class="metric-badge info">
+                            <i class="fas fa-calendar-check"></i>
+                            Planned
+                        </div>
+                    </div>
+
+                    <?php if ($pendingApprovals > 0): ?>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Approval Queue</div>
+                            <div class="metric-icon" style="background-color: #dc3545;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo $pendingApprovals; ?></div>
+                        <div class="metric-subtitle">Schedules awaiting approval</div>
+                        <div class="metric-badge warning">
+                            <i class="fas fa-clock"></i>
+                            Action Required
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Schedule Coverage</div>
+                            <div class="metric-icon" style="background-color: #17a2b8;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value"><?php echo round((($totalDoctorSchedules + $totalStaffSchedules) / max(1, $activeProviders)), 1); ?></div>
+                        <div class="metric-subtitle">Avg schedules per provider</div>
+                        <div class="metric-badge info">
+                            <i class="fas fa-chart-line"></i>
+                            Utilization
                         </div>
                     </div>
                 </div>
@@ -1553,41 +2392,39 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     </div>
                     <div class="card-body">
                         <div id="calendar"></div>
-                        <div class="mt-4">
+                        <div class="calendar-legend-wrapper">
                             <div class="legend-container">
                                 <h5 class="legend-title">Calendar Legend</h5>
-                                <div class="legend-items">
+                                <div class="legend-grid">
                                     <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #1BC5BD;"></span>
+                                        <span class="legend-color" style="background-color: #007bff;"></span>
                                         <span class="legend-text">Approved Doctor Schedules</span>
                                     </div>
                                     <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #FFA800;"></span>
+                                        <span class="legend-color" style="background-color: #fd7e14;"></span>
                                         <span class="legend-text">Pending Doctor Schedules</span>
                                     </div>
                                     <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #8950FC;"></span>
+                                        <span class="legend-color" style="background-color: #6f42c1;"></span>
                                         <span class="legend-text">Admin Schedules</span>
                                     </div>
                                     <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #17A2B8;"></span>
+                                        <span class="legend-color" style="background-color: #20c997;"></span>
                                         <span class="legend-text">Health Worker Schedules</span>
                                     </div>
                                     <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #007bff;"></span>
-                                        <span class="legend-text">Approved Appointments</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #ffc107;"></span>
-                                        <span class="legend-text">Pending Appointments</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #28a745;"></span>
-                                        <span class="legend-text">Completed Appointments</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background-color: #A0A0A0;"></span>
+                                        <span class="legend-color" style="background-color: #6c757d;"></span>
                                         <span class="legend-text">Past Schedules</span>
+                                    </div>
+                                    </div>
+                                <div class="legend-info mt-3">
+                                    <div class="alert alert-info mb-2 py-2 px-3">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        <strong>Click on any schedule</strong> to view associated appointments and walk-ins for that time slot.
+                                    </div>
+                                    <div class="alert alert-success mb-0 py-2 px-3">
+                                        <i class="fas fa-calendar-week mr-2"></i>
+                                        <strong>Navigation Tips:</strong> Use Month/Week/Day buttons to switch views. Click on dates to jump to specific days. Week view shows detailed time slots from 6 AM to 10 PM.
                                     </div>
                                 </div>
                             </div>
@@ -1595,14 +2432,48 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     </div>
                 </div>
 
-                <!-- Doctor Schedules Card -->
-                <div class="card card-outline card-info mb-4">
+                <!-- Schedule Management Tabs -->
+                <div class="card card-outline card-primary mb-4">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <h3 class="card-title mb-0">
+                        <h3 class="card-title">
                                 <i class="fas fa-calendar-alt mr-2"></i>
-                                Doctor Schedules
+                            Schedule Management
                             </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs" id="scheduleManagementTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="doctor-schedules-tab" data-toggle="tab" href="#doctor-schedules" role="tab">
+                                    <i class="fas fa-user-md mr-2"></i>Doctor Schedules
+                                    <span class="badge badge-info ml-2"><?php echo count($doctorSchedules); ?></span>
+                                    <?php if ($pendingApprovals > 0): ?>
+                                        <span class="badge badge-warning ml-2"><?php echo $pendingApprovals; ?> pending</span>
+                                    <?php endif; ?>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="staff-schedules-tab" data-toggle="tab" href="#staff-schedules" role="tab">
+                                    <i class="fas fa-users mr-2"></i>Health Worker Schedules
+                                    <span class="badge badge-success ml-2"><?php echo count($staffSchedules); ?></span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="scheduleManagementTabsContent">
+                            <!-- Doctor Schedules Tab -->
+                            <div class="tab-pane fade show active" id="doctor-schedules" role="tabpanel">
+                                <div class="schedule-tab-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="schedule-section-title">
+                                            <i class="fas fa-user-md mr-2"></i>Doctor Schedules Management
+                                        </h4>
                             <div class="d-flex align-items-center gap-2">
                                 <?php if ($pendingApprovals > 0): ?>
                                 <button class="btn btn-success" onclick="approveAllPending()">
@@ -1615,15 +2486,8 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                     All Schedules Approved
                                 </div>
                                 <?php endif; ?>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
                         <div class="table-responsive">
                             <table id="doctorSchedules" class="table table-striped table-hover">
                                 <thead>
@@ -1866,27 +2730,22 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                         </div>
                     </div>
                 </div>
+                            <!-- End Doctor Schedules Tab -->
 
 
                 
-                <!-- Staff Schedules Card -->
-                <div class="card card-outline card-success mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-user-md mr-2"></i>
-                            Staff Schedules
-                        </h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
+                            <!-- Staff Schedules Tab -->
+                            <div class="tab-pane fade" id="staff-schedules" role="tabpanel">
+                                <div class="schedule-tab-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="schedule-section-title">
+                                            <i class="fas fa-users mr-2"></i>Health Worker Schedules Management
+                                        </h4>
                         </div>
-                    </div>
-                    <div class="card-body">
                         <?php if (empty($staffSchedules)): ?>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                No staff schedules are currently available. Staff members can set their availability in the "My Availability" section.
+                                No health worker schedules are currently available. Health workers can set their availability in the "My Availability" section.
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -1950,9 +2809,14 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             
                             <div class="mt-3 alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                Staff schedules are automatically approved and available for patient booking.
+                                Health worker schedules are automatically approved and available for patient booking.
                             </div>
                         <?php endif; ?>
+                                </div>
+                            </div>
+                            <!-- End Staff Schedules Tab -->
+                        </div>
+                        <!-- End Tab Content -->
                     </div>
                 </div>
             </section>
@@ -1962,6 +2826,17 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
     </div>
 
     <?php include './config/site_css_js_links.php'; ?>
+    
+    <!-- DataTables JavaScript -->
+    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     
     <script src="plugins/fullcalendar/main.min.js"></script>
     
@@ -2001,7 +2876,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search staff schedules...",
+                    searchPlaceholder: "Search Health worker schedules...",
                     paginate: {
                         previous: "<i class='fas fa-chevron-left'></i>",
                         next: "<i class='fas fa-chevron-right'></i>"
@@ -2012,26 +2887,106 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
             // Hide default buttons for both tables
             $('.dt-buttons').hide();
 
+            // Handle tab switching for DataTables
+            $('#scheduleManagementTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href");
+                if (target === '#doctor-schedules') {
+                    setTimeout(function() {
+                        doctorTable.columns.adjust().responsive.recalc();
+                    }, 200);
+                } else if (target === '#staff-schedules') {
+                    setTimeout(function() {
+                        staffTable.columns.adjust().responsive.recalc();
+                    }, 200);
+                }
+            });
+
+            // Add tab change animation
+            $('#scheduleManagementTabs .nav-link').on('show.bs.tab', function(e) {
+                $(this).addClass('fade-in');
+            });
+
+            // Initialize tooltips for tab badges
+            $('[data-toggle="tooltip"]').tooltip();
+
             // Initialize Calendar
             var calendarEl = document.getElementById('calendar');
+            
+            if (!calendarEl) {
+                console.error('Calendar element not found');
+                return;
+            }
+            
+            try {
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
-                    left: 'prev,next today',
+                    left: 'prevYear,prev,next,nextYear today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                 },
                 events: <?= json_encode($calendarEvents) ?>,
                 height: 'auto',
                 themeSystem: 'bootstrap',
-                dayMaxEvents: true,
-                navLinks: true,
+                dayMaxEvents: 6, // Show more events per day
+                moreLinkClick: 'popover', // Show popup for overflow events
+                // Responsive design
+                aspectRatio: 1.8,
+                expandRows: true,
+                handleWindowResize: true,
                 firstDay: 1, // Start week on Monday
                 eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
                     meridiem: 'short'
                 },
+                // Enhanced week and day view settings
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                slotDuration: '00:30:00',
+                slotLabelInterval: '01:00:00',
+                allDaySlot: false,
+                nowIndicator: true,
+                scrollTime: '08:00:00',
+                // Week view specific settings
+                weekNumbers: true,
+                weekText: 'Week',
+                // Enhanced navigation
+                navLinks: true,
+                navLinkDayClick: function(date, jsEvent) {
+                    calendar.changeView('timeGridDay', date);
+                },
+                navLinkWeekClick: function(weekStart, jsEvent) {
+                    calendar.changeView('timeGridWeek', weekStart);
+                },
+                // Custom buttons for better navigation
+                customButtons: {
+                    goToToday: {
+                        text: 'Today',
+                        click: function() {
+                            calendar.today();
+                        }
+                    },
+                    prevWeek: {
+                        text: '← Week',
+                        click: function() {
+                            calendar.changeView('timeGridWeek');
+                            calendar.prev();
+                        }
+                    },
+                    nextWeek: {
+                        text: 'Week →',
+                        click: function() {
+                            calendar.changeView('timeGridWeek');
+                            calendar.next();
+                        }
+                    }
+                },
+                // Improved event display
+                eventDisplay: 'block',
+                eventOrder: ['type', 'start', 'title'],
+                eventMinHeight: 25,
+                eventShortHeight: 20,
                 eventDidMount: function(info) {
                     // Add tooltip for all events
                     $(info.el).tooltip({
@@ -2052,7 +3007,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     var headerClass = '';
                     
                     if (props.type === 'doctor_schedule') {
-                        modalTitle = '<i class="fas fa-calendar-alt mr-2"></i> Doctor Schedule Information';
+                        modalTitle = '<i class="fas fa-calendar-alt mr-2"></i> Doctor Schedule & Appointments';
                         headerClass = props.is_past ? 'bg-secondary text-white' : (props.is_approved ? 'bg-success text-white' : 'bg-warning text-white');
                         
                         var formattedDate = event.start.toLocaleDateString('en-US', { 
@@ -2088,9 +3043,21 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </div>
                             ${props.notes ? `<div class="mt-3"><strong>Notes:</strong><br><p class="text-muted">${props.notes}</p></div>` : ''}
                             ${props.approval_notes ? `<div class="mt-3"><strong>Admin Notes:</strong><br><p class="text-muted">${props.approval_notes}</p></div>` : ''}
+                            
+                            <hr class="my-4">
+                            <div class="appointments-section">
+                                <h6 class="text-primary mb-3"><i class="fas fa-user-clock mr-2"></i>Appointments for this Schedule</h6>
+                                <div id="appointmentsList" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading appointments...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading appointments...</p>
+                                </div>
+                            </div>
                         </div>`;
                     } else if (props.type === 'staff_schedule') {
-                        modalTitle = '<i class="fas fa-users mr-2"></i> Staff Schedule Information';
+                        var roleTitle = props.staff_role === 'admin' ? 'Admin' : 'Health Worker';
+                        modalTitle = '<i class="fas fa-users mr-2"></i> ' + roleTitle + ' Schedule & Appointments';
                         headerClass = props.is_past ? 'bg-secondary text-white' : (props.staff_role === 'admin' ? 'bg-purple text-white' : 'bg-info text-white');
                         
                         var formattedDate = event.start.toLocaleDateString('en-US', { 
@@ -2121,45 +3088,24 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                 </div>
                             </div>
                             ${props.notes ? `<div class="mt-3"><strong>Notes:</strong><br><p class="text-muted">${props.notes}</p></div>` : ''}
-                        </div>`;
-                    } else if (props.type === 'appointment') {
-                        modalTitle = '<i class="fas fa-user-clock mr-2"></i> Appointment Information';
-                        headerClass = props.is_past ? 'bg-secondary text-white' : 'bg-primary text-white';
-                        
-                        var formattedDate = event.start.toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                        });
-                        
-                        modalContent = `
-                        <div class="appointment-details">
-                            <div class="text-center mb-3">
-                                <h5 class="text-primary">${formattedDate}</h5>
+                            
+                            <hr class="my-4">
+                            <div class="appointments-section">
+                                <h6 class="text-primary mb-3"><i class="fas fa-user-clock mr-2"></i>Appointments for this Schedule</h6>
+                                <div id="appointmentsList" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading appointments...</span>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Patient:</strong> ${props.patient_name}</p>
-                                    <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                    <p class="mt-2 text-muted">Loading appointments...</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <p><strong>Provider:</strong> ${props.doctor_name || 'Not specified'}</p>
-                                    <p><strong>Status:</strong> 
-                                        <span class="badge badge-${props.status === 'approved' ? 'primary' : props.status === 'completed' ? 'success' : 'warning'}">
-                                            ${props.status.toUpperCase()}
-                                        </span>
-                                    </p>
                                 </div>
-                            </div>
-                            ${props.reason ? `<div class="mt-3"><strong>Reason:</strong><br><p class="text-muted">${props.reason}</p></div>` : ''}
                         </div>`;
                     }
                     
                     // Create and show modal
                     var modalHTML = `
                     <div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header ${headerClass}">
                                     <h5 class="modal-title">${modalTitle}</h5>
@@ -2183,6 +3129,11 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     // Show modal
                     $('#' + modalId).modal('show');
                     
+                    // Fetch appointments for this schedule
+                    if (props.type === 'doctor_schedule' || props.type === 'staff_schedule') {
+                        fetchAppointmentsForSchedule(props, modalId);
+                    }
+                    
                     // Remove modal from DOM when hidden
                     $('#' + modalId).on('hidden.bs.modal', function() {
                         $(this).remove();
@@ -2190,6 +3141,122 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 }
             });
             calendar.render();
+            } catch (error) {
+                console.error('Error initializing FullCalendar:', error);
+                $('#calendar').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error loading calendar. Please refresh the page.</div>');
+            }
+
+            // Function to fetch appointments for a specific schedule
+            function fetchAppointmentsForSchedule(props, modalId) {
+                var scheduleType = props.type === 'doctor_schedule' ? 'doctor' : 'staff';
+                var scheduleId = props.schedule_id;
+                var scheduleDate = props.schedule_date;
+                
+                // Make AJAX call to fetch appointments
+                $.ajax({
+                    url: 'ajax/get_schedule_appointments.php',
+                    type: 'POST',
+                    data: {
+                        schedule_type: scheduleType,
+                        schedule_id: scheduleId,
+                        schedule_date: scheduleDate,
+                        provider_id: props.doctor_id || props.staff_id,
+                        provider_name: props.doctor_name || props.staff_name
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            displayAppointments(response.appointments, modalId);
+                        } else {
+                            $('#' + modalId + ' #appointmentsList').html(
+                                '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle mr-2"></i>Error loading appointments: ' + response.error + '</div>'
+                            );
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#' + modalId + ' #appointmentsList').html(
+                            '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Failed to load appointments. Please try again.</div>'
+                        );
+                    }
+                });
+            }
+
+            // Function to display appointments in the modal
+            function displayAppointments(appointments, modalId) {
+                var appointmentsList = $('#' + modalId + ' #appointmentsList');
+                
+                if (appointments.length === 0) {
+                    appointmentsList.html(
+                        '<div class="alert alert-info"><i class="fas fa-info-circle mr-2"></i>No appointments found for this schedule.</div>'
+                    );
+                    return;
+                }
+                
+                var appointmentsHTML = '<div class="appointments-list">';
+                
+                appointments.forEach(function(appointment) {
+                    var isWalkin = appointment.is_walkin == 1;
+                    var isPast = new Date(appointment.appointment_date + ' ' + appointment.appointment_time) < new Date();
+                    
+                    var statusBadge = '';
+                    if (isPast) {
+                        statusBadge = '<span class="badge badge-secondary">Past</span>';
+                    } else {
+                        switch(appointment.status) {
+                            case 'approved':
+                                statusBadge = '<span class="badge badge-' + (isWalkin ? 'success' : 'primary') + '">Approved</span>';
+                                break;
+                            case 'completed':
+                                statusBadge = '<span class="badge badge-success">Completed</span>';
+                                break;
+                            case 'pending':
+                                statusBadge = '<span class="badge badge-' + (isWalkin ? 'warning' : 'info') + '">Pending</span>';
+                                break;
+                            default:
+                                statusBadge = '<span class="badge badge-secondary">' + appointment.status + '</span>';
+                        }
+                    }
+                    
+                    var appointmentTypeIcon = isWalkin ? 
+                        '<i class="fas fa-walking text-warning mr-2"></i>' : 
+                        '<i class="fas fa-calendar-check text-primary mr-2"></i>';
+                    
+                    var cardDataAttrs = '';
+                    if (isPast) {
+                        cardDataAttrs = 'data-status="past"';
+                    } else if (appointment.status === 'completed') {
+                        cardDataAttrs = 'data-status="completed"';
+                    } else {
+                        cardDataAttrs = 'data-type="' + (isWalkin ? 'walk-in' : 'regular') + '"';
+                    }
+                    
+                    appointmentsHTML += `
+                        <div class="card mb-3 appointment-card" ${cardDataAttrs}>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h6 class="card-title mb-2">
+                                            ${appointmentTypeIcon}
+                                            ${appointment.patient_name}
+                                            ${isWalkin ? '<span class="badge badge-warning badge-sm ml-2">Walk-in</span>' : ''}
+                                        </h6>
+                                        <p class="card-text text-muted mb-1">
+                                            <i class="fas fa-clock mr-1"></i> ${appointment.appointment_time}
+                                        </p>
+                                        ${appointment.reason ? `<p class="card-text text-muted mb-1"><i class="fas fa-notes-medical mr-1"></i> ${appointment.reason}</p>` : ''}
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        ${statusBadge}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                appointmentsHTML += '</div>';
+                appointmentsList.html(appointmentsHTML);
+            }
 
             // Doctor Export Button Handlers
             $('#btnDoctorCopy').click(function(e) {
@@ -2247,7 +3314,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 
                 Toast.fire({
                     icon: 'success',
-                    title: 'Staff schedules copied to clipboard!'
+                    title: 'Health worker schedules copied to clipboard!'
                 });
             });
 
