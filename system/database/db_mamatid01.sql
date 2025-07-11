@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2025 at 12:15 PM
+-- Generation Time: Jul 11, 2025 at 12:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,7 +59,7 @@ CREATE TABLE `admin_clients_appointments` (
 --
 
 INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `doctor_id`, `created_at`, `updated_at`, `email_sent`, `reminder_sent`, `is_archived`, `view_token`, `token_expiry`, `archived_at`, `archived_by`, `archive_reason`, `is_walkin`) VALUES
-(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-05 03:22:35', 1, 0, 1, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', '2025-07-03 15:10:44', 1, 'test 1', 0),
+(58, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-04', '06:00:00', 'test 1', 'completed', NULL, 17, 1, '2025-07-03 10:55:31', '2025-07-10 16:49:43', 1, 0, 0, '79338764422b8faf161360fa44e9f916c3f472e5fdd8d552354654692b4a6188', '2025-08-02 12:55:31', NULL, NULL, NULL, 0),
 (59, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '08:00:00', 'test 2', 'completed', NULL, 18, 1, '2025-07-03 15:14:35', '2025-07-05 08:13:29', 1, 0, 0, '3d5107baaeae702006ea748c43720bc2b78c3cca2f4eaae1d4be253b1b50c074', '2025-08-02 17:14:35', NULL, NULL, NULL, 0),
 (60, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '05:00:00', 'test 3', 'completed', NULL, 19, 24, '2025-07-03 16:11:19', '2025-07-06 04:35:51', 1, 0, 0, '2787740ce012e99aa2f28981db78965eaa9efddf2afbd38b1336186180bbc768', '2025-08-02 18:11:19', NULL, NULL, NULL, 0),
 (61, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '10:30:00', 'test 4', 'completed', NULL, 18, 1, '2025-07-05 03:20:36', '2025-07-06 02:30:07', 1, 0, 0, '9ec672ad22ca48fe2bfd1fc289da30729967e6d0af9beb5abf5afae2fdc6f706', '2025-08-04 05:20:36', NULL, NULL, NULL, 0),
@@ -67,10 +67,12 @@ INSERT INTO `admin_clients_appointments` (`id`, `patient_name`, `phone_number`, 
 (63, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:00:00', 'test 6', 'completed', NULL, 18, 1, '2025-07-05 03:41:02', '2025-07-06 02:30:07', 1, 0, 0, 'aa009d15f2f0c95289b5193f1e77df03b97372c4031aaec63119a12065ca8626', '2025-08-04 05:41:02', NULL, NULL, NULL, 0),
 (64, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-05', '11:30:00', 'test 7', 'completed', NULL, 18, 1, '2025-07-05 04:03:33', '2025-07-06 02:30:07', 1, 0, 0, 'f9723864df537bf3ff873a9e529a19d65a69855c928d4faf710c4ae226f9eacd', '2025-08-04 06:03:33', NULL, NULL, NULL, 0),
 (65, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-09', '06:30:00', 'test 8', 'completed', NULL, 22, 1, '2025-07-08 13:49:13', '2025-07-10 03:56:53', 1, 0, 0, 'f9b3866db5a3370ee783369599d2c2b6fce19a987fd5ee49e921ae2630aa281c', '2025-08-07 15:49:13', NULL, NULL, NULL, 0),
-(66, 'test 1', '09999999999', 'test 1', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 1', 'approved', '[Walk-in Appointment] test 1', 33, 24, '2025-07-10 05:05:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
-(67, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '05:30:00', 'test 8', 'approved', NULL, 33, 24, '2025-07-10 05:20:44', '2025-07-10 05:20:51', 1, 0, 0, '07a277e6edd1291715a76276716642c2e1c92ee0771806ce2cf45abee51a5df7', '2025-08-09 07:20:45', NULL, NULL, NULL, 0),
-(68, 'test 2', '09999999999', 'test 2', '2025-07-10', 'Male', '2025-07-11', '06:00:00', 'test 2', 'approved', '[Walk-in Appointment] test 2', 33, 24, '2025-07-10 05:59:21', NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
-(69, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '06:00:00', 'test 9', 'approved', NULL, 24, 22, '2025-07-10 10:03:51', '2025-07-10 10:03:57', 1, 0, 0, '0bdaf9578ceb8a4ff93faeb0c31a0a2e8b571aa61248f3e615ebfc2c4be09bbb', '2025-08-09 12:03:51', NULL, NULL, NULL, 0);
+(66, 'test 1', '09999999999', 'test 1', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 1', 'completed', '[Walk-in Appointment] test 1', 33, 24, '2025-07-10 05:05:21', '2025-07-11 10:20:41', 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
+(67, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '05:30:00', 'test 8', 'completed', NULL, 33, 24, '2025-07-10 05:20:44', '2025-07-11 10:20:41', 1, 0, 0, '07a277e6edd1291715a76276716642c2e1c92ee0771806ce2cf45abee51a5df7', '2025-08-09 07:20:45', NULL, NULL, NULL, 0),
+(68, 'test 2', '09999999999', 'test 2', '2025-07-10', 'Male', '2025-07-11', '06:00:00', 'test 2', 'completed', '[Walk-in Appointment] test 2', 33, 24, '2025-07-10 05:59:21', '2025-07-11 10:20:41', 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 1),
+(69, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-11', '06:00:00', 'test 9', 'completed', NULL, 24, 22, '2025-07-10 10:03:51', '2025-07-11 10:16:17', 1, 0, 0, '0bdaf9578ceb8a4ff93faeb0c31a0a2e8b571aa61248f3e615ebfc2c4be09bbb', '2025-08-09 12:03:51', NULL, NULL, NULL, 0),
+(70, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-12', '05:00:00', 'test 10', 'approved', NULL, 25, 22, '2025-07-11 10:13:33', '2025-07-11 10:13:39', 1, 0, 0, 'f99ea989b2e4f80351082b7409afcbd4ea7255bbf956bc9cdf2a721de1f5aee6', '2025-08-10 12:13:33', NULL, NULL, NULL, 0),
+(71, 'Leomar Escobin', '099198719610', 'Main House Baskerville01', '2003-09-23', 'Male', '2025-07-12', '05:30:00', 'test 11', 'approved', NULL, 34, 24, '2025-07-11 10:23:24', '2025-07-11 10:24:36', 1, 0, 0, '7c0d9808b5733d53eb1fdf8462559ae9428e889af0d4f479b9da00b5aade5938', '2025-08-10 12:23:25', NULL, NULL, NULL, 0);
 
 --
 -- Triggers `admin_clients_appointments`
@@ -234,7 +236,7 @@ INSERT INTO `admin_doctor_appointment_slots` (`id`, `schedule_id`, `slot_time`, 
 (192, 24, '15:30:00', 0, NULL),
 (193, 24, '16:00:00', 0, NULL),
 (194, 24, '16:30:00', 0, NULL),
-(195, 25, '05:00:00', 0, NULL),
+(195, 25, '05:00:00', 1, 70),
 (196, 25, '05:30:00', 0, NULL),
 (197, 25, '06:00:00', 0, NULL),
 (198, 25, '06:30:00', 0, NULL),
@@ -522,7 +524,10 @@ INSERT INTO `admin_hw_appointment_slots` (`id`, `schedule_id`, `slot_time`, `is_
 (16, 33, '06:00:00', 1, 68),
 (17, 33, '06:30:00', 1, 2),
 (18, 23, '06:00:00', 1, 3),
-(19, 24, '06:00:00', 1, 69);
+(19, 24, '06:00:00', 1, 69),
+(20, 34, '05:00:00', 1, 10),
+(21, 25, '05:00:00', 1, 70),
+(22, 34, '05:30:00', 1, 71);
 
 -- --------------------------------------------------------
 
@@ -690,6 +695,7 @@ CREATE TABLE `admin_walkin_appointments` (
   `id` int(11) NOT NULL,
   `patient_name` varchar(60) NOT NULL,
   `phone_number` varchar(12) NOT NULL,
+  `email` varchar(100) DEFAULT NULL COMMENT 'Patient email address for notifications',
   `address` varchar(100) NOT NULL,
   `date_of_birth` date NOT NULL,
   `gender` varchar(6) NOT NULL,
@@ -715,12 +721,13 @@ CREATE TABLE `admin_walkin_appointments` (
 -- Dumping data for table `admin_walkin_appointments`
 --
 
-INSERT INTO `admin_walkin_appointments` (`id`, `patient_name`, `phone_number`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `provider_id`, `provider_type`, `booked_by`, `walk_in_time`, `created_at`, `updated_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
-(2, 'test 3', '09999999999', 'test 3', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 3', 'approved', '[Walk-in Appointment] test 3', 33, 24, 'health_worker', 24, NULL, '2025-07-10 06:50:04', NULL, 0, NULL, NULL, NULL),
-(3, 'test 4', '09999999999', 'test 4', '2025-07-10', 'Female', '2025-07-11', '06:00:00', 'test 4', 'approved', '[Walk-in Appointment] test 4', 23, 1, 'admin', 1, NULL, '2025-07-10 07:29:40', NULL, 0, NULL, NULL, NULL),
-(7, 'test 5', '09999999999', 'test 5', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 5', 'approved', '[Walk-in Appointment] test 5', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:52:14', NULL, 0, NULL, NULL, NULL),
-(8, 'test 6', '09999999999', 'test 6', '2025-07-10', 'Female', '2025-07-11', '05:30:00', 'test 6', 'approved', '[Walk-in Appointment] test 6', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:53:57', NULL, 0, NULL, NULL, NULL),
-(9, 'test 7', '09787878777', 'test 7', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 7', 'approved', '[Walk-in Appointment] test 7', 24, 22, 'doctor', 24, NULL, '2025-07-10 10:05:48', NULL, 0, NULL, NULL, NULL);
+INSERT INTO `admin_walkin_appointments` (`id`, `patient_name`, `phone_number`, `email`, `address`, `date_of_birth`, `gender`, `appointment_date`, `appointment_time`, `reason`, `status`, `notes`, `schedule_id`, `provider_id`, `provider_type`, `booked_by`, `walk_in_time`, `created_at`, `updated_at`, `is_archived`, `archived_at`, `archived_by`, `archive_reason`) VALUES
+(2, 'test 3', '09999999999', NULL, 'test 3', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 3', 'completed', '[Walk-in Appointment] test 3', 33, 24, 'health_worker', 24, NULL, '2025-07-10 06:50:04', '2025-07-11 10:20:41', 0, NULL, NULL, NULL),
+(3, 'test 4', '09999999999', NULL, 'test 4', '2025-07-10', 'Female', '2025-07-11', '06:00:00', 'test 4', 'completed', '[Walk-in Appointment] test 4', 23, 1, 'admin', 1, NULL, '2025-07-10 07:29:40', '2025-07-11 07:44:06', 0, NULL, NULL, NULL),
+(7, 'test 5', '09999999999', NULL, 'test 5', '2025-07-11', 'Male', '2025-07-11', '05:00:00', 'test 5', 'completed', '[Walk-in Appointment] test 5', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:52:14', '2025-07-11 10:16:17', 0, NULL, NULL, NULL),
+(8, 'test 6', '09999999999', NULL, 'test 6', '2025-07-10', 'Female', '2025-07-11', '05:30:00', 'test 6', 'completed', '[Walk-in Appointment] test 6', 24, 22, 'doctor', 24, NULL, '2025-07-10 09:53:57', '2025-07-11 10:16:17', 0, NULL, NULL, NULL),
+(9, 'test 7', '09787878777', NULL, 'test 7', '2025-07-11', 'Female', '2025-07-11', '06:30:00', 'test 7', 'completed', '[Walk-in Appointment] test 7', 24, 22, 'doctor', 24, NULL, '2025-07-10 10:05:48', '2025-07-11 10:16:17', 1, '2025-07-10 16:50:00', 24, ''),
+(10, 'test 8', '09787878777', 'leomaresc853@gmail.com', 'test 8', '2025-07-11', 'Male', '2025-07-12', '05:00:00', 'test 8', 'approved', '[Walk-in Appointment] test 8', 34, 24, 'health_worker', 24, NULL, '2025-07-10 17:14:50', NULL, 0, NULL, NULL, NULL);
 
 --
 -- Triggers `admin_walkin_appointments`
@@ -1481,7 +1488,7 @@ ALTER TABLE `stock_movement_log`
 -- AUTO_INCREMENT for table `admin_clients_appointments`
 --
 ALTER TABLE `admin_clients_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `admin_doctor_appointment_slots`
@@ -1499,7 +1506,7 @@ ALTER TABLE `admin_doctor_schedules`
 -- AUTO_INCREMENT for table `admin_hw_appointment_slots`
 --
 ALTER TABLE `admin_hw_appointment_slots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `admin_hw_schedules`
@@ -1535,7 +1542,7 @@ ALTER TABLE `admin_user_accounts`
 -- AUTO_INCREMENT for table `admin_walkin_appointments`
 --
 ALTER TABLE `admin_walkin_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `clients_user_accounts`
