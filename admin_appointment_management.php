@@ -1777,7 +1777,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                             <div class="d-flex justify-content-md-end justify-content-start" style="padding-right: 20px;">
                                 <?php if (!$showArchived): ?>
                                     <button type="button" class="btn btn-success" onclick="toggleWalkinForm()">
-                                        <i class="fas fa-plus-circle mr-1"></i> Add Walk-in Appointment
+                                        <i class="fas fa-plus-circle mr-1"></i> Walk-in Appointment
                                     </button>
                                 <?php endif; ?>
                             </div>
@@ -3139,7 +3139,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             };
             
             $.ajax({
-                url: 'actions/book_walkin_appointment.php',
+                url: 'actions/admin_book_walkin_appointment.php',
                 type: 'POST',
                 data: formData,
                 dataType: 'json',

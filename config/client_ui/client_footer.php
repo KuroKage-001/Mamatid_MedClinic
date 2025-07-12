@@ -10,7 +10,6 @@ $base_path = $in_subdirectory ? '../..' : '.';
             <div class="footer-copyright">
                 <strong>
                     <a href="<?php echo $base_path; ?>/client_dashboard.php" class="footer-brand">
-                        <i class="fas fa-clinic-medical footer-icon"></i>
                         Mamatid Health Center
                     </a>
                 </strong>
@@ -72,13 +71,13 @@ $base_path = $in_subdirectory ? '../..' : '.';
 }
 
 .footer-brand {
-    display: flex;
-    align-items: center;
     color: #ffffff;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
     transition: color var(--transition-speed);
-    gap: 0.5rem;
+    position: relative;
 }
 
 .footer-brand:hover {
@@ -86,9 +85,19 @@ $base_path = $in_subdirectory ? '../..' : '.';
     text-decoration: none;
 }
 
-.footer-icon {
-    font-size: 1.2rem;
-    color: var(--footer-link);
+.footer-brand::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--footer-link);
+    transition: width var(--transition-speed);
+}
+
+.footer-brand:hover::after {
+    width: 100%;
 }
 
 .copyright-text {
@@ -104,35 +113,108 @@ $base_path = $in_subdirectory ? '../..' : '.';
 }
 
 .version-badge {
-    background: rgba(54, 153, 255, 0.15);
+    background: rgba(54, 153, 255, 0.1);
     color: var(--footer-link);
     padding: 0.4rem 0.8rem;
-    border-radius: 30px;
+    border-radius: 6px;
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.5px;
+    border: 1px solid rgba(54, 153, 255, 0.2);
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .main-footer {
         height: auto;
-        padding: 1rem 0;
+        padding: 0.8rem 0;
+    }
+
+    .footer-container {
+        padding: 0 1rem;
     }
 
     .footer-content {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.5rem;
         text-align: center;
     }
 
     .footer-copyright {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.3rem;
+    }
+
+    .footer-brand {
+        font-size: 0.9rem;
     }
 
     .copyright-text {
         margin-left: 0;
+        font-size: 0.8rem;
+    }
+
+    .version-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-footer {
+        padding: 0.5rem 0;
+    }
+
+    .footer-container {
+        padding: 0 0.8rem;
+    }
+
+    .footer-content {
+        gap: 0.3rem;
+    }
+
+    .footer-copyright {
+        gap: 0.2rem;
+    }
+
+    .footer-brand {
+        font-size: 0.8rem;
+    }
+
+    .copyright-text {
+        font-size: 0.7rem;
+    }
+
+    .version-badge {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
+    }
+}
+
+@media (max-width: 320px) {
+    .main-footer {
+        padding: 0.4rem 0;
+    }
+
+    .footer-container {
+        padding: 0 0.5rem;
+    }
+
+    .footer-content {
+        gap: 0.2rem;
+    }
+
+    .footer-brand {
+        font-size: 0.75rem;
+    }
+
+    .copyright-text {
+        font-size: 0.65rem;
+    }
+
+    .version-badge {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.4rem;
     }
 }
 

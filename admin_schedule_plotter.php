@@ -3491,7 +3491,7 @@ $activeProviders = count(array_unique(array_merge(
                      formData.append('type', 'all');
                      
                      // Submit form
-                     fetch('actions/bulk_approve_schedules.php', {
+                     fetch('actions/admin_approve_all_doctor_schedules.php', {
                          method: 'POST',
                          body: formData
                      })

@@ -90,7 +90,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     --active-bg: rgba(54, 153, 255, 0.15);
     --text-muted: #B5B5C3;
     --sidebar-bg: #1E1E2D;
-    --sidebar-width: 265px;
+    --sidebar-width: 250px;
     --menu-item-radius: 0.6rem;
     --header-color: #6993FF;
 }
@@ -347,21 +347,35 @@ $current_page = basename($_SERVER['PHP_SELF']);
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .main-sidebar {
-        width: 250px;
+        width: 220px;
     }
     
     .user-panel {
-        padding: 1rem;
+        padding: 1.2rem 0.8rem 1.2rem 0.4rem;
+    }
+    
+    .brand-link {
+        padding: 1rem 0.6rem !important;
+    }
+    
+    .nav-sidebar .nav-item {
+        padding: 0 0.6rem;
     }
 }
 
 @media (max-width: 768px) {
     .main-sidebar {
-        width: 240px;
+        width: 200px;
     }
     
     .user-panel {
-        padding: 0.75rem;
+        padding: 1rem 0.6rem 1rem 0.3rem;
+    }
+    
+    .user-info-container {
+        padding: 0.4rem;
+        padding-left: 0.2rem;
+        padding-right: 0.8rem;
     }
     
     .user-img {
@@ -373,13 +387,302 @@ $current_page = basename($_SERVER['PHP_SELF']);
         font-size: 0.9rem;
     }
     
+    .user-role-badge {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.6rem;
+    }
+    
     .nav-sidebar .nav-link {
-        padding: 0.75rem 0.9rem;
+        padding: 0.75rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .nav-sidebar .nav-link .nav-icon {
+        font-size: 1.1rem;
+        margin-right: 0.6rem;
+        width: 1.4rem;
     }
     
     .nav-treeview {
         padding-left: 0.75rem;
         margin-left: 0.75rem;
+    }
+    
+    .nav-treeview .nav-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    .nav-icon-sm {
+        font-size: 0.8rem !important;
+        margin-right: 0.6rem;
+        width: 1.2rem;
+    }
+    
+    .nav-header {
+        padding: 1.2rem 1rem 0.4rem !important;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .main-sidebar {
+        width: 180px;
+    }
+    
+    .brand-link {
+        padding: 0.8rem 0.5rem !important;
+        height: 60px;
+    }
+    
+    .brand-link .logo-xs,
+    .brand-link .logo-xl {
+        font-size: 0.9rem;
+    }
+    
+    .user-panel {
+        padding: 0.8rem 0.5rem 0.8rem 0.2rem;
+    }
+    
+    .user-info-container {
+        padding: 0.3rem;
+        padding-left: 0.1rem;
+        padding-right: 0.6rem;
+    }
+    
+    .user-img {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .user-display-name {
+        font-size: 0.85rem;
+    }
+    
+    .user-role-badge {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.5rem;
+    }
+    
+    .nav-sidebar .nav-item {
+        padding: 0 0.5rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .nav-sidebar .nav-link {
+        padding: 0.65rem 0.7rem;
+        font-size: 0.85rem;
+    }
+    
+    .nav-sidebar .nav-link .nav-icon {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+        width: 1.2rem;
+    }
+    
+    .nav-treeview {
+        padding-left: 0.6rem;
+        margin-left: 0.6rem;
+    }
+    
+    .nav-treeview .nav-link {
+        padding: 0.45rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .nav-icon-sm {
+        font-size: 0.75rem !important;
+        margin-right: 0.5rem;
+        width: 1rem;
+    }
+    
+    .nav-header {
+        padding: 1rem 0.8rem 0.3rem !important;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-sidebar {
+        width: 160px;
+    }
+    
+    .brand-link {
+        padding: 0.7rem 0.4rem !important;
+        height: 55px;
+    }
+    
+    .brand-link .logo-xs,
+    .brand-link .logo-xl {
+        font-size: 0.8rem;
+    }
+    
+    .user-panel {
+        padding: 0.6rem 0.4rem 0.6rem 0.1rem;
+    }
+    
+    .user-info-container {
+        padding: 0.2rem;
+        padding-left: 0.05rem;
+        padding-right: 0.4rem;
+    }
+    
+    .user-img {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .user-display-name {
+        font-size: 0.8rem;
+    }
+    
+    .user-role-badge {
+        font-size: 0.6rem;
+        padding: 0.05rem 0.4rem;
+    }
+    
+    .nav-sidebar .nav-item {
+        padding: 0 0.4rem;
+        margin-bottom: 0.15rem;
+    }
+    
+    .nav-sidebar .nav-link {
+        padding: 0.55rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .nav-sidebar .nav-link .nav-icon {
+        font-size: 0.9rem;
+        margin-right: 0.4rem;
+        width: 1rem;
+    }
+    
+    .nav-treeview {
+        padding-left: 0.5rem;
+        margin-left: 0.5rem;
+    }
+    
+    .nav-treeview .nav-link {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .nav-icon-sm {
+        font-size: 0.7rem !important;
+        margin-right: 0.4rem;
+        width: 0.9rem;
+    }
+    
+    .nav-header {
+        padding: 0.8rem 0.6rem 0.25rem !important;
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .main-sidebar {
+        width: 140px;
+    }
+    
+    .brand-link {
+        padding: 0.6rem 0.3rem !important;
+        height: 50px;
+    }
+    
+    .brand-link .logo-xs,
+    .brand-link .logo-xl {
+        font-size: 0.75rem;
+    }
+    
+    .user-panel {
+        padding: 0.5rem 0.3rem 0.5rem 0.05rem;
+    }
+    
+    .user-info-container {
+        padding: 0.15rem;
+        padding-left: 0.02rem;
+        padding-right: 0.3rem;
+    }
+    
+    .user-img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .user-display-name {
+        font-size: 0.75rem;
+    }
+    
+    .user-role-badge {
+        font-size: 0.55rem;
+        padding: 0.02rem 0.3rem;
+    }
+    
+    .nav-sidebar .nav-item {
+        padding: 0 0.3rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .nav-sidebar .nav-link {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .nav-sidebar .nav-link .nav-icon {
+        font-size: 0.85rem;
+        margin-right: 0.3rem;
+        width: 0.9rem;
+    }
+    
+    .nav-treeview {
+        padding-left: 0.4rem;
+        margin-left: 0.4rem;
+    }
+    
+    .nav-treeview .nav-link {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .nav-icon-sm {
+        font-size: 0.65rem !important;
+        margin-right: 0.3rem;
+        width: 0.8rem;
+    }
+    
+    .nav-header {
+        padding: 0.6rem 0.5rem 0.2rem !important;
+        font-size: 0.6rem;
+    }
+}
+
+/* Mobile Touch Improvements */
+@media (hover: none) and (pointer: coarse) {
+    .nav-sidebar .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .nav-sidebar .nav-link:hover {
+        transform: none;
+    }
+    
+    .nav-sidebar .nav-link:active {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: scale(0.98);
+    }
+    
+    .user-img:hover {
+        transform: none;
+    }
+    
+    .user-img:active {
+        transform: scale(0.95);
+    }
+    
+    .nav-sidebar .nav-link .nav-icon:hover {
+        transform: none;
     }
 }
 
