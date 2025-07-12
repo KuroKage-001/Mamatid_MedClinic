@@ -59,10 +59,7 @@ Deny from all
     Deny from all
 </Files>
 
-<Files "refresh_profile_images.js">
-    Order Deny,Allow
-    Deny from all
-</Files>
+
 
 # === MAXIMUM SECURITY HEADERS ===
 <IfModule mod_headers.c>

@@ -15,11 +15,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    // Get the current page URL
-    $current_page = basename($_SERVER['PHP_SELF']);
-    
-    // Redirect to unauthorized access page
-    header("location: system/security/admin_client_unauthorized_access_control.php?page=" . urlencode($current_page));
+    // Redirect to login page (maintaining same behavior as manual checks)
+    header("location:index.php");
     exit;
 }
 ?> 

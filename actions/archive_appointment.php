@@ -1,13 +1,10 @@
 <?php
+// Include authentication check
+require_once '../system/utilities/check_auth.php';
+
 include '../config/db_connection.php';
 include '../system/utilities/admin_client_common_functions_services.php';
 require_once '../system/utilities/admin_client_role_functions_services.php';
-
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("location:../index.php");
-    exit;
-}
 
 // Check permission
 requireRole(['admin', 'health_worker', 'doctor']);

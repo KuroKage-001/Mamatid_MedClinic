@@ -1,6 +1,6 @@
 <?php
 
-require('fpdf182/fpdf.php');
+require('../fpdf182/fpdf.php');
 
 class LB_PDF extends FPDF {
 
@@ -319,4 +319,4 @@ class LB_PDF extends FPDF {
     }
     
 }
-?>
+?> 

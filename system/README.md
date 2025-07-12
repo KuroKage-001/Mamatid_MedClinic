@@ -69,7 +69,7 @@ The system includes a comprehensive authentication mechanism to protect pages fr
 
 2. **admin_client_unauthorized_access_control.php**: Located in the system/security folder, this unified page handles both unauthorized access (401) and access denied (403) scenarios.
 
-3. **add_auth_check.php**: Located in the system/utilities folder, this script can be used to add authentication checks to all PHP files in the system.
+3. **admin_authentication_check.php**: Located in the system/utilities folder, this script can be used to add authentication checks to all PHP files in the system.
 
 4. **.htaccess**: Contains rules to redirect unauthorized access attempts to the admin_client_unauthorized_access_control.php page.
 
@@ -94,10 +94,10 @@ require_once './system/utilities/check_auth.php';
 
 ### Bulk Adding Authentication
 
-The system includes a script called `add_auth_check.php` (in the system/utilities folder) that can be run to automatically add the authentication check to all PHP files in the system. To use it:
+The system includes a script called `admin_authentication_check.php` (in the system/utilities folder) that can be run to automatically add the authentication check to all PHP files in the system. To use it:
 
 1. Make sure you have a backup of your files.
-2. Run the script: `php system/utilities/add_auth_check.php`
+2. Run the script: `php system/utilities/admin_authentication_check.php`
 3. The script will add the authentication check to all PHP files except those in the exclude list.
 
 ### Excluded Files

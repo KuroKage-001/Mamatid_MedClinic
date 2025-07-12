@@ -1,6 +1,6 @@
 <?php
 // Include the PDF library and database connection
-include("../system/logics-builder-pdf.php");
+include("../system/utilities/pdf_logics_builder.php");
 include '../config/db_connection.php';
 
 // Set report title and retrieve GET parameters

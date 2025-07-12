@@ -1,4 +1,7 @@
 <?php
+// Include authentication check
+require_once '../system/utilities/check_auth.php';
+
 /**
  * Get Providers by Type
  * 
@@ -8,13 +11,6 @@
 
 include '../config/db_connection.php';
 require_once '../system/utilities/admin_client_role_functions_services.php';
-
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit;
-}
 
 // Check permission
 try {

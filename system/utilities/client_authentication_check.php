@@ -29,7 +29,7 @@ $excludeFiles = [
 ];
 
 // Function to add client authentication check to a PHP file
-function add_client_auth_check($file) {
+function add_client_authentication_check($file) {
     // Read file content
     $content = file_get_contents($file);
     
@@ -63,7 +63,7 @@ $skipped_count = 0;
 // Process each client file
 foreach ($clientFiles as $file) {
     if (file_exists($file) && !in_array($file, $excludeFiles)) {
-        add_client_auth_check($file);
+        add_client_authentication_check($file);
         $processed_count++;
     } else {
         echo "Skipping file: $file (not found or excluded)\n";

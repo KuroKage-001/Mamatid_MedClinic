@@ -1,4 +1,7 @@
 <?php
+// Include authentication check
+require_once './system/utilities/check_auth.php';
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -7,11 +10,6 @@ ini_set('display_errors', 1);
 include './config/db_connection.php';
 include './system/utilities/admin_client_common_functions_services.php';
 require_once './system/utilities/admin_client_role_functions_services.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("location:index.php");
-    exit;
-}
 
 // Check if user is admin
 requireAdmin();
