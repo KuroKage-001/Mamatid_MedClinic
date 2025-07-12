@@ -1,9 +1,24 @@
 <?php
-include './config/db_connection.php';
-require_once './system/utilities/admin_client_role_functions_services.php';
+// Start session and check authentication
+session_start();
+
+include '../config/db_connection.php';
+require_once '../system/utilities/admin_client_role_functions_services.php';
 
 // Set content type to JSON
 header('Content-Type: application/json');
+
+// Check if user is logged in
+if (!getAdminSessionVar('user_id')) {
+    echo json_encode(['success' => false, 'error' => 'User not authenticated']);
+    exit;
+}
+
+// Check permission - only admin and health workers can access this
+if (!hasAnyRole(['admin', 'health_worker'])) {
+    echo json_encode(['success' => false, 'error' => 'Insufficient permissions']);
+    exit;
+}
 
 // Check if request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -26,8 +41,6 @@ if (empty($scheduleType) || empty($scheduleId) || empty($scheduleDate)) {
 
 try {
     $appointments = [];
-    
-
     
     if ($scheduleType === 'doctor') {
         // Get appointments for doctor schedule
@@ -106,6 +119,7 @@ try {
     $stmt->bindParam(':schedule_date1', $scheduleDate);
     $stmt->bindParam(':schedule_id2', $scheduleId);
     $stmt->bindParam(':schedule_date2', $scheduleDate);
+    
     $stmt->execute();
     
     $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);

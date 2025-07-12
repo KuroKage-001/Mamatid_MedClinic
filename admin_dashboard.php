@@ -349,29 +349,203 @@ try {
       }
     }
 
-    @media (max-width: 576px) {
-      .chart-actions {
-        gap: 6px;
-        flex-direction: column;
-        align-items: stretch;
-      }
+            @media (max-width: 576px) {
+            .chart-actions {
+                gap: 6px;
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-      .export-action-btn {
-        padding: 8px 12px !important;
-        font-size: 0.75rem !important;
-        gap: 6px !important;
-        border-radius: 8px !important;
-        justify-content: center !important;
-      }
+            .export-action-btn {
+                padding: 8px 12px !important;
+                font-size: 0.75rem !important;
+                gap: 6px !important;
+                border-radius: 8px !important;
+                justify-content: center !important;
+            }
 
-      .export-action-btn i {
-        font-size: 0.85rem !important;
-      }
+            .export-action-btn i {
+                font-size: 0.85rem !important;
+            }
 
-      .export-action-btn:hover {
-        transform: translateY(-2px) scale(1.01) !important;
-      }
-    }
+            .export-action-btn:hover {
+                transform: translateY(-2px) scale(1.01) !important;
+            }
+        }
+
+        /* Modern Statistics Cards */
+        .stats-card {
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card .card-body {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-card .icon {
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-card h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.95;
+        }
+
+        .stats-card small {
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+            z-index: 1;
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+            color: white;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%);
+            color: white;
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #e85d04 100%);
+            color: white;
+        }
+
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #b52d3c 100%);
+            color: white;
+        }
+
+        .bg-gradient-teal {
+            background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+            color: white;
+        }
+
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #6f42c1 0%, #495057 100%);
+            color: white;
+        }
+
+        /* Stats card icons with floating animation */
+        .stats-icon {
+            position: absolute;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            opacity: 0.2;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        /* Responsive Stats Cards */
+        @media (max-width: 768px) {
+            .stats-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .stats-card h3 {
+                font-size: 2rem;
+            }
+
+            .stats-card p {
+                font-size: 1rem;
+            }
+
+            .stats-card small {
+                font-size: 0.8rem;
+            }
+
+            .stats-icon {
+                font-size: 2.5rem;
+                right: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-card .card-body {
+                padding: 1.25rem;
+            }
+
+            .stats-card h3 {
+                font-size: 1.8rem;
+            }
+
+            .stats-card:hover {
+                transform: translateY(-4px) scale(1.01);
+            }
+        }
+
+        /* Remove any borders from content-header */
+        .content-header {
+            border: none !important;
+            border-bottom: none !important;
+            border-top: none !important;
+            padding: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Remove any borders from content wrapper and sections */
+        .content-wrapper {
+            border: none !important;
+            border-top: none !important;
+        }
+
+        .content {
+            border: none !important;
+            border-top: none !important;
+        }
+
+        .content-wrapper::before,
+        .content-wrapper::after {
+            display: none !important;
+        }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -381,11 +555,11 @@ try {
       include './config/admin_sidebar.php';
     ?>
     <div class="content-wrapper">
-      <section class="content-header">
+      <section class="content-header" style="border: none; padding: 0;">
         <div class="container-fluid">
           <div class="row align-items-center mb-4">
             <div class="col-12">
-              <h1>Dashboard Overview</h1>
+              <!-- Dashboard Overview heading removed -->
             </div>
           </div>
         </div>
@@ -393,49 +567,88 @@ try {
       
       <section class="content">
         <div class="container-fluid">
-          <!-- Stat Boxes -->
-          <div class="row">
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-success">
-                <div class="inner">
-                  <h3><?php echo $todaysCount; ?></h3>
-                  <p>Today's Patients</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar-day"></i>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-primary">
-                <div class="inner">
-                  <h3><?php echo $currentWeekCount; ?></h3>
-                  <p>Current Week</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar-week"></i>
+          <!-- Modern Statistics Cards -->
+          <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+              <div class="card bg-gradient-success text-white stats-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $todaysCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Today's Patients</p>
+                      <small class="d-block">
+                        <i class="fas fa-heartbeat mr-1"></i>
+                        Current Day Activity
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar-day fa-2x"></i>
+                    </div>
+                  </div>
+                  <i class="fas fa-calendar-day stats-icon"></i>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-warning">
-                <div class="inner">
-                  <h3><?php echo $currentMonthCount; ?></h3>
-                  <p>Current Month</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar"></i>
+            
+            <div class="col-lg-3 col-md-6">
+              <div class="card bg-gradient-info text-white stats-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentWeekCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Week</p>
+                      <small class="d-block">
+                        <i class="fas fa-calendar-week mr-1"></i>
+                        Weekly Statistics
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar-week fa-2x"></i>
+                    </div>
+                  </div>
+                  <i class="fas fa-calendar-week stats-icon"></i>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-danger">
-                <div class="inner">
-                  <h3><?php echo $currentYearCount; ?></h3>
-                  <p>Current Year</p>
+            
+            <div class="col-lg-3 col-md-6">
+              <div class="card bg-gradient-warning text-white stats-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentMonthCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Month</p>
+                      <small class="d-block">
+                        <i class="fas fa-calendar-alt mr-1"></i>
+                        Monthly Summary
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                  </div>
+                  <i class="fas fa-calendar-alt stats-icon"></i>
                 </div>
-                <div class="icon">
-                  <i class="fa fa-user-injured"></i>
+              </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+              <div class="card bg-gradient-danger text-white stats-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentYearCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Year</p>
+                      <small class="d-block">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Annual Overview
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-user-injured fa-2x"></i>
+                    </div>
+                  </div>
+                  <i class="fas fa-user-injured stats-icon"></i>
                 </div>
               </div>
             </div>
