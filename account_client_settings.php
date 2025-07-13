@@ -11,7 +11,7 @@ requireClient();
 
 $message = '';
 $error = '';
-$client_id = $_SESSION['client_id'];
+$client_id = function_exists('getClientSessionVar') ? getClientSessionVar('client_id') : $_SESSION['client_id'];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

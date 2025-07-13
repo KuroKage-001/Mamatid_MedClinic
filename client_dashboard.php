@@ -5,7 +5,7 @@ require_once './system/utilities/check_client_auth.php';
 include './config/db_connection.php';
 
 // Get client's appointments
-$clientId = $_SESSION['client_id'];
+$clientId = function_exists('getClientSessionVar') ? getClientSessionVar('client_id') : $_SESSION['client_id'];
 $query = "SELECT *, 
           DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
           TIME_FORMAT(appointment_time, '%h:%i %p') as formatted_time,

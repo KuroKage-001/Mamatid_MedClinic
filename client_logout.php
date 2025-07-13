@@ -1,20 +1,22 @@
 <?php
-// Start session
-session_start();
-
 // Include admin-client session isolation functions
 require_once './system/security/admin_client_session_isolation.php';
 
-// Check if client is logged in
-if (!isset($_SESSION['client_id'])) {
+// Initialize secure session
+if (!initializeSecureSession()) {
+    die('Failed to initialize session');
+}
+
+// Check if client is logged in using session isolation functions
+$client_id = function_exists('getClientSessionVar') ? getClientSessionVar('client_id') : ($_SESSION['client_id'] ?? null);
+if (!$client_id) {
     header("location: client_login.php");
     exit;
 }
 
 // Store session ID for logging (optional)
 $session_id = session_id();
-$client_id = $_SESSION['client_id'] ?? 'unknown';
-$client_name = $_SESSION['client_name'] ?? 'unknown';
+$client_name = function_exists('getClientSessionVar') ? getClientSessionVar('client_name') : ($_SESSION['client_name'] ?? 'unknown');
 
 // Log the logout action with session state
 logSessionOperation('client_logout', [

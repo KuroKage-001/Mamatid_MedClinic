@@ -1,138 +1,195 @@
 <?php
 /**
- * Secure Client Authentication Check
+ * Secure Client Authentication Check - Enhanced Version
  * Uses session isolation to prevent conflicts with admin sessions
+ * Version 2.0 - Fixed security issues
  */
+
+// Start session immediately if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include admin-client session isolation functions if not already included
 if (!defined('SESSION_ISOLATION_INCLUDED')) {
     require_once __DIR__ . '/../security/admin_client_session_isolation.php';
 }
 
-// Initialize secure session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    if (!initializeSecureSession()) {
-        // Session initialization failed
-        logSessionOperation('client_auth_session_init_failed', [
-            'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
-        ]);
-        header("Location: " . getClientBasePath() . "/client_login.php?error=session_init_failed");
-        exit;
-    }
-}
-
-// Validate session integrity
-if (!validateSessionIntegrity()) {
-    // Session compromised, redirect to login
-    logSessionOperation('client_auth_integrity_failed', [
-        'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
-        'session_id' => session_id(),
-        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
-    ]);
-    header("Location: " . getClientBasePath() . "/client_login.php?error=session_invalid");
-    exit;
-}
-
-// Check if client is logged in using safe session getter
-$clientId = getClientSessionVar('client_id');
-if (!$clientId || empty($clientId)) {
-    // Log unauthorized access attempt
-    logSessionOperation('client_auth_failed', [
-        'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
-        'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id']),
-        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-    ]);
-    
-    // Redirect to client login
-    header("Location: " . getClientBasePath() . "/client_login.php");
-    exit;
-}
-
-// Update client activity timestamp using safe session setter
-setClientSessionVar('client_last_activity', time());
-
-// Log successful client authentication
-logSessionOperation('client_auth_success', [
-    'client_id' => $clientId,
-    'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
-    'has_concurrent_admin' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
-]);
-
-/**
- * Get base path for client redirects
- */
+// Get base path for client redirects - improved version
 function getClientBasePath() {
-    // Simple approach: check if client_login.php exists in current directory
-    if (file_exists('client_login.php')) {
-        return '.';
+    // Check current directory first
+    if (file_exists('./client_login.php')) {
+        return './client_login.php';
     }
     
-    // If not, check parent directories
+    // Check parent directory
     if (file_exists('../client_login.php')) {
-        return '..';
+        return '../client_login.php';
     }
     
+    // Check two levels up
     if (file_exists('../../client_login.php')) {
-        return '../..';
-    }
-    
-    if (file_exists('../../../client_login.php')) {
-        return '../../..';
+        return '../../client_login.php';
     }
     
     // Default fallback
-    return '.';
+    return './client_login.php';
 }
 
-/**
- * Check if client session is still valid
- */
-function isClientSessionValid() {
-    // Check if client session exists using safe getter
-    $clientId = getClientSessionVar('client_id');
-    if (!$clientId || empty($clientId)) {
-        return false;
-    }
-    
-    // Check session timeout (optional - implement if needed)
-    $lastActivity = getClientSessionVar('client_last_activity');
-    if ($lastActivity) {
-        $timeout = 3600; // 1 hour timeout for clients
-        if ((time() - $lastActivity) > $timeout) {
-            // Session timed out
-            logSessionOperation('client_session_timeout', [
-                'client_id' => $clientId,
-                'last_activity' => $lastActivity,
-                'timeout_duration' => $timeout
-            ]);
+// Enhanced session initialization - compatible with session isolation system
+function initializeClientSession() {
+    if (session_status() === PHP_SESSION_NONE) {
+        // Use the same session initialization as the session isolation system
+        if (function_exists('initializeSecureSession')) {
+            return initializeSecureSession();
+        } else {
+            // Fallback initialization
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
+            ini_set('session.use_strict_mode', 1);
+            ini_set('session.cookie_lifetime', 0);
             
-            // Clear client session using safe logout
-            safeClientLogout();
-            return false;
+            // Use the same session name as the isolation system
+            session_name('MAMATID_SESSION');
+            
+            // Start session
+            if (!session_start()) {
+                error_log("Failed to start client session");
+                return false;
+            }
         }
     }
-    
     return true;
 }
 
-/**
- * Refresh client session activity
- */
-function refreshClientActivity() {
-    $clientId = getClientSessionVar('client_id');
-    if ($clientId) {
-        setClientSessionVar('client_last_activity', time());
-    }
-}
-
-// Perform additional session validation
-if (!isClientSessionValid()) {
-    header("Location: " . getClientBasePath() . "/client_login.php?error=session_expired");
+// Initialize session
+if (!initializeClientSession()) {
+    $login_url = getClientBasePath() . "?error=session_init_failed";
+    header("Location: $login_url");
     exit;
 }
 
-// Refresh activity timestamp
-refreshClientActivity();
+// Log the authentication attempt
+$script_name = $_SERVER['SCRIPT_NAME'] ?? 'unknown';
+$client_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+
+error_log("Client authentication check for script: $script_name from IP: $client_ip");
+
+// Check if client is logged in - use session isolation functions if available
+$client_id = null;
+
+if (function_exists('getClientSessionVar')) {
+    $client_id = getClientSessionVar('client_id');
+} else {
+    // Direct session access fallback
+    $client_id = $_SESSION['client_id'] ?? null;
+}
+
+// Validate client ID
+if (!$client_id || empty($client_id) || !is_numeric($client_id)) {
+    // Log unauthorized access attempt
+    error_log("Unauthorized client access attempt to $script_name from $client_ip");
+    error_log("Session data: " . print_r($_SESSION, true));
+    
+    // Clear any potentially corrupted session data using safe functions
+    if (function_exists('clearClientSession')) {
+        clearClientSession();
+    } else {
+        // Fallback cleanup
+        if (isset($_SESSION['client_id'])) {
+            unset($_SESSION['client_id']);
+        }
+        if (isset($_SESSION['client_name'])) {
+            unset($_SESSION['client_name']);
+        }
+        if (isset($_SESSION['client_email'])) {
+            unset($_SESSION['client_email']);
+        }
+    }
+    
+    // Redirect to login page
+    $login_url = getClientBasePath();
+    header("Location: $login_url");
+    exit;
+}
+
+// Update client activity timestamp
+if (function_exists('setClientSessionVar')) {
+    setClientSessionVar('client_last_activity', time());
+} else {
+    $_SESSION['client_last_activity'] = time();
+}
+
+// Validate session integrity
+$stored_user_agent = null;
+if (function_exists('getClientSessionVar')) {
+    $stored_user_agent = getClientSessionVar('client_user_agent');
+} else {
+    $stored_user_agent = $_SESSION['client_user_agent'] ?? null;
+}
+
+if ($stored_user_agent) {
+    if ($stored_user_agent !== $user_agent) {
+        error_log("Client session hijacking detected for client_id: $client_id");
+        
+        // Clear session and redirect to login
+        if (function_exists('safeClientLogout')) {
+            safeClientLogout();
+        } else {
+            session_destroy();
+        }
+        $login_url = getClientBasePath() . "?error=session_invalid";
+        header("Location: $login_url");
+        exit;
+    }
+} else {
+    // Set user agent for future validation
+    if (function_exists('setClientSessionVar')) {
+        setClientSessionVar('client_user_agent', $user_agent);
+    } else {
+        $_SESSION['client_user_agent'] = $user_agent;
+    }
+}
+
+// Check session timeout (1 hour)
+$last_activity = null;
+if (function_exists('getClientSessionVar')) {
+    $last_activity = getClientSessionVar('client_last_activity');
+} else {
+    $last_activity = $_SESSION['client_last_activity'] ?? null;
+}
+
+if (!$last_activity) {
+    $last_activity = time(); // Set current time if not set
+}
+
+$timeout = 3600; // 1 hour
+
+if ((time() - $last_activity) > $timeout) {
+    error_log("Client session timeout for client_id: $client_id");
+    
+    // Clear session and redirect to login
+    if (function_exists('safeClientLogout')) {
+        safeClientLogout();
+    } else {
+        session_destroy();
+    }
+    $login_url = getClientBasePath() . "?error=session_expired";
+    header("Location: $login_url");
+    exit;
+}
+
+// Log successful authentication
+error_log("Client authentication successful for client_id: $client_id accessing $script_name");
+
+// Set a flag to indicate successful authentication and update activity
+if (function_exists('setClientSessionVar')) {
+    setClientSessionVar('client_authenticated', true);
+    setClientSessionVar('client_last_activity', time());
+} else {
+    $_SESSION['client_authenticated'] = true;
+    $_SESSION['client_last_activity'] = time();
+}
+
 ?> 

@@ -10,7 +10,7 @@ requireClient();
 
 $message = '';
 $error = '';
-$clientId = $_SESSION['client_id'];
+$clientId = function_exists('getClientSessionVar') ? getClientSessionVar('client_id') : $_SESSION['client_id'];
 
 // Get message/error from URL if redirected
 if (isset($_GET['message'])) {
@@ -43,7 +43,7 @@ $staffSchedules = $staffScheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle appointment booking
 if (isset($_POST['book_appointment'])) {
-    $clientId = $_SESSION['client_id'];
+    $clientId = function_exists('getClientSessionVar') ? getClientSessionVar('client_id') : $_SESSION['client_id'];
     $scheduleId = $_POST['schedule_id'];
     $scheduleType = $_POST['schedule_type']; // 'doctor' or 'staff'
     $appointmentTime = $_POST['appointment_time'];
