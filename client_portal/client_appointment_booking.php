@@ -1,9 +1,9 @@
 <?php
 // Include client authentication check (this handles session isolation automatically)
-require_once './system/utilities/check_client_auth.php';
+require_once '../system/utilities/check_client_auth.php';
 
-include './config/db_connection.php';
-require_once './system/utilities/admin_client_role_functions_services.php';
+include '../config/db_connection.php';
+require_once '../system/utilities/admin_client_role_functions_services.php';
 
 // Restrict this page to clients only
 requireClient();
@@ -224,7 +224,7 @@ if (isset($_POST['book_appointment'])) {
         // Send confirmation email to client
         try {
             // Include mailer utility
-            require_once './system/phpmailer/system/mailer.php';
+            require_once '../system/phpmailer/system/mailer.php';
             
             // Get client email and ensure it exists
             $clientEmail = $client['email'] ?? '';
@@ -414,11 +414,11 @@ if (empty($calendarEvents)) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Book Appointment - Mamatid Health Center</title>
-    <?php include './config/site_css_links.php'; ?>
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <?php include '../config/site_css_links.php'; ?>
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
     
     <!-- FullCalendar CSS -->
-    <link href="plugins/fullcalendar/main.min.css" rel="stylesheet">
+    <link href="../plugins/fullcalendar/main.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -1562,10 +1562,10 @@ if (empty($calendarEvents)) {
         <?php include './config/client_ui/client_footer.php'; ?>
     </div>
     <!-- ./wrapper -->
-    <?php include './config/site_css_js_links.php'; ?>
+    <?php include '../config/site_css_js_links.php'; ?>
     
     <!-- FullCalendar JS -->
-    <script src="plugins/fullcalendar/main.min.js"></script>
+    <script src="../plugins/fullcalendar/main.min.js"></script>
     
     <script>
         $(function() {

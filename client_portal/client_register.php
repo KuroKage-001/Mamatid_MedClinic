@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-include './config/db_connection.php';
+include '../config/db_connection.php';
 
 $message = '';
 $showSuccessAlert = false;
@@ -31,7 +31,7 @@ if (isset($_POST['register'])) {
             // Generate a unique filename
             $fileExtension = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
             $newFileName = time() . '_' . uniqid() . '.' . $fileExtension;
-            $uploadDir = 'system/client_images/';
+            $uploadDir = '../system/client_images/';
             $uploadPath = $uploadDir . $newFileName;
             
             // Create directory if it doesn't exist
@@ -110,16 +110,16 @@ if (isset($_POST['register'])) {
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../dist/css/adminlte.min.css">
     <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <link rel="stylesheet" href="../plugins/sweetalert2/sweetalert2.min.css">
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
     
     <!-- Include jQuery and SweetAlert2 JS -->
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="../plugins/jquery/jquery.min.js"></script>
+    <script src="../plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
     <style>
         :root {
@@ -138,7 +138,7 @@ if (isset($_POST['register'])) {
 
         body {
             background: linear-gradient(135deg, rgba(0, 169, 255, 0.05) 0%, rgba(160, 233, 255, 0.05) 100%),
-                        url('dist/img/bg-001.jpg') no-repeat center center fixed;
+                        url('../dist/img/bg-001.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             display: flex;
@@ -191,7 +191,7 @@ if (isset($_POST['register'])) {
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('dist/img/bg-001.jpg') center/cover;
+            background: url('../dist/img/bg-001.jpg') center/cover;
             opacity: 0.15;
             mix-blend-mode: overlay;
         }
@@ -491,14 +491,14 @@ if (isset($_POST['register'])) {
         
         <div class="register-right">
             <div class="register-logo">
-                <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+                <img src="../dist/img/mamatid-transparent01.png" alt="System Logo">
             </div>
             
             <form method="post" enctype="multipart/form-data">
                 <!-- Profile Picture Upload -->
                 <div class="profile-upload">
                     <div class="profile-picture-container">
-                        <img src="system/client_images/default_client.png" alt="Profile Picture" id="profilePreview" class="profile-picture">
+                        <img src="../system/client_images/default_client.png" alt="Profile Picture" id="profilePreview" class="profile-picture">
                         <label for="profile_picture" class="profile-picture-overlay">
                             <i class="fas fa-camera"></i>
                         </label>

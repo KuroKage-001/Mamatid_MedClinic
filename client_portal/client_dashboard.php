@@ -1,8 +1,8 @@
 <?php
 // Include client authentication check (this handles session isolation automatically)
-require_once './system/utilities/check_client_auth.php';
+require_once '../system/utilities/check_client_auth.php';
 
-include './config/db_connection.php';
+include '../config/db_connection.php';
 
 // Get client's appointments
 $clientId = $_SESSION['client_id'];
@@ -34,8 +34,8 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Client Dashboard - Mamatid Health Center</title>
-    <?php include './config/site_css_links.php'; ?>
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <?php include '../config/site_css_links.php'; ?>
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
 
     <style>
         :root {
@@ -524,7 +524,7 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         <?php include './config/client_ui/client_footer.php'; ?>
     </div>
 
-    <?php include './config/site_css_js_links.php'; ?>
+    <?php include '../config/site_css_js_links.php'; ?>
     
     <script>
         $(function() {

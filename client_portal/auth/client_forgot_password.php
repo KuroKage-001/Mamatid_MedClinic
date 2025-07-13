@@ -1,7 +1,7 @@
 <?php
 session_start();
-include '../system/database/db_connection.php';
-include '../system/phpmailer/system/mailer.php';
+include '../../system/database/db_connection.php';
+include '../../system/phpmailer/system/mailer.php';
 
 // Initialize variables
 $message = '';
@@ -177,16 +177,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
     <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="../plugins/sweetalert2/sweetalert2.min.css">
-    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
+    <link rel="stylesheet" href="../../plugins/sweetalert2/sweetalert2.min.css">
+    <link rel="icon" type="image/png" href="../../dist/img/logo01.png">
     
     <!-- Include jQuery and SweetAlert2 JS -->
-    <script src="../plugins/jquery/jquery.min.js"></script>
-    <script src="../plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="../../plugins/jquery/jquery.min.js"></script>
+    <script src="../../plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
     <style>
         :root {
@@ -328,7 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="forgot-password-container">
         <div class="logo-container">
-            <img src="../dist/img/mamatid-transparent01.png" alt="Mamatid Health Center Logo">
+            <img src="../../dist/img/mamatid-transparent01.png" alt="Mamatid Health Center Logo">
         </div>
         
         <h2>Reset Your Password</h2>

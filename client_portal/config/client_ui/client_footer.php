@@ -1,7 +1,7 @@
 <?php
 // Determine if we're in a subdirectory by checking the script path
-$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
-$base_path = $in_subdirectory ? '../..' : '.';
+$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false || strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
+$base_path = $in_subdirectory ? '../..' : '../..';
 ?>
 <footer class="main-footer fixed-bottom">
     <div class="footer-container">

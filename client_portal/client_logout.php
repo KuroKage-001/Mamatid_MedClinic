@@ -3,7 +3,7 @@
 session_start();
 
 // Include admin-client session isolation functions
-require_once './system/security/admin_client_session_isolation.php';
+require_once '../system/security/admin_client_session_isolation.php';
 
 // Check if client is logged in
 if (!isset($_SESSION['client_id'])) {

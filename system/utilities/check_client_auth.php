@@ -64,26 +64,32 @@ logSessionOperation('client_auth_success', [
  * Get base path for client redirects
  */
 function getClientBasePath() {
-    // Simple approach: check if client_login.php exists in current directory
-    if (file_exists('client_login.php')) {
+    // Check if we're in the client_portal directory
+    if (strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false) {
+        // From client_portal, client_login.php is in the same directory
         return '.';
     }
     
+    // Simple approach: check if client_login.php exists in client_portal
+    if (file_exists('client_portal/client_login.php')) {
+        return 'client_portal';
+    }
+    
     // If not, check parent directories
-    if (file_exists('../client_login.php')) {
-        return '..';
+    if (file_exists('../client_portal/client_login.php')) {
+        return '../client_portal';
     }
     
-    if (file_exists('../../client_login.php')) {
-        return '../..';
+    if (file_exists('../../client_portal/client_login.php')) {
+        return '../../client_portal';
     }
     
-    if (file_exists('../../../client_login.php')) {
-        return '../../..';
+    if (file_exists('../../../client_portal/client_login.php')) {
+        return '../../../client_portal';
     }
     
     // Default fallback
-    return '.';
+    return 'client_portal';
 }
 
 /**

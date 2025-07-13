@@ -1,6 +1,6 @@
 <?php
 // Include admin-client session isolation functions first (before any session operations)
-require_once './system/security/admin_client_session_isolation.php';
+require_once '../system/security/admin_client_session_isolation.php';
 
 // Initialize secure session using the isolation functions
 if (!initializeSecureSession()) {
@@ -8,7 +8,7 @@ if (!initializeSecureSession()) {
 }
 
 // Include database connection after session is properly initialized
-include './config/db_connection.php';
+include '../config/db_connection.php';
 
 // Alert Handler Code
 if (!defined('ALERT_HANDLER_INCLUDED')) {
@@ -165,16 +165,16 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../dist/css/adminlte.min.css">
     <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <link rel="stylesheet" href="../plugins/sweetalert2/sweetalert2.min.css">
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
     
     <!-- Include jQuery and SweetAlert2 JS -->
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="../plugins/jquery/jquery.min.js"></script>
+    <script src="../plugins/sweetalert2/sweetalert2.all.min.js"></script>
 
     <style>
         :root {
@@ -193,7 +193,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
 
         body {
             background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%),
-                        url('dist/img/bg-001.jpg') no-repeat center center fixed;
+                        url('../dist/img/bg-001.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             display: flex;
@@ -245,7 +245,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('dist/img/bg-001.jpg') center/cover;
+            background: url('../dist/img/bg-001.jpg') center/cover;
             opacity: 0.5;
             mix-blend-mode: overlay;
         }
@@ -524,7 +524,7 @@ $rememberedEmail = isset($_COOKIE['remembered_client_email']) ? $_COOKIE['rememb
         
         <div class="client-right">
             <div class="client-logo">
-                <img src="dist/img/mamatid-transparent01.png" alt="System Logo">
+                <img src="../dist/img/mamatid-transparent01.png" alt="System Logo">
             </div>
             
             <div class="typewriter">

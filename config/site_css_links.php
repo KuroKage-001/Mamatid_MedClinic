@@ -1,7 +1,8 @@
 <?php
 // Determine if we're in a subdirectory by checking the script path
 $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false);
-$base_path = $in_subdirectory ? '../..' : '.';
+$in_client_portal = (strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
+$base_path = $in_subdirectory ? '../..' : ($in_client_portal ? '..' : '.');
 ?>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
