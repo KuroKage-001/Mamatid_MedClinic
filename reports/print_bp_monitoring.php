@@ -1,0 +1,146 @@
+<?php
+include '../config/db_connection.php';
+include '../system/utilities/admin_client_common_functions_services.php';
+
+$from = $_GET['from'] ?? '';
+$to = $_GET['to'] ?? '';
+
+try {
+    // Convert the date strings to MySQL format (yyyy-mm-dd)
+    $fromArr = explode("/", $from);
+    $toArr = explode("/", $to);
+    $fromMysql = $fromArr[2] . '-' . $fromArr[0] . '-' . $fromArr[1];
+    $toMysql = $toArr[2] . '-' . $toArr[0] . '-' . $toArr[1];
+
+    $query = "SELECT * FROM general_bp_monitoring 
+              WHERE DATE(date) BETWEEN :from_date AND :to_date 
+              ORDER BY date DESC";
+
+    $stmt = $con->prepare($query);
+    $stmt->bindParam(':from_date', $fromMysql, PDO::PARAM_STR);
+    $stmt->bindParam(':to_date', $toMysql, PDO::PARAM_STR);
+    $stmt->execute();
+
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Error: " . $e->getMessage());
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BP Monitoring Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .date-range {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .footer {
+      text-align: right;
+      margin-top: 20px;
+    }
+    .bp-normal { color: green; }
+    .bp-elevated { color: orange; }
+    .bp-high { color: red; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>MAMATID HEALTH CENTER</h2>
+    <h3>BP MONITORING REPORT</h3>
+  </div>
+  
+  <div class="date-range">
+    <p>From: <?php echo date('F d, Y', strtotime($fromMysql)); ?> To: <?php echo date('F d, Y', strtotime($toMysql)); ?></p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Sex</th>
+        <th>Address</th>
+        <th>BP Reading</th>
+        <th>Status</th>
+        <th>Risk Factors</th>
+        <th>Contact #</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (count($result) > 0): ?>
+        <?php foreach($result as $row): 
+          // Parse BP reading
+          $bp_parts = explode('/', $row['bp']);
+          $systolic = intval($bp_parts[0] ?? 0);
+          $diastolic = intval($bp_parts[1] ?? 0);
+          
+          // Determine BP status and CSS class
+          if ($systolic < 120 && $diastolic < 80) {
+            $status = 'Normal';
+            $class = 'bp-normal';
+          } elseif (($systolic >= 120 && $systolic <= 129) && $diastolic < 80) {
+            $status = 'Elevated';
+            $class = 'bp-elevated';
+          } else {
+            $status = 'High';
+            $class = 'bp-high';
+          }
+          
+          // Compile risk factors
+          $risks = [];
+          if ($row['alcohol']) $risks[] = 'Alcohol';
+          if ($row['smoke']) $risks[] = 'Smoking';
+          if ($row['obese']) $risks[] = 'Obesity';
+        ?>
+        <tr>
+          <td><?php echo date('m/d/Y', strtotime($row['date'])); ?></td>
+          <td><?php echo htmlspecialchars($row['name']); ?></td>
+          <td><?php echo htmlspecialchars($row['sex']); ?></td>
+          <td><?php echo htmlspecialchars($row['address']); ?></td>
+          <td class="<?php echo $class; ?>"><?php echo htmlspecialchars($row['bp']); ?></td>
+          <td class="<?php echo $class; ?>"><?php echo $status; ?></td>
+          <td><?php echo !empty($risks) ? implode(', ', $risks) : 'None'; ?></td>
+          <td><?php echo htmlspecialchars($row['cp_number']); ?></td>
+        </tr>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <tr>
+          <td colspan="8" style="text-align: center;">No records found for the selected date range.</td>
+        </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p>Generated on: <?php echo date('F d, Y H:i:s'); ?></p>
+  </div>
+
+  <script>
+    window.print();
+  </script>
+</body>
+</html> 

@@ -1,0 +1,110 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
+# URL Rewriting for clean URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html
+
+RewriteCond %{REQUEST_FILENAME} !favicon.ico
+
+# Redirect old access control files to new combined location
+RewriteRule ^access_denied\.php$ system/security/admin_client_unauthorized_access_control.php [L,QSA,R=301]
+RewriteRule ^unauthorized_access\.php$ system/security/admin_client_unauthorized_access_control.php [L,QSA,R=301]
+
+# Security: Block access to sensitive files
+RewriteRule ^config/ - [F,L]
+RewriteRule ^logs/ - [F,L]
+RewriteRule \.log$ - [F,L]
+RewriteRule ^\.env$ - [F,L]
+
+# Redirect protected pages to admin_client_unauthorized_access_control.php if not logged in
+# This is a fallback - PHP authentication should catch this first
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_FILENAME} \.php$
+RewriteCond %{REQUEST_FILENAME} !(index|client_login|client_register|client_logout)\.php
+RewriteCond %{REQUEST_FILENAME} !system/security/admin_client_unauthorized_access_control\.php
+RewriteCond %{HTTP_COOKIE} !PHPSESSID
+RewriteRule ^(.*)$ system/security/admin_client_unauthorized_access_control.php?page=$1 [L,QSA]
+
+</IfModule>
+
+# Security Headers for Production
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options DENY
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options nosniff
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Content Security Policy
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
+</IfModule>
+
+# Session Security Settings
+<IfModule mod_php.c>
+    php_flag session.cookie_httponly on
+    php_flag session.use_only_cookies on
+    php_value session.gc_maxlifetime 3600
+    php_value session.cookie_lifetime 0
+</IfModule>
+
+# Cache Control for Performance
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpg "access plus 1 week"
+    ExpiresByType image/jpeg "access plus 1 week" 
+    ExpiresByType image/gif "access plus 1 week"
+    ExpiresByType image/png "access plus 1 week"
+    ExpiresByType image/svg+xml "access plus 1 week"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    
+    # Other static files
+    ExpiresByType application/pdf "access plus 1 week"
+    ExpiresByType text/xml "access plus 1 week"
+</IfModule>
+
+# Alternative cache headers if mod_expires is not available
+<IfModule mod_headers.c>
+    # 1 WEEK for images and static files
+    <filesMatch "\.(flv|jpg|jpeg|png|gif|js|swf|ico|svg)$">
+        Header set Cache-Control "max-age=604800, public"
+    </filesMatch>
+
+    # 1 WEEK for CSS
+    <filesMatch "\.(css)$">
+        Header set Cache-Control "max-age=604800, public, must-revalidate"
+    </filesMatch>
+
+    # 1 WEEK for XML and text files
+    <filesMatch "\.(xml|txt)$">
+        Header set Cache-Control "max-age=604800, public, must-revalidate"
+    </filesMatch>
+</IfModule>
+
+# Compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom_xml
+</IfModule>
