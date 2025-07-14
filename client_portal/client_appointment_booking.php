@@ -1780,7 +1780,7 @@ if (empty($calendarEvents)) {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary book-this-schedule">Book This Schedule</button>
+                                    <button type="button" class="btn btn-primary book-this-schedule">Book a Schedule</button>
                                 </div>
                             </div>
                         </div>

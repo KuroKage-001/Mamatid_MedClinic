@@ -208,16 +208,46 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             color: #8950FC;
         }
 
-        /* Content Header Styling */
-        .content-header {
-            padding: 20px 0;
+        /* Statistics Cards */
+        .stats-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .content-header h1 {
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card .icon {
+            opacity: 0.8;
+        }
+
+        .stats-card h3 {
             font-size: 2rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #8950FC, #3699FF);
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #1BC5BD, #0d7e66);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #3699FF, #6993FF);
         }
 
         /* Button Styling */
@@ -248,6 +278,74 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
             box-shadow: 0 4px 15px rgba(246, 78, 96, 0.4);
         }
 
+        /* Tab Styling */
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            background-color: #f8f9fa;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: #3699FF;
+            background-color: rgba(54, 153, 255, 0.05);
+        }
+
+        .nav-tabs .nav-link.active {
+            border: none;
+            color: #3699FF;
+            background-color: white;
+            border-bottom: 3px solid #3699FF;
+            font-weight: 600;
+        }
+
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #3699FF;
+        }
+
+        .tab-content {
+            background-color: white;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .tab-pane {
+            min-height: 300px;
+        }
+
+        .nav-tabs .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* Empty state styling */
+        .text-center.py-4 {
+            padding: 3rem 1rem !important;
+        }
+
+        .text-center.py-4 i {
+            opacity: 0.5;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .small-box .inner h3 {
@@ -271,6 +369,16 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                 width: 100%;
                 margin-bottom: 0.5rem;
             }
+
+            .nav-tabs .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .nav-tabs .badge {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
         }
     </style>
 </head>
@@ -280,32 +388,11 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
         <?php include './config/client_ui/client_header.php'; ?>
         <?php include './config/client_ui/client_sidebar.php'; ?>
 
-        <div class="content-wrapper">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row align-items-center mb-4">
-                        <div class="col-12">
-                            <h1>Client Dashboard</h1>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+        <div class="content-wrapper" style="padding-top: 32px;">
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Stats Overview -->
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-12 mb-4">
-                            <div class="small-box bg-success">
-                                <div class="inner">
-                                    <h3><?php echo count($appointments); ?></h3>
-                                    <p>Total Appointments</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-calendar-check"></i>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Statistics Overview -->
+                    <div class="row mb-4 g-4 mt-3" style="margin-top: 0; padding-top: 0;">
                         <?php
                         $approvedCount = 0;
                         $completedCount = 0;
@@ -316,205 +403,291 @@ $message = isset($_GET['message']) ? $_GET['message'] : '';
                             if ($appointment['status'] == 'completed') $completedCount++;
                         }
                         ?>
-                        <div class="col-lg-4 col-md-6 col-12 mb-4">
-                            <div class="small-box bg-primary">
-                                <div class="inner">
-                                    <h3><?php echo $approvedCount; ?></h3>
-                                    <p>Upcoming Appointments</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-check-circle"></i>
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card bg-gradient-info text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.10);">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h3 class="mb-1"><?php echo count($appointments); ?></h3>
+                                            <p class="mb-1 font-weight-bold">Total Appointments</p>
+                                            <small class="d-block opacity-75">
+                                                <i class="fas fa-calendar-check mr-1"></i>
+                                                All Time Bookings
+                                            </small>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-calendar-check fa-2x"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12 mb-4">
-                            <div class="small-box bg-info">
-                                <div class="inner">
-                                    <h3><?php echo $completedCount; ?></h3>
-                                    <p>Completed Appointments</p>
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card bg-gradient-success text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(27,197,189,0.10);">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h3 class="mb-1"><?php echo $approvedCount; ?></h3>
+                                            <p class="mb-1 font-weight-bold">Upcoming Appointments</p>
+                                            <small class="d-block opacity-75">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Confirmed Bookings
+                                            </small>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-check-circle fa-2x"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="icon">
-                                    <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card bg-gradient-primary text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.10);">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h3 class="mb-1"><?php echo $completedCount; ?></h3>
+                                            <p class="mb-1 font-weight-bold">Completed Appointments</p>
+                                            <small class="d-block opacity-75">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                Finished Sessions
+                                            </small>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-calendar-alt fa-2x"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Approved Upcoming Appointments -->
-                    <?php
-                    $upcomingApproved = array_filter($appointments, function($apt) use ($today) {
-                        return $apt['status'] == 'approved' && $apt['appointment_date'] >= $today;
-                    });
-                    if (!empty($upcomingApproved)): 
-                    ?>
+                    <!-- Appointments Tabs -->
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-calendar-check mr-2"></i>
-                                Upcoming Approved Appointments
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                My Appointments
                             </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
                         </div>
                         <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Reason</th>
-                                            <th>Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($upcomingApproved as $appointment): ?>
-                                        <tr>
-                                            <td>
-                                                <strong class="text-success">
-                                                    <?php echo $appointment['formatted_date']; ?>
-                                                </strong>
-                                            </td>
-                                            <td><?php echo $appointment['formatted_time']; ?></td>
-                                            <td><?php echo $appointment['reason']; ?></td>
-                                            <td><?php echo $appointment['notes'] ?? 'No notes'; ?></td>
-                                        </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs nav-fill" id="appointmentsTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="upcoming-tab" data-toggle="tab" data-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">
+                                        <i class="fas fa-calendar-check mr-1"></i>
+                                        Upcoming
+                                        <?php
+                                        $upcomingCount = count(array_filter($appointments, function($apt) use ($today) {
+                                            return $apt['status'] == 'approved' && $apt['appointment_date'] >= $today;
+                                        }));
+                                        if ($upcomingCount > 0): ?>
+                                        <span class="badge badge-success ml-1"><?php echo $upcomingCount; ?></span>
+                                        <?php endif; ?>
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="recent-tab" data-toggle="tab" data-target="#recent" type="button" role="tab" aria-controls="recent" aria-selected="false">
+                                        <i class="fas fa-bell mr-1"></i>
+                                        Recent Updates
+                                        <?php
+                                        $recentCount = count(array_filter($appointments, function($apt) {
+                                            return in_array($apt['status'], ['approved', 'completed', 'cancelled']) && 
+                                                   strtotime($apt['last_modified']) >= strtotime('-7 days');
+                                        }));
+                                        if ($recentCount > 0): ?>
+                                        <span class="badge badge-warning ml-1"><?php echo $recentCount; ?></span>
+                                        <?php endif; ?>
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="history-tab" data-toggle="tab" data-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                                        <i class="fas fa-history mr-1"></i>
+                                        All History
+                                        <span class="badge badge-info ml-1"><?php echo count($appointments); ?></span>
+                                    </button>
+                                </li>
+                            </ul>
 
-                    <!-- Recent Status Updates -->
-                    <?php
-                    $recentUpdates = array_filter($appointments, function($apt) {
-                        return in_array($apt['status'], ['approved', 'completed', 'cancelled']) && 
-                               strtotime($apt['last_modified']) >= strtotime('-7 days');
-                    });
-                    if (!empty($recentUpdates)): 
-                    ?>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-bell mr-2"></i>
-                                Recent Status Updates
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            <th>Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($recentUpdates as $update): ?>
-                                        <tr>
-                                            <td><?php echo $update['formatted_date']; ?></td>
-                                            <td><?php echo $update['formatted_time']; ?></td>
-                                            <td>
-                                                <span class="badge badge-<?php 
-                                                    echo match($update['status']) {
-                                                        'approved' => 'success',
-                                                        'completed' => 'info',
-                                                        'cancelled' => 'danger',
-                                                        default => 'secondary'
-                                                    };
-                                                ?>">
-                                                    <?php echo ucfirst($update['status']); ?>
-                                                </span>
-                                            </td>
-                                            <td><?php echo $update['notes'] ?? 'No notes'; ?></td>
-                                        </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- All Appointments History -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-history mr-2"></i>
-                                All Appointments History
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <?php if (empty($appointments)): ?>
-                                <p class="text-muted">No appointments found.</p>
-                            <?php else: ?>
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Reason</th>
-                                                <th>Status</th>
-                                                <th>Notes</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($appointments as $appointment): ?>
-                                            <tr>
-                                                <td><?php echo $appointment['formatted_date']; ?></td>
-                                                <td><?php echo $appointment['formatted_time']; ?></td>
-                                                <td><?php echo $appointment['reason']; ?></td>
-                                                <td>
-                                                    <span class="badge badge-<?php 
-                                                        echo match($appointment['status']) {
-                                                            'approved' => 'success',
-                                                            'cancelled' => 'danger',
-                                                            'completed' => 'info',
-                                                            default => 'secondary'
-                                                        };
-                                                    ?>">
-                                                        <?php echo ucfirst($appointment['status']); ?>
-                                                    </span>
-                                                </td>
-                                                <td><?php echo $appointment['notes'] ?? 'No notes'; ?></td>
-                                                <td>
-                                                    <?php if ($appointment['appointment_date'] > date('Y-m-d')): ?>
-                                                    <div class="btn-group">
-                                                        <button type="button" 
-                                                                class="btn btn-danger btn-sm delete-appointment" 
-                                                                data-id="<?php echo $appointment['id']; ?>"
-                                                                data-date="<?php echo $appointment['formatted_date']; ?>"
-                                                                data-time="<?php echo $appointment['formatted_time']; ?>">
-                                                            <i class="fas fa-times"></i> Cancel
-                                                        </button>
-                                                    </div>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
+                            <!-- Tab panes -->
+                            <div class="tab-content" id="appointmentsTabContent">
+                                <!-- Upcoming Appointments Tab -->
+                                <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                                    <?php
+                                    $upcomingApproved = array_filter($appointments, function($apt) use ($today) {
+                                        return $apt['status'] == 'approved' && $apt['appointment_date'] >= $today;
+                                    });
+                                    ?>
+                                    <div class="p-3">
+                                        <?php if (empty($upcomingApproved)): ?>
+                                            <div class="text-center py-4">
+                                                <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+                                                <h5 class="text-muted">No Upcoming Appointments</h5>
+                                                <p class="text-muted">You don't have any approved appointments scheduled.</p>
+                                                <a href="client_appointment_booking.php" class="btn btn-primary">
+                                                    <i class="fas fa-plus mr-1"></i> Book New Appointment
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Time</th>
+                                                            <th>Reason</th>
+                                                            <th>Notes</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($upcomingApproved as $appointment): ?>
+                                                        <tr>
+                                                            <td>
+                                                                <strong class="text-success">
+                                                                    <?php echo $appointment['formatted_date']; ?>
+                                                                </strong>
+                                                            </td>
+                                                            <td><?php echo $appointment['formatted_time']; ?></td>
+                                                            <td><?php echo $appointment['reason']; ?></td>
+                                                            <td><?php echo $appointment['notes'] ?? 'No notes'; ?></td>
+                                                            <td>
+                                                                <button type="button" 
+                                                                        class="btn btn-danger btn-sm delete-appointment" 
+                                                                        data-id="<?php echo $appointment['id']; ?>"
+                                                                        data-date="<?php echo $appointment['formatted_date']; ?>"
+                                                                        data-time="<?php echo $appointment['formatted_time']; ?>">
+                                                                    <i class="fas fa-times"></i> Cancel
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                            <?php endif; ?>
+
+                                <!-- Recent Updates Tab -->
+                                <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
+                                    <?php
+                                    $recentUpdates = array_filter($appointments, function($apt) {
+                                        return in_array($apt['status'], ['approved', 'completed', 'cancelled']) && 
+                                               strtotime($apt['last_modified']) >= strtotime('-7 days');
+                                    });
+                                    ?>
+                                    <div class="p-3">
+                                        <?php if (empty($recentUpdates)): ?>
+                                            <div class="text-center py-4">
+                                                <i class="fas fa-bell-slash text-muted mb-3" style="font-size: 3rem;"></i>
+                                                <h5 class="text-muted">No Recent Updates</h5>
+                                                <p class="text-muted">No appointment status changes in the last 7 days.</p>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Time</th>
+                                                            <th>Status</th>
+                                                            <th>Notes</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($recentUpdates as $update): ?>
+                                                        <tr>
+                                                            <td><?php echo $update['formatted_date']; ?></td>
+                                                            <td><?php echo $update['formatted_time']; ?></td>
+                                                            <td>
+                                                                <span class="badge badge-<?php 
+                                                                    echo match($update['status']) {
+                                                                        'approved' => 'success',
+                                                                        'completed' => 'info',
+                                                                        'cancelled' => 'danger',
+                                                                        default => 'secondary'
+                                                                    };
+                                                                ?>">
+                                                                    <?php echo ucfirst($update['status']); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td><?php echo $update['notes'] ?? 'No notes'; ?></td>
+                                                        </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- All History Tab -->
+                                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                                    <div class="p-3">
+                                        <?php if (empty($appointments)): ?>
+                                            <div class="text-center py-4">
+                                                <i class="fas fa-history text-muted mb-3" style="font-size: 3rem;"></i>
+                                                <h5 class="text-muted">No Appointment History</h5>
+                                                <p class="text-muted">You haven't booked any appointments yet.</p>
+                                                <a href="client_appointment_booking.php" class="btn btn-primary">
+                                                    <i class="fas fa-plus mr-1"></i> Book Your First Appointment
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Time</th>
+                                                            <th>Reason</th>
+                                                            <th>Status</th>
+                                                            <th>Notes</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($appointments as $appointment): ?>
+                                                        <tr>
+                                                            <td><?php echo $appointment['formatted_date']; ?></td>
+                                                            <td><?php echo $appointment['formatted_time']; ?></td>
+                                                            <td><?php echo $appointment['reason']; ?></td>
+                                                            <td>
+                                                                <span class="badge badge-<?php 
+                                                                    echo match($appointment['status']) {
+                                                                        'approved' => 'success',
+                                                                        'cancelled' => 'danger',
+                                                                        'completed' => 'info',
+                                                                        default => 'secondary'
+                                                                    };
+                                                                ?>">
+                                                                    <?php echo ucfirst($appointment['status']); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td><?php echo $appointment['notes'] ?? 'No notes'; ?></td>
+                                                            <td>
+                                                                <?php if ($appointment['appointment_date'] > date('Y-m-d')): ?>
+                                                                <div class="btn-group">
+                                                                    <button type="button" 
+                                                                            class="btn btn-danger btn-sm delete-appointment" 
+                                                                            data-id="<?php echo $appointment['id']; ?>"
+                                                                            data-date="<?php echo $appointment['formatted_date']; ?>"
+                                                                            data-time="<?php echo $appointment['formatted_time']; ?>">
+                                                                        <i class="fas fa-times"></i> Cancel
+                                                                    </button>
+                                                                </div>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                        </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

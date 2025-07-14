@@ -24,50 +24,72 @@ $timestamp = time();
 ?>
 
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+<nav class="main-header navbar navbar-expand navbar-dark fixed-top">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            <a class="nav-link menu-trigger" data-widget="pushmenu" href="#" role="button">
+                <i class="fas fa-bars"></i>
+            </a>
         </li>
     </ul>
 
+    <!-- Brand -->
+    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="navbar-brand">
+        <img src="<?php echo $base_path; ?>/dist/img/logo01.png" alt="MHC Logo" class="brand-image">
+        <span class="brand-text">Mamatid Health Center</span>
+    </a>
+
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-        <!-- Notifications Dropdown Menu -->
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">0</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">0 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> No new notifications
-                </a>
+        <!-- Clock -->
+        <li class="nav-item clock-container">
+            <div class="clock-widget">
+                <i class="far fa-clock"></i>
+                <div class="clock-info">
+                    <div id="digital-clock"></div>
+                    <div id="date-display"></div>
+                </div>
             </div>
         </li>
-        
-        <!-- User Dropdown Menu -->
+
+        <!-- User Menu -->
         <li class="nav-item dropdown user-menu">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
-                <span class="user-name"><?php echo getClientSessionVar('client_name'); ?></span>
+            <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
+                <div class="user-avatar">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
+                    <span class="status-indicator status-online"></span>
+                </div>
+                <div class="user-info d-none d-md-block">
+                    <span class="user-name"><?php echo getClientSessionVar('client_name'); ?></span>
+                    <span class="user-role">Client</span>
+                </div>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
             </a>
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <!-- User image -->
-                <li class="user-header bg-primary">
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
+                <div class="user-header">
                     <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
-                    <h6><?php echo getClientSessionVar('client_name'); ?></h6>
-                    <span class="username"><?php echo getClientSessionVar('client_email'); ?></span>
-                </li>
-                <!-- Menu Footer-->
-                <li class="user-footer">
-                    <a href="account_client_settings.php" class="btn btn-default btn-flat">Profile</a>
-                    <a href="client_logout.php" class="btn btn-default btn-flat float-right">Sign out</a>
-                </li>
-            </ul>
+                    <div class="user-details">
+                        <h6><?php echo getClientSessionVar('client_name'); ?></h6>
+                        <span class="username"><?php echo getClientSessionVar('client_email'); ?></span>
+                        <div class="role-badge role-client">Client</div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-body">
+                    <a href="<?php echo $base_path; ?>/client_portal/account_client_settings.php" class="dropdown-item">
+                        <i class="fas fa-user-md mr-2"></i>
+                        <span>Account Settings</span>
+                    </a>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-footer">
+                    <a href="<?php echo $base_path; ?>/client_portal/client_logout.php" class="btn btn-danger btn-block">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>       
         </li>
     </ul>
 </nav>
@@ -80,6 +102,8 @@ $timestamp = time();
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --accent-color: #3699FF;
+    --client-accent: #1BC5BD;
+    --client-hover: #0BB7B0;
     --danger-color: #F64E60;
     --dropdown-bg: #2D2D3A;
     --transition-speed: 0.3s;
@@ -132,7 +156,7 @@ $timestamp = time();
 
 /* Notification Badge */
 .badge-primary {
-    background: var(--accent-color);
+    background: var(--client-accent);
     font-size: 0.7rem;
     padding: 0.25em 0.5em;
     position: absolute;
@@ -234,7 +258,7 @@ $timestamp = time();
 }
 
 .status-online {
-    background-color: #1BC5BD;
+    background-color: var(--client-accent);
 }
 
 .status-offline {
@@ -311,7 +335,7 @@ $timestamp = time();
 
 .role-client {
     background-color: rgba(27, 197, 189, 0.15);
-    color: #1BC5BD;
+    color: var(--client-accent);
 }
 
 /* Dropdown Body and Footer */
@@ -377,7 +401,7 @@ $timestamp = time();
 .clock-widget i {
     font-size: 1.2rem;
     margin-right: 0.75rem;
-    color: var(--accent-color);
+    color: var(--client-accent);
 }
 
 .clock-info {
@@ -436,7 +460,31 @@ $timestamp = time();
 </style>
 
 <script>
-// Force image refresh on load
+// Clock functionality
+function updateClock() {
+    const now = new Date();
+    
+    // Update time in 12-hour format
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format without leading zeros
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    document.getElementById('digital-clock').textContent = `${hours}:${minutes} ${ampm}`;
+    
+    // Update date with shorter format
+    const options = { 
+        weekday: 'short',
+        month: 'short', 
+        day: 'numeric'
+    };
+    document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', options);
+}
+
+// Update clock immediately and then every second
 document.addEventListener('DOMContentLoaded', function() {
     // Add timestamp to force cache refresh
     const timestamp = new Date().getTime();
@@ -451,31 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Clock functionality
-    function updateClock() {
-        const now = new Date();
-        
-        // Update time in 12-hour format
-        let hours = now.getHours();
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        // Convert to 12-hour format without leading zeros
-        hours = hours % 12;
-        hours = hours ? hours : 12; // Convert 0 to 12
-        
-        document.getElementById('digital-clock').textContent = `${hours}:${minutes} ${ampm}`;
-        
-        // Update date with shorter format
-        const options = { 
-            weekday: 'short',
-            month: 'short', 
-            day: 'numeric'
-        };
-        document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', options);
-    }
-
-    // Update clock immediately and then every second
+    // Initialize clock
     updateClock();
     setInterval(updateClock, 1000);
 });

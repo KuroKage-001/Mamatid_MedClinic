@@ -41,5 +41,5 @@ RewriteRule ^system/ - [F,L]
 RewriteRule ^config/ - [F,L]
 
 # Custom error pages
-ErrorDocument 403 /client_portal/error_403.php
-ErrorDocument 404 /client_portal/error_404.php 
+ErrorDocument 403 /client_portal/client_security/error_403.php
+ErrorDocument 404 /client_portal/client_security/error_404.php

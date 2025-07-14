@@ -30,44 +30,61 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="client_dashboard.php" class="brand-link logo-switch">
-        <img src="<?php echo $base_path; ?>/dist/img/logo01.png?v=<?php echo $timestamp; ?>" alt="MHC Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Client Portal</span>
+        <div class="brand-logo-container">
+            <h3 class="brand-image-xl logo-xs mb-0"><b>MHC</b></h3>
+            <h3 class="brand-image-xl logo-xl mb-0">Clinic <b>MHC</b></h3>
+            <div class="brand-spacer"></div>
+        </div>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
-            </div>
-            <div class="info">
-                <a href="account_client_settings.php" class="user-display-name"><?php echo getClientSessionVar('client_name'); ?></a>
-                <span class="user-role">Client</span>
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="user-info-container">
+                <!-- User Image -->
+                <div class="user-image-container">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
+                    <span class="user-status-indicator online"></span>
+                </div>
+                <!-- User Info -->
+                <div class="user-info">
+                    <a href="account_client_settings.php" class="user-display-name"><?php echo getClientSessionVar('client_name'); ?></a>
+                    <div class="user-role-badge">
+                        <span class="role-text">Client</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Sidebar Menu -->
-        <nav class="mt-2">
+        <nav class="mt-3">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Dashboard -->
-                <li class="nav-item">
+                
+                <!-- Dashboard Menu Item -->
+                <li class="nav-item" id="mnu_dashboard">
                     <a href="client_dashboard.php" class="nav-link <?php echo ($current_page == 'client_dashboard.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
+                <!-- Client Services Section -->
+                <li class="nav-header">CLIENT SERVICES</li>
+
                 <!-- Book Appointment -->
-                <li class="nav-item">
+                <li class="nav-item" id="mnu_appointments">
                     <a href="client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-plus"></i>
                         <p>Book Appointment</p>
                     </a>
                 </li>
 
+                <!-- Account Management Section -->
+                <li class="nav-header">ACCOUNT MANAGEMENT</li>
+
                 <!-- Account Settings -->
-                <li class="nav-item">
+                <li class="nav-item" id="mnu_account">
                     <a href="account_client_settings.php" class="nav-link <?php echo ($current_page == 'account_client_settings.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-user-cog"></i>
                         <p>Account Settings</p>
@@ -75,7 +92,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
                 </li>
 
                 <!-- Logout -->
-                <li class="nav-item">
+                <li class="nav-item" id="mnu_logout">
                     <a href="client_logout.php" class="nav-link">
                         <i class="nav-icon fas fa-sign-out-alt"></i>
                         <p>Logout</p>
@@ -98,6 +115,8 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
     --sidebar-width: 250px;
     --menu-item-radius: 0.6rem;
     --header-color: #6993FF;
+    --client-accent: #1BC5BD;
+    --client-hover: #0BB7B0;
 }
 
 /* Sidebar Container */
@@ -113,10 +132,10 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 /* Brand Logo */
 .brand-link {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 1.25rem 1rem !important;
-    background: linear-gradient(135deg, #3699FF 0%, #2563EB 100%);
+    padding: 1rem 0.75rem !important;
+    background: linear-gradient(135deg, var(--client-accent) 0%, var(--client-hover) 100%);
     text-align: center;
-    height: 70px;
+    height: 65px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -142,29 +161,22 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
     flex-grow: 1;
 }
 
-/* Sidebar */
-.sidebar {
-    padding-top: 1.5rem;
-}
-
 /* User Panel */
 .user-panel {
-    padding: 1.5rem 1rem 2rem 0.5rem;
+    padding: 1.5rem 1rem 1.5rem 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 1rem;
-    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .user-info-container {
     display: flex;
     align-items: center;
     position: relative;
-    padding: 0.75rem;
+    padding: 0.5rem;
     padding-left: 0.25rem;
     padding-right: 1.5rem;
     background: rgba(255, 255, 255, 0.03);
     border-radius: var(--menu-item-radius);
-    margin-top: 0.5rem;
     width: calc(100% + 1rem);
     margin-right: -1rem;
 }
@@ -228,7 +240,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 }
 
 .user-display-name:hover {
-    color: var(--primary-color);
+    color: var(--client-accent);
     text-decoration: none;
 }
 
@@ -239,9 +251,12 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
     padding: 0.2rem 0.8rem;
     font-size: 0.75rem;
     font-weight: 500;
-    color: #1BC5BD;
+    color: var(--client-accent);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Navigation */
@@ -276,7 +291,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
     top: 0;
     height: 100%;
     width: 0;
-    background: var(--primary-color);
+    background: var(--client-accent);
     opacity: 0;
     transition: all 0.3s ease;
 }
@@ -294,7 +309,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 
 .nav-sidebar .nav-link.active {
     color: #fff !important;
-    background: linear-gradient(90deg, var(--active-bg), rgba(54, 153, 255, 0.05));
+    background: linear-gradient(90deg, rgba(27, 197, 189, 0.15), rgba(27, 197, 189, 0.05));
     font-weight: 500;
 }
 
@@ -352,7 +367,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .main-sidebar {
-        width: 240px;
+        width: 250px;
     }
     
     .user-panel {
@@ -362,7 +377,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 
 @media (max-width: 768px) {
     .main-sidebar {
-        width: 230px;
+        width: 240px;
     }
     
     .user-panel {
@@ -414,6 +429,22 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 
 .sidebar-collapse .nav-header {
     display: none;
+}
+
+/* Sidebar */
+.sidebar {
+    padding-top: 1rem !important;
+}
+
+.user-panel {
+    padding-top: 1rem !important;
+    padding-bottom: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 1rem !important;
+}
+
+.brand-link {
+    margin-bottom: 4rem !important;
 }
 </style>
 
