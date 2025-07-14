@@ -309,50 +309,6 @@ foreach ($appointments as $appointment) {
             --dark-color: #1a1a2d;
         }
 
-        /* --- PAGE BACKGROUND --- */
-        body,
-        .content-wrapper {
-            background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
-            min-height: 100vh;
-        }
-
-        /* --- SET AVAILABILITY BUTTON --- */
-        .btn-set-availability {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: #fff !important;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.05rem;
-            padding: 0.85rem 2.1rem;
-            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.18);
-            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.7rem;
-        }
-        .btn-set-availability i {
-            font-size: 1.2rem;
-        }
-        .btn-set-availability:hover, .btn-set-availability:focus {
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            color: #fff !important;
-            transform: translateY(-2px) scale(1.04);
-            box-shadow: 0 12px 32px rgba(52, 152, 219, 0.25);
-        }
-        .btn-set-availability:active {
-            transform: scale(0.98);
-        }
-
-        @media (max-width: 576px) {
-            .btn-set-availability {
-                width: 100%;
-                justify-content: center;
-                font-size: 1rem;
-                padding: 0.75rem 1.2rem;
-            }
-        }
-
         /* Card Styling */
         .card {
             border: none;
@@ -375,7 +331,7 @@ foreach ($appointments as $appointment) {
             margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--dark-color);
+            color: #2c3e50;
         }
 
         .card-body {
@@ -402,9 +358,10 @@ foreach ($appointments as $appointment) {
         }
 
         .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
+            font-weight: 600;
+            color: #2c3e50;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         /* Button Styling */
@@ -462,13 +419,16 @@ foreach ($appointments as $appointment) {
             color: var(--primary-color);
         }
 
-        /* Content Styling */
-        .content {
+        /* Content Header Styling */
+        .content-header {
             padding: 20px 0;
         }
 
-        .content .container-fluid {
-            padding: 0 15px;
+        .content-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
         }
 
         /* Custom Checkbox */
@@ -486,24 +446,357 @@ foreach ($appointments as $appointment) {
             border: 2px solid #e4e6ef;
         }
 
-        /* Calendar Styling */
-        .fc-event {
-            border-radius: 6px;
-            padding: 5px;
-            cursor: pointer;
+        .custom-control-label {
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
-        .fc-day-today {
-            background-color: rgba(54, 153, 255, 0.05) !important;
+        /* Form Text Improvements */
+        .form-text {
+            color: #6c757d !important;
+            font-weight: 500;
+            font-size: 0.8rem;
         }
 
+        /* Input placeholder text */
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 0.8;
+        }
+
+        /* Improve text visibility in disabled fields */
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            color: #495057 !important;
+            font-weight: 500;
+        }
+
+        /* Select option text */
+        select.form-control option {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* Textarea text */
+        textarea.form-control {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+
+        /* Input text color */
+        .form-control {
+            color: #2c3e50 !important;
+            font-weight: 500;
+        }
+
+        /* Input Group Text Styling */
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 2px solid #e4e6ef;
+            color: #495057;
+            font-weight: 600;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-group-prepend .input-group-text {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group-append .input-group-text {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Availability Form Specific Styling */
+        #availability-form .card-body {
+            background-color: #ffffff;
+        }
+
+        #availability-form label,
+        #availability-form .form-label {
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+
+        #availability-form .custom-control-label {
+            color: #2c3e50 !important;
+            font-weight: 500 !important;
+        }
+
+        #availability-form .form-text {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+        }
+
+        /* Calendar Styling Enhancements */
+        .fc {
+            font-family: inherit;
+        }
+        
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
         .fc-button {
+            padding: 0.5rem 1rem !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: all 0.2s !important;
             background-color: var(--primary-color) !important;
             border-color: var(--primary-color) !important;
         }
-
+        
         .fc-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(54, 153, 255, 0.3) !important;
             background-color: var(--secondary-color) !important;
+        }
+        
+        .fc-day-today {
+            background-color: rgba(54, 153, 255, 0.05) !important;
+        }
+        
+        .fc-event {
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+        }
+        
+        .fc-event::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent) !important;
+            border-radius: inherit !important;
+            pointer-events: none !important;
+        }
+        
+        .fc-event:hover {
+            transform: scale(1.05) translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        .fc-daygrid-day-number {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .fc-col-header-cell-cushion {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        /* Enhanced Week View Styling for Better Activity Visibility */
+        .fc-timeGridWeek-view {
+            font-size: 0.9rem;
+        }
+        
+        .fc-timegrid-slot-label {
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+            color: #666 !important;
+        }
+        
+        .fc-timegrid-axis-cushion {
+            color: #666 !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timegrid-event {
+            border-radius: 8px !important;
+            padding: 4px 8px !important;
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+            border-left: 3px solid rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-title {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .fc-timegrid-event .fc-event-time {
+            font-size: 0.7rem !important;
+            opacity: 0.9 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .fc-event-title {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* Column styling for better separation */
+        .fc-col-header-cell {
+            background-color: #f8f9fa !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid #e9ecef !important;
+        }
+        
+        .fc-timegrid-col-frame {
+            position: relative;
+        }
+        
+        .fc-timegrid-col-bg .fc-timegrid-bg-harness {
+            border-right: 1px solid #e9ecef !important;
+        }
+        
+        /* Now indicator styling */
+        .fc-timegrid-now-indicator-line {
+            border-color: #dc3545 !important;
+            border-width: 2px !important;
+        }
+        
+        .fc-timegrid-now-indicator-arrow {
+            border-color: #dc3545 !important;
+        }
+        
+        /* Event stacking improvements */
+        .fc-timegrid-event-harness {
+            margin-right: 2px !important;
+        }
+        
+        .fc-timegrid-event-harness-inset .fc-timegrid-event {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .fc-timegrid-event:hover {
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(12px) !important;
+        }
+        
+        /* More link styling for overflow events */
+        .fc-more-link {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 4px !important;
+            padding: 2px 6px !important;
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-more-link:hover {
+            background-color: #e9ecef !important;
+            color: #212529 !important;
+        }
+        
+        /* Popover styling for overflow events */
+        .fc-popover {
+            border: none !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+        }
+        
+        .fc-popover-header {
+            background-color: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding: 8px 12px !important;
+            font-weight: 600 !important;
+        }
+        
+        .fc-popover-body {
+            padding: 8px !important;
+        }
+        
+        /* Enhanced Week View Styling */
+        .fc-timeGrid-view .fc-day-grid {
+            display: none;
+        }
+        
+        .fc-timeGrid-view .fc-axis {
+            width: 65px !important;
+        }
+        
+        .fc-timeGrid-view .fc-time {
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-minor {
+            border-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .fc-timeGrid-view .fc-slats .fc-major {
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .fc-day-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            font-weight: 600 !important;
+            padding: 8px !important;
+            border-bottom: 2px solid #dee2e6 !important;
+        }
+        
+        .fc-today .fc-day-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            color: white !important;
+        }
+        
+        /* Week navigation enhancements */
+        .fc-button-group .fc-button {
+            margin: 0 2px !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+        }
+        
+        .fc-timeGridWeek-button,
+        .fc-timeGridDay-button {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+        }
+        
+        .fc-timeGridWeek-button:hover,
+        .fc-timeGridDay-button:hover {
+            background: linear-gradient(135deg, #138496 0%, #0f6674 100%) !important;
+        }
+        
+        /* Responsive improvements for mobile */
+        @media (max-width: 768px) {
+            .fc-timeGrid-view {
+                font-size: 0.8rem;
+            }
+            
+            .fc-timegrid-event {
+                font-size: 0.7rem !important;
+                padding: 2px 4px !important;
+            }
+            
+            .fc-col-header-cell-cushion {
+                font-size: 0.8rem !important;
+            }
+            
+            .fc-timeGrid-view .fc-axis {
+                width: 45px !important;
+            }
+            
+            .fc-day-header {
+                padding: 6px !important;
+                font-size: 0.8rem !important;
+            }
         }
 
         .badge-approved {
@@ -521,62 +814,6 @@ foreach ($appointments as $appointment) {
         }
         
         /* Calendar Legend Styling */
-        .legend-container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            padding: 1.25rem;
-            margin-top: 1.5rem;
-        }
-        
-        .legend-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 1rem;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.75rem;
-        }
-        
-        .legend-items {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
-        }
-        
-        .legend-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 0.75rem;
-            display: inline-block;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .legend-text {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        /* Enhanced Calendar Legend Styling */
         .calendar-legend-wrapper {
             display: flex;
             justify-content: center;
@@ -703,7 +940,214 @@ foreach ($appointments as $appointment) {
                 min-width: 180px;
             }
         }
-
+        
+        /* Calendar Styling Enhancements */
+        .fc {
+            font-family: inherit;
+        }
+        
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .fc-button {
+            padding: 0.5rem 1rem !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: all 0.2s !important;
+        }
+        
+        .fc-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(54, 153, 255, 0.3) !important;
+        }
+        
+        .fc-day-today {
+            background-color: rgba(54, 153, 255, 0.05) !important;
+        }
+        
+        .fc-event {
+            border-radius: 6px !important;
+            padding: 3px 5px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+            transition: transform 0.2s !important;
+        }
+        
+        .fc-event:hover {
+            transform: scale(1.02);
+        }
+        
+        .fc-daygrid-day-number {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .fc-col-header-cell-cushion {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        /* Event Modal Styling */
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: none;
+        }
+        
+        .modal-header .close {
+            opacity: 0.8;
+            text-shadow: none;
+        }
+        
+        .modal-header .close:hover {
+            opacity: 1;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        .bg-purple {
+            background-color: #8950FC !important;
+        }
+        
+        .bg-teal {
+            background-color: #1BC5BD !important;
+        }
+        
+        .bg-info-light {
+            background-color: rgba(54, 153, 255, 0.1);
+        }
+        
+        .bg-success-light {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .bg-secondary-light {
+            background-color: rgba(108, 117, 125, 0.1);
+        }
+        
+        .bg-danger-light {
+            background-color: rgba(246, 78, 96, 0.1);
+        }
+        
+        .bg-warning-light {
+            background-color: rgba(255, 168, 0, 0.1);
+        }
+        
+        .bg-orange-light {
+            background-color: rgba(255, 143, 0, 0.1);
+        }
+        
+        .bg-dark-light {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .event-date h4 {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-label {
+            color: #6c757d;
+            margin-right: 0.25rem;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .notes, .reason {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .patient-info {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-footer {
+            border-top: none;
+            padding: 0.75rem 1.25rem 1.25rem;
+            justify-content: center;
+        }
+        
+        .modal-footer .btn {
+            min-width: 120px;
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .modal-footer .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Info Card Styling */
+        .info-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-card h6 {
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-card p {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .info-card i {
+            opacity: 0.8;
+        }
+        
+        .patient-avatar {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notes-section, .reason-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .notes-section .bg-light,
+        .reason-section .bg-light {
+            border-left: 4px solid #17a2b8;
+            background-color: #ffffff !important;
+        }
+        
         /* Export Buttons and Column Visibility Styling */
         .chart-actions {
             display: flex;
@@ -935,207 +1379,6 @@ foreach ($appointments as $appointment) {
             }
         }
 
-        /* Tab Styling */
-        .nav-tabs {
-            border-bottom: 2px solid #e9ecef;
-            margin-bottom: 0;
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            border-bottom: 3px solid transparent;
-            border-radius: 0;
-            color: #6c757d;
-            font-weight: 500;
-            padding: 1rem 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-tabs .nav-link:hover {
-            border-color: transparent;
-            color: var(--primary-color);
-            background-color: rgba(54, 153, 255, 0.05);
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            background-color: transparent;
-            border-bottom: 3px solid var(--primary-color);
-            font-weight: 600;
-        }
-
-        .nav-tabs .nav-link i {
-            margin-right: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .tab-content {
-            background-color: #fff;
-            border: 1px solid #e9ecef;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .tab-pane {
-            padding: 1.5rem;
-        }
-
-        /* Form Section Styling */
-        .form-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .section-title {
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #e9ecef;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 50px;
-            height: 2px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 1px;
-        }
-
-        .section-title i {
-            color: var(--primary-color);
-            opacity: 0.8;
-        }
-
-        .options-container {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 1rem;
-            border: 1px solid #e9ecef;
-        }
-
-        .options-container .custom-control-label {
-            font-size: 0.9rem;
-            color: #495057;
-        }
-
-        .options-container .custom-control-label i {
-            color: var(--primary-color);
-            opacity: 0.7;
-        }
-
-        /* Enhanced Form Controls */
-        #availability-form .form-control {
-            border: 2px solid #e4e6ef;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background-color: #fff;
-        }
-
-        #availability-form .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15);
-            background-color: #fff;
-        }
-
-        #availability-form .input-group-text {
-            background-color: #f8f9fa;
-            border: 2px solid #e4e6ef;
-            color: #495057;
-            font-weight: 500;
-        }
-
-        #availability-form .input-group .form-control {
-            border-right: none;
-        }
-
-        #availability-form .input-group .input-group-append .input-group-text {
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-        }
-
-        #availability-form .input-group .form-control:focus + .input-group-append .input-group-text {
-            border-color: var(--primary-color);
-        }
-
-        /* Submit Button Styling */
-        #availability-form .btn-lg {
-            padding: 0.875rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        #availability-form .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-            box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
-        }
-
-        #availability-form .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(54, 153, 255, 0.4);
-        }
-
-        #availability-form .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-            border: none;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-        }
-
-        #availability-form .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
-        }
-
-        /* Responsive Design for Tabs and Form */
-        @media (max-width: 768px) {
-            .nav-tabs .nav-link {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .nav-tabs .nav-link i {
-                margin-right: 0.3rem;
-                font-size: 0.8rem;
-            }
-
-            .tab-pane {
-                padding: 1rem;
-            }
-
-            .form-section {
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-
-            .section-title {
-                font-size: 1rem;
-                margin-bottom: 1rem;
-            }
-
-            #availability-form .btn-lg {
-                padding: 0.75rem 1.5rem;
-                font-size: 1rem;
-            }
-
-            .options-container {
-                padding: 0.75rem;
-            }
-        }
-
         @media (max-width: 576px) {
             .export-container {
                 gap: 6px;
@@ -1163,486 +1406,6 @@ foreach ($appointments as $appointment) {
                 width: 100%;
             }
         }
-        
-        /* Calendar Styling Enhancements */
-        .fc {
-            font-family: inherit;
-        }
-        
-        .fc-toolbar-title {
-            font-size: 1.5rem !important;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        
-        .fc-button {
-            padding: 0.5rem 1rem !important;
-            font-weight: 500 !important;
-            border-radius: 6px !important;
-            box-shadow: none !important;
-            transition: all 0.2s !important;
-        }
-        
-        .fc-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(54, 153, 255, 0.3) !important;
-        }
-        
-        .fc-day-today {
-            background-color: rgba(54, 153, 255, 0.05) !important;
-        }
-        
-        .fc-event {
-            border-radius: 6px !important;
-            padding: 3px 5px !important;
-            font-size: 0.85rem !important;
-            font-weight: 500 !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-            border: none !important;
-            transition: transform 0.2s !important;
-        }
-        
-        .fc-event:hover {
-            transform: scale(1.02);
-        }
-        
-        .fc-daygrid-day-number {
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .fc-col-header-cell-cushion {
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        
-        /* Event Modal Styling */
-        .modal-content {
-            border: none;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .modal-header {
-            padding: 1.25rem;
-            border-bottom: none;
-        }
-        
-        .modal-header .close {
-            opacity: 0.8;
-            text-shadow: none;
-        }
-        
-        .modal-header .close:hover {
-            opacity: 1;
-        }
-        
-        .modal-title {
-            font-weight: 600;
-        }
-        
-        .bg-purple {
-            background-color: #8950FC !important;
-        }
-        
-        .bg-teal {
-            background-color: #1BC5BD !important;
-        }
-        
-        .bg-info-light {
-            background-color: rgba(54, 153, 255, 0.1);
-        }
-        
-        .bg-success-light {
-            background-color: rgba(40, 167, 69, 0.1);
-        }
-        
-        .bg-secondary-light {
-            background-color: rgba(108, 117, 125, 0.1);
-        }
-        
-        .bg-danger-light {
-            background-color: rgba(246, 78, 96, 0.1);
-        }
-        
-        .bg-warning-light {
-            background-color: rgba(255, 168, 0, 0.1);
-        }
-        
-        .bg-orange-light {
-            background-color: rgba(255, 143, 0, 0.1);
-        }
-        
-        .event-date h4 {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .info-item {
-            margin-bottom: 0.5rem;
-        }
-        
-        .info-label {
-            color: #6c757d;
-            margin-right: 0.25rem;
-        }
-        
-        .info-value {
-            color: #333;
-        }
-        
-        .notes, .reason {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-        
-        .patient-info {
-            border-bottom: 1px solid #eee;
-        }
-        
-        .modal-footer {
-            border-top: none;
-            padding: 0.75rem 1.25rem 1.25rem;
-            justify-content: center;
-        }
-        
-        .modal-footer .btn {
-            min-width: 120px;
-            font-weight: 500;
-            border-radius: 6px;
-            padding: 0.5rem 1.5rem;
-            transition: all 0.2s;
-        }
-        
-        .modal-footer .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Availability Form Dark Theme Styling */
-        .availability-form-card {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: slideInUp 0.5s ease;
-            margin-bottom: 2rem;
-        }
-
-        @keyframes slideInUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .availability-form-header {
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem 2rem;
-            color: white;
-        }
-
-        .availability-icon-container {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .availability-icon-container i {
-            font-size: 1.3rem;
-            color: white;
-        }
-
-        .availability-form-title {
-            color: #ecf0f1;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .availability-form-subtitle {
-            color: #bdc3c7;
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-
-        .btn-close-availability {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close-availability:hover {
-            background: rgba(231, 76, 60, 0.8);
-            transform: scale(1.1);
-        }
-
-        .availability-form-body {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            padding: 1.5rem;
-        }
-
-        /* Form Grid */
-        .availability-form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .availability-form-grid .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .availability-form-grid .form-group {
-            margin-bottom: 0;
-        }
-
-        /* Form Controls */
-        .availability-label {
-            display: block;
-            color: #ecf0f1;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .availability-label i {
-            color: #3498db;
-            width: 16px;
-        }
-
-        .availability-input {
-            width: 100%;
-            padding: 0.75rem 0.875rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: white;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .availability-input:focus {
-            outline: none;
-            border-color: #3498db;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
-        }
-
-        .availability-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .availability-input option {
-            background: #34495e;
-            color: white;
-        }
-
-        .availability-input:disabled {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.5);
-            cursor: not-allowed;
-        }
-
-        .availability-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .availability-help-text {
-            color: #bdc3c7;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-            opacity: 0.8;
-        }
-
-        /* Checkbox Styling */
-        .availability-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .availability-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .availability-checkbox-input {
-            width: 18px;
-            height: 18px;
-            accent-color: #3498db;
-            cursor: pointer;
-        }
-
-        .availability-checkbox-label {
-            color: #ecf0f1;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin: 0;
-        }
-
-        .availability-checkbox-label i {
-            color: #3498db;
-            width: 16px;
-        }
-
-        /* Navigation Buttons */
-        .availability-form-navigation {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-buttons-right {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn-availability-cancel,
-        .btn-availability-submit {
-            padding: 0.75rem 1.25rem;
-            border: none;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-availability-cancel {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-            color: white;
-        }
-
-        .btn-availability-cancel:hover {
-            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-availability-submit {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-
-        .btn-availability-submit:hover {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(39, 174, 96, 0.4);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .availability-form-header {
-                padding: 1rem;
-            }
-
-            .availability-form-body {
-                padding: 1rem;
-            }
-
-            .availability-form-grid {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
-            }
-
-            .availability-form-navigation {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .nav-buttons-right {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-availability-cancel,
-            .btn-availability-submit {
-                flex: 1;
-                justify-content: center;
-            }
-        }
-
-        /* --- MODERN HEADER FOR DOCTOR SCHEDULE PLOTTER --- */
-        .modern-header {
-            background: linear-gradient(135deg, #232b3e 0%, #3498db 100%);
-            border-radius: 18px;
-            padding: 2rem 2.5rem 1.5rem 2.5rem;
-            margin-bottom: 2.2rem;
-            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            position: relative;
-        }
-        .modern-header .header-icon {
-            background: linear-gradient(135deg, #2980b9 0%, #1BC5BD 100%);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px rgba(27, 197, 189, 0.15);
-        }
-        .modern-header .header-icon i {
-            color: #fff;
-            font-size: 2rem;
-        }
-        .modern-header .header-title {
-            color: #fff;
-            font-size: 2.1rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.18);
-            margin: 0;
-        }
-        @media (max-width: 576px) {
-            .modern-header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1.2rem 1rem 1rem 1rem;
-                gap: 0.7rem;
-            }
-            .modern-header .header-title {
-                font-size: 1.3rem;
-            }
-            .modern-header .header-icon {
-                width: 44px;
-                height: 44px;
-            }
-        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -1652,11 +1415,17 @@ foreach ($appointments as $appointment) {
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
-                    <div class="modern-header">
-                        <div class="header-icon">
-                            <i class="fas fa-calendar-alt"></i>
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Doctor Schedule Plotter</h1>
                         </div>
-                        <h1 class="header-title">Doctor Schedule Plotter</h1>
+                        <div class="col-sm-6">
+                            <div class="float-sm-right">
+                                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#availability-form" aria-expanded="false" aria-controls="availability-form">
+                                    <i class="fas fa-plus-circle mr-2"></i>Set Availability
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1681,208 +1450,197 @@ foreach ($appointments as $appointment) {
 
                     <!-- Set Your Availability Form -->
                     <div class="collapse" id="availability-form">
-                        <div class="availability-form-card">
-                            <div class="availability-form-header">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="availability-icon-container">
-                                            <i class="fas fa-calendar-plus"></i>
-                                </div>
-                                        <div class="ml-3">
-                                            <h4 class="availability-form-title mb-0">Set Your Availability</h4>
-                                            <p class="availability-form-subtitle mb-0">Configure your schedule and time slots</p>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn-close-availability" data-toggle="collapse" data-target="#availability-form">
-                                        <i class="fas fa-times"></i>
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Set Your Availability</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="availability-form-body">
-                                <form method="post" id="availability-form">
-                                        <!-- Add form token to prevent duplicate submissions -->
-                                        <input type="hidden" name="form_token" value="<?php echo $_SESSION['form_token']; ?>">
+                            <div class="card-body">
+                                <form method="post">
+                                    <!-- Add form token to prevent duplicate submissions -->
+                                    <input type="hidden" name="form_token" value="<?php echo $_SESSION['form_token']; ?>">
                                     
-                                    <!-- Compact Form Grid -->
-                                    <div class="availability-form-grid">
-                                        <!-- Schedule Period -->
-                                                <div class="form-group">
-                                            <label for="start_date" class="availability-label">
-                                                <i class="fas fa-calendar-day mr-2"></i>Start Date *
-                                            </label>
-                                            <input type="date" class="availability-input" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
-                                                </div>
-                                        
-                                                <div class="form-group">
-                                            <label for="end_date" class="availability-label">
-                                                <i class="fas fa-calendar-day mr-2"></i>End Date *
-                                            </label>
-                                            <input type="date" class="availability-input" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
-                                        </div>
-                                        
-                                        <!-- Time Settings -->
-                                                <div class="form-group">
-                                            <label for="start_time" class="availability-label">
-                                                <i class="fas fa-clock mr-2"></i>Start Time *
-                                            </label>
-                                            <input type="time" class="availability-input" id="start_time" name="start_time" required>
-                                                </div>
-                                        
-                                                <div class="form-group">
-                                            <label for="end_time" class="availability-label">
-                                                <i class="fas fa-clock mr-2"></i>End Time *
-                                            </label>
-                                            <input type="time" class="availability-input" id="end_time" name="end_time" required>
-                                        </div>
-                                        
-                                        <!-- Appointment Settings -->
-                                                <div class="form-group">
-                                            <label for="time_slot" class="availability-label">
-                                                <i class="fas fa-user-clock mr-2"></i>Time Slot Duration *
-                                            </label>
-                                            <select class="availability-input" id="time_slot" name="time_slot" required>
-                                                        <option value="15">15 minutes</option>
-                                                        <option value="30" selected>30 minutes</option>
-                                                        <option value="45">45 minutes</option>
-                                                        <option value="60">60 minutes</option>
-                                                    </select>
-                                                </div>
-                                        
-                                                <div class="form-group">
-                                            <label class="availability-label">
-                                                <i class="fas fa-users mr-2"></i>Max Patients per Slot
-                                            </label>
-                                                    <input type="hidden" id="max_patients" name="max_patients" value="1">
-                                            <input type="text" class="availability-input" value="1 Patient per slot" readonly disabled>
-                                            <small class="availability-help-text">Each time slot accepts one appointment only</small>
-                                        </div>
-                                        
-                                        <!-- Additional Settings -->
-                                        <div class="form-group full-width">
-                                            <label for="notes" class="availability-label">
-                                                <i class="fas fa-sticky-note mr-2"></i>Additional Notes
-                                            </label>
-                                            <textarea class="availability-input availability-textarea" id="notes" name="notes" rows="2" placeholder="Any additional information about your availability (optional)"></textarea>
-                                        </div>
-                                        
-                                        <!-- Options -->
-                                        <div class="form-group full-width">
-                                            <label class="availability-label">
-                                                <i class="fas fa-cog mr-2"></i>Options
-                                            </label>
-                                            <div class="availability-options">
-                                                <div class="availability-checkbox">
-                                                    <input type="checkbox" class="availability-checkbox-input" id="skip_weekends" name="skip_weekends" checked>
-                                                    <label class="availability-checkbox-label" for="skip_weekends">
-                                                        <i class="fas fa-calendar-times mr-1"></i>Skip Weekends
-                                                    </label>
-                                        </div>
-                                                <div class="availability-checkbox">
-                                                    <input type="checkbox" class="availability-checkbox-input" id="replace_existing" name="replace_existing">
-                                                    <label class="availability-checkbox-label" for="replace_existing">
-                                                        <i class="fas fa-sync-alt mr-1"></i>Replace existing schedules
-                                                    </label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="start_date" name="start_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" class="form-control" id="end_date" name="end_date" min="<?= date('Y-m-d') ?>" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        
-                                    <!-- Submit Buttons -->
-                                    <div class="availability-form-navigation">
-                                        <div class="nav-buttons-right">
-                                            <button type="button" class="btn-availability-cancel" data-toggle="collapse" data-target="#availability-form">
-                                                <i class="fas fa-times mr-2"></i>Cancel
-                                            </button>
-                                            <button type="submit" name="submit_schedule" class="btn-availability-submit">
-                                                <i class="fas fa-save mr-2"></i>Save Schedule
-                                            </button>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Start Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="start_time" name="start_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">End Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" class="form-control" id="end_time" name="end_time" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Time Slot Duration</label>
+                                                <select class="form-control" id="time_slot" name="time_slot" required>
+                                                    <option value="15">15 minutes</option>
+                                                    <option value="30" selected>30 minutes</option>
+                                                    <option value="45">45 minutes</option>
+                                                    <option value="60">60 minutes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Max Patients per Slot</label>
+                                                <input type="hidden" id="max_patients" name="max_patients" value="1">
+                                                <input type="text" class="form-control" value="1 Patient per slot" readonly disabled>
+                                                <small class="form-text text-muted">Each time slot accepts one appointment only</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="submit" name="submit_schedule" class="btn btn-primary w-100">
+                                                    <i class="fas fa-save mr-2"></i>Save Schedule
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Additional Notes</label>
+                                                <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Any additional information about your availability"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Options</label>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="skip_weekends" name="skip_weekends" checked>
+                                                    <label class="custom-control-label" for="skip_weekends">Skip Weekends</label>
+                                                </div>
+                                                <div class="custom-control custom-checkbox mt-2">
+                                                    <input type="checkbox" class="custom-control-input" id="replace_existing" name="replace_existing">
+                                                    <label class="custom-control-label" for="replace_existing">Replace existing schedules</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        
-                    <!-- Tabs Section -->
+                    </div>
+
+                    <!-- Calendar Section -->
                     <div class="row">
                         <div class="col-12">
                             <div class="card card-outline card-primary">
-                                <div class="card-header d-flex align-items-center justify-content-between">
-                                    <h3 class="card-title mb-0">Schedule Management</h3>
-                                    <button type="button" class="btn btn-set-availability ml-auto" data-toggle="collapse" data-target="#availability-form" aria-expanded="false" aria-controls="availability-form">
-                                        <i class="fas fa-plus-circle mr-2"></i>Set Availability
-                                    </button>
+                                <div class="card-header">
+                                    <h3 class="card-title">Calendar</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Nav tabs -->
-                                    <ul class="nav nav-tabs" id="scheduleTabs" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link active" id="calendar-tab" data-toggle="tab" href="#calendar-tab-pane" role="tab" aria-controls="calendar-tab-pane" aria-selected="true">
-                                                <i class="fas fa-calendar-alt mr-2"></i>Calendar View
-                                            </a>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link" id="schedules-tab" data-toggle="tab" href="#schedules-tab-pane" role="tab" aria-controls="schedules-tab-pane" aria-selected="false">
-                                                <i class="fas fa-list mr-2"></i>Availability Schedules
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    
-                                    <!-- Tab panes -->
-                                    <div class="tab-content" id="scheduleTabsContent">
-                                        <!-- Calendar Tab -->
-                                        <div class="tab-pane fade show active" id="calendar-tab-pane" role="tabpanel" aria-labelledby="calendar-tab">
-                                            <div class="pt-3">
                                     <div id="calendar"></div>
-                                                <div class="calendar-legend-wrapper">
+                                    <div class="calendar-legend-wrapper">
                                         <div class="legend-container">
-                                                        <h5 class="legend-title">Calendar Legend</h5>
-                                                        <div class="legend-grid">
+                                            <h5 class="legend-title">Calendar Legend</h5>
+                                            <div class="legend-grid">
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #1BC5BD"></span>
+                                                    <span class="legend-color" style="background-color: #1BC5BD"></span>
                                                     <span class="legend-text">Approved Schedules</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #FFA800"></span>
+                                                    <span class="legend-color" style="background-color: #FFA800"></span>
                                                     <span class="legend-text">Pending Schedules</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #A0A0A0"></span>
+                                                    <span class="legend-color" style="background-color: #A0A0A0"></span>
                                                     <span class="legend-text">Past Schedules</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #F64E60"></span>
+                                                    <span class="legend-color" style="background-color: #F64E60"></span>
                                                     <span class="legend-text">Regular Appointments</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #FF8F00"></span>
+                                                    <span class="legend-color" style="background-color: #FF8F00"></span>
                                                     <span class="legend-text">Walk-in Appointments</span>
-                                            </div>
+                                                </div>
                                                 <div class="legend-item">
-                                                                <span class="legend-color" style="background-color: #000000"></span>
+                                                    <span class="legend-color" style="background-color: #000000"></span>
                                                     <span class="legend-text">Past Appointments</span>
                                                 </div>
                                             </div>
-                                                        <div class="legend-info mt-3">
-                                                            <div class="alert alert-info mb-2 py-2 px-3 auto-hide-alert">
-                                                                <i class="fas fa-info-circle mr-2"></i>
-                                                                <strong>Click on any event</strong> to view detailed information including patient details, appointment reasons, and schedule notes.
+                                            <div class="legend-info mt-3">
+                                                <div class="alert alert-info mb-2 py-2 px-3">
+                                                    <i class="fas fa-info-circle mr-2"></i>
+                                                    <strong>Click on any event</strong> to view detailed information including patient details, appointment reasons, and schedule notes.
+                                                </div>
+                                                <div class="alert alert-success mb-0 py-2 px-3">
+                                                    <i class="fas fa-calendar-week mr-2"></i>
+                                                    <strong>Navigation Tips:</strong> Use Month/Week/Day buttons to switch views. Click on dates to jump to specific days. Week view shows detailed time slots from 6 AM to 10 PM.
+                                                </div>
+                                            </div>
                                         </div>
-                                                            <div class="alert alert-success mb-0 py-2 px-3 auto-hide-alert">
-                                                                <i class="fas fa-calendar-week mr-2"></i>
-                                                                <strong>Navigation Tips:</strong> Use Month/Week/Day buttons to switch views. Click on dates to jump to specific days. Week view shows detailed time slots from 6 AM to 10 PM.
-                                    </div>
+                                    </div>                           
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Availability Schedules</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>  
                                 </div>
-                                        
-                                        <!-- Schedules Tab -->
-                                        <div class="tab-pane fade" id="schedules-tab-pane" role="tabpanel" aria-labelledby="schedules-tab">
-                                            <div class="pt-3">
-                                                <div class="table-responsive">
-                                    <table id="schedules_table" class="table table-bordered table-striped">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="schedules_table" class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
@@ -1932,31 +1690,28 @@ foreach ($appointments as $appointment) {
                                                 </tr>
                                             <?php } ?>
                                         </tbody>
-                                    </table>
-                                                    <div class="export-container mt-3 mb-3" id="exportContainer">
-                                                        <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
-                                                            <i class="fas fa-copy"></i>
-                                                            <span>Copy</span>
-                                                        </a>
-                                                        <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
-                                                            <i class="fas fa-file-csv"></i>
-                                                            <span>CSV</span>
-                                                        </a>
-                                                        <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
-                                                            <i class="fas fa-file-excel"></i>
-                                                            <span>Excel</span>
-                                                        </a>
-                                                        <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
-                                                            <i class="fas fa-file-pdf"></i>
-                                                            <span>PDF</span>
-                                                        </a>
-                                                        <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
-                                                            <i class="fas fa-print"></i>
-                                                            <span>Print</span>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        </table>
+                                        <div class="export-container mt-3 mb-3" id="exportContainer">
+                                            <a href="#" class="export-action-btn export-copy-btn" id="btnCopy">
+                                                <i class="fas fa-copy"></i>
+                                                <span>Copy</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-csv-btn" id="btnCSV">
+                                                <i class="fas fa-file-csv"></i>
+                                                <span>CSV</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-excel-btn" id="btnExcel">
+                                                <i class="fas fa-file-excel"></i>
+                                                <span>Excel</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-pdf-btn" id="btnPDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                                <span>PDF</span>
+                                            </a>
+                                            <a href="#" class="export-action-btn export-print-btn" id="btnPrint">
+                                                <i class="fas fa-print"></i>
+                                                <span>Print</span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -2041,6 +1796,8 @@ foreach ($appointments as $appointment) {
             // Hide default buttons
             $('.dt-buttons').hide();
 
+
+
             // Enhance search to work with all text content including HTML stripped content
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 if (settings.nTable.id !== 'schedules_table') {
@@ -2109,7 +1866,7 @@ foreach ($appointments as $appointment) {
                 table.button('.buttons-print').trigger();
             });
             
-            // Handle send notification button click for regular appointments
+            // Handle send notification button click
             $(document).on('click', '.send-notification', function() {
                 const appointmentId = $(this).data('appointment-id');
                 const btn = $(this);
@@ -2172,9 +1929,9 @@ foreach ($appointments as $appointment) {
                 });
             });
             
-            // Handle send notification button click for walk-in appointments
+            // Handle walk-in notification sending
             $(document).on('click', '.send-walkin-notification', function() {
-                const walkinId = $(this).data('walkin-id');
+                const appointmentId = $(this).data('appointment-id');
                 const btn = $(this);
                 
                 // Disable button and show loading state
@@ -2185,7 +1942,7 @@ foreach ($appointments as $appointment) {
                     url: 'ajax/admin_notif_walkin_appointment_sender.php',
                     type: 'POST',
                     data: {
-                        walkin_id: walkinId
+                        appointment_id: appointmentId
                     },
                     dataType: 'json',
                     success: function(response) {
@@ -2201,7 +1958,7 @@ foreach ($appointments as $appointment) {
                             
                             // Update button to show sent status
                             btn.removeClass('btn-warning').addClass('btn-success')
-                               .html('<i class="fas fa-check mr-2"></i> Email Sent')
+                               .html('<i class="fas fa-check mr-2"></i> Walk-in Notification Sent')
                                .prop('disabled', true);
                         } else {
                             // Show error message
@@ -2215,14 +1972,14 @@ foreach ($appointments as $appointment) {
                             
                             // Reset button
                             btn.prop('disabled', false)
-                               .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                               .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
                         }
                     },
                     error: function() {
                         // Show error message
                         const alertHtml = `
                             <div class="alert alert-danger alert-dismissible fade show mt-3">
-                                <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the email notification.
+                                <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the walk-in notification.
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         `;
@@ -2230,7 +1987,7 @@ foreach ($appointments as $appointment) {
                         
                         // Reset button
                         btn.prop('disabled', false)
-                           .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                           .html('<i class="fas fa-walking mr-2"></i> Send Walk-in Notification');
                     }
                 });
             });
@@ -2302,15 +2059,8 @@ foreach ($appointments as $appointment) {
                 return;
             }
             
-            // Auto-hide alerts after 5 seconds
-            setTimeout(function() {
-                $('.auto-hide-alert').fadeOut('slow', function() {
-                    $(this).remove();
-                });
-            }, 5000);
-            
             try {
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
                     left: 'prevYear,prev,next,nextYear today',
@@ -2431,56 +2181,73 @@ foreach ($appointments as $appointment) {
                         <div class="schedule-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="event-date text-center py-3 ${props.is_past ? 'bg-secondary-light' : (props.is_approved ? 'bg-success-light' : 'bg-warning-light')}">
-                                        <h4 class="mb-0">${formattedDate}</h4>
+                                    <div class="event-date text-center py-4 ${props.is_past ? 'bg-secondary-light' : (props.is_approved ? 'bg-success-light' : 'bg-warning-light')} border-bottom">
+                                        <div class="date-icon mb-2">
+                                            <i class="fas fa-calendar-day fa-2x ${props.is_past ? 'text-secondary' : (props.is_approved ? 'text-success' : 'text-warning')}"></i>
+                                        </div>
+                                        <h4 class="mb-1 font-weight-bold">${formattedDate}</h4>
+                                        <p class="mb-0 text-muted">
+                                            <i class="fas fa-user-md mr-1"></i>
+                                            Doctor Schedule
+                                        </p>
                                     </div>
                                     <div class="event-info p-4">
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-clock text-muted mr-2"></i>
-                                                    <span class="info-label">Time:</span>
-                                                    <span class="info-value font-weight-bold">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Schedule Time</h6>
+                                                    <p class="mb-0 text-muted">
                                                         ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
                                                         ${event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                    </span>
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-hourglass-half text-muted mr-2"></i>
-                                                    <span class="info-label">Time Slot:</span>
-                                                    <span class="info-value font-weight-bold">${props.time_slot} minutes</span>
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-hourglass-half fa-2x text-success mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Time Slot</h6>
+                                                    <p class="mb-0 text-muted">${props.time_slot} minutes per appointment</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-users text-muted mr-2"></i>
-                                                    <span class="info-label">Max Patients:</span>
-                                                    <span class="info-value font-weight-bold">${props.max_patients}</span>
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-users fa-2x text-warning mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Capacity</h6>
+                                                    <p class="mb-0 text-muted">${props.max_patients} patient per slot</p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-check-circle text-muted mr-2"></i>
-                                                    <span class="info-label">Status:</span>
-                                                    <span class="badge ${statusClass} px-2 py-1">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-${props.is_approved ? 'check-circle' : 'clock'} fa-2x ${props.is_approved ? 'text-success' : 'text-warning'} mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Status</h6>
+                                                    <span class="badge ${statusClass} px-3 py-2">
                                                         ${statusText} ${props.is_past ? '(Past)' : ''}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         ${props.notes ? `
-                                        <div class="notes mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-sticky-note text-muted mr-2"></i> Notes:</h6>
-                                            <p class="mb-0 text-muted">${props.notes}</p>
+                                        <div class="notes-section mt-4 pt-3 border-top">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas fa-sticky-note fa-lg text-info mr-2"></i>
+                                                <h6 class="font-weight-bold mb-0">Additional Notes</h6>
+                                            </div>
+                                            <div class="bg-light rounded p-3">
+                                                <p class="mb-0 text-dark">${props.notes}</p>
+                                            </div>
                                         </div>` : ''}
                                         ${props.approval_notes ? `
-                                        <div class="notes mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-comment-alt text-muted mr-2"></i> Admin Notes:</h6>
-                                            <p class="mb-0 text-muted">${props.approval_notes}</p>
+                                        <div class="notes-section mt-4 pt-3 border-top">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas fa-comment-alt fa-lg text-info mr-2"></i>
+                                                <h6 class="font-weight-bold mb-0">Admin Notes</h6>
+                                            </div>
+                                            <div class="bg-light rounded p-3">
+                                                <p class="mb-0 text-dark">${props.approval_notes}</p>
+                                            </div>
                                         </div>` : ''}
                                     </div>
                                 </div>
@@ -2492,11 +2259,7 @@ foreach ($appointments as $appointment) {
                         
                         // Set header class based on appointment status, whether it's past, and if it's walk-in
                         if (props.is_past) {
-                            if (props.status == 'completed') {
-                                headerClass = 'bg-success text-white';
-                            } else {
-                                headerClass = 'bg-secondary text-white';
-                            }
+                            headerClass = 'bg-dark text-white'; // Black for all past appointments
                         } else if (props.is_walk_in) {
                             headerClass = 'bg-warning text-white'; // Orange for walk-in appointments
                         } else {
@@ -2529,80 +2292,90 @@ foreach ($appointments as $appointment) {
                         
                         // Set background color class based on appointment type and status
                         var bgClass = props.is_past ? 
-                            (props.status == 'completed' ? 'bg-success-light' : 'bg-secondary-light') : 
+                            'bg-dark-light' : 
                             (props.is_walk_in ? 'bg-orange-light' : 'bg-danger-light');
                         
                         var iconColor = props.is_past ? 
-                            (props.status == 'completed' ? 'text-success' : 'text-secondary') : 
+                            'text-dark' : 
                             (props.is_walk_in ? 'text-warning' : 'text-danger');
                         
                         modalContent = `
                         <div class="appointment-details p-0">
                             <div class="card mb-0 border-0">
                                 <div class="card-body p-0">
-                                    <div class="patient-info p-3 ${bgClass}">
+                                    <div class="patient-info p-4 ${bgClass} border-bottom">
                                         <div class="d-flex align-items-center">
                                             <div class="patient-icon mr-3">
-                                                <i class="fas fa-${props.is_walk_in ? 'walking' : 'user-circle'} fa-3x ${iconColor}"></i>
+                                                <div class="patient-avatar bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-${props.is_walk_in ? 'walking' : 'user'} fa-2x ${iconColor}"></i>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h5 class="mb-1">
+                                            <div class="flex-grow-1">
+                                                <h4 class="mb-1 font-weight-bold">
                                                     ${props.patient_name}
                                                     ${props.is_walk_in ? '<span class="badge badge-warning ml-2"><i class="fas fa-walking fa-xs"></i> Walk-in</span>' : ''}
-                                                </h5>
+                                                </h4>
+                                                <p class="mb-1 text-muted">
+                                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                                    ${formattedDate}
+                                                </p>
                                                 <p class="mb-0 text-muted">
-                                                    ${formattedDate} - ${props.is_walk_in ? 'Walk-in appointment' : 'Scheduled appointment'} with Doctor
+                                                    <i class="fas fa-user-md mr-1"></i>
+                                                    ${props.is_walk_in ? 'Walk-in appointment' : 'Scheduled appointment'} with Doctor
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="appointment-info p-4">
-                                        <div class="row mb-3">
+                                        <div class="row mb-4">
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-clock text-muted mr-2"></i>
-                                                    <span class="info-label">Time:</span>
-                                                    <span class="info-value font-weight-bold">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Appointment Time</h6>
+                                                    <p class="mb-0 text-muted font-weight-bold">
                                                         ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                                    </span>
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <i class="fas fa-check-circle text-muted mr-2"></i>
-                                                    <span class="info-label">Status:</span>
-                                                    <span class="badge ${statusClass} px-2 py-1">
+                                                <div class="info-card bg-light rounded p-3 text-center">
+                                                    <i class="fas fa-${props.status == 'completed' ? 'check-circle' : (props.status == 'approved' ? 'calendar-check' : 'exclamation-triangle')} fa-2x ${statusClass.includes('success') ? 'text-success' : (statusClass.includes('primary') ? 'text-primary' : 'text-warning')} mb-2"></i>
+                                                    <h6 class="font-weight-bold mb-1">Status</h6>
+                                                    <span class="badge ${statusClass} px-3 py-2">
                                                         ${statusText} ${props.is_past ? '(Past)' : ''}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         ${props.reason ? `
-                                        <div class="reason mt-3 pt-3 border-top">
-                                            <h6 class="font-weight-bold"><i class="fas fa-comment-medical text-muted mr-2"></i> Reason for Visit:</h6>
-                                            <p class="mb-0 text-muted">${props.reason}</p>
+                                        <div class="reason-section mt-4 pt-3 border-top">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas fa-comment-medical fa-lg text-info mr-2"></i>
+                                                <h6 class="font-weight-bold mb-0">Reason for Visit</h6>
+                                            </div>
+                                            <div class="bg-light rounded p-3">
+                                                <p class="mb-0 text-dark">${props.reason}</p>
+                                            </div>
                                         </div>` : ''}
                                     </div>
                                 </div>
                             </div>
                         </div>`;
                         
-                        // Add send notification button for active appointments
+                        // Add send notification button for active appointments (both regular and walk-in)
                         if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
                             if (props.is_walk_in) {
-                                // For walk-in appointments, check if email is available
                                 modalContent += `
                                 <div class="text-center pb-3">
-                                    <button type="button" class="btn btn-warning send-walkin-notification" data-walkin-id="${props.appointment_id}">
-                                        <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                    <button type="button" class="btn btn-warning send-walkin-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-walking mr-2"></i> Send Walk-in Notification
                                     </button>
                                     <small class="d-block text-muted mt-2">
                                         <i class="fas fa-info-circle mr-1"></i>
-                                        Send confirmation email if patient provided an email address
+                                        Send email notification for this walk-in appointment
                                     </small>
                                 </div>`;
                             } else {
-                                // For regular appointments
                                 modalContent += `
                                 <div class="text-center pb-3">
                                     <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
@@ -2645,7 +2418,7 @@ foreach ($appointments as $appointment) {
                         $(this).remove();
                     });
                 }
-            });
+                            });
             calendar.render();
             } catch (error) {
                 console.error('Error initializing FullCalendar:', error);
