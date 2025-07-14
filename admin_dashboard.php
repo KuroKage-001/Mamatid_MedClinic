@@ -372,6 +372,218 @@ try {
         transform: translateY(-2px) scale(1.01) !important;
       }
     }
+
+    /* Chart Container Styles */
+    .chart-container {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    .chart-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .chart-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      appearance: none;
+      background: #fff;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .chart-period-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .period-label {
+      color: #666;
+      font-weight: 500;
+    }
+
+    .period-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .period-dates {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.25rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      height: 100%;
+    }
+
+    .stat-card-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .stat-card-info h4 {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card-value {
+      color: #333;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .stat-card-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+      color: #666;
+    }
+
+    .stat-card-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .trend-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 500;
+    }
+
+    .trend-indicator.positive {
+      color: #00C851;
+    }
+
+    .trend-indicator.negative {
+      color: #FF5252;
+    }
+
+    .trend-period {
+      color: #666;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 10px;
+      min-height: 300px;
+    }
+
+    .chart-loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary-color);
+    }
+
+    .legend-line {
+      width: 20px;
+      height: 2px;
+      background: #ddd;
+    }
+
+    /* Content Wrapper Padding */
+    .content-wrapper {
+      padding: 1.5rem;
+      background: #f8f9fa;
+    }
+
+    /* Container Fluid Padding */
+    .container-fluid {
+      padding: 0;
+    }
+
+    /* Row Gutters */
+    .row.g-3 {
+      margin: 0;
+    }
+
+    /* Small Box Adjustments */
+    .small-box {
+      margin-bottom: 0;
+      overflow: hidden;
+    }
+
+    .small-box .icon {
+      opacity: 0.2;
+      right: 15px;
+    }
+
+    .small-box:hover .icon {
+      font-size: 70px;
+    }
+
+    .small-box .inner {
+      padding: 20px;
+    }
+
+    .small-box h3 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .small-box p {
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* Chart Select Icon */
+    .chart-select-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
@@ -381,23 +593,15 @@ try {
       include './config/admin_sidebar.php';
     ?>
     <div class="content-wrapper">
-      <section class="content-header">
-        <div class="container-fluid">
-          <div class="row align-items-center mb-4">
-            <div class="col-12">
-              <h1>Dashboard Overview</h1>
-            </div>
-          </div>
-        </div>
-      </section>
+
       
       <section class="content">
         <div class="container-fluid">
           <!-- Stat Boxes -->
-          <div class="row">
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-success">
-                <div class="inner">
+          <div class="row g-3">
+            <div class="col-lg-3 col-md-6 col-12">
+              <div class="small-box" style="background: linear-gradient(135deg, #00C851, #00A844); border-radius: 10px;">
+                <div class="inner text-white">
                   <h3><?php echo $todaysCount; ?></h3>
                   <p>Today's Patients</p>
                 </div>
@@ -406,9 +610,9 @@ try {
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-primary">
-                <div class="inner">
+            <div class="col-lg-3 col-md-6 col-12">
+              <div class="small-box" style="background: linear-gradient(135deg, #2196F3, #1976D2); border-radius: 10px;">
+                <div class="inner text-white">
                   <h3><?php echo $currentWeekCount; ?></h3>
                   <p>Current Week</p>
                 </div>
@@ -417,9 +621,9 @@ try {
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-warning">
-                <div class="inner">
+            <div class="col-lg-3 col-md-6 col-12">
+              <div class="small-box" style="background: linear-gradient(135deg, #FFA726, #FB8C00); border-radius: 10px;">
+                <div class="inner text-white">
                   <h3><?php echo $currentMonthCount; ?></h3>
                   <p>Current Month</p>
                 </div>
@@ -428,9 +632,9 @@ try {
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-              <div class="small-box bg-danger">
-                <div class="inner">
+            <div class="col-lg-3 col-md-6 col-12">
+              <div class="small-box" style="background: linear-gradient(135deg, #FF5252, #E53935); border-radius: 10px;">
+                <div class="inner text-white">
                   <h3><?php echo $currentYearCount; ?></h3>
                   <p>Current Year</p>
                 </div>

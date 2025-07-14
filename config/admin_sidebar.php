@@ -276,7 +276,7 @@ $role_display_name = getRoleDisplayName($user_role);
     --active-bg: rgba(54, 153, 255, 0.15);
     --text-muted: #B5B5C3;
     --sidebar-bg: #1E1E2D;
-    --sidebar-width: 265px;
+    --sidebar-width: 250px;
     --menu-item-radius: 0.6rem;
     --header-color: #6993FF;
 }
@@ -294,10 +294,10 @@ $role_display_name = getRoleDisplayName($user_role);
 /* Brand Logo */
 .brand-link {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 1.25rem 1rem !important;
+    padding: 1rem 0.75rem !important;
     background: linear-gradient(135deg, #3699FF 0%, #2563EB 100%);
     text-align: center;
-    height: 70px;
+    height: 65px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
