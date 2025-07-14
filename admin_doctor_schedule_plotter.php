@@ -959,7 +959,7 @@ foreach ($appointments as $appointment) {
                 "order": [[0, "asc"]]
             });
             
-            // Handle send notification button click
+            // Handle send notification button click for regular appointments
             $(document).on('click', '.send-notification', function() {
                 const appointmentId = $(this).data('appointment-id');
                 const btn = $(this);
@@ -1010,6 +1010,69 @@ foreach ($appointments as $appointment) {
                         const alertHtml = `
                             <div class="alert alert-danger alert-dismissible fade show mt-3">
                                 <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the notification.
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        `;
+                        btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                        
+                        // Reset button
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                    }
+                });
+            });
+            
+            // Handle send notification button click for walk-in appointments
+            $(document).on('click', '.send-walkin-notification', function() {
+                const walkinId = $(this).data('walkin-id');
+                const btn = $(this);
+                
+                // Disable button and show loading state
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Sending...');
+                
+                // Send AJAX request to send walk-in notification
+                $.ajax({
+                    url: 'ajax/admin_notif_walkin_appointment_sender.php',
+                    type: 'POST',
+                    data: {
+                        walkin_id: walkinId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            const alertHtml = `
+                                <div class="alert alert-success alert-dismissible fade show mt-3">
+                                    <i class="fas fa-check-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Update button to show sent status
+                            btn.removeClass('btn-warning').addClass('btn-success')
+                               .html('<i class="fas fa-check mr-2"></i> Email Sent')
+                               .prop('disabled', true);
+                        } else {
+                            // Show error message
+                            const alertHtml = `
+                                <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> ${response.message}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                </div>
+                            `;
+                            btn.closest('.modal-content').find('.modal-body').append(alertHtml);
+                            
+                            // Reset button
+                            btn.prop('disabled', false)
+                               .html('<i class="fas fa-envelope mr-2"></i> Send Email Notification');
+                        }
+                    },
+                    error: function() {
+                        // Show error message
+                        const alertHtml = `
+                            <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while sending the email notification.
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         `;
@@ -1323,22 +1386,29 @@ foreach ($appointments as $appointment) {
                             </div>
                         </div>`;
                         
-                        // Add send notification button for active appointments (only for regular appointments)
-                        if (props.type === 'appointment' && !props.is_past && props.appointment_id && !props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
-                                    <i class="fas fa-envelope mr-2"></i> Send Email Notification
-                                </button>
-                            </div>`;
-                        } else if (props.type === 'appointment' && !props.is_past && props.is_walk_in) {
-                            modalContent += `
-                            <div class="text-center pb-3">
-                                <div class="alert alert-info mb-0">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Walk-in appointments do not require email notifications as the patient is already present.
-                                </div>
-                            </div>`;
+                        // Add send notification button for active appointments
+                        if (props.type === 'appointment' && !props.is_past && props.appointment_id) {
+                            if (props.is_walk_in) {
+                                // For walk-in appointments, check if email is available
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-warning send-walkin-notification" data-walkin-id="${props.appointment_id}">
+                                        <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                    </button>
+                                    <small class="d-block text-muted mt-2">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Send confirmation email if patient provided an email address
+                                    </small>
+                                </div>`;
+                            } else {
+                                // For regular appointments
+                                modalContent += `
+                                <div class="text-center pb-3">
+                                    <button type="button" class="btn btn-primary send-notification" data-appointment-id="${props.appointment_id}">
+                                        <i class="fas fa-envelope mr-2"></i> Send Email Notification
+                                    </button>
+                                </div>`;
+                            }
                         }
                     }
                     

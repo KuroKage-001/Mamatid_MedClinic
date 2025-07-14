@@ -473,4 +473,337 @@ function generateAppointmentConfirmationEmail($appointmentDetails) {
     ';
     
     return $body;
+}
+
+/**
+ * Generate walk-in appointment confirmation email body
+ * 
+ * @param array $appointmentDetails Appointment details
+ * @return string HTML email body
+ */
+function generateWalkinAppointmentEmail($appointmentDetails) {
+    // Extract appointment details
+    $patientName = $appointmentDetails['patient_name'] ?? 'Valued Patient';
+    $providerName = $appointmentDetails['doctor_name'] ?? 'Healthcare Provider';
+    $appointmentDate = isset($appointmentDetails['appointment_date']) ? 
+                     date('l, F j, Y', strtotime($appointmentDetails['appointment_date'])) : '';
+    $appointmentTime = isset($appointmentDetails['appointment_time']) ? 
+                     date('h:i A', strtotime($appointmentDetails['appointment_time'])) : '';
+    $reason = $appointmentDetails['reason'] ?? 'General Consultation';
+
+    // Build email body
+    $body = '
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Walk-in Appointment Confirmation - Mamatid Health Center</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333333;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #dddddd;
+                border-radius: 5px;
+                background-color: #ffffff;
+            }
+            .header {
+                background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 5px 5px 0 0;
+            }
+            .content {
+                padding: 30px;
+                background-color: #ffffff;
+            }
+            .appointment-details {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #3498db;
+            }
+            .appointment-details p {
+                margin: 8px 0;
+            }
+            .footer {
+                text-align: center;
+                font-size: 12px;
+                color: #666666;
+                margin-top: 30px;
+                border-top: 1px solid #eeeeee;
+                padding-top: 20px;
+            }
+            .important-notice {
+                background-color: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 5px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .contact-info {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-top: 20px;
+            }
+            .walkin-badge {
+                display: inline-block;
+                background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+                color: white;
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2 style="margin:0;">Mamatid Health Center</h2>
+                <p style="margin:5px 0 0 0;">Walk-in Appointment Confirmation<span class="walkin-badge">WALK-IN</span></p>
+            </div>
+            <div class="content">
+                <p>Dear ' . htmlspecialchars($patientName) . ',</p>
+                
+                <p>Thank you for choosing Mamatid Health Center for your healthcare needs. This email confirms your walk-in appointment details.</p>
+                
+                <div class="appointment-details">
+                    <h3 style="margin-top:0;color:#3498db;">Appointment Information</h3>
+                    <p><strong>Healthcare Provider:</strong> ' . htmlspecialchars($providerName) . '</p>
+                    <p><strong>Date:</strong> ' . htmlspecialchars($appointmentDate) . '</p>
+                    <p><strong>Time:</strong> ' . htmlspecialchars($appointmentTime) . '</p>
+                    <p><strong>Purpose of Visit:</strong> ' . htmlspecialchars($reason) . '</p>
+                    <p><strong>Appointment Type:</strong> <span style="color: #FFA800; font-weight: bold;">Walk-in Appointment</span></p>
+                </div>
+                
+                <div class="important-notice">
+                    <h4 style="margin-top:0;color:#856404;">Important Information</h4>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>This is a <strong>walk-in appointment</strong> that was booked on your behalf by our staff.</li>
+                        <li>Please arrive at least 10 minutes before your scheduled time.</li>
+                        <li>Bring a valid government-issued ID for registration.</li>
+                        <li>If you have any medical records or current medications, please bring them.</li>
+                        <li>Wear a face mask within the facility premises.</li>
+                    </ul>
+                </div>
+                
+                <div class="contact-info">
+                    <h4 style="margin-top:0;color:#3498db;">Need to Make Changes?</h4>
+                    <p>If you need to reschedule or cancel your appointment, please contact us at least 24 hours in advance through:</p>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>Phone: 0991-871-9610</li>
+                        <li>Email: mamatid.medclinic@gmail.com</li>
+                    </ul>
+                </div>
+
+                <p>We look forward to providing you with quality healthcare services.</p>
+                
+                <p>Best regards,<br>
+                <strong>Mamatid Health Center Team</strong></p>
+            </div>
+            <div class="footer">
+                <p>This is an automated message. Please do not reply to this email.</p>
+                <p>&copy; ' . date('Y') . ' Mamatid Health Center. All rights reserved.</p>
+                <p>Address: 123 Mamatid Street, Cabuyao City, Laguna</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ';
+    
+    return $body;
+} 
+
+/**
+ * Generate walk-in appointment reminder email body
+ * 
+ * @param array $appointmentDetails Appointment details
+ * @return string HTML email body
+ */
+function generateWalkinAppointmentReminderEmail($appointmentDetails) {
+    // Extract appointment details
+    $patientName = $appointmentDetails['patient_name'] ?? 'Valued Patient';
+    $providerName = $appointmentDetails['doctor_name'] ?? 'Healthcare Provider';
+    $appointmentDate = isset($appointmentDetails['appointment_date']) ? 
+                     date('l, F j, Y', strtotime($appointmentDetails['appointment_date'])) : '';
+    $appointmentTime = isset($appointmentDetails['appointment_time']) ? 
+                     date('h:i A', strtotime($appointmentDetails['appointment_time'])) : '';
+    $reason = $appointmentDetails['reason'] ?? 'General Consultation';
+
+    // Build email body
+    $body = '
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Appointment Reminder - Mamatid Health Center</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333333;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #dddddd;
+                border-radius: 5px;
+                background-color: #ffffff;
+            }
+            .header {
+                background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 5px 5px 0 0;
+            }
+            .content {
+                padding: 30px;
+                background-color: #ffffff;
+            }
+            .appointment-details {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #FFA800;
+            }
+            .appointment-details p {
+                margin: 8px 0;
+            }
+            .footer {
+                text-align: center;
+                font-size: 12px;
+                color: #666666;
+                margin-top: 30px;
+                border-top: 1px solid #eeeeee;
+                padding-top: 20px;
+            }
+            .reminder-notice {
+                background-color: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 5px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .checklist {
+                background-color: #e8f5e8;
+                border: 1px solid #c8e6c9;
+                border-radius: 5px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .contact-info {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-top: 20px;
+            }
+            .walkin-badge {
+                display: inline-block;
+                background: linear-gradient(135deg, #FFA800 0%, #F09000 100%);
+                color: white;
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+            .checklist ul {
+                list-style: none;
+                padding-left: 0;
+            }
+            .checklist li {
+                padding: 5px 0;
+                position: relative;
+                padding-left: 25px;
+            }
+            .checklist li:before {
+                content: "✓";
+                position: absolute;
+                left: 0;
+                color: #4caf50;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2 style="margin:0;">Mamatid Health Center</h2>
+                <p style="margin:5px 0 0 0;">Appointment Reminder<span class="walkin-badge">WALK-IN</span></p>
+            </div>
+            <div class="content">
+                <p>Dear ' . htmlspecialchars($patientName) . ',</p>
+                
+                <p>This is a friendly reminder about your upcoming walk-in appointment at Mamatid Health Center. We look forward to seeing you!</p>
+                
+                <div class="appointment-details">
+                    <h3 style="margin-top:0;color:#FFA800;">Your Appointment Details</h3>
+                    <p><strong>Healthcare Provider:</strong> ' . htmlspecialchars($providerName) . '</p>
+                    <p><strong>Date:</strong> ' . htmlspecialchars($appointmentDate) . '</p>
+                    <p><strong>Time:</strong> ' . htmlspecialchars($appointmentTime) . '</p>
+                    <p><strong>Purpose of Visit:</strong> ' . htmlspecialchars($reason) . '</p>
+                    <p><strong>Appointment Type:</strong> <span style="color: #FFA800; font-weight: bold;">Walk-in Appointment</span></p>
+                </div>
+                
+                <div class="checklist">
+                    <h4 style="margin-top:0;color:#2e7d32;">Pre-Appointment Checklist</h4>
+                    <ul>
+                        <li>Plan to arrive 10-15 minutes early</li>
+                        <li>Bring your valid ID for verification</li>
+                        <li>Bring any relevant medical records or test results</li>
+                        <li>Wear a face mask and follow health protocols</li>
+                        <li>Bring a list of current medications (if any)</li>
+                        <li>Prepare any questions you may have for the doctor</li>
+                    </ul>
+                </div>
+                
+                <div class="reminder-notice">
+                    <h4 style="margin-top:0;color:#856404;">Important Reminder</h4>
+                    <p>This is a <strong>walk-in appointment</strong> that was booked on your behalf. Please arrive on time to ensure we can provide you with the best care possible.</p>
+                </div>
+                
+                <div class="contact-info">
+                    <h4 style="margin-top:0;color:#3498db;">Need to Make Changes?</h4>
+                    <p>If you need to reschedule or cancel your appointment, please contact us as soon as possible so we can accommodate other patients who may need care:</p>
+                    <ul style="padding-left:20px;margin:10px 0;">
+                        <li>Phone: 0991-871-9610</li>
+                        <li>Email: mamatid.medclinic@gmail.com</li>
+                    </ul>
+                </div>
+
+                <p>We appreciate you choosing Mamatid Health Center for your healthcare needs.</p>
+                
+                <p>Best regards,<br>
+                <strong>Mamatid Health Center Team</strong></p>
+            </div>
+            <div class="footer">
+                <p>This is an automated message. Please do not reply to this email.</p>
+                <p>&copy; ' . date('Y') . ' Mamatid Health Center. All rights reserved.</p>
+                <p>Address: 123 Mamatid Street, Cabuyao City, Laguna</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ';
+    
+    return $body;
 } 

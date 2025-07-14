@@ -73,7 +73,8 @@ $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as docto
                           WHEN a.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN 'doctor'
                           WHEN a.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN 'staff'
                           ELSE 'unknown'
-                      END as schedule_type
+                      END as schedule_type,
+                      'regular' as appointment_type
                       FROM admin_clients_appointments a
                       LEFT JOIN admin_user_accounts u ON a.doctor_id = u.id
                       WHERE a.status != 'cancelled'
@@ -81,6 +82,22 @@ $appointmentsQuery = "SELECT a.*, u.display_name as doctor_name, u.role as docto
 $appointmentsStmt = $con->prepare($appointmentsQuery);
 $appointmentsStmt->execute();
 $allAppointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch all walk-in appointments for calendar display
+$walkinAppointmentsQuery = "SELECT w.*, u.display_name as doctor_name, u.role as doctor_role,
+                           CASE 
+                               WHEN w.schedule_id IN (SELECT id FROM admin_doctor_schedules) THEN 'doctor'
+                               WHEN w.schedule_id IN (SELECT id FROM admin_hw_schedules) THEN 'staff'
+                               ELSE 'unknown'
+                           END as schedule_type,
+                           'walk-in' as appointment_type
+                           FROM admin_walkin_appointments w
+                           LEFT JOIN admin_user_accounts u ON w.provider_id = u.id
+                           WHERE w.status != 'cancelled'
+                           ORDER BY w.appointment_date ASC, w.appointment_time ASC";
+$walkinAppointmentsStmt = $con->prepare($walkinAppointmentsQuery);
+$walkinAppointmentsStmt->execute();
+$allWalkinAppointments = $walkinAppointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Format all schedules and appointments for calendar
 $calendarEvents = [];
@@ -177,6 +194,54 @@ foreach ($allAppointments as $appointment) {
             'reason' => $appointment['reason'],
             'status' => $appointment['status'],
             'schedule_type' => $appointment['schedule_type'],
+            'appointment_type' => 'regular',
+            'is_past' => $isPast
+        ]
+    ];
+}
+
+// Add walk-in appointments to calendar
+foreach ($allWalkinAppointments as $walkinAppointment) {
+    $appointmentTime = strtotime($walkinAppointment['appointment_date'] . ' ' . $walkinAppointment['appointment_time']);
+    $isPast = $appointmentTime < time();
+    
+    // Set color for walk-in appointments - distinct from regular appointments
+    $color = '#FF6B35'; // Orange for active walk-in appointments
+    if ($isPast) {
+        if ($walkinAppointment['status'] == 'completed') {
+            $color = '#20c997'; // Teal for completed walk-in
+        } else {
+            $color = '#6c757d'; // Gray for past but not completed
+        }
+    } else {
+        switch($walkinAppointment['status']) {
+            case 'approved':
+                $color = '#FF6B35'; // Orange for approved walk-in
+                break;
+            case 'pending':
+                $color = '#fd7e14'; // Darker orange for pending walk-in
+                break;
+            default:
+                $color = '#FF6B35'; // Orange for others
+        }
+    }
+    
+    $calendarEvents[] = [
+        'id' => 'walkin_appointment_' . $walkinAppointment['id'],
+        'title' => 'Walk-in: ' . $walkinAppointment['patient_name'],
+        'start' => $walkinAppointment['appointment_date'] . 'T' . $walkinAppointment['appointment_time'],
+        'end' => $walkinAppointment['appointment_date'] . 'T' . $walkinAppointment['appointment_time'],
+        'backgroundColor' => $color,
+        'borderColor' => $color,
+        'extendedProps' => [
+            'type' => 'walkin_appointment',
+            'patient_name' => $walkinAppointment['patient_name'],
+            'doctor_name' => $walkinAppointment['doctor_name'],
+            'doctor_role' => $walkinAppointment['doctor_role'],
+            'reason' => $walkinAppointment['reason'],
+            'status' => $walkinAppointment['status'],
+            'schedule_type' => $walkinAppointment['schedule_type'],
+            'appointment_type' => 'walk-in',
             'is_past' => $isPast
         ]
     ];
@@ -186,6 +251,7 @@ foreach ($allAppointments as $appointment) {
 $totalDoctorSchedules = count($doctorSchedules);
 $totalStaffSchedules = count($staffSchedules);
 $totalAppointments = count($allAppointments);
+$totalWalkinAppointments = count($allWalkinAppointments);
 $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
     return !$schedule['is_approved'];
 }));
@@ -622,6 +688,10 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
 
         .bg-gradient-warning {
             background: linear-gradient(135deg, var(--warning-color), #cc8400);
+        }
+
+        .bg-gradient-walkin {
+            background: linear-gradient(135deg, #FF6B35, #fd7e14);
         }
 
         /* Additional badge styles */
@@ -1139,8 +1209,6 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
         /* Enhanced Table Styling */
         .table tbody tr:hover {
             background-color: rgba(54, 153, 255, 0.05);
-            transform: scale(1.01);
-            transition: all 0.2s ease;
         }
 
         /* Badge enhancements for better visibility */
@@ -1430,50 +1498,74 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
 
 
         /* Modern Export Actions CSS */
+        
+        /* Tab Styling */
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-color: transparent;
+            color: var(--primary-color);
+            background-color: rgba(54, 153, 255, 0.05);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .tab-content {
+            padding-top: 1rem;
+        }
+        
+        .tab-pane {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
-<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
+<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed" style="background: #f4f6fa;">
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar and Sidebar -->
         <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Content Header -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row align-items-center mb-4">
-                        <div class="col-12 col-md-6" style="padding-left: 20px;">
-                            <h1>Appointment Plotter</h1>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+        <div class="content-wrapper" style="background: #f4f6fa; padding-top: 18px; padding-left: 18px; padding-right: 18px;">
             <!-- Main content -->
             <section class="content">
-                <!-- Display Messages -->
-                <?php if ($message): ?>
-                <div class="alert alert-info alert-dismissible fade show">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    <?php echo $message; ?>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                </div>
-                <?php endif; ?>
-                
-                <?php if ($error): ?>
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
-                    <?php echo $error; ?>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                </div>
-                <?php endif; ?>
-
                 <!-- Statistics Overview -->
-                <div class="row mb-4">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card bg-gradient-info text-white stats-card">
+                <div class="row mb-4 g-4" style="margin-top: 0; padding-top: 0;">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-gradient-info text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.10);">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
@@ -1498,8 +1590,8 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card bg-gradient-success text-white stats-card">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-gradient-success text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(27,197,189,0.10);">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
@@ -1517,16 +1609,16 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="card bg-gradient-primary text-white stats-card">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-gradient-primary text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.10);">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h3 class="mb-1"><?php echo $totalAppointments; ?></h3>
-                                        <p class="mb-1 font-weight-bold">Total Appointments</p>
+                                        <p class="mb-1 font-weight-bold">Regular Appointments</p>
                                         <small class="d-block opacity-75">
-                                            <i class="fas fa-calendar-day mr-1"></i>
-                                            All Providers
+                                            <i class="fas fa-calendar-check mr-1"></i>
+                                            Scheduled Bookings
                                         </small>
                                     </div>
                                     <div class="icon">
@@ -1536,11 +1628,30 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card bg-gradient-walkin text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(255,107,53,0.10);">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1"><?php echo $totalWalkinAppointments; ?></h3>
+                                        <p class="mb-1 font-weight-bold">Walk-in Appointments</p>
+                                        <small class="d-block opacity-75">
+                                            <i class="fas fa-walking mr-1"></i>
+                                            Same Day Bookings
+                                        </small>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-walking fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Calendar Overview -->
-                <div class="card card-outline card-primary mb-4">
-                    <div class="card-header">
+                <div class="card card-outline card-primary mb-4" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.08);">
+                    <div class="card-header" style="border-radius: 18px 18px 0 0;">
                         <h3 class="card-title">
                             <i class="fas fa-calendar-alt mr-2"></i>
                             Schedule Overview Calendar
@@ -1551,7 +1662,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="border-radius: 0 0 18px 18px;">
                         <div id="calendar"></div>
                         <div class="mt-4">
                             <div class="legend-container">
@@ -1586,6 +1697,14 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                         <span class="legend-text">Completed Appointments</span>
                                     </div>
                                     <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #FF6B35;"></span>
+                                        <span class="legend-text">Walk-in Appointments</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #20c997;"></span>
+                                        <span class="legend-text">Completed Walk-ins</span>
+                                    </div>
+                                    <div class="legend-item">
                                         <span class="legend-color" style="background-color: #A0A0A0;"></span>
                                         <span class="legend-text">Past Schedules</span>
                                     </div>
@@ -1595,366 +1714,374 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                     </div>
                 </div>
 
-                <!-- Doctor Schedules Card -->
-                <div class="card card-outline card-info mb-4">
+                <!-- Schedules Tabs -->
+                <div class="card card-outline card-primary mb-4">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <h3 class="card-title mb-0">
-                                <i class="fas fa-calendar-alt mr-2"></i>
-                                Doctor Schedules
-                            </h3>
-                            <div class="d-flex align-items-center gap-2">
-                                <?php if ($pendingApprovals > 0): ?>
-                                <button class="btn btn-success" onclick="approveAllPending()">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                    Approve All Pending (<?php echo $pendingApprovals; ?>)
-                                </button>
-                                <?php else: ?>
-                                <div class="alert alert-success mb-0 py-2 px-3">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                    All Schedules Approved
-                                </div>
-                                <?php endif; ?>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <ul class="nav nav-tabs card-header-tabs" id="schedulesTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="doctor-tab" data-toggle="tab" href="#doctor-schedules" role="tab" aria-controls="doctor-schedules" aria-selected="true">
+                                    <i class="fas fa-user-md mr-2"></i>
+                                    Doctor Schedules
+                                    <?php if ($pendingApprovals > 0): ?>
+                                        <span class="badge badge-warning ml-2"><?php echo $pendingApprovals; ?></span>
+                                    <?php endif; ?>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="staff-tab" data-toggle="tab" href="#staff-schedules" role="tab" aria-controls="staff-schedules" aria-selected="false">
+                                    <i class="fas fa-users mr-2"></i>
+                                    Staff Schedules
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="doctorSchedules" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Doctor</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Time Slot</th>
-                                        <th>Max Patients</th>
-                                        <th>Status</th>
-                                        <th>Notes</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($doctorSchedules as $schedule): ?>
-                                    <tr data-schedule-id="<?php echo $schedule['id']; ?>" 
-                                        data-schedule-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"
-                                        class="schedule-row <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved-row' : 'pending-row'; ?>">
-                                        <td><?php echo htmlspecialchars($schedule['doctor_name']); ?></td>
-                                        <td><?php echo date('M d, Y (D)', strtotime($schedule['schedule_date'])); ?></td>
-                                        <td>
-                                            <?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . 
-                                                     date('h:i A', strtotime($schedule['end_time'])); ?>
-                                        </td>
-                                        <td><?php echo $schedule['time_slot_minutes']; ?> minutes</td>
-                                        <td><?php echo $schedule['max_patients']; ?></td>
-                                        <td>
-                                            <?php if (isset($schedule['is_approved'])): ?>
-                                                <span class="badge badge-<?php echo $schedule['is_approved'] ? 'success' : 'warning'; ?>">
-                                                    <?php echo $schedule['is_approved'] ? 'Approved' : 'Pending'; ?>
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge badge-warning">Pending</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($schedule['notes'] ?? ''); ?></td>
-                                        <td>
-                                            <button type="button" class="btn-manage-schedule" 
-                                                    data-toggle="modal" 
-                                                    data-target="#scheduleModal<?php echo $schedule['id']; ?>"
-                                                    title="Manage Doctor Schedule">
-                                                <i class="fas fa-cog mr-2"></i>
-                                                <span class="btn-text">Manage</span>
-                                                <div class="btn-status-indicator status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"></div>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    
-                                    <!-- Modern Schedule Management Modal -->
-                                    <div class="modal fade" id="scheduleModal<?php echo $schedule['id']; ?>">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content schedule-manage-card">
-                                                <div class="modal-header schedule-manage-header">
-                                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="schedule-icon-container">
-                                                                <i class="fas fa-user-md"></i>
-                                                            </div>
-                                                            <div class="ml-3">
-                                                                <h4 class="schedule-manage-title mb-0">Doctor Schedule Management</h4>
-                                                                <p class="schedule-manage-subtitle mb-0">Review and approve doctor availability</p>
-                                                            </div>
-                                                        </div>
-                                                        <button type="button" class="btn-close-schedule" data-dismiss="modal">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-body schedule-manage-body">
-                                                    <!-- Doctor Info Section -->
-                                                    <div class="schedule-info-section">
-                                                        <div class="doctor-info-card">
-                                                            <div class="d-flex align-items-center mb-3">
-                                                                <div class="doctor-avatar">
-                                                                    <i class="fas fa-user-md fa-2x text-primary"></i>
+                        <div class="tab-content" id="schedulesTabContent">
+                            <!-- Doctor Schedules Tab -->
+                            <div class="tab-pane fade show active" id="doctor-schedules" role="tabpanel" aria-labelledby="doctor-tab">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Doctor Schedule Management</h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <?php if ($pendingApprovals > 0): ?>
+                                        <button class="btn btn-success btn-sm" onclick="approveAllPending()">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            Approve All Pending (<?php echo $pendingApprovals; ?>)
+                                        </button>
+                                        <?php else: ?>
+                                        <div class="alert alert-success mb-0 py-2 px-3">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            All Schedules Approved
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table id="doctorSchedules" class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Doctor</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Time Slot</th>
+                                                <th>Max Patients</th>
+                                                <th>Status</th>
+                                                <th>Notes</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($doctorSchedules as $schedule): ?>
+                                            <tr data-schedule-id="<?php echo $schedule['id']; ?>" 
+                                                data-schedule-status="<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"
+                                                class="schedule-row <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved-row' : 'pending-row'; ?>">
+                                                <td><?php echo htmlspecialchars($schedule['doctor_name']); ?></td>
+                                                <td><?php echo date('M d, Y (D)', strtotime($schedule['schedule_date'])); ?></td>
+                                                <td>
+                                                    <?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . 
+                                                             date('h:i A', strtotime($schedule['end_time'])); ?>
+                                                </td>
+                                                <td><?php echo $schedule['time_slot_minutes']; ?> minutes</td>
+                                                <td><?php echo $schedule['max_patients']; ?></td>
+                                                <td>
+                                                    <?php if (isset($schedule['is_approved'])): ?>
+                                                        <span class="badge badge-<?php echo $schedule['is_approved'] ? 'success' : 'warning'; ?>">
+                                                            <?php echo $schedule['is_approved'] ? 'Approved' : 'Pending'; ?>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-warning">Pending</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($schedule['notes'] ?? ''); ?></td>
+                                                <td>
+                                                    <button type="button" class="btn-manage-schedule" 
+                                                            data-toggle="modal" 
+                                                            data-target="#scheduleModal<?php echo $schedule['id']; ?>"
+                                                            title="Manage Doctor Schedule">
+                                                        <i class="fas fa-cog mr-2"></i>
+                                                        <span class="btn-text">Manage</span>
+                                                        <div class="btn-status-indicator status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>"></div>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            
+                                            <!-- Modern Schedule Management Modal -->
+                                            <div class="modal fade" id="scheduleModal<?php echo $schedule['id']; ?>">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content schedule-manage-card">
+                                                        <div class="modal-header schedule-manage-header">
+                                                            <div class="d-flex align-items-center justify-content-between w-100">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="schedule-icon-container">
+                                                                        <i class="fas fa-user-md"></i>
+                                                                    </div>
+                                                                    <div class="ml-3">
+                                                                        <h4 class="schedule-manage-title mb-0">Doctor Schedule Management</h4>
+                                                                        <p class="schedule-manage-subtitle mb-0">Review and approve doctor availability</p>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="ml-3">
-                                                                    <h5 class="doctor-name mb-1">Dr. <?php echo htmlspecialchars($schedule['doctor_name']); ?></h5>
-                                                                    <p class="doctor-specialty mb-0 text-muted">Medical Professional</p>
-                                                                </div>
+                                                                <button type="button" class="btn-close-schedule" data-dismiss="modal">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
-                                                    </div>
-
-                                                    <!-- Schedule Details Grid -->
-                                                    <div class="schedule-details-grid">
-                                                        <div class="detail-card">
-                                                            <div class="detail-icon">
-                                                                <i class="fas fa-calendar-day text-info"></i>
-                                                            </div>
-                                                            <div class="detail-content">
-                                                                <label class="detail-label">Schedule Date</label>
-                                                                <p class="detail-value"><?php echo date('F d, Y', strtotime($schedule['schedule_date'])); ?></p>
-                                                                <small class="detail-extra"><?php echo date('l', strtotime($schedule['schedule_date'])); ?></small>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="detail-card">
-                                                            <div class="detail-icon">
-                                                                <i class="fas fa-clock text-warning"></i>
-                                                            </div>
-                                                            <div class="detail-content">
-                                                                <label class="detail-label">Time Range</label>
-                                                                <p class="detail-value"><?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])); ?></p>
-                                                                <small class="detail-extra"><?php echo $schedule['time_slot_minutes']; ?> min slots</small>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="detail-card">
-                                                            <div class="detail-icon">
-                                                                <i class="fas fa-users text-success"></i>
-                                                            </div>
-                                                            <div class="detail-content">
-                                                                <label class="detail-label">Capacity</label>
-                                                                <p class="detail-value"><?php echo $schedule['max_patients']; ?> patients</p>
-                                                                <small class="detail-extra">per time slot</small>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="detail-card">
-                                                            <div class="detail-icon">
-                                                                <i class="fas fa-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'check-circle text-success' : 'clock text-warning'; ?>"></i>
-                                                            </div>
-                                                            <div class="detail-content">
-                                                                <label class="detail-label">Current Status</label>
-                                                                <p class="detail-value">
-                                                                    <span class="status-badge status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>">
-                                                                        <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Approved' : 'Pending'; ?>
-                                                                    </span>
-                                                                </p>
-                                                                <small class="detail-extra"><?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Ready for booking' : 'Awaiting approval'; ?></small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Management Form -->
-                                                    <form method="post" class="schedule-manage-form">
-                                                        <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
-                                                        
-                                                        <!-- Approval Section -->
-                                                        <div class="approval-section">
-                                                            <div class="section-header">
-                                                                <h6 class="section-title">
-                                                                    <i class="fas fa-clipboard-check mr-2"></i>Approval Management
-                                                                </h6>
-                                                                <p class="section-description">Review and approve this doctor's schedule for patient booking</p>
-                                                            </div>
-                                                            
-                                                            <div class="approval-toggle-container">
-                                                                <div class="custom-control custom-switch custom-switch-lg">
-                                                                    <input type="checkbox" class="custom-control-input" 
-                                                                           id="approveSwitch<?php echo $schedule['id']; ?>" 
-                                                                           name="is_approved" 
-                                                                           <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'checked' : ''; ?>>
-                                                                    <label class="custom-control-label approve-switch-label" 
-                                                                           for="approveSwitch<?php echo $schedule['id']; ?>">
-                                                                        <span class="switch-text">
-                                                                            <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Schedule Approved' : 'Schedule Not Approved'; ?>
-                                                                        </span>
-                                                                        <small class="switch-subtext">
-                                                                            <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Patients can book appointments' : 'Schedule is hidden from patients'; ?>
-                                                                        </small>
-                                                                    </label>
+                                                        <div class="modal-body schedule-manage-body">
+                                                            <!-- Doctor Info Section -->
+                                                            <div class="schedule-info-section">
+                                                                <div class="doctor-info-card">
+                                                                    <div class="d-flex align-items-center mb-3">
+                                                                        <div class="doctor-avatar">
+                                                                            <i class="fas fa-user-md fa-2x text-primary"></i>
+                                                                        </div>
+                                                                        <div class="ml-3">
+                                                                            <h5 class="doctor-name mb-1">Dr. <?php echo htmlspecialchars($schedule['doctor_name']); ?></h5>
+                                                                            <p class="doctor-specialty mb-0 text-muted">Medical Professional</p>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <!-- Notes Section -->
-                                                        <div class="notes-section">
-                                                            <div class="section-header">
-                                                                <h6 class="section-title">
-                                                                    <i class="fas fa-sticky-note mr-2"></i>Administrative Notes
-                                                                </h6>
-                                                                <p class="section-description">Add any notes or comments about this schedule approval</p>
-                                                            </div>
-                                                            
-                                                            <div class="notes-input-container">
-                                                                <textarea name="approval_notes" class="notes-textarea" rows="4" 
-                                                                          placeholder="Enter your notes about this schedule approval..."><?php echo htmlspecialchars($schedule['approval_notes'] ?? ''); ?></textarea>
-                                                            </div>
-                                                        </div>
+                                                            <!-- Schedule Details Grid -->
+                                                            <div class="schedule-details-grid">
+                                                                <div class="detail-card">
+                                                                    <div class="detail-icon">
+                                                                        <i class="fas fa-calendar-day text-info"></i>
+                                                                    </div>
+                                                                    <div class="detail-content">
+                                                                        <label class="detail-label">Schedule Date</label>
+                                                                        <p class="detail-value"><?php echo date('F d, Y', strtotime($schedule['schedule_date'])); ?></p>
+                                                                        <small class="detail-extra"><?php echo date('l', strtotime($schedule['schedule_date'])); ?></small>
+                                                                    </div>
+                                                                </div>
 
-                                                        <!-- Doctor's Original Notes -->
-                                                        <?php if (!empty($schedule['notes'])): ?>
-                                                        <div class="doctor-notes-section">
-                                                            <div class="section-header">
-                                                                <h6 class="section-title">
-                                                                    <i class="fas fa-comment-medical mr-2"></i>Doctor's Notes
-                                                                </h6>
-                                                                <p class="section-description">Notes provided by the doctor</p>
-                                                            </div>
-                                                            
-                                                            <div class="doctor-notes-display">
-                                                                <p><?php echo htmlspecialchars($schedule['notes']); ?></p>
-                                                            </div>
-                                                        </div>
-                                                        <?php endif; ?>
+                                                                <div class="detail-card">
+                                                                    <div class="detail-icon">
+                                                                        <i class="fas fa-clock text-warning"></i>
+                                                                    </div>
+                                                                    <div class="detail-content">
+                                                                        <label class="detail-label">Time Range</label>
+                                                                        <p class="detail-value"><?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])); ?></p>
+                                                                        <small class="detail-extra"><?php echo $schedule['time_slot_minutes']; ?> min slots</small>
+                                                                    </div>
+                                                                </div>
 
-                                                        <!-- Action Buttons -->
-                                                        <div class="action-buttons">
-                                                            <button type="button" class="btn-cancel-schedule" data-dismiss="modal">
-                                                                <i class="fas fa-times mr-2"></i>Cancel
-                                                            </button>
-                                                            <button type="submit" name="approve_schedule" class="btn-save-schedule">
-                                                                <i class="fas fa-save mr-2"></i>Save Changes
-                                                            </button>
+                                                                <div class="detail-card">
+                                                                    <div class="detail-icon">
+                                                                        <i class="fas fa-users text-success"></i>
+                                                                    </div>
+                                                                    <div class="detail-content">
+                                                                        <label class="detail-label">Capacity</label>
+                                                                        <p class="detail-value"><?php echo $schedule['max_patients']; ?> patients</p>
+                                                                        <small class="detail-extra">per time slot</small>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="detail-card">
+                                                                    <div class="detail-icon">
+                                                                        <i class="fas fa-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'check-circle text-success' : 'clock text-warning'; ?>"></i>
+                                                                    </div>
+                                                                    <div class="detail-content">
+                                                                        <label class="detail-label">Current Status</label>
+                                                                        <p class="detail-value">
+                                                                            <span class="status-badge status-<?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'approved' : 'pending'; ?>">
+                                                                                <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Approved' : 'Pending'; ?>
+                                                                            </span>
+                                                                        </p>
+                                                                        <small class="detail-extra"><?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Ready for booking' : 'Awaiting approval'; ?></small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Management Form -->
+                                                            <form method="post" class="schedule-manage-form">
+                                                                <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
+                                                                
+                                                                <!-- Approval Section -->
+                                                                <div class="approval-section">
+                                                                    <div class="section-header">
+                                                                        <h6 class="section-title">
+                                                                            <i class="fas fa-clipboard-check mr-2"></i>Approval Management
+                                                                        </h6>
+                                                                        <p class="section-description">Review and approve this doctor's schedule for patient booking</p>
+                                                                    </div>
+                                                                    
+                                                                    <div class="approval-toggle-container">
+                                                                        <div class="custom-control custom-switch custom-switch-lg">
+                                                                            <input type="checkbox" class="custom-control-input" 
+                                                                                   id="approveSwitch<?php echo $schedule['id']; ?>" 
+                                                                                   name="is_approved" 
+                                                                                   <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'checked' : ''; ?>>
+                                                                            <label class="custom-control-label approve-switch-label" 
+                                                                                   for="approveSwitch<?php echo $schedule['id']; ?>">
+                                                                                <span class="switch-text">
+                                                                                    <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Schedule Approved' : 'Schedule Not Approved'; ?>
+                                                                                </span>
+                                                                                <small class="switch-subtext">
+                                                                                    <?php echo (isset($schedule['is_approved']) && $schedule['is_approved']) ? 'Patients can book appointments' : 'Schedule is hidden from patients'; ?>
+                                                                                </small>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Notes Section -->
+                                                                <div class="notes-section">
+                                                                    <div class="section-header">
+                                                                        <h6 class="section-title">
+                                                                            <i class="fas fa-sticky-note mr-2"></i>Administrative Notes
+                                                                        </h6>
+                                                                        <p class="section-description">Add any notes or comments about this schedule approval</p>
+                                                                    </div>
+                                                                    
+                                                                    <div class="notes-input-container">
+                                                                        <textarea name="approval_notes" class="notes-textarea" rows="4" 
+                                                                                  placeholder="Enter your notes about this schedule approval..."><?php echo htmlspecialchars($schedule['approval_notes'] ?? ''); ?></textarea>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Doctor's Original Notes -->
+                                                                <?php if (!empty($schedule['notes'])): ?>
+                                                                <div class="doctor-notes-section">
+                                                                    <div class="section-header">
+                                                                        <h6 class="section-title">
+                                                                            <i class="fas fa-comment-medical mr-2"></i>Doctor's Notes
+                                                                        </h6>
+                                                                        <p class="section-description">Notes provided by the doctor</p>
+                                                                    </div>
+                                                                    
+                                                                    <div class="doctor-notes-display">
+                                                                        <p><?php echo htmlspecialchars($schedule['notes']); ?></p>
+                                                                    </div>
+                                                                </div>
+                                                                <?php endif; ?>
+
+                                                                <!-- Action Buttons -->
+                                                                <div class="action-buttons">
+                                                                    <button type="button" class="btn-cancel-schedule" data-dismiss="modal">
+                                                                        <i class="fas fa-times mr-2"></i>Cancel
+                                                                    </button>
+                                                                    <button type="submit" name="approve_schedule" class="btn-save-schedule">
+                                                                        <i class="fas fa-save mr-2"></i>Save Changes
+                                                                    </button>
+                                                                </div>
+                                                            </form>
                                                         </div>
-                                                    </form>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="export-container mt-4" id="doctorExportContainer">
+                                    <a href="#" class="export-action-btn export-copy-btn" id="btnDoctorCopy">
+                                        <i class="fas fa-copy"></i>
+                                        <span>Copy</span>
+                                    </a>
+                                    <a href="#" class="export-action-btn export-csv-btn" id="btnDoctorCSV">
+                                        <i class="fas fa-file-csv"></i>
+                                        <span>CSV</span>
+                                    </a>
+                                    <a href="#" class="export-action-btn export-excel-btn" id="btnDoctorExcel">
+                                        <i class="fas fa-file-excel"></i>
+                                        <span>Excel</span>
+                                    </a>
+                                    <a href="#" class="export-action-btn export-pdf-btn" id="btnDoctorPDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <span>PDF</span>
+                                    </a>
+                                    <a href="#" class="export-action-btn export-print-btn" id="btnDoctorPrint">
+                                        <i class="fas fa-print"></i>
+                                        <span>Print</span>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Staff Schedules Tab -->
+                            <div class="tab-pane fade" id="staff-schedules" role="tabpanel" aria-labelledby="staff-tab">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Staff Schedule Overview</h5>
+                                </div>
+                                
+                                <?php if (empty($staffSchedules)): ?>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        No staff schedules are currently available. Staff members can set their availability in the "My Availability" section.
                                     </div>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="export-container mt-4" id="doctorExportContainer">
-                            <a href="#" class="export-action-btn export-copy-btn" id="btnDoctorCopy">
-                                <i class="fas fa-copy"></i>
-                                <span>Copy</span>
-                            </a>
-                            <a href="#" class="export-action-btn export-csv-btn" id="btnDoctorCSV">
-                                <i class="fas fa-file-csv"></i>
-                                <span>CSV</span>
-                            </a>
-                            <a href="#" class="export-action-btn export-excel-btn" id="btnDoctorExcel">
-                                <i class="fas fa-file-excel"></i>
-                                <span>Excel</span>
-                            </a>
-                            <a href="#" class="export-action-btn export-pdf-btn" id="btnDoctorPDF">
-                                <i class="fas fa-file-pdf"></i>
-                                <span>PDF</span>
-                            </a>
-                            <a href="#" class="export-action-btn export-print-btn" id="btnDoctorPrint">
-                                <i class="fas fa-print"></i>
-                                <span>Print</span>
-                            </a>
+                                <?php else: ?>
+                                    <div class="table-responsive">
+                                        <table id="staffSchedules" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Staff</th>
+                                                    <th>Role</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Time Slot</th>
+                                                    <th>Max Patients</th>
+                                                    <th>Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($staffSchedules as $staffSchedule): ?>
+                                                    <tr>
+                                                        <td><?php echo htmlspecialchars($staffSchedule['staff_name']); ?></td>
+                                                        <td>
+                                                            <span class="badge badge-<?php echo $staffSchedule['staff_role'] == 'admin' ? 'admin' : 'health-worker'; ?> badge-role">
+                                                                <?php echo ucfirst($staffSchedule['staff_role']); ?>
+                                                            </span>
+                                                        </td>
+                                                        <td><?php echo date('M d, Y (D)', strtotime($staffSchedule['schedule_date'])); ?></td>
+                                                        <td>
+                                                            <?php echo date('h:i A', strtotime($staffSchedule['start_time'])) . ' - ' . 
+                                                                    date('h:i A', strtotime($staffSchedule['end_time'])); ?>
+                                                        </td>
+                                                        <td><?php echo $staffSchedule['time_slot_minutes']; ?> minutes</td>
+                                                        <td><?php echo $staffSchedule['max_patients']; ?></td>
+                                                        <td><?php echo htmlspecialchars($staffSchedule['notes'] ?? ''); ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="export-container mt-4" id="staffExportContainer">
+                                        <a href="#" class="export-action-btn export-copy-btn" id="btnStaffCopy">
+                                            <i class="fas fa-copy"></i>
+                                            <span>Copy</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-csv-btn" id="btnStaffCSV">
+                                            <i class="fas fa-file-csv"></i>
+                                            <span>CSV</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-excel-btn" id="btnStaffExcel">
+                                            <i class="fas fa-file-excel"></i>
+                                            <span>Excel</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-pdf-btn" id="btnStaffPDF">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span>PDF</span>
+                                        </a>
+                                        <a href="#" class="export-action-btn export-print-btn" id="btnStaffPrint">
+                                            <i class="fas fa-print"></i>
+                                            <span>Print</span>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="mt-3 alert alert-info">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Staff schedules are automatically approved and available for patient booking.
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
 
 
                 
-                <!-- Staff Schedules Card -->
-                <div class="card card-outline card-success mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-user-md mr-2"></i>
-                            Staff Schedules
-                        </h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($staffSchedules)): ?>
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                No staff schedules are currently available. Staff members can set their availability in the "My Availability" section.
-                            </div>
-                        <?php else: ?>
-                            <div class="table-responsive">
-                                <table id="staffSchedules" class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Staff</th>
-                                            <th>Role</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Time Slot</th>
-                                            <th>Max Patients</th>
-                                            <th>Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($staffSchedules as $staffSchedule): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($staffSchedule['staff_name']); ?></td>
-                                                <td>
-                                                    <span class="badge badge-<?php echo $staffSchedule['staff_role'] == 'admin' ? 'admin' : 'health-worker'; ?> badge-role">
-                                                        <?php echo ucfirst($staffSchedule['staff_role']); ?>
-                                                    </span>
-                                                </td>
-                                                <td><?php echo date('M d, Y (D)', strtotime($staffSchedule['schedule_date'])); ?></td>
-                                                <td>
-                                                    <?php echo date('h:i A', strtotime($staffSchedule['start_time'])) . ' - ' . 
-                                                            date('h:i A', strtotime($staffSchedule['end_time'])); ?>
-                                                </td>
-                                                <td><?php echo $staffSchedule['time_slot_minutes']; ?> minutes</td>
-                                                <td><?php echo $staffSchedule['max_patients']; ?></td>
-                                                <td><?php echo htmlspecialchars($staffSchedule['notes'] ?? ''); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="export-container mt-4" id="staffExportContainer">
-                                <a href="#" class="export-action-btn export-copy-btn" id="btnStaffCopy">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </a>
-                                <a href="#" class="export-action-btn export-csv-btn" id="btnStaffCSV">
-                                    <i class="fas fa-file-csv"></i>
-                                    <span>CSV</span>
-                                </a>
-                                <a href="#" class="export-action-btn export-excel-btn" id="btnStaffExcel">
-                                    <i class="fas fa-file-excel"></i>
-                                    <span>Excel</span>
-                                </a>
-                                <a href="#" class="export-action-btn export-pdf-btn" id="btnStaffPDF">
-                                    <i class="fas fa-file-pdf"></i>
-                                    <span>PDF</span>
-                                </a>
-                                <a href="#" class="export-action-btn export-print-btn" id="btnStaffPrint">
-                                    <i class="fas fa-print"></i>
-                                    <span>Print</span>
-                                </a>
-                            </div>
-                            
-                            <div class="mt-3 alert alert-info">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Staff schedules are automatically approved and available for patient booking.
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
+
             </section>
         </div>
 
@@ -2147,6 +2274,39 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                     <p><strong>Provider:</strong> ${props.doctor_name || 'Not specified'}</p>
                                     <p><strong>Status:</strong> 
                                         <span class="badge badge-${props.status === 'approved' ? 'primary' : props.status === 'completed' ? 'success' : 'warning'}">
+                                            ${props.status.toUpperCase()}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            ${props.reason ? `<div class="mt-3"><strong>Reason:</strong><br><p class="text-muted">${props.reason}</p></div>` : ''}
+                        </div>`;
+                    } else if (props.type === 'walkin_appointment') {
+                        modalTitle = '<i class="fas fa-walking mr-2"></i> Walk-in Appointment Information';
+                        headerClass = props.is_past ? 'bg-secondary text-white' : 'bg-warning text-white';
+                        
+                        var formattedDate = event.start.toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                        
+                        modalContent = `
+                        <div class="walkin-appointment-details">
+                            <div class="text-center mb-3">
+                                <h5 class="text-warning">${formattedDate}</h5>
+                                <span class="badge badge-warning"><i class="fas fa-walking mr-1"></i> Walk-in Appointment</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Patient:</strong> ${props.patient_name}</p>
+                                    <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Provider:</strong> ${props.doctor_name || 'Not specified'}</p>
+                                    <p><strong>Status:</strong> 
+                                        <span class="badge badge-${props.status === 'approved' ? 'warning' : props.status === 'completed' ? 'success' : 'secondary'}">
                                             ${props.status.toUpperCase()}
                                         </span>
                                     </p>

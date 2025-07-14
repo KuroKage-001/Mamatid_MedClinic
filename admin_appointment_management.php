@@ -81,7 +81,12 @@ try {
 // Fetch all appointments with archive metadata
 try {
     if ($showArchived) {
-        $query = "SELECT a.*, 
+        $query = "SELECT a.id, a.patient_name, a.phone_number, NULL as email, a.address, a.date_of_birth, a.gender,
+                         a.appointment_date, a.appointment_time, a.reason, a.status, a.notes,
+                         a.schedule_id, a.doctor_id, a.created_at, a.updated_at,
+                         a.email_sent, a.reminder_sent, a.is_archived, 
+                         a.view_token, a.token_expiry, a.archived_at, a.archived_by, a.archive_reason,
+                         0 as is_walkin,
                          DATE_FORMAT(a.appointment_date, '%M %d, %Y') as formatted_date,
                          DATE_FORMAT(a.appointment_time, '%h:%i %p') as formatted_time,
                          DATE_FORMAT(a.archived_at, '%d %b %Y %h:%i %p') as archived_at_formatted,
@@ -91,7 +96,7 @@ try {
                   LEFT JOIN admin_user_accounts u ON a.archived_by = u.id
                   WHERE a.is_archived = 1 
                   UNION ALL
-                  SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                  SELECT w.id, w.patient_name, w.phone_number, w.email, w.address, w.date_of_birth, w.gender,
                          w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
                          w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
                          0 as email_sent, 0 as reminder_sent, w.is_archived, 
@@ -107,14 +112,19 @@ try {
                   WHERE w.is_archived = 1
                   ORDER BY archived_at DESC";
     } else {
-        $query = "SELECT *, 
-                         DATE_FORMAT(appointment_date, '%M %d, %Y') as formatted_date,
-                         DATE_FORMAT(appointment_time, '%h:%i %p') as formatted_time,
+        $query = "SELECT a.id, a.patient_name, a.phone_number, NULL as email, a.address, a.date_of_birth, a.gender,
+                         a.appointment_date, a.appointment_time, a.reason, a.status, a.notes,
+                         a.schedule_id, a.doctor_id, a.created_at, a.updated_at,
+                         a.email_sent, a.reminder_sent, a.is_archived, 
+                         a.view_token, a.token_expiry, NULL as archived_at, NULL as archived_by, NULL as archive_reason,
+                         0 as is_walkin,
+                         DATE_FORMAT(a.appointment_date, '%M %d, %Y') as formatted_date,
+                         DATE_FORMAT(a.appointment_time, '%h:%i %p') as formatted_time,
                          'regular' as appointment_type
-                  FROM admin_clients_appointments 
-                  WHERE is_archived = 0 
+                  FROM admin_clients_appointments a
+                  WHERE a.is_archived = 0 
                   UNION ALL
-                  SELECT w.id, w.patient_name, w.phone_number, w.address, w.date_of_birth, w.gender,
+                  SELECT w.id, w.patient_name, w.phone_number, w.email, w.address, w.date_of_birth, w.gender,
                          w.appointment_date, w.appointment_time, w.reason, w.status, w.notes,
                          w.schedule_id, w.provider_id as doctor_id, w.created_at, w.updated_at,
                          0 as email_sent, 0 as reminder_sent, w.is_archived, 
@@ -1862,6 +1872,15 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                                            placeholder="e.g., 09123456789" required>
                                                 </div>
                                                 
+                                                <div class="form-group">
+                                                    <label for="walkin_email" class="walkin-label">
+                                                        <i class="fas fa-envelope mr-2"></i>Email Address (Optional)
+                                                    </label>
+                                                    <input type="email" class="walkin-input" id="walkin_email" name="email" 
+                                                           placeholder="e.g., patient@example.com">
+                                                    <small class="text-light opacity-75">We'll send appointment confirmation to this email if provided</small>
+                                                </div>
+                                                
                                                 <div class="form-group full-width">
                                                     <label for="walkin_address" class="walkin-label">
                                                         <i class="fas fa-map-marker-alt mr-2"></i>Address *
@@ -2071,6 +2090,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                         <th>Time</th>
                                         <th>Patient Name</th>
                                         <th>Phone</th>
+                                        <th>Email</th>
                                         <th>Gender</th>
                                         <th>Reason</th>
                                         <th>Status</th>
@@ -2101,6 +2121,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['email'] ?? ''); ?></td>
                                         <td><?php echo htmlspecialchars($row['gender']); ?></td>
                                         <td><?php echo htmlspecialchars($row['reason']); ?></td>
                                         <td>
@@ -3100,6 +3121,7 @@ $archivedCount = $countResult['archived_count'] ?? 0;
             const formData = {
                 patient_name: $('#walkin_patient_name').val(),
                 phone_number: $('#walkin_phone_number').val(),
+                email: $('#walkin_email').val(),
                 address: $('#walkin_address').val(),
                 date_of_birth: $('#walkin_date_of_birth').val(),
                 gender: $('#walkin_gender').val(),
@@ -3119,9 +3141,17 @@ $archivedCount = $countResult['archived_count'] ?? 0;
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
+                        let icon = 'success';
+                        let title = 'Walk-in Appointment Booked!';
+                        
+                        // If email was sent, show additional info
+                        if (response.email_sent) {
+                            title = 'Appointment Booked & Email Sent!';
+                        }
+                        
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Walk-in Appointment Booked!',
+                            icon: icon,
+                            title: title,
                             text: response.message,
                             showConfirmButton: true,
                             confirmButtonText: 'OK',

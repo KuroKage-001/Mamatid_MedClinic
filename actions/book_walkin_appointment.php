@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get form data
 $patientName = trim($_POST['patient_name'] ?? '');
 $phoneNumber = trim($_POST['phone_number'] ?? '');
+$email = trim($_POST['email'] ?? '');
 $address = trim($_POST['address'] ?? '');
 $dateOfBirth = $_POST['date_of_birth'] ?? '';
 $gender = $_POST['gender'] ?? '';
@@ -57,6 +58,11 @@ if (empty($patientName)) {
 
 if (empty($phoneNumber)) {
     $errors[] = 'Phone number is required';
+}
+
+// Validate email if provided
+if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Invalid email format';
 }
 
 if (empty($address)) {
@@ -196,15 +202,16 @@ try {
     
     // Insert the walk-in appointment into the dedicated table
     $insertQuery = "INSERT INTO admin_walkin_appointments 
-                   (patient_name, phone_number, address, date_of_birth, gender, 
+                   (patient_name, phone_number, email, address, date_of_birth, gender, 
                     appointment_date, appointment_time, reason, status, notes, 
                     schedule_id, provider_id, provider_type, booked_by) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $insertStmt = $con->prepare($insertQuery);
     $insertStmt->execute([
         $patientName,
         $phoneNumber,
+        $email,
         $address,
         $dateOfBirth,
         $gender,
@@ -271,14 +278,66 @@ try {
     
     $con->commit();
     
+    // Send email notification if email is provided
+    $emailSent = false;
+    if (!empty($email)) {
+        try {
+            // Include the mailer utility
+            require_once '../system/phpmailer/system/mailer.php';
+            
+            // Get provider name
+            $providerName = '';
+            if ($providerType == 'doctor') {
+                $providerQuery = "SELECT display_name FROM admin_user_accounts WHERE id = ? AND role = 'doctor'";
+            } else {
+                $providerQuery = "SELECT display_name FROM admin_user_accounts WHERE id = ? AND role IN ('admin', 'health_worker')";
+            }
+            $providerStmt = $con->prepare($providerQuery);
+            $providerStmt->execute([$providerId]);
+            $provider = $providerStmt->fetch(PDO::FETCH_ASSOC);
+            $providerName = $provider['display_name'] ?? 'Healthcare Provider';
+            
+            // Prepare appointment details for email
+            $appointmentDetails = [
+                'patient_name' => $patientName,
+                'doctor_name' => $providerName,
+                'appointment_date' => $appointmentDate,
+                'appointment_time' => $appointmentTime,
+                'reason' => $reason,
+                'view_token' => null // Walk-in appointments don't have view tokens
+            ];
+            
+            // Generate email body
+            $emailBody = generateWalkinAppointmentEmail($appointmentDetails);
+            
+            // Send email
+            $emailResult = sendEmail($email, 'Walk-in Appointment Confirmation - Mamatid Health Center', $emailBody, $patientName);
+            
+            if ($emailResult['success']) {
+                $emailSent = true;
+                error_log("Walk-in appointment confirmation email sent successfully to: $email");
+            } else {
+                error_log("Failed to send walk-in appointment confirmation email: " . $emailResult['message']);
+            }
+        } catch (Exception $e) {
+            error_log("Error sending walk-in appointment confirmation email: " . $e->getMessage());
+        }
+    }
+    
     // Format appointment time for display
     $formattedTime = date('h:i A', strtotime($appointmentTime));
     $formattedDate = date('M d, Y', strtotime($appointmentDate));
     
+    $message = "Walk-in appointment successfully booked for {$patientName} on {$formattedDate} at {$formattedTime}";
+    if ($emailSent) {
+        $message .= ". Confirmation email has been sent to the provided email address.";
+    }
+    
     echo json_encode([
         'success' => true,
-        'message' => "Walk-in appointment successfully booked for {$patientName} on {$formattedDate} at {$formattedTime}",
-        'appointment_id' => $appointmentId
+        'message' => $message,
+        'appointment_id' => $appointmentId,
+        'email_sent' => $emailSent
     ]);
     
 } catch (Exception $e) {
