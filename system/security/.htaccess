@@ -1,0 +1,72 @@
+# Security Protection for /system/security/ Directory
+# Prevents unauthorized access and sets security headers
+# Version 2.0 - Enhanced Protection
+
+# Deny direct access to all files in this directory
+Order Deny,Allow
+Deny from all
+
+# Allow only index.php and index.html to be accessed (for redirect purposes)
+<Files "index.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "index.html">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Block access to sensitive file types
+<FilesMatch "\.(php|sql|conf|config|bak|backup|log|txt|md)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Exception for our index files
+<FilesMatch "^index\.(php|html)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Security headers for any allowed requests
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+    Header always set Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';"
+</IfModule>
+
+# Redirect any direct file access attempts to main page
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Don't redirect if accessing index files
+    RewriteCond %{REQUEST_FILENAME} !^.*index\.(php|html)$
+    
+    # Redirect all other requests to main application
+    RewriteRule ^(.*)$ ../../index.php [R=301,L]
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# Disable directory browsing (additional protection)
+Options -Indexes
+
+# Prevent access to version control files
+<FilesMatch "\.(git|svn|hg)">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Log access attempts (if CustomLog is available)
+<IfModule mod_log_config.c>
+    # This would need to be configured at server level
+    # LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" security
+    # CustomLog logs/security_access.log security
+</IfModule> 
