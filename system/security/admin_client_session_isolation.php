@@ -2,8 +2,9 @@
 /**
  * Admin-Client Session Isolation Functions
  * Prevents admin session operations from affecting client sessions
+ * Enhanced with better security and concurrent user support
  * Author: System Administrator
- * Version: 1.0
+ * Version: 2.0
  */
 
 // Prevent direct access
@@ -42,7 +43,9 @@ function getClientSessionVars() {
         'client_profile_picture',
         'client_last_activity',
         'client_session_token',
-        'client_login_time'
+        'client_login_time',
+        'client_ip_address',
+        'client_user_agent'
     ];
 }
 
@@ -220,6 +223,7 @@ function initializeSecureSession() {
         ini_set('session.cookie_httponly', 1);
         ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
         ini_set('session.use_strict_mode', 1);
+        ini_set('session.cookie_samesite', 'Strict');
         
         // Set session name to avoid conflicts
         session_name('MAMATID_SESSION');
@@ -228,6 +232,12 @@ function initializeSecureSession() {
         if (!session_start()) {
             error_log("Failed to start session in initializeSecureSession()");
             return false;
+        }
+        
+        // Set session security headers
+        if (!isset($_SESSION['session_created'])) {
+            $_SESSION['session_created'] = time();
+            $_SESSION['session_token'] = bin2hex(random_bytes(32));
         }
     }
     return true;
@@ -246,6 +256,73 @@ function validateSessionIntegrity() {
         }
     } else if (isset($_SESSION['user_id']) || isset($_SESSION['client_id'])) {
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+    }
+    
+    // Check for session hijacking via IP address
+    if (isset($_SESSION['ip_address'])) {
+        if ($_SESSION['ip_address'] !== $_SERVER['REMOTE_ADDR']) {
+            error_log("Session hijacking detected: IP address mismatch");
+            session_destroy();
+            return false;
+        }
+    } else if (isset($_SESSION['user_id']) || isset($_SESSION['client_id'])) {
+        $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+    }
+    
+    return true;
+}
+
+/**
+ * Check session timeout for clients
+ */
+function checkClientSessionTimeout() {
+    $timeout = 3600; // 1 hour timeout for clients
+    
+    if (isset($_SESSION['client_id']) && !empty($_SESSION['client_id'])) {
+        $lastActivity = getClientSessionVar('client_last_activity');
+        if ($lastActivity && (time() - $lastActivity) > $timeout) {
+            // Session timed out
+            logSessionOperation('client_session_timeout', [
+                'client_id' => $_SESSION['client_id'],
+                'last_activity' => $lastActivity,
+                'timeout_duration' => $timeout
+            ]);
+            
+            // Clear client session
+            safeClientLogout();
+            return false;
+        }
+        
+        // Update last activity
+        setClientSessionVar('client_last_activity', time());
+    }
+    
+    return true;
+}
+
+/**
+ * Check session timeout for admins
+ */
+function checkAdminSessionTimeout() {
+    $timeout = 7200; // 2 hours timeout for admins
+    
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $lastActivity = getAdminSessionVar('last_activity');
+        if ($lastActivity && (time() - $lastActivity) > $timeout) {
+            // Session timed out
+            logSessionOperation('admin_session_timeout', [
+                'user_id' => $_SESSION['user_id'],
+                'last_activity' => $lastActivity,
+                'timeout_duration' => $timeout
+            ]);
+            
+            // Clear admin session
+            safeAdminLogout();
+            return false;
+        }
+        
+        // Update last activity
+        setAdminSessionVar('last_activity', time());
     }
     
     return true;
@@ -291,10 +368,26 @@ function logSessionOperation($operation, $details = []) {
         'timestamp' => date('Y-m-d H:i:s'),
         'session_id' => session_id(),
         'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
+        'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
         'details' => $details,
         'session_state' => debugSessionState()
     ];
     
     error_log("Session Operation: " . json_encode($logData));
+}
+
+/**
+ * Generate secure session token
+ */
+function generateSecureToken() {
+    return bin2hex(random_bytes(32));
+}
+
+/**
+ * Validate session token
+ */
+function validateSessionToken($token) {
+    return isset($_SESSION['session_token']) && hash_equals($_SESSION['session_token'], $token);
 }
 ?> 

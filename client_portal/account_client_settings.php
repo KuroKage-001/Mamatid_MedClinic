@@ -11,7 +11,7 @@ requireClient();
 
 $message = '';
 $error = '';
-$client_id = $_SESSION['client_id'];
+$client_id = getClientSessionVar('client_id');
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':client_id', $client_id);
             
             if ($stmt->execute()) {
-                $_SESSION['client_name'] = $full_name;
-                $_SESSION['client_email'] = $email;
+                setClientSessionVar('client_name', $full_name);
+                setClientSessionVar('client_email', $email);
                 $message = "Profile updated successfully!";
             } else {
                 $error = "Error updating profile";
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bindParam(':client_id', $client_id);
                 
                 if ($stmt->execute()) {
-                    $_SESSION['client_profile_picture'] = $new_filename;
+                    setClientSessionVar('client_profile_picture', $new_filename);
                     $message = "Profile picture updated successfully!";
                     
                     // Force immediate refresh of the profile image cache and reload page

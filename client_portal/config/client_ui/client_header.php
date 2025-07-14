@@ -1,98 +1,73 @@
 <?php
-// Determine if we're in a subdirectory by checking the script path
-$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false || strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
-$base_path = $in_subdirectory ? '..' : '..';
+// Include admin-client session isolation functions
+require_once '../system/security/admin_client_session_isolation.php';
 
-// Add timestamp for cache-busting
-$timestamp = time();
-
-// Ensure profile picture is set
-if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])) {
-    // Include database connection if not already included
-    if (!isset($con)) {
-        require_once $base_path . '/config/db_connection.php';
-    }
-    
-    // Fetch client profile picture
+// Get client profile picture using safe getter
+$clientId = getClientSessionVar('client_id');
+if (!getClientSessionVar('client_profile_picture') && $clientId) {
+    // Fetch profile picture from database
+    include '../config/db_connection.php';
     $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
     $profileStmt = $con->prepare($profileQuery);
-    $profileStmt->execute([$_SESSION['client_id']]);
+    $profileStmt->execute([$clientId]);
     $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
     
-    // Set profile picture in session
-    $_SESSION['client_profile_picture'] = !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png';
+    // Set profile picture in session using safe setter
+    setClientSessionVar('client_profile_picture', !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png');
 }
+
+// Determine base path for assets
+$base_path = '..';
+
+// Add cache-busting timestamp
+$timestamp = time();
 ?>
+
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-dark fixed-top">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link menu-trigger" data-widget="pushmenu" href="#" role="button">
-                <i class="fas fa-clinic-medical"></i>
-            </a>
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
     </ul>
 
-    <!-- Brand -->
-    <a href="client_dashboard.php" class="navbar-brand">
-        <img src="<?php echo $base_path; ?>/dist/img/logo01.png?v=<?php echo $timestamp; ?>" alt="MHC Logo" class="brand-image">
-        <span class="brand-text">Mamatid Health Center</span>
-    </a>
-
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-        <!-- Clock -->
-        <li class="nav-item clock-container">
-            <div class="clock-widget">
-                <i class="far fa-clock"></i>
-                <div class="clock-info">
-                    <div id="digital-clock"></div>
-                    <div id="date-display"></div>
-                </div>
+        <!-- Notifications Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="far fa-bell"></i>
+                <span class="badge badge-warning navbar-badge">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <span class="dropdown-item dropdown-header">0 Notifications</span>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-envelope mr-2"></i> No new notifications
+                </a>
             </div>
         </li>
-        <!-- User Menu -->
+        
+        <!-- User Dropdown Menu -->
         <li class="nav-item dropdown user-menu">
-            <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
-                <div class="user-avatar">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'">
-                    <span class="status-indicator status-online"></span>
-                </div>
-                <div class="user-info d-none d-md-block">
-                    <span class="user-name"><?php echo $_SESSION['client_name']; ?></span>
-                    <span class="user-role">Client</span>
-                </div>
-                <i class="fas fa-heartbeat dropdown-arrow"></i>
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
+                <span class="user-name"><?php echo getClientSessionVar('client_name'); ?></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
-                <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'">
-                    <div class="user-details">
-                        <h6><?php echo $_SESSION['client_name']; ?></h6>
-                        <span class="username"><?php echo $_SESSION['client_email']; ?></span>
-                        <div class="role-badge role-client">Client</div>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-body">
-                    <a href="account_client_settings.php" class="dropdown-item">
-                        <i class="fas fa-hospital-user mr-2"></i>
-                        <span>Account Settings</span>
-                    </a>
-                    <a href="client_appointment_booking.php" class="dropdown-item">
-                        <i class="fas fa-stethoscope mr-2"></i>
-                        <span>Book Appointment</span>
-                    </a>
-                </div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-footer">
-                    <a href="client_logout.php" class="btn btn-danger btn-block">
-                        <i class="fas fa-hospital-symbol mr-2"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </div>       
+            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <!-- User image -->
+                <li class="user-header bg-primary">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
+                    <h6><?php echo getClientSessionVar('client_name'); ?></h6>
+                    <span class="username"><?php echo getClientSessionVar('client_email'); ?></span>
+                </li>
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                    <a href="account_client_settings.php" class="btn btn-default btn-flat">Profile</a>
+                    <a href="client_logout.php" class="btn btn-default btn-flat float-right">Sign out</a>
+                </li>
+            </ul>
         </li>
     </ul>
 </nav>

@@ -1,4 +1,7 @@
 <?php
+// Include client authentication check
+require_once '../system/utilities/check_client_auth.php';
+
 include '../config/db_connection.php';
 
 // Check if schedule_id is provided
@@ -19,7 +22,7 @@ try {
     } else {
         $query = "SELECT schedule_date, start_time, end_time, time_slot_minutes, max_patients 
                   FROM admin_doctor_schedules 
-                  WHERE id = ?";
+                  WHERE id = ? AND is_approved = 1";
     }
     
     $stmt = $con->prepare($query);

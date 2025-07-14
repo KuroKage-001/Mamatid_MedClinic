@@ -7,6 +7,9 @@
  * and checks if the client already has appointments at specific times.
  */
 
+// Include client authentication check
+require_once '../system/utilities/check_client_auth.php';
+
 include '../config/db_connection.php';
 header('Content-Type: application/json');
 
@@ -46,6 +49,9 @@ try {
     
     // Get schedule details to check max patients and date
     $scheduleQuery = "SELECT * FROM {$schedulesTable} WHERE id = ?";
+    if ($scheduleType !== 'staff' && $scheduleType !== 'health_worker') {
+        $scheduleQuery .= " AND is_approved = 1";
+    }
     $scheduleStmt = $con->prepare($scheduleQuery);
     $scheduleStmt->execute([$scheduleId]);
     $schedule = $scheduleStmt->fetch(PDO::FETCH_ASSOC);

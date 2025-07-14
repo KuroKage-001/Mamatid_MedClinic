@@ -1,24 +1,19 @@
 <?php
-include './config/db_connection.php';
+// Include client authentication check (this handles session isolation automatically)
+require_once '../system/utilities/check_client_auth.php';
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if client is logged in
-if (!isset($_SESSION['client_id'])) {
-    header("location:client_login.php");
-    exit;
-}
+include '../config/db_connection.php';
 
 $message = '';
 $appointmentId = isset($_GET['id']) ? $_GET['id'] : 0;
 
+// Get client ID from session using safe getter
+$clientId = getClientSessionVar('client_id');
+
 // Fetch appointment details
 $query = "SELECT * FROM admin_clients_appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)";
 $stmt = $con->prepare($query);
-$stmt->execute([$appointmentId, $_SESSION['client_id']]);
+$stmt->execute([$appointmentId, $clientId]);
 $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // If appointment not found or doesn't belong to client, redirect to dashboard
@@ -48,7 +43,7 @@ if (isset($_POST['update_appointment'])) {
             $appointmentTime,
             $reason,
             $appointmentId,
-            $_SESSION['client_id']
+            $clientId
         ]);
 
         $con->commit();
@@ -70,8 +65,8 @@ if (isset($_POST['update_appointment'])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Update Appointment - Mamatid Health Center</title>
-    <?php include './config/site_css_links.php'; ?>
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <?php include '../config/site_css_links.php'; ?>
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
 
     <style>
         .main-sidebar { background-color: #3c4b64 !important }
@@ -96,7 +91,7 @@ if (isset($_POST['update_appointment'])) {
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <div class="login-user text-light font-weight-bolder">Hello, <?php echo $_SESSION['client_name']; ?>!</div>
+                    <div class="login-user text-light font-weight-bolder">Hello, <?php echo getClientSessionVar('client_name'); ?>!</div>
                 </li>
                 <li class="nav-item ml-3">
                     <a href="client_logout.php" class="nav-link">
@@ -110,7 +105,7 @@ if (isset($_POST['update_appointment'])) {
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="client_dashboard.php" class="brand-link">
-                <img src="dist/img/logo01.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="../dist/img/logo01.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Client Portal</span>
             </a>
 
@@ -119,7 +114,7 @@ if (isset($_POST['update_appointment'])) {
                 <!-- Sidebar user panel -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="info">
-                        <a href="#" class="d-block"><?php echo $_SESSION['client_name']; ?></a>
+                        <a href="#" class="d-block"><?php echo getClientSessionVar('client_name'); ?></a>
                     </div>
                 </div>
 
@@ -198,33 +193,39 @@ if (isset($_POST['update_appointment'])) {
                                                         <i class="far fa-clock"></i>
                                                     </span>
                                                 </div>
-                                                <input type="time" class="form-control" 
-                                                       name="appointment_time" required
-                                                       value="<?php echo $appointment['appointment_time']; ?>">
+                                                <select class="form-control" name="appointment_time" required>
+                                                    <option value="">Select Time</option>
+                                                    <?php
+                                                    $start = 8; // 8 AM
+                                                    $end = 17; // 5 PM
+                                                    for ($hour = $start; $hour <= $end; $hour++) {
+                                                        $time = sprintf('%02d:00', $hour);
+                                                        $selected = ($appointment['appointment_time'] == $time) ? 'selected' : '';
+                                                        echo "<option value='$time' $selected>" . date('h:i A', strtotime($time)) . "</option>";
+                                                        
+                                                        $time = sprintf('%02d:30', $hour);
+                                                        $selected = ($appointment['appointment_time'] == $time) ? 'selected' : '';
+                                                        echo "<option value='$time' $selected>" . date('h:i A', strtotime($time)) . "</option>";
+                                                    }
+                                                    ?>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Reason for Appointment</label>
-                                            <textarea class="form-control" name="reason" 
-                                                      rows="4" required
-                                                      placeholder="Please describe your reason for the appointment"><?php echo $appointment['reason']; ?></textarea>
-                                        </div>
-                                    </div>
+                                
+                                <div class="form-group">
+                                    <label>Reason for Visit</label>
+                                    <textarea class="form-control" name="reason" rows="4" placeholder="Please describe the reason for your visit..."><?php echo htmlspecialchars($appointment['reason']); ?></textarea>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <button type="submit" name="update_appointment" 
-                                                class="btn btn-primary">
-                                            <i class="fas fa-save"></i> Update Appointment
-                                        </button>
-                                        <a href="client_dashboard.php" class="btn btn-secondary">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </a>
-                                    </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" name="update_appointment" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Update Appointment
+                                    </button>
+                                    <a href="client_dashboard.php" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                                    </a>
                                 </div>
                             </form>
                         </div>
@@ -232,11 +233,8 @@ if (isset($_POST['update_appointment'])) {
                 </div>
             </section>
         </div>
-
-        <!-- Footer -->
-        <?php include './config/admin_footer.php'; ?>
     </div>
 
-    <?php include './config/site_css_js_links.php'; ?>
+    <?php include '../config/site_js_links.php'; ?>
 </body>
 </html> 

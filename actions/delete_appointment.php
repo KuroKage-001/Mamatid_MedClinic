@@ -1,25 +1,20 @@
 <?php
-include './config/db_connection.php';
+// Include client authentication check (this handles session isolation automatically)
+require_once '../system/utilities/check_client_auth.php';
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if client is logged in
-if (!isset($_SESSION['client_id'])) {
-    header("location:client_login.php");
-    exit;
-}
+include '../config/db_connection.php';
 
 $message = '';
 $appointmentId = isset($_GET['id']) ? $_GET['id'] : 0;
+
+// Get client ID from session using safe getter
+$clientId = getClientSessionVar('client_id');
 
 try {
     // Check if appointment exists and belongs to the client
     $query = "SELECT id FROM admin_clients_appointments WHERE id = ? AND patient_name = (SELECT full_name FROM clients_user_accounts WHERE id = ?)";
     $stmt = $con->prepare($query);
-    $stmt->execute([$appointmentId, $_SESSION['client_id']]);
+    $stmt->execute([$appointmentId, $clientId]);
     
     if ($stmt->rowCount() > 0) {
         $con->beginTransaction();
@@ -40,6 +35,6 @@ try {
 }
 
 // Redirect back to dashboard with message
-header("location:client_dashboard.php?message=" . urlencode($message));
+header("location:../client_portal/client_dashboard.php?message=" . urlencode($message));
 exit;
 ?> 

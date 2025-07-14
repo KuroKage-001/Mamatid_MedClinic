@@ -95,6 +95,9 @@ if (isset($_POST['login'])) {
                 setClientSessionVar('client_name', $row['full_name']);
                 setClientSessionVar('client_email', $row['email']);
                 setClientSessionVar('client_last_activity', time()); // Set client activity timestamp
+                setClientSessionVar('client_login_time', time()); // Set login timestamp
+                setClientSessionVar('client_ip_address', $_SERVER['REMOTE_ADDR'] ?? 'unknown'); // Set IP address
+                setClientSessionVar('client_user_agent', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'); // Set user agent
                 
                 // Fetch client profile picture
                 $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
@@ -119,7 +122,9 @@ if (isset($_POST['login'])) {
                     'client_id' => $row['id'],
                     'client_name' => $row['full_name'],
                     'client_email' => $row['email'],
-                    'has_concurrent_admin' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+                    'has_concurrent_admin' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id']),
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                 ]);
 
                 // Redirect to client dashboard

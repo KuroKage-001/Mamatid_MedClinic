@@ -2,6 +2,7 @@
 /**
  * Secure Client Authentication Check
  * Uses session isolation to prevent conflicts with admin sessions
+ * Enhanced with session timeout and security features
  */
 
 // Include admin-client session isolation functions if not already included
@@ -31,6 +32,17 @@ if (!validateSessionIntegrity()) {
         'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
     ]);
     header("Location: " . getClientBasePath() . "/client_login.php?error=session_invalid");
+    exit;
+}
+
+// Check client session timeout
+if (!checkClientSessionTimeout()) {
+    // Session timed out
+    logSessionOperation('client_auth_timeout', [
+        'script' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+    ]);
+    header("Location: " . getClientBasePath() . "/client_login.php?error=session_expired");
     exit;
 }
 
@@ -102,25 +114,8 @@ function isClientSessionValid() {
         return false;
     }
     
-    // Check session timeout (optional - implement if needed)
-    $lastActivity = getClientSessionVar('client_last_activity');
-    if ($lastActivity) {
-        $timeout = 3600; // 1 hour timeout for clients
-        if ((time() - $lastActivity) > $timeout) {
-            // Session timed out
-            logSessionOperation('client_session_timeout', [
-                'client_id' => $clientId,
-                'last_activity' => $lastActivity,
-                'timeout_duration' => $timeout
-            ]);
-            
-            // Clear client session using safe logout
-            safeClientLogout();
-            return false;
-        }
-    }
-    
-    return true;
+    // Check session timeout
+    return checkClientSessionTimeout();
 }
 
 /**

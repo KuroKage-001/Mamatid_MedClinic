@@ -1,94 +1,83 @@
 <?php
-// Determine if we're in a subdirectory by checking the script path
-$in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false || strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
-$base_path = $in_subdirectory ? '..' : '..';
+// Include admin-client session isolation functions
+require_once '../system/security/admin_client_session_isolation.php';
 
-// Add timestamp for cache-busting
-$timestamp = time();
-
-// Ensure profile picture is set
-if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])) {
-    // Include database connection if not already included
-    if (!isset($con)) {
-        require_once $base_path . '/config/db_connection.php';
-    }
-    
-    // Fetch client profile picture
+// Get client profile picture using safe getter
+$clientId = getClientSessionVar('client_id');
+if (!getClientSessionVar('client_profile_picture') && $clientId) {
+    // Fetch profile picture from database
+    include '../config/db_connection.php';
     $profileQuery = "SELECT profile_picture FROM clients_user_accounts WHERE id = ?";
     $profileStmt = $con->prepare($profileQuery);
-    $profileStmt->execute([$_SESSION['client_id']]);
+    $profileStmt->execute([$clientId]);
     $profileData = $profileStmt->fetch(PDO::FETCH_ASSOC);
     
-    // Set profile picture in session
-    $_SESSION['client_profile_picture'] = !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png';
+    // Set profile picture in session using safe setter
+    setClientSessionVar('client_profile_picture', !empty($profileData['profile_picture']) ? $profileData['profile_picture'] : 'default_client.png');
 }
 
-// Get the current page filename for active state checking
-$current_page = basename($_SERVER['PHP_SELF']);
+// Determine base path for assets
+$base_path = '..';
+
+// Add cache-busting timestamp
+$timestamp = time();
+
+// Get current page for active menu highlighting
+$current_page = basename($_SERVER['SCRIPT_NAME']);
 ?>
-<!-- Sidebar Container -->
+
+<!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="client_dashboard.php" class="brand-link logo-switch">
-        <div class="brand-logo-container">
-            <h3 class="brand-image-xl logo-xs mb-0"><b>MHC</b></h3>
-            <h3 class="brand-image-xl logo-xl mb-0">Client <b>Portal</b></h3>
-            <div class="brand-spacer"></div>
-        </div>
+        <img src="<?php echo $base_path; ?>/dist/img/logo01.png?v=<?php echo $timestamp; ?>" alt="MHC Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Client Portal</span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user panel -->
-        <div class="user-panel">
-            <div class="user-info-container">
-                <!-- User Image -->
-                <div class="user-image-container">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'" />
-                    <span class="user-status-indicator online"></span>
-                </div>
-                <!-- User Info -->
-                <div class="user-info">
-                    <a href="account_client_settings.php" class="user-display-name"><?php echo $_SESSION['client_name']; ?></a>
-                    <div class="user-role-badge">
-                        <span class="role-text">Client</span>
-                    </div>
-                </div>
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="<?php echo $base_path; ?>/system/client_images/<?php echo getClientSessionVar('client_profile_picture', 'default_client.png'); ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png';">
+            </div>
+            <div class="info">
+                <a href="account_client_settings.php" class="user-display-name"><?php echo getClientSessionVar('client_name'); ?></a>
+                <span class="user-role">Client</span>
             </div>
         </div>
-        
+
         <!-- Sidebar Menu -->
-        <nav class="mt-3">
+        <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                
-                <!-- Dashboard Menu Item -->
-                <li class="nav-item" id="mnu_dashboard">
+                <!-- Dashboard -->
+                <li class="nav-item">
                     <a href="client_dashboard.php" class="nav-link <?php echo ($current_page == 'client_dashboard.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-clinic-medical"></i>
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <!-- Appointment Menu Item -->
-                <li class="nav-item" id="mnu_appointment">
+                <!-- Book Appointment -->
+                <li class="nav-item">
                     <a href="client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-stethoscope"></i>
+                        <i class="nav-icon fas fa-calendar-plus"></i>
                         <p>Book Appointment</p>
                     </a>
                 </li>
 
-                <!-- Settings Menu Item -->
-                <li class="nav-item" id="mnu_settings">
+                <!-- Account Settings -->
+                <li class="nav-item">
                     <a href="account_client_settings.php" class="nav-link <?php echo ($current_page == 'account_client_settings.php' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-hospital-user"></i>
+                        <i class="nav-icon fas fa-user-cog"></i>
                         <p>Account Settings</p>
                     </a>
                 </li>
 
-                <!-- Logout Menu Item -->
-                <li class="nav-item" id="mnu_logout">
+                <!-- Logout -->
+                <li class="nav-item">
                     <a href="client_logout.php" class="nav-link">
-                        <i class="nav-icon fas fa-hospital-symbol"></i>
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
                         <p>Logout</p>
                     </a>
                 </li>
@@ -106,7 +95,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     --active-bg: rgba(54, 153, 255, 0.15);
     --text-muted: #B5B5C3;
     --sidebar-bg: #1E1E2D;
-    --sidebar-width: 265px;
+    --sidebar-width: 250px;
     --menu-item-radius: 0.6rem;
     --header-color: #6993FF;
 }
@@ -363,7 +352,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .main-sidebar {
-        width: 250px;
+        width: 240px;
     }
     
     .user-panel {
@@ -373,7 +362,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 @media (max-width: 768px) {
     .main-sidebar {
-        width: 240px;
+        width: 230px;
     }
     
     .user-panel {
