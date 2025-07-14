@@ -14,11 +14,13 @@ client_portal/
 │       ├── client_footer.php
 │       ├── client_header.php
 │       └── client_sidebar.php
+├── account_client_settings.php
 ├── client_appointment_booking.php
 ├── client_dashboard.php
 ├── client_login.php
 ├── client_logout.php
 ├── client_register.php
+├── .htaccess
 └── README.md
 ```
 
@@ -30,6 +32,7 @@ client_portal/
 - **client_dashboard.php** - Client dashboard after login
 - **client_appointment_booking.php** - Appointment booking interface
 - **client_logout.php** - Client logout handler
+- **account_client_settings.php** - Client account settings and profile management
 
 ### Authentication Files (auth/)
 - **client_forgot_password.php** - Password reset request form
@@ -47,6 +50,12 @@ client_portal/
 - Secure login with session management
 - Password recovery via email
 - Session isolation from admin accounts
+
+### Account Management
+- Profile picture upload and management
+- Personal information updates
+- Password change functionality
+- Account settings customization
 
 ### Appointment Management
 - View available doctor and staff schedules
@@ -66,6 +75,7 @@ client_portal/
 - Input validation and sanitization
 - Secure password reset tokens
 - Profile picture upload validation
+- Directory security with .htaccess
 
 ## Dependencies
 
@@ -85,4 +95,4 @@ The main site index.php provides links to both admin and client portals.
 
 ## Installation Notes
 
-All file paths have been updated to work from the client_portal directory structure. The system maintains backward compatibility with existing database structures and shared utilities. 
+All file paths have been updated to work from the client_portal directory structure. The system maintains backward compatibility with existing database structures and shared utilities. All client-specific functionality is now contained within this directory for better organization and security. 

@@ -1,10 +1,10 @@
 <?php
-// Include client authentication check
-require_once './system/utilities/check_client_auth.php';
+// Include client authentication check (this handles session isolation automatically)
+require_once '../system/utilities/check_client_auth.php';
 
-require_once 'config/db_connection.php';
-require_once 'system/utilities/admin_client_common_functions_services.php';
-require_once 'system/utilities/admin_client_role_functions_services.php';
+include '../config/db_connection.php';
+require_once '../system/utilities/admin_client_common_functions_services.php';
+require_once '../system/utilities/admin_client_role_functions_services.php';
 
 // Check if this is a client-only page
 requireClient();
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         if (in_array($ext, $allowed)) {
             $new_filename = $client_id . '_' . time() . '.' . $ext;
-            $upload_path = 'system/client_images/' . $new_filename;
+            $upload_path = '../system/client_images/' . $new_filename;
             
             if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $upload_path)) {
                 // Delete old profile picture if it's not the default
@@ -108,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->execute();
                 $current_pic = $stmt->fetchColumn();
                 
-                if ($current_pic != 'default_client.png' && file_exists('system/client_images/' . $current_pic)) {
-                    unlink('system/client_images/' . $current_pic);
+                if ($current_pic != 'default_client.png' && file_exists('../system/client_images/' . $current_pic)) {
+                    unlink('../system/client_images/' . $current_pic);
                 }
                 
                 // Update database
@@ -170,11 +170,11 @@ $client_data = $stmt->fetch(PDO::FETCH_ASSOC);
 // Set default profile picture path
 $profile_pic = isset($client_data['profile_picture']) && !empty($client_data['profile_picture']) 
                ? $client_data['profile_picture'] : 'default_client.png';
-$profile_pic_url = 'system/client_images/' . $profile_pic;
+$profile_pic_url = '../system/client_images/' . $profile_pic;
 
 // If the file doesn't exist, use a fallback image
 if (!file_exists($profile_pic_url)) {
-    $profile_pic_url = 'dist/img/patient-avatar.png';
+    $profile_pic_url = '../dist/img/patient-avatar.png';
 }
 ?>
 
@@ -182,9 +182,9 @@ if (!file_exists($profile_pic_url)) {
 <html>
 <head>
     <title>Account Settings | Mamatid Health Center</title>
-    <?php include 'config/site_css_links.php'; ?>
-    <link rel="stylesheet" href="dist/css/admin_system_styles/admin_update_users.css">
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
+    <?php include '../config/site_css_links.php'; ?>
+    <link rel="stylesheet" href="../dist/css/admin_system_styles/admin_update_users.css">
+    <link rel="icon" type="image/png" href="../dist/img/logo01.png">
     <style>
         :root {
           --transition-speed: 0.3s;
@@ -410,8 +410,8 @@ if (!file_exists($profile_pic_url)) {
 <body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
-<?php include 'config/client_ui/client_header.php'; ?>
-<?php include 'config/client_ui/client_sidebar.php'; ?>
+<?php include './config/client_ui/client_header.php'; ?>
+<?php include './config/client_ui/client_sidebar.php'; ?>
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
@@ -633,10 +633,10 @@ if (!file_exists($profile_pic_url)) {
     </section>
 </div>
 
-<?php include 'config/client_ui/client_footer.php'; ?>
+<?php include './config/client_ui/client_footer.php'; ?>
 </div>
 
-<?php include 'config/site_css_js_links.php'; ?>
+<?php include '../config/site_css_js_links.php'; ?>
 
 <script>
 function previewImage(input) {

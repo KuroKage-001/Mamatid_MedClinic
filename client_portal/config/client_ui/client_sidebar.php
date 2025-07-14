@@ -1,7 +1,7 @@
 <?php
 // Determine if we're in a subdirectory by checking the script path
 $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false || strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
-$base_path = $in_subdirectory ? '../..' : '../..';
+$base_path = $in_subdirectory ? '..' : '..';
 
 // Add timestamp for cache-busting
 $timestamp = time();
@@ -29,7 +29,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <!-- Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="brand-link logo-switch">
+    <a href="client_dashboard.php" class="brand-link logo-switch">
         <div class="brand-logo-container">
             <h3 class="brand-image-xl logo-xs mb-0"><b>MHC</b></h3>
             <h3 class="brand-image-xl logo-xl mb-0">Client <b>Portal</b></h3>
@@ -44,12 +44,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="user-info-container">
                 <!-- User Image -->
                 <div class="user-image-container">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'" />
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'" />
                     <span class="user-status-indicator online"></span>
                 </div>
                 <!-- User Info -->
                 <div class="user-info">
-                    <a href="<?php echo $base_path; ?>/account_client_settings.php" class="user-display-name"><?php echo $_SESSION['client_name']; ?></a>
+                    <a href="account_client_settings.php" class="user-display-name"><?php echo $_SESSION['client_name']; ?></a>
                     <div class="user-role-badge">
                         <span class="role-text">Client</span>
                     </div>
@@ -63,17 +63,33 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 
                 <!-- Dashboard Menu Item -->
                 <li class="nav-item" id="mnu_dashboard">
-                    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="nav-link <?php echo ($current_page == 'client_dashboard.php' ? 'active' : ''); ?>">
+                    <a href="client_dashboard.php" class="nav-link <?php echo ($current_page == 'client_dashboard.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-clinic-medical"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <!-- Book Appointment Menu Item -->
-                <li class="nav-item" id="mnu_book_appointment">
-                    <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
+                <!-- Appointment Menu Item -->
+                <li class="nav-item" id="mnu_appointment">
+                    <a href="client_appointment_booking.php" class="nav-link <?php echo ($current_page == 'client_appointment_booking.php' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-stethoscope"></i>
                         <p>Book Appointment</p>
+                    </a>
+                </li>
+
+                <!-- Settings Menu Item -->
+                <li class="nav-item" id="mnu_settings">
+                    <a href="account_client_settings.php" class="nav-link <?php echo ($current_page == 'account_client_settings.php' ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-hospital-user"></i>
+                        <p>Account Settings</p>
+                    </a>
+                </li>
+
+                <!-- Logout Menu Item -->
+                <li class="nav-item" id="mnu_logout">
+                    <a href="client_logout.php" class="nav-link">
+                        <i class="nav-icon fas fa-hospital-symbol"></i>
+                        <p>Logout</p>
                     </a>
                 </li>
             </ul>

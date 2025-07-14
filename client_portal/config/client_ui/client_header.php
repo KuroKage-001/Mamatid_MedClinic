@@ -1,7 +1,7 @@
 <?php
 // Determine if we're in a subdirectory by checking the script path
 $in_subdirectory = (strpos($_SERVER['SCRIPT_NAME'], '/system/') !== false || strpos($_SERVER['SCRIPT_NAME'], '/client_portal/') !== false);
-$base_path = $in_subdirectory ? '../..' : '../..';
+$base_path = $in_subdirectory ? '..' : '..';
 
 // Add timestamp for cache-busting
 $timestamp = time();
@@ -35,8 +35,8 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
     </ul>
 
     <!-- Brand -->
-    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="navbar-brand">
-        <img src="<?php echo $base_path; ?>/dist/img/logo01.png" alt="MHC Logo" class="brand-image">
+    <a href="client_dashboard.php" class="navbar-brand">
+        <img src="<?php echo $base_path; ?>/dist/img/logo01.png?v=<?php echo $timestamp; ?>" alt="MHC Logo" class="brand-image">
         <span class="brand-text">Mamatid Health Center</span>
     </a>
 
@@ -56,7 +56,7 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
         <li class="nav-item dropdown user-menu">
             <a class="nav-link user-panel" data-toggle="dropdown" href="#" aria-expanded="false">
                 <div class="user-avatar">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="user-image" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'">
                     <span class="status-indicator status-online"></span>
                 </div>
                 <div class="user-info d-none d-md-block">
@@ -67,7 +67,7 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/dist/img/patient-avatar.png'">
+                    <img src="<?php echo $base_path; ?>/system/client_images/<?php echo isset($_SESSION['client_profile_picture']) ? $_SESSION['client_profile_picture'] : 'default_client.png'; ?>?v=<?php echo $timestamp; ?>" class="profile-img" alt="User Image" onerror="if(this.src.indexOf('default_client.png')===-1) this.src='<?php echo $base_path; ?>/system/client_images/default_client.png'">
                     <div class="user-details">
                         <h6><?php echo $_SESSION['client_name']; ?></h6>
                         <span class="username"><?php echo $_SESSION['client_email']; ?></span>
@@ -76,18 +76,18 @@ if (!isset($_SESSION['client_profile_picture']) && isset($_SESSION['client_id'])
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-body">
-                    <a href="<?php echo $base_path; ?>/account_client_settings.php" class="dropdown-item">
+                    <a href="account_client_settings.php" class="dropdown-item">
                         <i class="fas fa-hospital-user mr-2"></i>
                         <span>Account Settings</span>
                     </a>
-                    <a href="<?php echo $base_path; ?>/client_appointment_booking.php" class="dropdown-item">
+                    <a href="client_appointment_booking.php" class="dropdown-item">
                         <i class="fas fa-stethoscope mr-2"></i>
                         <span>Book Appointment</span>
                     </a>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-footer">
-                    <a href="<?php echo $base_path; ?>/client_logout.php" class="btn btn-danger btn-block">
+                    <a href="client_logout.php" class="btn btn-danger btn-block">
                         <i class="fas fa-hospital-symbol mr-2"></i>
                         <span>Logout</span>
                     </a>

@@ -9,7 +9,7 @@ $base_path = $in_subdirectory ? '../..' : '../..';
             <!-- Left side: copyright -->
             <div class="footer-copyright">
                 <strong>
-                    <a href="<?php echo $base_path; ?>/client_dashboard.php" class="footer-brand">
+                    <a href="client_dashboard.php" class="footer-brand">
                         <i class="fas fa-clinic-medical footer-icon"></i>
                         Mamatid Health Center
                     </a>

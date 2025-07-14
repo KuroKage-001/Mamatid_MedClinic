@@ -11,21 +11,16 @@ if (!isset($_SESSION['client_id'])) {
     exit;
 }
 
-// Store session ID for logging (optional)
-$session_id = session_id();
-$client_id = $_SESSION['client_id'] ?? 'unknown';
-$client_name = $_SESSION['client_name'] ?? 'unknown';
-
-// Log the logout action with session state
-logSessionOperation('client_logout', [
-    'client_id' => $client_id,
-    'client_name' => $client_name,
-    'has_admin_session' => isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])
+// Log the logout for debugging
+logSessionOperation('client_logout_request', [
+    'client_id' => $_SESSION['client_id'],
+    'client_name' => $_SESSION['client_name'] ?? 'unknown'
 ]);
 
-// Use safe client logout to preserve any admin/staff session that might be active
+// Use safe client logout to preserve any admin session
 safeClientLogout();
 
-// Redirect to client login page with logout message
+// Redirect to client login
 header("location: client_login.php?message=logged_out");
-exit; 
+exit;
+?> 
