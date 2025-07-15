@@ -1,0 +1,199 @@
+# MAXIMUM SECURITY PROTECTION - AUTHENTICATION UTILITIES DIRECTORY
+# This directory contains critical authentication and security utilities
+# Classification: CONFIDENTIAL - SYSTEM SECURITY
+# Version: 3.0 - Ultra-High Security Configuration
+
+# === GLOBAL DIRECTORY PROTECTION ===
+# Deny all direct access by default
+Order Deny,Allow
+Deny from all
+
+# Only allow access to index files for security redirection
+<Files "index.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "index.html">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# === CRITICAL FILE PROTECTION ===
+# Block access to all authentication and utility files
+<FilesMatch "\.(php|sql|conf|config|bak|backup|log|txt|md|json|xml|ini|env)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Exception only for index files
+<FilesMatch "^index\.(php|html)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# === SPECIFIC AUTHENTICATION FILE BLOCKING ===
+# Block specific critical files by name
+<Files "check_auth.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "check_client_auth.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "add_auth_check.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "add_client_auth_check.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "congratulation.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "refresh_profile_images.js">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# === MAXIMUM SECURITY HEADERS ===
+<IfModule mod_headers.c>
+    # Core security headers
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, private"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+    Header always set Clear-Site-Data "*"
+    
+    # Advanced security headers
+    Header always set Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; child-src 'none'; form-action 'none'; base-uri 'none';"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), midi=(), screen-wake-lock=(), web-share=()"
+    Header always set Cross-Origin-Embedder-Policy "require-corp"
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+    Header always set Cross-Origin-Resource-Policy "same-origin"
+    Header always set X-DNS-Prefetch-Control "off"
+    Header always set X-Download-Options "noopen"
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+    
+    # Custom security classification header
+    Header always set X-Security-Classification "CONFIDENTIAL-AUTH-UTILITIES"
+    Header always set X-Threat-Level "HIGH-SECURITY-ZONE"
+</IfModule>
+
+# === ADVANCED REDIRECT RULES ===
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Don't redirect if accessing index files
+    RewriteCond %{REQUEST_FILENAME} !^.*index\.(php|html)$
+    
+    # Log all unauthorized access attempts
+    RewriteCond %{REQUEST_URI} !^.*index\.(php|html)$
+    RewriteRule .* - [E=security_breach:1]
+    
+    # Redirect all other requests with 301 status
+    RewriteRule ^(.*)$ ../../index.php [R=301,L]
+    
+    # Block common attack patterns
+    RewriteCond %{QUERY_STRING} (eval\(|base64_decode|gzip|benchmark|mysql_|information_schema) [NC,OR]
+    RewriteCond %{QUERY_STRING} (script|javascript|vbscript|onload|onerror) [NC,OR]
+    RewriteCond %{QUERY_STRING} (<script|<iframe|<object|<embed) [NC,OR]
+    RewriteCond %{REQUEST_URI} (\.php\.|\.asp\.|\.jsp\.|\.cgi\.) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (sqlmap|nikto|nessus|openvas|nmap) [NC]
+    RewriteRule ^(.*)$ ../../index.php [R=301,L]
+</IfModule>
+
+# === SYSTEM HARDENING ===
+# Disable server signature for security
+ServerSignature Off
+
+# Disable directory browsing completely
+Options -Indexes -ExecCGI -FollowSymLinks -Includes
+
+# Disable CGI execution
+RemoveHandler cgi-script .cgi .pl .py
+
+# Block common exploit attempts
+<IfModule mod_rewrite.c>
+    # Block SQL injection attempts
+    RewriteCond %{QUERY_STRING} (union|select|insert|delete|drop|create|alter|exec|script) [NC]
+    RewriteRule .* ../../index.php [R=301,L]
+    
+    # Block file inclusion attempts
+    RewriteCond %{QUERY_STRING} (file|ftp|http|https)\: [NC]
+    RewriteRule .* ../../index.php [R=301,L]
+    
+    # Block PHP execution attempts
+    RewriteCond %{QUERY_STRING} php://input [NC,OR]
+    RewriteCond %{QUERY_STRING} php://filter [NC]
+    RewriteRule .* ../../index.php [R=301,L]
+</IfModule>
+
+# === VERSION CONTROL PROTECTION ===
+# Block access to version control files
+<FilesMatch "\.(git|svn|hg|bzr|cvs)">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Order Deny,Allow
+    Deny from all
+</DirectoryMatch>
+
+# === DEVELOPMENT FILE PROTECTION ===
+# Block access to development and backup files
+<FilesMatch "\.(bak|backup|old|tmp|temp|~|#|swp|swo|orig|rej)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# === SENSITIVE FILE EXTENSIONS ===
+# Block additional sensitive file types
+<FilesMatch "\.(key|pem|crt|p12|pfx|der|csr|p7b|p7c|p7s|jks|keystore)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# === CUSTOM ERROR RESPONSES ===
+# Redirect errors to main application
+ErrorDocument 400 /index.php
+ErrorDocument 401 /index.php
+ErrorDocument 403 /index.php
+ErrorDocument 404 /index.php
+ErrorDocument 500 /index.php
+
+# === ADVANCED LOGGING (if supported) ===
+<IfModule mod_log_config.c>
+    # Custom log format for security incidents
+    # LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\" \"%{security_breach}e\"" auth_security
+    # CustomLog logs/auth_utilities_security.log auth_security env=security_breach
+</IfModule>
+
+# === RATE LIMITING (if mod_evasive is available) ===
+<IfModule mod_evasive24.c>
+    DOSHashTableSize    3000
+    DOSPageCount        2
+    DOSSiteCount        50
+    DOSPageInterval     1
+    DOSSiteInterval     1
+    DOSBlockingPeriod   600
+</IfModule>
+
+# === FINAL SECURITY NOTICE ===
+# This .htaccess file protects critical authentication utilities
+# Any modifications to this file must be approved by system security
+# Classification Level: CONFIDENTIAL - AUTHENTICATION SYSTEMS
+# Threat Level: HIGH SECURITY ZONE
+# Last Updated: System Security Team 

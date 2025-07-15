@@ -1,0 +1,45 @@
+# Security measures for client portal
+Options -Indexes
+ServerSignature Off
+
+# Prevent access to sensitive files
+<Files "*.log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.sql">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.ini">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevent access to configuration files
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow access to images and assets
+<FilesMatch "\.(jpg|jpeg|png|gif|css|js|ico|svg|woff|woff2|ttf|eot)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Force HTTPS in production (uncomment when deploying)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Prevent access to system files
+RewriteEngine On
+RewriteRule ^system/ - [F,L]
+RewriteRule ^config/ - [F,L]
+
+# Custom error pages
+ErrorDocument 403 /client_portal/client_security/error_403.php
+ErrorDocument 404 /client_portal/client_security/error_404.php

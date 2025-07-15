@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Restricted Area - Authentication Services</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta http-equiv="refresh" content="0;url=../../index.php">
+    
+    <!-- Maximum Security Headers -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, private">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="*">
+    
+    <!-- Ultra-Strict Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self'; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; child-src 'none'; form-action 'none'; base-uri 'none'; manifest-src 'none';">
+    
+    <!-- Enhanced Permissions Policy -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), midi=(), screen-wake-lock=(), web-share=()">
+    
+    <!-- Maximum Security Meta Tags -->
+    <meta http-equiv="X-DNS-Prefetch-Control" content="off">
+    <meta http-equiv="X-Download-Options" content="noopen">
+    <meta http-equiv="X-Permitted-Cross-Domain-Policies" content="none">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
+    
+    <style>
+        /* Security-hardened styling */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Animated background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #e74c3c 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #e74c3c 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.1;
+            animation: securityPattern 20s linear infinite;
+        }
+        
+        @keyframes securityPattern {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(50px) translateY(50px); }
+        }
+        
+        .security-fortress {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 50px 40px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            color: #2c3e50;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .security-fortress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, 
+                #e74c3c 0%, #c0392b 25%, #e74c3c 50%, #c0392b 75%, #e74c3c 100%);
+            animation: securityStripe 3s ease-in-out infinite;
+        }
+        
+        @keyframes securityStripe {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        
+        .fortress-icon {
+            font-size: 72px;
+            margin-bottom: 25px;
+            color: #e74c3c;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .threat-level {
+            display: inline-block;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+            animation: blink 2s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.7; }
+        }
+        
+        .status-code {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .fortress-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .security-alert {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border: 2px solid #e74c3c;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .security-alert::before {
+            content: '⚠️';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            animation: warning 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes warning {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .alert-title {
+            font-weight: 700;
+            color: #c0392b;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .alert-text {
+            font-size: 14px;
+            color: #7f1d1d;
+            line-height: 1.6;
+        }
+        
+        .threat-details {
+            background: #f8f9fa;
+            border-left: 6px solid #e74c3c;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .countdown-section {
+            background: linear-gradient(135deg, #e8f4fd, #cbe7fb);
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .countdown-timer {
+            font-weight: 800;
+            color: #e74c3c;
+            font-size: 32px;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .emergency-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .emergency-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .emergency-link:hover::before {
+            left: 100%;
+        }
+        
+        .emergency-link:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(231, 76, 60, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .security-footer {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+            font-size: 11px;
+            color: #6c757d;
+            line-height: 1.8;
+        }
+        
+        .classification {
+            background: #000;
+            color: #e74c3c;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+            
+            .security-fortress {
+                padding: 30px 25px;
+                border-radius: 15px;
+            }
+            
+            .fortress-icon {
+                font-size: 56px;
+            }
+            
+            .fortress-title {
+                font-size: 22px;
+            }
+            
+            .countdown-timer {
+                font-size: 24px;
+            }
+        }
+        
+        /* Ultra-security: Disable interactions */
+        .security-fortress {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;" onmousedown="return false;">
+    <div class="security-fortress">
+        <div class="threat-level">🔴 HIGH SECURITY ZONE</div>
+        <div class="fortress-icon">🏰</div>
+        <div class="status-code">HTTP 403 - RESTRICTED</div>
+        <h1 class="fortress-title">Authentication Services Protected</h1>
+        
+        <div class="security-alert">
+            <div class="alert-title">🚨 UNAUTHORIZED ACCESS DETECTED</div>
+            <div class="alert-text">
+                This directory contains critical authentication and security utilities. 
+                Access is strictly prohibited and monitored by automated security systems.
+            </div>
+        </div>
+        
+        <div class="threat-details">
+            <div class="classification">CONFIDENTIAL - SYSTEM SECURITY</div>
+            <strong>Protected Assets:</strong><br>
+            • Authentication validation systems<br>
+            • Session security protocols<br>
+            • User authorization utilities<br>
+            • System access controls<br><br>
+            <strong>Security Measures Active:</strong> Real-time monitoring, access logging, 
+            intrusion detection, and automated response protocols.
+        </div>
+        
+        <div class="countdown-section">
+            <strong>🚀 Secure Redirect Initiated</strong><br>
+            <div class="countdown-timer" id="countdown">3</div>
+            <div>Transferring to secure portal...</div>
+        </div>
+        
+        <!-- Maximum Security JavaScript -->
+        <script>
+            (function() {
+                'use strict';
+                
+                // Enhanced security monitoring and logging
+                var securityData = {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent || 'unknown',
+                    referrer: document.referrer || 'direct',
+                    viewport: (window.innerWidth || 0) + 'x' + (window.innerHeight || 0),
+                    language: navigator.language || 'unknown',
+                    platform: navigator.platform || 'unknown',
+                    cookieEnabled: navigator.cookieEnabled,
+                    url: window.location.href,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+                    online: navigator.onLine,
+                    hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+                    deviceMemory: navigator.deviceMemory || 'unknown',
+                    connection: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                    touchPoints: navigator.maxTouchPoints || 0,
+                    threat_level: 'HIGH_SECURITY_ZONE',
+                    protected_asset: 'authentication_utilities'
+                };
+                
+                // Enhanced logging with security classification
+                try {
+                    sessionStorage.setItem('security_breach_attempt_auth_utils', JSON.stringify(securityData));
+                    localStorage.setItem('last_security_incident', JSON.stringify({
+                        type: 'unauthorized_auth_access',
+                        timestamp: securityData.timestamp,
+                        classification: 'HIGH_PRIORITY'
+                    }));
+                } catch(e) {
+                    // Silent handling for security
+                }
+                
+                // Advanced countdown with visual feedback
+                var countdown = 3;
+                var countdownElement = document.getElementById('countdown');
+                
+                function updateCountdown() {
+                    if (countdown > 0) {
+                        countdownElement.textContent = countdown;
+                        countdownElement.style.color = countdown === 1 ? '#e74c3c' : '#2c3e50';
+                        countdown--;
+                        setTimeout(updateCountdown, 1000);
+                    } else {
+                        countdownElement.textContent = '🔒';
+                        // Multiple secure redirect methods
+                        try {
+                            window.location.replace('../../index.php');
+                        } catch(e) {
+                            window.location.href = '../../index.php';
+                        }
+                    }
+                }
+                
+                updateCountdown();
+                
+                // Ultimate security redirect (multiple fallbacks)
+                setTimeout(function() {
+                    window.location.href = '../../index.php';
+                }, 3500);
+                
+                // Maximum developer tools prevention
+                var devtools = {
+                    open: false,
+                    orientation: null
+                };
+                
+                setInterval(function() {
+                    if (window.outerHeight - window.innerHeight > 160 || 
+                        window.outerWidth - window.innerWidth > 160) {
+                        if (!devtools.open) {
+                            devtools.open = true;
+                            // Immediate redirect on devtools detection
+                            window.location.href = '../../index.php';
+                        }
+                    }
+                }, 500);
+                
+                // Comprehensive keyboard blocking
+                document.addEventListener('keydown', function(e) {
+                    var blocked = [
+                        123, // F12
+                        116, // F5 (refresh)
+                        85,  // U (with Ctrl)
+                        83,  // S (with Ctrl)
+                        73,  // I (with Ctrl+Shift)
+                        74,  // J (with Ctrl+Shift)
+                        67,  // C (with Ctrl+Shift)
+                        86,  // V (with Ctrl)
+                        65,  // A (with Ctrl)
+                        80,  // P (with Ctrl)
+                        78,  // N (with Ctrl)
+                        82   // R (with Ctrl)
+                    ];
+                    
+                    if (blocked.includes(e.keyCode) || 
+                        (e.ctrlKey && (e.shiftKey || e.altKey)) ||
+                        (e.ctrlKey && [85, 83, 73, 74, 67, 86, 65, 80, 78, 82].includes(e.keyCode))) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                });
+                
+                // Advanced right-click prevention
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                });
+                
+                // Prevent text selection and dragging
+                ['selectstart', 'dragstart', 'mousedown'].forEach(function(event) {
+                    document.addEventListener(event, function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                });
+                
+                // Clear browser history and data
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, document.title, window.location.href);
+                }
+                
+                // Disable common debugging methods
+                window.console = window.console || {};
+                ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml',
+                 'group', 'groupEnd', 'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'].forEach(function(method) {
+                    window.console[method] = function() {};
+                });
+                
+            })();
+        </script>
+        
+        <!-- Enhanced noscript fallback -->
+        <noscript>
+            <div style="background: #fff3cd; border: 2px solid #856404; padding: 20px; margin: 25px 0; border-radius: 8px; color: #856404;">
+                <strong>⚠️ Security Protocol Violation:</strong><br>
+                JavaScript is required for security validation. Please enable JavaScript 
+                or contact your system administrator immediately.
+            </div>
+            <a href="../../index.php" class="emergency-link">🚨 Emergency Access Portal</a>
+        </noscript>
+        
+        <div class="security-footer">
+            <div class="classification">CLASSIFIED - SYSTEM UTILITIES</div>
+            <strong>SECURITY CLASSIFICATION:</strong> This area contains authentication utilities 
+            critical to system security. All access attempts are logged, monitored, and reported 
+            to security administrators.<br><br>
+            <strong>WARNING:</strong> Unauthorized access attempts may result in account termination, 
+            legal action, and law enforcement notification.<br><br>
+            <strong>AUTHORIZED PERSONNEL ONLY</strong> - If you require access, contact your system administrator 
+            with proper security clearance documentation.
+        </div>
+    </div>
+</body>
+</html> 
