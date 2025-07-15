@@ -4,7 +4,7 @@ session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("location: admin_login.php");
+    header("location: index.php");
     exit;
 }
 
@@ -30,6 +30,6 @@ foreach ($admin_session_vars as $var) {
 session_regenerate_id(true);
 
 // Redirect to login page with logout message
-header("location: admin_login.php?message=logged_out");
+header("location: index.php?message=logged_out");
 exit;
 ?>

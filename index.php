@@ -1,36 +1,121 @@
+<?php
+session_start();
+include './config/db_connection.php';
+
+// Alert Handler Code
+if (!defined('ALERT_HANDLER_INCLUDED')) {
+    define('ALERT_HANDLER_INCLUDED', true);
+    if (!function_exists('displayAlert')) {
+        function displayAlert() {
+            if (isset($_SESSION['alert_message'])): ?>
+                <script>
+                    $(document).ready(function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'modern-toast'
+                            }
+                        });
+                        Toast.fire({
+                            icon: '<?php echo $_SESSION['alert_type']; ?>',
+                            title: '<?php echo addslashes($_SESSION['alert_message']); ?>',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown animate__faster'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp animate__faster'
+                            }
+                        });
+                    });
+                </script>
+                <?php
+                unset($_SESSION['alert_message']);
+                unset($_SESSION['alert_type']);
+            endif;
+        }
+    }
+}
+
+// Handle login submission
+if (isset($_POST['login'])) {
+    $userName = $_POST['user_name'];
+    $password = $_POST['password'];
+    $encryptedPassword = md5($password);
+    $query = "SELECT `id`, `display_name`, `user_name`, `profile_picture`, `role`, `status` FROM `admin_user_accounts` WHERE `user_name` = :user_name AND `password` = :password AND `status` = 'active'";
+    try {
+        $stmtLogin = $con->prepare($query);
+        $stmtLogin->bindParam(':user_name', $userName, PDO::PARAM_STR);
+        $stmtLogin->bindParam(':password', $encryptedPassword, PDO::PARAM_STR);
+        $stmtLogin->execute();
+        $count = $stmtLogin->rowCount();
+        if ($count == 1) {
+            $row = $stmtLogin->fetch(PDO::FETCH_ASSOC);
+            $_SESSION['user_id']         = $row['id'];
+            $_SESSION['display_name']    = $row['display_name'];
+            $_SESSION['user_name']       = $row['user_name'];
+            $_SESSION['profile_picture'] = $row['profile_picture'];
+            $_SESSION['role']            = $row['role'];
+            $_SESSION['admin_last_activity'] = time();
+            if (isset($_POST['remember_me'])) {
+                setcookie("remembered_username", $userName, time() + (30 * 24 * 60 * 60), "/");
+            } else {
+                setcookie("remembered_username", "", time() - 3600, "/");
+            }
+            header("location:admin_dashboard.php");
+            exit;
+        } else {
+            $_SESSION['alert_type'] = 'error';
+            $_SESSION['alert_message'] = 'Access Denied: Incorrect username or password, or account is inactive. Please check your credentials and try again.';
+        }
+    } catch (PDOException $ex) {
+        echo $ex->getTraceAsString();
+        echo $ex->getMessage();
+        exit;
+    }
+}
+$rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembered_username'] : '';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mamatid Health Center - Portal Selection</title>
-
+  <link rel="icon" type="image/png" href="dist/img/logo01.png">
+  <title>Login - Mamatid Health Center System</title>
   <!-- Google Font -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- AdminLTE CSS -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
-    <link rel="icon" type="image/png" href="dist/img/logo01.png">
-
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="dist/css/animate.min.css">
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <script src="plugins/sweetalert2/sweetalert2.all.min.js"></script>
   <style>
     :root {
-            --primary-color: #3699FF;
-            --secondary-color: #89CFF3;
-            --accent-color: #A0E9FF;
-            --text-primary: #2B2A4C;
-            --text-secondary: #4A4A4A;
-            --bg-light: #F6F8FC;
-            --border-color: #E1E6EF;
+      --primary-color: #4F46E5;
+      --primary-hover: #4338CA;
+      --secondary-color: #6366F1;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --bg-light: #F9FAFB;
+      --border-color: #E5E7EB;
     }
-
-    * {
-            font-family: 'Poppins', sans-serif;
-    }
-
-        body {
-      background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%),
-                  url('dist/img/bg-001.jpg') no-repeat center center fixed;
+    * { font-family: 'Inter', sans-serif; }
+    body.login-page {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%), url('dist/img/bg-001.jpg') no-repeat center center fixed;
       background-size: cover;
       min-height: 100vh;
       display: flex;
@@ -38,40 +123,70 @@
       justify-content: center;
       position: relative;
     }
-
-        body::before {
+    body.login-page::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(255, 255, 255, 0.50);
-            backdrop-filter: blur(3px);
+      backdrop-filter: blur(2px);
     }
-
-        .portal-container {
+    .login-wrapper {
       position: relative;
       z-index: 1;
       display: flex;
-      flex-direction: column;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
+      width: 1000px;
+      max-width: 95%;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
       overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-      padding: 3rem;
-            max-width: 800px;
-            width: 95%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      backdrop-filter: blur(8px);
     }
-
-        .logo-container {
+    .login-left {
+      flex: 1;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.85), rgba(99, 102, 241, 0.85));
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-left::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('dist/img/bg-001.jpg') center/cover;
+      opacity: 0.6;
+      mix-blend-mode: multiply;
+    }
+    .login-left-content {
+      position: relative;
+      z-index: 1;
+    }
+    .login-left h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .login-left p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    .login-right {
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-logo {
       text-align: center;
       margin-bottom: 2rem;
     }
-
-        .logo-container img {
+    .login-logo img {
       width: 120px;
       height: 120px;
       border-radius: 50%;
@@ -80,171 +195,187 @@
       box-shadow: 0 4px 15px rgba(0, 169, 255, 0.2);
       border: 2px solid var(--primary-color);
       transition: all 0.3s ease;
+      object-fit: cover;
     }
-
-        .logo-container img:hover {
+    .login-logo img:hover {
       transform: scale(1.05);
       box-shadow: 0 8px 20px rgba(0, 169, 255, 0.3);
     }
-
-        .portal-title {
-            color: var(--text-primary);
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
+    .typewriter {
       text-align: center;
+      margin-bottom: 2rem;
     }
-
-        .portal-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 3rem;
-            text-align: center;
+    .typewriter h2 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 600;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 0.15em;
+      animation: typing 3.5s steps(40, end);
     }
-
-        .portal-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
-            max-width: 700px;
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
     }
-
-        .portal-card {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
+    .login-form-group {
+      margin-bottom: 1.5rem;
+    }
+    .login-form-group label {
+      display: block;
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .login-input-group {
+      position: relative;
+    }
+    .login-input-group input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 1rem;
       transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            border: 2px solid transparent;
+      color: var(--text-primary);
     }
-
-        .portal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    .login-input-group input:focus {
       border-color: var(--primary-color);
-        }
-
-        .portal-card.admin {
-            background: linear-gradient(135deg, rgba(54, 153, 255, 0.05), rgba(105, 147, 255, 0.05));
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      outline: none;
     }
-
-        .portal-card.client {
-            background: linear-gradient(135deg, rgba(27, 197, 189, 0.05), rgba(32, 201, 151, 0.05));
-        }
-
-        .portal-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+    .login-input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
     }
-
-        .portal-card.admin .portal-icon {
+    .login-input-group input:focus + i {
       color: var(--primary-color);
     }
-
-        .portal-card.client .portal-icon {
-            color: #1BC5BD;
-        }
-
-        .portal-card h3 {
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
-
-        .portal-card p {
+    .remember-me input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+    }
+    .remember-me label {
       color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
+      cursor: pointer;
+      user-select: none;
     }
-
-        .portal-btn {
-            display: inline-block;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
+    .login-btn {
+      background: var(--primary-color);
+      color: white;
       border: none;
-            cursor: pointer;
+      padding: 1rem;
+      border-radius: 12px;
+      font-weight: 600;
       font-size: 1rem;
-        }
-
-        .portal-btn.admin {
-            background: linear-gradient(135deg, var(--primary-color), #6993FF);
-            color: white;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
-
-        .portal-btn.admin:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(54, 153, 255, 0.4);
-            color: white;
-            text-decoration: none;
-      }
-
-        .portal-btn.client {
-            background: linear-gradient(135deg, #1BC5BD, #20C997);
-            color: white;
-        }
-
-        .portal-btn.client:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(27, 197, 189, 0.4);
-            color: white;
-            text-decoration: none;
-      }
-
-        @media (max-width: 768px) {
-            .portal-container {
-        padding: 2rem;
-      }
-            
-            .portal-title {
-                font-size: 2rem;
+    .login-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
     }
-
-            .portal-cards {
-                grid-template-columns: 1fr;
-            }
+    .login-btn:active {
+      transform: translateY(0);
+    }
+    @media (max-width: 768px) {
+      .login-wrapper { flex-direction: column; }
+      .login-left { padding: 2rem; text-align: center; }
+      .login-right { padding: 2rem; }
+    }
+    .modern-toast {
+      background: white !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+      border-radius: 16px !important;
+      padding: 1rem !important;
+      border-left: 4px solid #DC2626 !important;
+    }
+    .modern-toast .swal2-title {
+      color: var(--text-primary) !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+    }
+    .modern-toast .swal2-html-container {
+      color: var(--text-secondary) !important;
+    }
+    .modern-toast .swal2-timer-progress-bar {
+      background: #DC2626 !important;
+      height: 3px !important;
     }
   </style>
 </head>
-
-<body>
-    <div class="portal-container">
-        <div class="logo-container">
-            <img src="dist/img/mamatid-transparent01.png" alt="Mamatid Health Center Logo">
+<body class="login-page">
+  <?php displayAlert(); ?>
+  <div class="login-wrapper">
+    <div class="login-left">
+      <div class="login-left-content">
+        <h1>Mamatid Health Center</h1>
+        <p>Access the Mamatid Health Center System to manage patient records, appointments, and healthcare services efficiently.</p>
+      </div>
     </div>
-    
-        <h1 class="portal-title">Mamatid Health Center</h1>
-        <p class="portal-subtitle">Choose your portal to continue</p>
-        
-        <div class="portal-cards">
-            <div class="portal-card admin">
-                <div class="portal-icon">
-                    <i class="fas fa-user-shield"></i>
+    <div class="login-right">
+      <div class="login-logo">
+        <img src="dist/img/mamatid-logo-01.jpg.png" alt="MHC Logo">
       </div>
-                <h3>Admin Portal</h3>
-                <p>Access administrative features, manage users, appointments, and system settings.</p>
-                <a href="admin_login.php" class="portal-btn admin">
-                    <i class="fas fa-sign-in-alt mr-2"></i>
-                    Admin Login
-                </a>
+      <div class="typewriter">
+        <h2>Enter your Credentials</h2>
       </div>
-      
-            <div class="portal-card client">
-                <div class="portal-icon">
-                    <i class="fas fa-user-injured"></i>
+      <form method="post">
+        <div class="login-form-group">
+          <label for="user_name">Username</label>
+          <div class="login-input-group">
+            <input 
+              type="text"
+              id="user_name"
+              name="user_name"
+              placeholder="Enter your username"
+              value="<?php echo htmlspecialchars($rememberedUsername); ?>"
+              required
+            >
+            <i class="fas fa-user"></i>
           </div>
-                <h3>Client Portal</h3>
-                <p>Book appointments, view your medical history, and manage your health records.</p>
-                <a href="client_portal/client_login.php" class="portal-btn client">
-                    <i class="fas fa-sign-in-alt mr-2"></i>
-                    Client Login
-                </a>
+        </div>
+        <div class="login-form-group">
+          <label for="password">Password</label>
+          <div class="login-input-group">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            >
+            <i class="fas fa-lock"></i>
           </div>
+        </div>
+        <div class="remember-me">
+          <input 
+            type="checkbox"
+            id="remember_me"
+            name="remember_me"
+            <?php echo ($rememberedUsername !== '') ? 'checked' : ''; ?>
+          >
+          <label for="remember_me">Remember me</label>
+        </div>
+        <button type="submit" name="login" class="login-btn">
+          Sign In
+        </button>
+      </form>
     </div>
   </div>
 </body>
