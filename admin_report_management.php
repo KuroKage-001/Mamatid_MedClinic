@@ -60,12 +60,137 @@ ob_clean();
       --dark-color: #1a1a2d;
     }
 
+    /* --- PAGE BACKGROUND --- */
+    body,
+    .content-wrapper {
+      background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
+      min-height: 100vh;
+    }
+
+    /* --- MODERN HEADER FOR REPORTS MANAGEMENT --- */
+    .modern-header {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      border-radius: 20px;
+      padding: 25px 30px;
+      margin: 20px 0 30px;
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      overflow: hidden;
+    }
+
+    .modern-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(54, 153, 255, 0.1), rgba(105, 147, 255, 0.1));
+      z-index: 0;
+    }
+
+    .modern-header .header-icon {
+      position: relative;
+      background: linear-gradient(135deg, #3699FF 0%, #6993FF 100%);
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
+      z-index: 1;
+    }
+
+    .modern-header .header-icon i {
+      color: white;
+      font-size: 28px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modern-header .header-title {
+      position: relative;
+      color: #ffffff;
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .modern-header .header-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(to right, #3699FF, #6993FF);
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .modern-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+      }
+
+      .modern-header .header-icon {
+        width: 48px;
+        height: 48px;
+      }
+
+      .modern-header .header-icon i {
+        font-size: 24px;
+      }
+
+      .modern-header .header-title {
+        font-size: 1.75rem;
+      }
+
+      .modern-header .header-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Content Header Enhanced Styling */
+    .content-header {
+      padding: 15px 0;
+      position: relative;
+    }
+
+    .content-header .container-fluid {
+      position: relative;
+      z-index: 1;
+    }
+
+    .content {
+      padding: 20px 0;
+    }
+
+    .content .container-fluid {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
     /* Card Styling */
     .card {
+      background: rgba(255, 255, 255, 0.95);
       border: none;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       border-radius: 15px;
       margin-bottom: 30px;
+      backdrop-filter: blur(10px);
     }
 
     .card-outline {
@@ -73,20 +198,40 @@ ob_clean();
     }
 
     .card-header {
-      background: white;
+      background: transparent;
       padding: 1.5rem;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    .card-header h3 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--dark-color);
+    .card-header .nav-tabs {
+      border-bottom: none;
+      margin-bottom: -1.5rem;
     }
 
     .card-body {
       padding: 1.5rem;
+    }
+
+    /* Tab Styling */
+    .nav-tabs .nav-link {
+      color: var(--dark-color);
+      padding: 1rem 1.5rem;
+      font-weight: 500;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      transition: all var(--transition-speed);
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .nav-tabs .nav-link.active {
+      color: var(--primary-color);
+      background: transparent;
+      border-bottom: 2px solid var(--primary-color);
     }
 
     /* Form Controls */
@@ -97,11 +242,13 @@ ob_clean();
       padding: 0.625rem 1rem;
       font-size: 1rem;
       transition: all var(--transition-speed);
+      background: rgba(255, 255, 255, 0.9);
     }
 
     .form-control:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+      background: white;
     }
 
     .input-group-text {
@@ -128,50 +275,25 @@ ob_clean();
       box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
     }
 
-    /* DateTimePicker Styling */
-    .datetimepicker-input {
-      background-color: white;
-    }
-
-    .tempusdominus-bootstrap-4 .datepicker-days table {
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .tempusdominus-bootstrap-4 .datepicker-days th,
-    .tempusdominus-bootstrap-4 .datepicker-days td {
-      padding: 0.75rem;
-    }
-
-    /* Content Header Styling */
-    .content-header {
-      padding: 20px 0;
-    }
-
-    .content-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin: 0;
-    }
-
-    /* Responsive Adjustments */
     @media (max-width: 768px) {
-      .card-header {
-        padding: 1rem;
+      .modern-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
       }
 
-      .card-body {
-        padding: 1rem;
+      .modern-header .header-icon {
+        width: 40px;
+        height: 40px;
       }
 
-      .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
+      .modern-header .header-title {
+        font-size: 1.5rem;
       }
 
-      .form-group {
-        margin-bottom: 1rem;
+      .nav-tabs .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -190,9 +312,12 @@ ob_clean();
       <!-- Content Header -->
       <section class="content-header">
         <div class="container-fluid">
-          <div class="row align-items-center mb-4">
-            <div class="col-12 col-md-6" style="padding-left: 20px;">
-              <h1>Reports</h1>
+          <div class="modern-header">
+            <div class="header-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="header-content">
+              <h1 class="header-title">Reports Management</h1>
             </div>
           </div>
         </div>
@@ -201,309 +326,284 @@ ob_clean();
       <!-- Main Content Section -->
       <section class="content">
         <div class="container-fluid">
-          <!-- Medicine Inventory Report -->
           <div class="card card-outline card-primary">
             <div class="card-header">
-              <h3 class="card-title">Medicine Inventory Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
+              <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="medicine-tab" data-toggle="tab" href="#medicine" role="tab">
+                    Medicine Inventory
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="family-planning-tab" data-toggle="tab" href="#family-planning" role="tab">
+                    Family Planning
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="family-members-tab" data-toggle="tab" href="#family-members" role="tab">
+                    Family Members
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="deworming-tab" data-toggle="tab" href="#deworming" role="tab">
+                    Deworming
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="bp-tab" data-toggle="tab" href="#bp" role="tab">
+                    Blood Pressure
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="blood-sugar-tab" data-toggle="tab" href="#blood-sugar" role="tab">
+                    Blood Sugar
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="tetanus-tab" data-toggle="tab" href="#tetanus" role="tab">
+                    Tetanus Toxoid
+                  </a>
+                </li>
+              </ul>
             </div>
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-3">
-                  <button type="button" id="print_inventory" class="btn btn-primary w-100">
-                    <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                  </button>
+              <div class="tab-content" id="reportTabsContent">
+                <!-- Medicine Inventory Tab -->
+                <div class="tab-pane fade show active" id="medicine" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <button type="button" id="print_inventory" class="btn btn-primary w-100">
+                        <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Family Planning Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Family Planning Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="family_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="family_from" 
-                             data-target="#family_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#family_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Family Planning Tab -->
+                <div class="tab-pane fade" id="family-planning" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="family_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="family_from" 
+                                 data-target="#family_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#family_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="family_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="family_to" 
+                                 data-target="#family_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#family_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_family" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="family_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="family_to" 
-                             data-target="#family_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#family_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_family" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Family Members Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Family Members Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="family_members_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="family_members_from" 
-                             data-target="#family_members_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#family_members_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Family Members Tab -->
+                <div class="tab-pane fade" id="family-members" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="family_members_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="family_members_from" 
+                                 data-target="#family_members_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#family_members_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="family_members_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="family_members_to" 
+                                 data-target="#family_members_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#family_members_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_family_members" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="family_members_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="family_members_to" 
-                             data-target="#family_members_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#family_members_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_family_members" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Deworming Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Deworming Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="deworming_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="deworming_from" 
-                             data-target="#deworming_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#deworming_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Deworming Tab -->
+                <div class="tab-pane fade" id="deworming" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="deworming_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="deworming_from" 
+                                 data-target="#deworming_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#deworming_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="deworming_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="deworming_to" 
+                                 data-target="#deworming_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#deworming_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_deworming" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="deworming_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="deworming_to" 
-                             data-target="#deworming_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#deworming_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_deworming" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- BP Monitoring Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">BP Monitoring Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="bp_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="bp_from" 
-                             data-target="#bp_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#bp_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Blood Pressure Tab -->
+                <div class="tab-pane fade" id="bp" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="bp_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="bp_from" 
+                                 data-target="#bp_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#bp_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="bp_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="bp_to" 
+                                 data-target="#bp_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#bp_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_bp" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="bp_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="bp_to" 
-                             data-target="#bp_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#bp_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_bp" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Random Blood Sugar Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Random Blood Sugar Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="blood_sugar_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="blood_sugar_from" 
-                             data-target="#blood_sugar_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#blood_sugar_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Blood Sugar Tab -->
+                <div class="tab-pane fade" id="blood-sugar" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="blood_sugar_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="blood_sugar_from" 
+                                 data-target="#blood_sugar_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#blood_sugar_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="blood_sugar_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="blood_sugar_to" 
+                                 data-target="#blood_sugar_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#blood_sugar_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_blood_sugar" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="blood_sugar_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="blood_sugar_to" 
-                             data-target="#blood_sugar_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#blood_sugar_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_blood_sugar" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Tetanus Toxoid Report -->
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Tetanus Toxoid Report</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">From Date</label>
-                    <div class="input-group date" id="tetanus_from_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="tetanus_from" 
-                             data-target="#tetanus_from_date" placeholder="Select start date"/>
-                      <div class="input-group-append" data-target="#tetanus_from_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                <!-- Tetanus Toxoid Tab -->
+                <div class="tab-pane fade" id="tetanus" role="tabpanel">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">From Date</label>
+                        <div class="input-group date" id="tetanus_from_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="tetanus_from" 
+                                 data-target="#tetanus_from_date" placeholder="Select start date"/>
+                          <div class="input-group-append" data-target="#tetanus_from_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <div class="form-group">
-                    <label class="form-label">To Date</label>
-                    <div class="input-group date" id="tetanus_to_date" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" id="tetanus_to" 
-                             data-target="#tetanus_to_date" placeholder="Select end date"/>
-                      <div class="input-group-append" data-target="#tetanus_to_date" data-toggle="datetimepicker">
-                        <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                    <div class="col-md-4 mb-3">
+                      <div class="form-group">
+                        <label class="form-label">To Date</label>
+                        <div class="input-group date" id="tetanus_to_date" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" id="tetanus_to" 
+                                 data-target="#tetanus_to_date" placeholder="Select end date"/>
+                          <div class="input-group-append" data-target="#tetanus_to_date" data-toggle="datetimepicker">
+                            <span class="input-group-text"><i class="far fa-calendar"></i></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" id="print_tetanus" class="btn btn-primary w-100">
-                      <i class="fas fa-file-pdf mr-2"></i>Generate PDF
-                    </button>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" id="print_tetanus" class="btn btn-primary w-100">
+                          <i class="fas fa-file-pdf mr-2"></i>Generate PDF
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
