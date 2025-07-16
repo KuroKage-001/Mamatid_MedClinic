@@ -69,104 +69,50 @@ ob_clean();
 
     /* --- MODERN HEADER FOR REPORTS MANAGEMENT --- */
     .modern-header {
-      position: relative;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      border-radius: 20px;
-      padding: 25px 30px;
-      margin: 20px 0 30px;
-      display: flex;
-      align-items: center;
-      gap: 25px;
-      overflow: hidden;
+        background: linear-gradient(135deg, #232b3e 0%, #3498db 100%);
+        border-radius: 18px;
+        padding: 2rem 2.5rem 1.5rem 2.5rem;
+        margin-bottom: 2.2rem;
+        box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        position: relative;
     }
-
-    .modern-header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, rgba(54, 153, 255, 0.1), rgba(105, 147, 255, 0.1));
-      z-index: 0;
-    }
-
     .modern-header .header-icon {
-      position: relative;
-      background: linear-gradient(135deg, #3699FF 0%, #6993FF 100%);
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 15px rgba(54, 153, 255, 0.4);
-      z-index: 1;
+        background: linear-gradient(135deg, #2980b9 0%, #1BC5BD 100%);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-
     .modern-header .header-icon i {
-      color: white;
-      font-size: 28px;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        color: #fff;
+        font-size: 1.8rem;
     }
-
     .modern-header .header-title {
-      position: relative;
-      color: #ffffff;
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      z-index: 1;
+        color: #fff;
+        font-size: 2.1rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        margin: 0;
     }
-
-    .modern-header .header-title::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 40px;
-      height: 3px;
-      background: linear-gradient(to right, #3699FF, #6993FF);
-      border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-      .modern-header {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-        gap: 15px;
-      }
-
-      .modern-header .header-icon {
-        width: 48px;
-        height: 48px;
-      }
-
-      .modern-header .header-icon i {
-        font-size: 24px;
-      }
-
-      .modern-header .header-title {
-        font-size: 1.75rem;
-      }
-
-      .modern-header .header-title::after {
-        left: 50%;
-        transform: translateX(-50%);
-      }
+    @media (max-width: 576px) {
+        .modern-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.2rem 1rem 1rem 1rem;
+            gap: 0.7rem;
+        }
     }
 
     /* Content Header Enhanced Styling */
     .content-header {
-      padding: 15px 0;
-      position: relative;
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
     }
 
     .content-header .container-fluid {
@@ -314,11 +260,9 @@ ob_clean();
         <div class="container-fluid">
           <div class="modern-header">
             <div class="header-icon">
-              <i class="fas fa-chart-pie"></i>
+              <i class="fas fa-calendar-alt"></i>
             </div>
-            <div class="header-content">
-              <h1 class="header-title">Reports Management</h1>
-            </div>
+            <h1 class="header-title">Reports Management</h1>
           </div>
         </div>
       </section>
