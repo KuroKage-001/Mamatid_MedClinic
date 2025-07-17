@@ -6,19 +6,15 @@ $base_path = $in_subdirectory ? '../..' : '.';
 <footer class="main-footer fixed-bottom">
     <div class="footer-container">
         <div class="footer-content">
-            <!-- Left side: copyright -->
             <div class="footer-copyright">
-                <strong>
-                    <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="footer-brand">
-                        <i class="fas fa-clinic-medical footer-icon"></i>
-                        Mamatid Health Center
-                    </a>
-                </strong>
+                <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="footer-brand">
+                    <i class="fas fa-clinic-medical footer-icon"></i>
+                    Mamatid Health Center
+                </a>
                 <span class="copyright-text">&copy; <?php echo date('Y');?> All rights reserved.</span>
             </div>
-            <!-- Right side: version info -->
             <div class="footer-version">
-                <span class="version-badge">Version 1.0</span>
+                <span class="version-text">Version 1.0</span>
             </div>
         </div>
     </div>
@@ -46,10 +42,9 @@ $base_path = $in_subdirectory ? '../..' : '.';
     border-top: 1px solid var(--footer-border);
     color: var(--footer-text);
     padding: 0;
-    height: 60px;
+    min-height: 60px;
     display: flex;
     align-items: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .footer-container {
@@ -61,7 +56,7 @@ $base_path = $in_subdirectory ? '../..' : '.';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100%;
+    width: 100%;
 }
 
 /* Footer Copyright Section */
@@ -72,18 +67,17 @@ $base_path = $in_subdirectory ? '../..' : '.';
 }
 
 .footer-brand {
-    display: flex;
-    align-items: center;
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
-    transition: color var(--transition-speed);
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
+    transition: color var(--transition-speed);
 }
 
 .footer-brand:hover {
     color: var(--footer-link);
-    text-decoration: none;
 }
 
 .footer-icon {
@@ -92,47 +86,34 @@ $base_path = $in_subdirectory ? '../..' : '.';
 }
 
 .copyright-text {
-    color: var(--footer-text);
     margin-left: 0.5rem;
     font-size: 0.9rem;
 }
 
 /* Footer Version Section */
-.footer-version {
-    display: flex;
-    align-items: center;
-}
-
-.version-badge {
-    background: rgba(54, 153, 255, 0.15);
-    color: var(--footer-link);
-    padding: 0.4rem 0.8rem;
-    border-radius: 30px;
+.version-text {
+    color: var(--footer-text);
     font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .main-footer {
-        height: auto;
-        padding: 1rem 0;
+        min-height: auto;
+        padding: 1rem;
     }
-
     .footer-content {
         flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .footer-copyright {
-        flex-direction: column;
+        align-items: center;
         gap: 0.5rem;
     }
-
+    .footer-copyright {
+        flex-direction: column;
+        align-items: center;
+    }
     .copyright-text {
         margin-left: 0;
+        margin-top: 0.25rem;
     }
 }
 

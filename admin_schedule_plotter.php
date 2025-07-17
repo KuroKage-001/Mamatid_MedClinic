@@ -1550,16 +1550,29 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 transform: translateY(0);
             }
         }
+
+        /* Card Collapse Styling - Fix for rounded corners when collapsed */
+        .card.collapsed .card-header {
+            border-radius: 24px !important;
+        }
+        
+        .card:not(.collapsed) .card-header {
+            border-radius: 24px 24px 0 0 !important;
+        }
+        
+        .card .card-body {
+            border-radius: 0 0 24px 24px !important;
+        }
     </style>
 </head>
-<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed" style="background: #f4f6fa;">
+<body class="hold-transition sidebar-mini light-mode layout-fixed layout-navbar-fixed">
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar and Sidebar -->
         <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
-        <div class="content-wrapper" style="background: #f4f6fa; padding-top: 18px; padding-left: 18px; padding-right: 18px;">
+        <div class="content-wrapper" style="background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important; min-height: 100vh; padding-top: 18px; padding-left: 18px; padding-right: 18px;">
             <!-- Main content -->
             <section class="content">
                 <!-- Statistics Overview -->
@@ -1650,8 +1663,8 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 </div>
 
                 <!-- Calendar Overview -->
-                <div class="card card-outline card-primary mb-4" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(54,153,255,0.08);">
-                    <div class="card-header" style="border-radius: 18px 18px 0 0;">
+                <div class="card card-outline card-primary mb-4" style="background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(54,153,255,0.08);">
+                    <div class="card-header" style="border-radius: 24px 24px 0 0;">
                         <h3 class="card-title">
                             <i class="fas fa-calendar-alt mr-2"></i>
                             Schedule Overview Calendar
@@ -1662,7 +1675,7 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                             </button>
                         </div>
                     </div>
-                    <div class="card-body" style="border-radius: 0 0 18px 18px;">
+                    <div class="card-body" style="border-radius: 0 0 24px 24px;">
                         <div id="calendar"></div>
                         <div class="mt-4">
                             <div class="legend-container">
@@ -1715,9 +1728,20 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                 </div>
 
                 <!-- Schedules Tabs -->
-                <div class="card card-outline card-primary mb-4">
-                    <div class="card-header">
-                        <ul class="nav nav-tabs card-header-tabs" id="schedulesTabs" role="tablist">
+                <div class="card card-outline card-primary mb-4" style="background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(54,153,255,0.08);">
+                    <div class="card-header" style="border-radius: 24px 24px 0 0;">
+                        <h3 class="card-title">
+                            <i class="fas fa-clipboard-list mr-2"></i>
+                            Schedule Management
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="border-radius: 0 0 24px 24px;">
+                        <ul class="nav nav-tabs" id="schedulesTabs" role="tablist" style="margin-bottom: 1.5rem;">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" id="doctor-tab" data-toggle="tab" href="#doctor-schedules" role="tab" aria-controls="doctor-schedules" aria-selected="true">
                                     <i class="fas fa-user-md mr-2"></i>
@@ -1734,8 +1758,6 @@ $pendingApprovals = count(array_filter($doctorSchedules, function($schedule) {
                                 </a>
                             </li>
                         </ul>
-                    </div>
-                    <div class="card-body">
                         <div class="tab-content" id="schedulesTabContent">
                             <!-- Doctor Schedules Tab -->
                             <div class="tab-pane fade show active" id="doctor-schedules" role="tabpanel" aria-labelledby="doctor-tab">
