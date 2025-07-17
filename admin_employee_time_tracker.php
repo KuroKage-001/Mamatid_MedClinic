@@ -50,7 +50,7 @@ if (isset($_POST['action'])) {
 
         if ($action == 'time_in' && $canTimeIn) {
             // Insert a new record into admin_time_in_attendance_logs table
-$query = "INSERT INTO `admin_time_in_attendance_logs` (`user_id`, `log_date`, `time_in`) 
+            $query = "INSERT INTO `admin_time_in_attendance_logs` (`user_id`, `log_date`, `time_in`) 
                       VALUES (:uid, :today, :time_in)";
             $stmt = $con->prepare($query);
             $stmt->execute([':uid' => $userId, ':today' => $today, ':time_in' => $currentTime]);
@@ -58,7 +58,7 @@ $query = "INSERT INTO `admin_time_in_attendance_logs` (`user_id`, `log_date`, `t
             $type = 'success';
         } elseif ($action == 'time_out' && $canTimeOut) {
             // Insert a record into admin_time_out_attendance_logs table
-$query = "INSERT INTO `admin_time_out_attendance_logs` (`user_id`, `log_date`, `time_out`) 
+            $query = "INSERT INTO `admin_time_out_attendance_logs` (`user_id`, `log_date`, `time_out`) 
                      VALUES (:uid, :today, :time_out)";
             $stmt = $con->prepare($query);
             $stmt->execute([
@@ -182,8 +182,8 @@ if ($isAdmin && isset($_POST['admin_action'])) {
                 $logDate = $logData['log_date'];
                 
                 // Delete from admin_time_in_attendance_logs
-$queryDeleteTimeIn = "DELETE FROM admin_time_in_attendance_logs WHERE user_id = :uid AND log_date = :log_date";
-                $stmtDeleteTimeIn = $con->prepare($queryDeleteTimeIn);
+                $queryDeleteTimeIn = "DELETE FROM admin_time_in_attendance_logs WHERE user_id = :uid AND log_date = :log_date";
+                $stmtDeleteTimeIn = $conGRA->prepare($queryDeleteTimeIn);
                 $stmtDeleteTimeIn->bindParam(':uid', $userId);
                 $stmtDeleteTimeIn->bindParam(':log_date', $logDate);
                 $stmtDeleteTimeIn->execute();
@@ -265,220 +265,99 @@ try {
             --dark-color: #1a1a2d;
         }
 
-        /* Modern Export Actions CSS */
-        .dt-button-collection {
-            display: none !important;
+        /* Page Background */
+        body,
+        .content-wrapper {
+            background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
+            min-height: 100vh;
         }
 
-        .export-container {
+        /* Content Header Styling */
+        .content-header {
+            border-bottom: none !important;
+            margin-bottom: 0 !important;
+        }
+
+        .content-header .container-fluid {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Content Styling */
+        .content {
+            padding: 20px 0;
+        }
+
+        .content .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Modern Header Styling */
+        .modern-header {
+            background: linear-gradient(135deg, #232b3e 0%, #3498db 100%);
+            border-radius: 18px;
+            padding: 2rem 2.5rem 1.5rem 2.5rem;
+            margin-bottom: 2.2rem;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
             display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
             align-items: center;
-            margin-bottom: 15px;
+            gap: 1.2rem;
+            position: relative;
         }
 
-        /* Elegant Export Options - Non-Button Design */
-        .export-action-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 10px !important;
-            padding: 12px 18px !important;
-            font-size: 0.875rem !important;
-            font-weight: 600 !important;
-            text-decoration: none !important;
-            border-radius: 12px !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            cursor: pointer !important;
-            position: relative !important;
-            overflow: hidden !important;
-            border: 2px solid transparent !important;
-            background: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-            text-transform: none !important;
-            letter-spacing: 0.3px !important;
+        .modern-header .header-icon {
+            background: linear-gradient(135deg, #2980b9 0%, #1BC5BD 100%);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .export-action-btn::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: -100% !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
-            transition: left 0.6s ease !important;
+        .modern-header .header-icon i {
+            color: #fff;
+            font-size: 1.8rem;
         }
 
-        .export-action-btn:hover::before {
-            left: 100% !important;
+        .modern-header .header-title {
+            color: #fff;
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            margin: 0;
         }
 
-        .export-action-btn:hover {
-            transform: translateY(-3px) scale(1.02) !important;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
-            border-color: currentColor !important;
-        }
-
-        .export-action-btn:active {
-            transform: translateY(-1px) scale(1.01) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
-        }
-
-        .export-action-btn i {
-            font-size: 1rem !important;
-            transition: all 0.3s ease !important;
-            opacity: 0.9 !important;
-            flex-shrink: 0 !important;
-        }
-
-        .export-action-btn:hover i {
-            transform: scale(1.15) rotate(5deg) !important;
-            opacity: 1 !important;
-        }
-
-        /* Sophisticated Color Schemes for Each Export Type */
-        .export-copy-btn {
-            color: #6366F1 !important;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)) !important;
-        }
-
-        .export-copy-btn:hover {
-            color: #4F46E5 !important;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25) !important;
-        }
-
-        .export-csv-btn {
-            color: #10B981 !important;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)) !important;
-        }
-
-        .export-csv-btn:hover {
-            color: #059669 !important;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08)) !important;
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25) !important;
-        }
-
-        .export-excel-btn {
-            color: #22C55E !important;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
-        }
-
-        .export-excel-btn:hover {
-            color: #16A34A !important;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08)) !important;
-            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25) !important;
-        }
-
-        .export-pdf-btn {
-            color: #EF4444 !important;
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05)) !important;
-        }
-
-        .export-pdf-btn:hover {
-            color: #DC2626 !important;
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08)) !important;
-            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
-        }
-
-        .export-print-btn {
-            color: #8B5CF6 !important;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
-        }
-
-        .export-print-btn:hover {
-            color: #7C3AED !important;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
-            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25) !important;
-        }
-
-        /* Hide default DataTable buttons */
-        .dt-buttons {
-            display: none !important;
-        }
-
-        /* Custom layout for DataTable wrapper */
-        #time_logs_wrapper .row:first-child {
-            margin-bottom: 15px;
-        }
-
-        #time_logs_wrapper .dataTables_filter {
-            float: left !important;
-            text-align: left !important;
-        }
-
-        #time_logs_wrapper .dataTables_filter input {
-            width: 300px;
-            border-radius: 8px;
-            border: 2px solid #e4e6ef;
-            padding: 0.625rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        #time_logs_wrapper .dataTables_filter input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-        }
-
-        /* Responsive Design for Modern Export Options */
-        @media (max-width: 768px) {
-            .export-container {
-                flex-wrap: wrap;
-                gap: 8px;
-                justify-content: center;
-            }
-
-            .export-action-btn {
-                padding: 10px 14px !important;
-                font-size: 0.8125rem !important;
-                gap: 8px !important;
-                border-radius: 10px !important;
-            }
-
-            .export-action-btn i {
-                font-size: 0.9rem !important;
-            }
+        .modern-header #datetime {
+            background: none;
+            padding: 0;
+            box-shadow: none;
+            animation: none;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.18);
         }
 
         @media (max-width: 576px) {
-            .export-container {
-                gap: 6px;
+            .modern-header {
                 flex-direction: column;
-                align-items: stretch;
-            }
-
-            .export-action-btn {
-                padding: 8px 12px !important;
-                font-size: 0.75rem !important;
-                gap: 6px !important;
-                border-radius: 8px !important;
-                justify-content: center !important;
-            }
-
-            .export-action-btn i {
-                font-size: 0.85rem !important;
-            }
-
-            .export-action-btn:hover {
-                transform: translateY(-2px) scale(1.01) !important;
-            }
-
-            #time_logs_wrapper .dataTables_filter input {
-                width: 100%;
+                align-items: flex-start;
+                padding: 1.2rem 1rem 1rem 1rem;
+                gap: 0.7rem;
             }
         }
 
         /* Card Styling */
         .card {
+            background: rgba(255, 255, 255, 0.95);
             border: none;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             border-radius: 15px;
             margin-bottom: 30px;
+            backdrop-filter: blur(10px);
         }
 
         .card-outline {
@@ -572,18 +451,6 @@ try {
             color: var(--primary-color);
         }
 
-        /* Content Header Styling */
-        .content-header {
-            padding: 20px 0;
-        }
-
-        .content-header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0;
-        }
-
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .card-header {
@@ -602,14 +469,14 @@ try {
 
         /* DateTime Badge Styling */
         #datetime {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 500;
-        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
-        animation: pulse 2s infinite;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+            animation: pulse 2s infinite;
         }
 
         /* Modern Table Styling */
@@ -697,10 +564,12 @@ try {
 
         /* Card Enhancements */
         .card {
+            background: rgba(255, 255, 255, 0.95);
             border: none;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             border-radius: 15px;
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         .card-header {
@@ -1104,11 +973,12 @@ try {
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <div class="container-fluid">
-                <div class="row align-items-center mb-4">
-                    <div class="col-12 col-md-6" style="padding-left: 20px;">
-                        <h1><?php echo $isAdmin ? 'Employee Time Tracking' : 'My Attendance'; ?></h1>
+                <div class="modern-header">
+                    <div class="header-icon">
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <div class="col-12 col-md-6 text-md-right mt-3 mt-md-0">
+                    <h1 class="header-title"><?php echo $isAdmin ? 'Employee Time Tracking' : 'My Attendance'; ?></h1>
+                    <div class="ml-auto">
                         <span id="datetime" class="d-inline-block"></span>
                     </div>
                 </div>
@@ -1375,7 +1245,6 @@ try {
 </div>
 
 <?php include './config/site_css_js_links.php'; ?>
-
 
 <script>
     $(document).ready(function() {

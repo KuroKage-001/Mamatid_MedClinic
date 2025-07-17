@@ -145,6 +145,80 @@ try {
       --dark-color: #1a1a2d;
     }
 
+    /* Page Background */
+    body,
+    .content-wrapper {
+      background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
+      min-height: 100vh;
+    }
+
+    /* Content Header Styling */
+    .content-header {
+      border-bottom: none !important;
+      margin-bottom: 0 !important;
+    }
+
+    .content-header .container-fluid {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Modern Header Styling */
+    .modern-header {
+      background: linear-gradient(135deg, #232b3e 0%, #3498db 100%);
+      border-radius: 18px;
+      padding: 2rem 2.5rem 1.5rem 2.5rem;
+      margin-bottom: 2.2rem;
+      box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      position: relative;
+    }
+
+    .modern-header .header-icon {
+      background: linear-gradient(135deg, #2980b9 0%, #1BC5BD 100%);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modern-header .header-icon i {
+      color: #fff;
+      font-size: 1.8rem;
+    }
+
+    .modern-header .header-title {
+      color: #fff;
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      margin: 0;
+    }
+
+    @media (max-width: 576px) {
+      .modern-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.2rem 1rem 1rem 1rem;
+        gap: 0.7rem;
+      }
+    }
+
+    /* Content Styling */
+    .content {
+      padding: 20px 0;
+    }
+
+    .content .container-fluid {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
     /* Card Styling */
     .card {
       border: none;
@@ -316,19 +390,6 @@ try {
       background-color: rgba(246, 78, 96, 0.1);
       color: var(--danger-color);
       border-left: 4px solid var(--danger-color);
-    }
-
-    /* Content Header Styling */
-    .content-header {
-      padding: 20px 0;
-    }
-
-    .content-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin: 0;
-      text-transform: capitalize;
     }
 
     /* Action Buttons Group */
@@ -624,12 +685,14 @@ try {
   <div class="wrapper">
     <?php include './config/admin_header.php'; include './config/admin_sidebar.php'; ?>
     <div class="content-wrapper">
+      <!-- Updated Content Header -->
       <section class="content-header">
         <div class="container-fluid">
-          <div class="row align-items-center mb-4">
-            <div class="col-12 col-md-6" style="padding-left: 20px;">
-              <h1>Users Management</h1>
+          <div class="modern-header">
+            <div class="header-icon">
+              <i class="fas fa-users"></i>
             </div>
+            <h1 class="header-title">Users Management</h1>
           </div>
         </div>
       </section>
@@ -640,7 +703,7 @@ try {
           <div class="alert alert-success alert-dismissible fade show">
             <i class="fas fa-check-circle mr-2"></i>
             <?php echo $message; ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <button type="button" class="close" data-dismiss="alert">×</button>
           </div>
         <?php endif; ?>
 
@@ -648,7 +711,7 @@ try {
           <div class="alert alert-danger alert-dismissible fade show">
             <i class="fas fa-exclamation-circle mr-2"></i>
             <?php echo $error; ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <button type="button" class="close" data-dismiss="alert">×</button>
           </div>
         <?php endif; ?>
 
@@ -868,7 +931,6 @@ try {
 
   <?php include './config/site_css_js_links.php'; ?>
   
-  
   <script>
     $(document).ready(function() {
       // Initialize DataTable
@@ -904,7 +966,7 @@ try {
         const Toast = Swal.mixin({
           toast: true,
           position: 'top-end',
-          showConfirmButton: false,
+          showConfirmButton: falsez
           timer: 2000,
           timerProgressBar: true
         });

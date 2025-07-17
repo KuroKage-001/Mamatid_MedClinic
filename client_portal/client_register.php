@@ -20,7 +20,7 @@ if (isset($_POST['register'])) {
     $gender = $_POST['gender'];
     
     // Profile picture handling
-    $profileImage = 'default_client.png'; // Default image
+    $profileImage = 'default_client.jpg'; // Default image
     
     // Check if a file was uploaded
     if(isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
@@ -476,9 +476,11 @@ if (isset($_POST['register'])) {
     <div class="register-container">
         <div class="register-left">
             <div class="register-left-content">
-                <h1>Join Our Healthcare Community</h1>
-                <p>Create your account to access personalized healthcare services and manage your medical needs efficiently.</p>
-                
+                <div class="register-logo" style="text-align:center; margin-bottom:2rem;">
+                    <img src="../dist/img/mamatid-transparent01.png" alt="System Logo" style="width:110px; height:110px; border-radius:50%; background:white; box-shadow:0 4px 15px rgba(0,169,255,0.15); border:2px solid var(--primary-color); padding:10px;">
+                </div>
+                <h1 style="text-align:center;">Join Our Healthcare Community</h1>
+                <p style="text-align:center;">Create your account to access personalized healthcare services and manage your medical needs efficiently.</p>
                 <ul class="register-benefits">
                     <li><i class="fas fa-check"></i> Easy appointment scheduling</li>
                     <li><i class="fas fa-check"></i> Secure medical records access</li>
@@ -490,15 +492,12 @@ if (isset($_POST['register'])) {
         </div>
         
         <div class="register-right">
-            <div class="register-logo">
-                <img src="../dist/img/mamatid-transparent01.png" alt="System Logo">
-            </div>
             
             <form method="post" enctype="multipart/form-data">
                 <!-- Profile Picture Upload -->
                 <div class="profile-upload">
                     <div class="profile-picture-container">
-                        <img src="../system/client_images/default_client.png" alt="Profile Picture" id="profilePreview" class="profile-picture">
+                        <img src="../system/client_images/default_client.jpg" alt="Profile Picture" id="profilePreview" class="profile-picture">
                         <label for="profile_picture" class="profile-picture-overlay">
                             <i class="fas fa-camera"></i>
                         </label>

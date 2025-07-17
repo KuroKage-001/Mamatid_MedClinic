@@ -528,10 +528,12 @@ try {
       background: #ddd;
     }
 
-    /* Content Wrapper Padding */
+    /* --- PAGE BACKGROUND --- */
+    body,
     .content-wrapper {
+      background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
+      min-height: 100vh;
       padding: 1.5rem;
-      background: #f8f9fa;
     }
 
     /* Container Fluid Padding */
@@ -544,35 +546,50 @@ try {
       margin: 0;
     }
 
-    /* Small Box Adjustments */
-    .small-box {
-      margin-bottom: 0;
+    /* Statistics Cards */
+    .stats-card {
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
       overflow: hidden;
+      position: relative;
+      transition: transform 0.3s ease;
     }
 
-    .small-box .icon {
-      opacity: 0.2;
-      right: 15px;
+    .stats-card:hover {
+      transform: translateY(-5px);
     }
 
-    .small-box:hover .icon {
-      font-size: 70px;
+    .stats-card .icon {
+      opacity: 0.8;
     }
 
-    .small-box .inner {
-      padding: 20px;
+    .stats-card h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
     }
 
-    .small-box h3 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      margin: 0;
-      white-space: nowrap;
-    }
-
-    .small-box p {
+    .stats-card p {
       font-size: 1rem;
-      margin: 0;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    .bg-gradient-success {
+      background: linear-gradient(135deg, #00C851, #00A844);
+    }
+
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #2196F3, #1976D2);
+    }
+
+    .bg-gradient-warning {
+      background: linear-gradient(135deg, #FFA726, #FB8C00);
+    }
+
+    .bg-gradient-danger {
+      background: linear-gradient(135deg, #FF5252, #E53935);
     }
 
     /* Chart Select Icon */
@@ -598,48 +615,80 @@ try {
       <section class="content">
         <div class="container-fluid">
           <!-- Stat Boxes -->
-          <div class="row g-3">
-            <div class="col-lg-3 col-md-6 col-12">
-              <div class="small-box" style="background: linear-gradient(135deg, #00C851, #00A844); border-radius: 10px;">
-                <div class="inner text-white">
-                  <h3><?php echo $todaysCount; ?></h3>
-                  <p>Today's Patients</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar-day"></i>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-12">
-              <div class="small-box" style="background: linear-gradient(135deg, #2196F3, #1976D2); border-radius: 10px;">
-                <div class="inner text-white">
-                  <h3><?php echo $currentWeekCount; ?></h3>
-                  <p>Current Week</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar-week"></i>
+          <div class="row mb-4 g-4" style="margin-top: 0; padding-top: 0;">
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card bg-gradient-success text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(0,197,129,0.10);">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $todaysCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Today's Patients</p>
+                      <small class="d-block opacity-75">
+                        <i class="fas fa-calendar-day mr-1"></i>
+                        <?php echo date('M d, Y'); ?>
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar-day fa-2x"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12">
-              <div class="small-box" style="background: linear-gradient(135deg, #FFA726, #FB8C00); border-radius: 10px;">
-                <div class="inner text-white">
-                  <h3><?php echo $currentMonthCount; ?></h3>
-                  <p>Current Month</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-calendar"></i>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card bg-gradient-primary text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(33,150,243,0.10);">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentWeekCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Week</p>
+                      <small class="d-block opacity-75">
+                        <i class="fas fa-calendar-week mr-1"></i>
+                        Week <?php echo date('W'); ?> of <?php echo date('Y'); ?>
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar-week fa-2x"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-12">
-              <div class="small-box" style="background: linear-gradient(135deg, #FF5252, #E53935); border-radius: 10px;">
-                <div class="inner text-white">
-                  <h3><?php echo $currentYearCount; ?></h3>
-                  <p>Current Year</p>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card bg-gradient-warning text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(255,167,38,0.10);">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentMonthCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Month</p>
+                      <small class="d-block opacity-75">
+                        <i class="fas fa-calendar mr-1"></i>
+                        <?php echo date('F Y'); ?>
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                  </div>
                 </div>
-                <div class="icon">
-                  <i class="fa fa-user-injured"></i>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card bg-gradient-danger text-white stats-card shadow-sm" style="border-radius: 18px; box-shadow: 0 4px 24px rgba(255,82,82,0.10);">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="mb-1"><?php echo $currentYearCount; ?></h3>
+                      <p class="mb-1 font-weight-bold">Current Year</p>
+                      <small class="d-block opacity-75">
+                        <i class="fas fa-user-injured mr-1"></i>
+                        Year <?php echo date('Y'); ?>
+                      </small>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-user-injured fa-2x"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -647,34 +696,37 @@ try {
 
           <!-- Chart Section -->
           <div class="chart-container">
-            <div class="row mb-4 align-items-center">
-              <div class="col-md-4">
-                <div class="chart-select-wrapper">
-                <select id="chartType" class="chart-select">
-                  <option value="weekly">Weekly Patient Statistics</option>
-                  <option value="monthly">Monthly Patient Statistics</option>
-                  <option value="yearly">Yearly Patient Statistics</option>
-                </select>
-                  <div class="chart-select-icon">
-                    <i class="fas fa-chart-bar"></i>
+          <div class="card card-outline card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Patient Statistics Dashboard</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
               </div>
             </div>
-              </div>
-              <div class="col-md-6">
-                <div class="chart-period-info">
-                  <span class="period-label">Current Period:</span>
-                  <span class="period-value" id="currentPeriod">This Week</span>
-                  <span class="period-dates" id="periodDates"></span>
+            <div class="card-body">
+              <div class="row mb-4 align-items-center">
+                <div class="col-md-4">
+                  <div class="chart-select-wrapper">
+                  <select id="chartType" class="chart-select">
+                    <option value="weekly">Weekly Patient Statistics</option>
+                    <option value="monthly">Monthly Patient Statistics</option>
+                    <option value="yearly">Yearly Patient Statistics</option>
+                  </select>
+                    <div class="chart-select-icon">
+                      <i class="fas fa-chart-bar"></i>
                 </div>
               </div>
-              <div class="col-md-2 text-right">
-              <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="chart-period-info">
+                    <span class="period-label">Current Period:</span>
+                    <span class="period-value" id="currentPeriod">This Week</span>
+                    <span class="period-dates" id="periodDates"></span>
+                  </div>
+                </div>
               </div>
-            </div>
 
             <div class="row mb-4">
               <div class="col-md-3">
@@ -801,6 +853,8 @@ try {
                 </div>
               </div>
             </div>
+            </div>
+          </div>
           </div>
         </div>
       </section>
