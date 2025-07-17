@@ -213,11 +213,14 @@ $rememberedUsername = isset($_COOKIE['remembered_username']) ? $_COOKIE['remembe
       white-space: nowrap;
       margin: 0 auto;
       letter-spacing: 0.15em;
-      animation: typing 3.5s steps(40, end);
+      animation: typing 6s ease-in-out infinite;
+      width: 0;
     }
     @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
+      0% { width: 0 }
+      30% { width: 100% }
+      70% { width: 100% }
+      100% { width: 0 }
     }
     .login-form-group {
       margin-bottom: 1.5rem;

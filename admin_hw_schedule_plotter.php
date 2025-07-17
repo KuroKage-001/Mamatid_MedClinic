@@ -266,6 +266,12 @@ $roleDisplay = ucfirst($staffRole);
             --dark-color: #1a1a2d;
         }
 
+        body,
+        .content-wrapper {
+            background: linear-gradient(135deg, #232b3e 0%, #34495e 100%) !important;
+            min-height: 100vh;
+        }
+
         /* Card Styling */
         .card {
             border: none;
@@ -377,15 +383,50 @@ $roleDisplay = ucfirst($staffRole);
 
         /* Content Header Styling */
         .content-header {
-            padding: 20px 0;
-        }
+            border-bottom: none !important;
+            margin-bottom: 0 !important;
+         }
 
-        .content-header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0;
+        /* --- MODERN HEADER STYLES --- */
+    .modern-header {
+        background: linear-gradient(135deg, #232b3e 0%, #3498db 100%);
+        border-radius: 18px;
+        padding: 2rem 2.5rem 1.5rem 2.5rem;
+        margin-bottom: 2.2rem;
+        box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+    }
+    .modern-header .header-icon {
+        background: linear-gradient(135deg, #2980b9 0%, #1BC5BD 100%);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .modern-header .header-icon i {
+        color: #fff;
+        font-size: 1.8rem;
+    }
+    .modern-header .header-title {
+        color: #fff;
+        font-size: 2.1rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        margin: 0;
+    }
+    @media (max-width: 576px) {
+        .modern-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.2rem 1rem 1rem 1rem;
+            gap: 0.7rem;
         }
+    }
 
         /* Custom Checkbox */
         .custom-checkbox {
@@ -910,24 +951,18 @@ $roleDisplay = ucfirst($staffRole);
         <?php include './config/admin_header.php'; ?>
         <?php include './config/admin_sidebar.php'; ?>
         <div class="content-wrapper">
-            <div class="content-header">
+
+             <!-- Modern Header -->
+            <section class="content-header">
                 <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="m-0">
-                                Schedule Plotter
-                                <span class="role-badge role-<?php echo $staffRole; ?>"><?php echo $roleDisplay; ?></span>
-                            </h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="admin_dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Schedule Plotter</li>
-                            </ol>
-                        </div>
+                    <div class="modern-header">
+                    <div class="header-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h1 class="header-title">Schedule Plotter</h1>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <div class="content">
                 <div class="container-fluid">
