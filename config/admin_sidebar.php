@@ -293,14 +293,33 @@ $role_display_name = getRoleDisplayName($user_role);
 
 /* Brand Logo */
 .brand-link {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 1rem 0.75rem !important;
-    background: linear-gradient(135deg, #3699FF 0%, #2563EB 100%);
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 1.25rem 1rem !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     text-align: center;
     height: 65px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+}
+
+.brand-link::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transition: transform 0.6s;
+    transform: translateX(-100%);
+}
+
+.brand-link:hover::before {
+    transform: translateX(100%);
 }
 
 .brand-logo-container {
@@ -330,17 +349,31 @@ $role_display_name = getRoleDisplayName($user_role);
     margin-bottom: 0.5rem;
 }
 
+/* Remove all backgrounds when collapsed */
+.sidebar-collapse .user-panel {
+    padding: 1rem 0 !important;
+    border-bottom: none !important;
+    background: transparent !important;
+}
+
 .user-info-container {
     display: flex;
     align-items: center;
     position: relative;
-    padding: 0.5rem;
-    padding-left: 0.25rem;
-    padding-right: 1.5rem;
-    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
     border-radius: var(--menu-item-radius);
-    width: calc(100% + 1rem);
-    margin-right: -1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-speed) var(--transition-smooth);
+    cursor: pointer;
+}
+
+.user-info-container:hover {
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.08) 0%, rgba(54, 153, 255, 0.04) 100%);
+    border-color: rgba(54, 153, 255, 0.2);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
 }
 
 .user-image-container {
@@ -565,31 +598,34 @@ $role_display_name = getRoleDisplayName($user_role);
     }
 }
 
-/* Collapsed Sidebar (for future implementation) */
+/* Collapsed Sidebar */
 .sidebar-collapse .main-sidebar {
     width: 70px;
 }
 
-.sidebar-collapse .brand-link .logo-xl {
-    display: none;
-}
-
+.sidebar-collapse .brand-text,
 .sidebar-collapse .user-info,
 .sidebar-collapse .nav-sidebar .nav-link p,
-.sidebar-collapse .nav-sidebar .nav-link .right {
+.sidebar-collapse .nav-sidebar .nav-link .right,
+.sidebar-collapse .nav-header {
     display: none;
 }
 
-.sidebar-collapse .user-image-container {
-    margin: 0 auto;
+.sidebar-collapse .brand-link {
+    justify-content: center;
+}
+
+.sidebar-collapse .user-info-container {
+    justify-content: center;
 }
 
 .sidebar-collapse .nav-sidebar .nav-link .nav-icon {
     margin: 0 auto;
-    font-size: 1.25rem;
+    font-size: 1.3rem;
 }
 
 .sidebar-collapse .nav-header {
     display: none;
 }
 </style>
+
