@@ -1432,7 +1432,7 @@ if (empty($calendarEvents)) {
                                 <div class="card-header">
                                     <h3 class="card-title">
                                         <i class="fas fa-calendar-alt mr-2"></i>
-                                        Available Doctor Schedules
+                                        Available Schedules
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
