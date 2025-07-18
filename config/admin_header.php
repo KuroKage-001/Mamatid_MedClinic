@@ -21,15 +21,21 @@ validateSessionIntegrity();
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link menu-trigger" data-widget="pushmenu" href="#" role="button">
-                <i class="fas fa-bars"></i>
+                <div class="menu-trigger-content">
+                    <i class="fas fa-bars"></i>
+                </div>
             </a>
         </li>
     </ul>
 
     <!-- Brand -->
     <a href="<?php echo $base_path; ?>/admin_dashboard.php" class="navbar-brand">
-        <img src="<?php echo $base_path; ?>/dist/img/logo01.png" alt="MHC Logo" class="brand-image">
-        <span class="brand-text">Mamatid Health Center</span>
+        <div class="brand-container">
+            <div class="brand-icon-wrapper">
+                <img src="<?php echo $base_path; ?>/dist/img/logo01.png" alt="MHC Logo" class="brand-image">
+            </div>
+            <span class="brand-text">Mamatid Health Center</span>
+        </div>
     </a>
 
     <!-- Right navbar links -->
@@ -37,7 +43,9 @@ validateSessionIntegrity();
         <!-- Clock -->
         <li class="nav-item clock-container">
             <div class="clock-widget">
-                <i class="far fa-clock"></i>
+                <div class="clock-icon">
+                    <i class="far fa-clock"></i>
+                </div>
                 <div class="clock-info">
                     <div id="digital-clock"></div>
                     <div id="date-display"></div>
@@ -64,11 +72,14 @@ validateSessionIntegrity();
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dropdown-menu-dark">
                 <div class="user-header">
-                    <img src="<?php echo $base_path; ?>/system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/user_images/default_profile.jpg'">
-                    <div class="user-details">
-                        <h6><?php echo $_SESSION['display_name']; ?></h6>
-                        <span class="username">@<?php echo $_SESSION['user_name']; ?></span>
-                        <div class="role-badge role-<?php echo $_SESSION['role']; ?>"><?php echo getRoleDisplayName($_SESSION['role']); ?></div>
+                    <div class="user-header-bg"></div>
+                    <div class="user-header-content">
+                        <img src="<?php echo $base_path; ?>/system/user_images/<?php echo $_SESSION['profile_picture']; ?>?v=<?php echo $_SESSION['profile_picture_timestamp'] ?? time(); ?>" class="profile-img" alt="User Image" onerror="this.src='<?php echo $base_path; ?>/system/user_images/default_profile.jpg'">
+                        <div class="user-details">
+                            <h6><?php echo $_SESSION['display_name']; ?></h6>
+                            <span class="username">@<?php echo $_SESSION['user_name']; ?></span>
+                            <div class="role-badge role-<?php echo $_SESSION['role']; ?>"><?php echo getRoleDisplayName($_SESSION['role']); ?></div>
+                        </div>
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
@@ -123,6 +134,7 @@ validateSessionIntegrity();
                     </div>
                     <div class="header-text">
                         <h5 class="modal-title" id="switchAccountModalLabel">Switch Account</h5>
+                        <p class="subtitle">Switch to a different user account</p>
                     </div>
                 </div>
                 <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">
@@ -196,22 +208,49 @@ validateSessionIntegrity();
 /* Header Variables */
 :root {
     --header-bg: #1a1a2d;
-    --header-hover: #2d2d44;
+    --header-light: #262638;
+    --header-hover: rgba(54, 153, 255, 0.1);
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: #B5B5C3;
     --accent-color: #3699FF;
+    --accent-light: #4dabff;
+    --accent-dark: #187DE4;
     --danger-color: #F64E60;
+    --success-color: #1BC5BD;
     --dropdown-bg: #2D2D3A;
+    --border-color: rgba(255, 255, 255, 0.08);
     --transition-speed: 0.3s;
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.2);
+    --glow-effect: 0 0 20px rgba(54, 153, 255, 0.3);
 }
 
 /* Main Header Styling */
 .main-header {
-    background: var(--header-bg);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, var(--header-bg) 0%, var(--header-light) 100%);
+    border-bottom: 1px solid var(--border-color);
     padding: 0.5rem 1rem;
-    height: 60px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: 70px;
+    box-shadow: var(--shadow-heavy);
+    position: relative;
+    z-index: 1000;
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(54, 153, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(54, 153, 255, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Menu Trigger Button */
@@ -223,15 +262,6 @@ validateSessionIntegrity();
     border: 1px solid transparent;
     position: relative;
     overflow: hidden;
-}
-
-.menu-trigger-content {
-    padding: 0.75rem;
-    border-radius: 12px;
-    transition: all var(--transition-speed) var(--transition-smooth);
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-}
 
 .menu-trigger:hover .menu-trigger-content {
     background: var(--header-hover);
@@ -241,7 +271,14 @@ validateSessionIntegrity();
 }
 
 .menu-trigger i {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    transition: all var(--transition-speed) var(--transition-smooth);
+}
+
+.menu-trigger:hover i {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px currentColor;
 }
 
 /* Brand Styling */
@@ -277,26 +314,17 @@ validateSessionIntegrity();
 }
 
 .brand-image {
-    height: 35px;
+    height: 28px;
     width: auto;
-    margin-right: 0.75rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .brand-text {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: var(--text-primary);
     letter-spacing: 0.5px;
-}
-
-/* Notification Badge */
-.badge-primary {
-    background: var(--accent-color);
-    font-size: 0.7rem;
-    padding: 0.25em 0.5em;
-    position: absolute;
-    top: 5px;
-    right: 3px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .clock-widget {
@@ -318,29 +346,43 @@ validateSessionIntegrity();
     transform: translateY(-1px);
 }
 
-.dropdown-item {
+.clock-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--glow-effect);
+}
+
+.clock-icon i {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.clock-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#digital-clock {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
     color: var(--text-primary);
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-    transition: all var(--transition-speed);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.dropdown-item:hover {
-    background: var(--header-hover);
-    color: var(--text-primary);
-}
-
-.dropdown-item i {
-    width: 20px;
-    text-align: center;
-}
-
-.dropdown-item.text-danger {
-    color: var(--danger-color) !important;
-}
-
-.dropdown-item.text-danger:hover {
-    background: rgba(246, 78, 96, 0.1);
+#date-display {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    margin-top: 2px;
+    font-weight: 500;
 }
 
 /* User Menu */
@@ -361,121 +403,238 @@ validateSessionIntegrity();
     border-color: rgba(54, 153, 255, 0.3);
     box-shadow: var(--shadow-medium);
     transform: translateY(-1px);
-}
 
-/* Enhanced User Menu Styling */
-.user-panel {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
+.user-image {
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    transition: all var(--transition-speed) var(--transition-smooth);
+    box-shadow: var(--shadow-medium);
 }
 
-.user-avatar {
-    position: relative;
-    flex-shrink: 0;
+.user-menu .nav-link:hover .user-image {
+    transform: scale(1.05);
+    border-color: rgba(54, 153, 255, 0.5);
+    box-shadow: var(--glow-effect);
 }
 
 .status-indicator {
     position: absolute;
     bottom: -2px;
     right: -2px;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     border: 2px solid var(--header-bg);
+    animation: pulse-status 2s infinite;
+}
+
+@keyframes pulse-status {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .status-online {
-    background-color: #1BC5BD;
+    background-color: var(--success-color);
+    box-shadow: 0 0 10px rgba(27, 197, 189, 0.5);
 }
 
 .status-offline {
-    background-color: #B5B5C3;
+    background-color: var(--danger-color);
+    box-shadow: 0 0 10px rgba(246, 78, 96, 0.5);
 }
 
 .user-info {
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+    min-width: 0;
 }
 
 .user-name {
     font-weight: 600;
     color: var(--text-primary);
     font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-role {
     color: var(--text-secondary);
     font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdown-arrow {
     font-size: 0.7rem;
-    margin-left: 5px;
     color: var(--text-secondary);
     transition: transform var(--transition-speed);
+    margin-left: auto;
 }
 
 .user-menu .nav-link[aria-expanded="true"] .dropdown-arrow {
     transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
+/* Switch Account Button */
+.switch-account-btn {
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.15) 0%, rgba(54, 153, 255, 0.08) 100%);
+    border: 1px solid rgba(54, 153, 255, 0.3);
+    color: var(--accent-color);
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: all var(--transition-speed) var(--transition-smooth);
+    font-size: 0.9rem;
+    backdrop-filter: blur(5px);
+}
+
+.switch-account-btn:hover {
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.25) 0%, rgba(54, 153, 255, 0.15) 100%);
+    border-color: rgba(54, 153, 255, 0.5);
+    color: var(--accent-light);
+    transform: scale(1.1);
+    box-shadow: var(--glow-effect);
+}
+
+.switch-account-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.3);
+}
+
+/* Dropdown Menus */
+.dropdown-menu-dark {
+    background: var(--dropdown-bg);
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-heavy);
+    padding: 0;
+    margin-top: 0.75rem;
+    min-width: 260px;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--border-color);
+    margin: 0.5rem 0;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    transition: all var(--transition-speed) var(--transition-smooth);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.15) 0%, rgba(54, 153, 255, 0.08) 100%);
+    color: var(--text-primary);
+    transform: translateX(4px);
+}
+
+.dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: var(--accent-color);
+    transition: all var(--transition-speed);
+}
+
+.dropdown-item:hover i {
+    transform: scale(1.1);
+    text-shadow: 0 0 10px currentColor;
 }
 
 /* User Dropdown Header */
 .user-header {
-    padding: 1.25rem;
+    position: relative;
+    padding: 1.5rem 1.25rem;
     text-align: center;
-    background: linear-gradient(135deg, rgba(26, 26, 45, 0.5), rgba(45, 45, 68, 0.5));
-    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+.user-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.1) 0%, rgba(105, 147, 255, 0.05) 100%);
+    z-index: 0;
+}
+
+.user-header-content {
+    position: relative;
+    z-index: 1;
 }
 
 .profile-img {
     width: 70px;
     height: 70px;
-    border-radius: 50%;
+    border-radius: 16px;
     object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-heavy);
+    transition: transform var(--transition-speed);
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
 }
 
 .user-details h6 {
-    margin: 5px 0;
-    font-weight: 600;
+    margin: 8px 0 4px 0;
+    font-weight: 700;
     color: var(--text-primary);
+    font-size: 1.1rem;
 }
 
 .username {
     display: block;
     color: var(--text-secondary);
     font-size: 0.85rem;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
 .role-badge {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 15px;
+    padding: 6px 16px;
+    border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 500;
-    margin-top: 5px;
+    font-weight: 600;
+    margin-top: 8px;
+    border: 1px solid;
+    backdrop-filter: blur(10px);
 }
 
 .role-admin {
-    background-color: rgba(137, 80, 252, 0.15);
+    background: linear-gradient(135deg, rgba(137, 80, 252, 0.2) 0%, rgba(137, 80, 252, 0.1) 100%);
     color: #8950FC;
+    border-color: rgba(137, 80, 252, 0.3);
 }
 
 .role-doctor {
-    background-color: rgba(255, 168, 0, 0.15);
+    background: linear-gradient(135deg, rgba(255, 168, 0, 0.2) 0%, rgba(255, 168, 0, 0.1) 100%);
     color: #FFA800;
+    border-color: rgba(255, 168, 0, 0.3);
 }
 
 .role-health_worker {
-    background-color: rgba(54, 153, 255, 0.15);
-    color: #3699FF;
+    background: linear-gradient(135deg, rgba(54, 153, 255, 0.2) 0%, rgba(54, 153, 255, 0.1) 100%);
+    color: var(--accent-color);
+    border-color: rgba(54, 153, 255, 0.3);
 }
 
 /* Dropdown Body and Footer */
@@ -484,49 +643,27 @@ validateSessionIntegrity();
 }
 
 .dropdown-footer {
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.25rem;
 }
 
 .btn-danger {
     background: linear-gradient(135deg, var(--danger-color) 0%, #F1416C 100%);
     border: none;
-    font-weight: 500;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: all var(--transition-speed);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    transition: all var(--transition-speed) var(--transition-smooth);
+    box-shadow: var(--shadow-medium);
 }
 
 .btn-danger:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(246, 78, 96, 0.3);
-}
-
-/* Switch Account Button */
-.switch-account-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    padding: 6px 8px;
-    margin-left: 8px;
-    border-radius: 6px;
-    transition: all var(--transition-speed);
-    font-size: 0.9rem;
-}
-
-.switch-account-btn:hover {
-    background: var(--header-hover);
-    color: var(--accent-color);
-    transform: scale(1.1);
-}
-
-.switch-account-btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(54, 153, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(246, 78, 96, 0.4);
 }
 
 /* Switch Account Modal Styling */
 .switch-account-dialog {
-    max-width: 420px;
+    max-width: 450px;
     margin: 1.75rem auto;
 }
 
@@ -534,37 +671,39 @@ validateSessionIntegrity();
     background: linear-gradient(135deg, #2D2D3A 0%, #1a1a2d 100%);
     border: none;
     border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-heavy);
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .switch-account-header {
     background: linear-gradient(135deg, rgba(54, 153, 255, 0.1) 0%, rgba(105, 147, 255, 0.05) 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem 2rem 1.5rem 2rem;
     position: relative;
     color: #ffffff;
 }
 
 .header-content {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
 .switch-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--accent-color) 0%, #6993FF 100%);
-    border-radius: 15px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 16px;
-    box-shadow: 0 8px 20px rgba(54, 153, 255, 0.3);
+    box-shadow: var(--glow-effect);
+    flex-shrink: 0;
 }
 
 .switch-icon i {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: white;
 }
 
@@ -574,88 +713,100 @@ validateSessionIntegrity();
 
 .header-text h5,
 .modal-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+    margin: 0 0 4px 0;
+    font-size: 1.6rem;
+    font-weight: 700;
     color: #ffffff !important;
     line-height: 1.2;
 }
 
 .subtitle {
-    margin: 4px 0 0 0;
+    margin: 0;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 .close-btn {
-    background: none;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: var(--text-secondary);
-    padding: 8px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 10px;
     transition: all var(--transition-speed);
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 1.5rem;
+    right: 1.5rem;
+    backdrop-filter: blur(10px);
 }
 
 .close-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
     color: var(--text-primary);
+    transform: scale(1.1);
 }
 
 .switch-account-body {
-    padding: 28px;
+    padding: 2rem;
 }
 
 .current-user {
     display: flex;
     align-items: center;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    margin-bottom: 24px;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    border-radius: 16px;
+    margin-bottom: 2rem;
     position: relative;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
 }
 
 .current-user-img {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
     object-fit: cover;
-    margin-right: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    margin-right: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-medium);
 }
 
 .current-user-info {
     flex: 1;
+    min-width: 0;
 }
 
 .current-name {
     display: block;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1.3;
+    margin-bottom: 2px;
 }
 
 .current-username {
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .current-badge {
-    background: linear-gradient(135deg, #1BC5BD 0%, #0BB7B0 100%);
+    background: linear-gradient(135deg, var(--success-color) 0%, #0BB7B0 100%);
     color: white;
-    padding: 4px 12px;
+    padding: 6px 16px;
     border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(27, 197, 189, 0.3);
 }
 
 .switch-divider {
     text-align: center;
-    margin: 24px 0;
+    margin: 2rem 0;
     position: relative;
 }
 
@@ -666,57 +817,63 @@ validateSessionIntegrity();
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, transparent 0%, var(--border-color) 50%, transparent 100%);
 }
 
 .switch-divider span {
     background: #2D2D3A;
     color: var(--text-secondary);
-    padding: 0 16px;
-    font-size: 0.9rem;
-    font-weight: 500;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
 }
 
 .form-label {
     display: flex;
     align-items: center;
     color: var(--text-primary);
-    font-weight: 500;
-    margin-bottom: 8px;
+    font-weight: 600;
+    margin-bottom: 10px;
     font-size: 0.95rem;
+    gap: 0.5rem;
 }
 
 .form-label i {
-    margin-right: 8px;
-    width: 16px;
+    width: 18px;
     color: var(--accent-color);
+    font-size: 1rem;
 }
 
 .switch-input {
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
     color: #ffffff !important;
-    padding: 14px 16px;
+    padding: 16px 18px;
     font-size: 1rem;
-    transition: all var(--transition-speed);
+    transition: all var(--transition-speed) var(--transition-smooth);
     width: 100%;
+    backdrop-filter: blur(5px);
+    font-weight: 500;
 }
 
 .switch-input:focus {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.12);
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.2);
+    box-shadow: 0 0 0 4px rgba(54, 153, 255, 0.15);
     outline: none;
     color: #ffffff !important;
 }
 
 .switch-input::placeholder {
     color: var(--text-secondary);
+    font-weight: 400;
 }
 
 .password-input-group {
@@ -725,27 +882,29 @@ validateSessionIntegrity();
 
 .password-toggle {
     position: absolute;
-    right: 12px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
-    background: none;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: var(--text-secondary);
-    padding: 8px;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: 8px;
     transition: all var(--transition-speed);
     cursor: pointer;
+    backdrop-filter: blur(5px);
 }
 
 .password-toggle:hover {
     color: var(--accent-color);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(54, 153, 255, 0.15);
+    transform: translateY(-50%) scale(1.05);
 }
 
 .save-login-option {
     display: flex;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 1.5rem;
 }
 
 .save-checkbox {
@@ -759,24 +918,27 @@ validateSessionIntegrity();
     user-select: none;
     color: var(--text-primary);
     font-size: 0.95rem;
+    font-weight: 500;
+    gap: 0.75rem;
 }
 
 .checkmark {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    margin-right: 12px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition-speed);
-    background: rgba(255, 255, 255, 0.05);
+    transition: all var(--transition-speed) var(--transition-smooth);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(5px);
 }
 
 .save-checkbox:checked + .save-label .checkmark {
-    background: linear-gradient(135deg, var(--accent-color) 0%, #6993FF 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
     border-color: var(--accent-color);
+    box-shadow: var(--glow-effect);
 }
 
 .checkmark i {
@@ -792,42 +954,45 @@ validateSessionIntegrity();
 
 .switch-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 28px;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 .btn-cancel {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid var(--border-color);
     color: var(--text-primary);
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 500;
-    transition: all var(--transition-speed);
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    transition: all var(--transition-speed) var(--transition-smooth);
+    backdrop-filter: blur(5px);
 }
 
 .btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
     color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
 }
 
 .btn-switch {
     flex: 2;
-    background: linear-gradient(135deg, var(--accent-color) 0%, #6993FF 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
     border: none;
     color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all var(--transition-speed);
-    box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: all var(--transition-speed) var(--transition-smooth);
+    box-shadow: var(--glow-effect);
 }
 
 .btn-switch:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(54, 153, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(54, 153, 255, 0.5);
     color: white;
 }
 
@@ -846,11 +1011,29 @@ validateSessionIntegrity();
     }
     
     .brand-image {
-        height: 30px;
+        height: 26px;
     }
     
     .switch-account-btn {
         display: none;
+    }
+    
+    .clock-info {
+        display: none;
+    }
+    
+    .clock-widget {
+        padding: 0.75rem;
+        gap: 0;
+    }
+    
+    .clock-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .clock-icon i {
+        font-size: 1.1rem;
     }
     
     .switch-account-dialog {
@@ -859,11 +1042,11 @@ validateSessionIntegrity();
     }
     
     .switch-account-header {
-        padding: 20px;
+        padding: 1.5rem;
     }
     
     .switch-account-body {
-        padding: 20px;
+        padding: 1.5rem;
     }
     
     .switch-actions {
@@ -872,74 +1055,37 @@ validateSessionIntegrity();
     
     .btn-cancel, .btn-switch {
         flex: 1;
-      }
-}
-
-/* Clock Styling */
-.clock-container {
-    margin-right: 1.5rem;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-top: 0.5rem;
-}
-
-.clock-widget {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    border-radius: 8px;
-    color: var(--text-primary);
-    height: 40px;
-}
-
-.clock-widget i {
-    font-size: 1.2rem;
-    margin-right: 0.75rem;
-    color: var(--accent-color);
-}
-
-.clock-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-#digital-clock {
-    font-size: 1.3rem;
-    font-weight: 600;
-    line-height: 1.2;
-    white-space: nowrap;
-    color: var(--text-primary);
-}
-
-#date-display {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    margin-top: 2px;
-    text-align: center;
-}
-
-@media (max-width: 768px) {
-    .clock-container {
-        margin-right: 0.75rem;
-        padding-top: 0.25rem;
     }
-    
-    .clock-widget {
-        padding: 0.5rem;
-        height: 40px;
+}
+
+/* Enhanced animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-    
-    .clock-info {
-        display: none;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    .clock-widget i {
-        margin-right: 0;
-        font-size: 1.4rem;
-    }
+}
+
+.dropdown-menu-dark {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.dropdown-item:nth-child(1) { animation-delay: 0.1s; }
+.dropdown-item:nth-child(2) { animation-delay: 0.15s; }
+.dropdown-item:nth-child(3) { animation-delay: 0.2s; }
+.dropdown-item:nth-child(4) { animation-delay: 0.25s; }
+.dropdown-item:nth-child(5) { animation-delay: 0.3s; }
+
+/* Focus states for accessibility */
+.menu-trigger:focus,
+.user-menu .nav-link:focus,
+.dropdown-item:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }
 </style>
 
@@ -1242,4 +1388,4 @@ function showSwitchAccountToast(type, message) {
 $(document).ready(function() {
     $('[title]').tooltip();
 });
-</script> 
+</script>
