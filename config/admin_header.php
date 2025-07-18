@@ -262,15 +262,6 @@ validateSessionIntegrity();
     border: 1px solid transparent;
     position: relative;
     overflow: hidden;
-}
-
-.menu-trigger-content {
-    padding: 0.75rem;
-    border-radius: 12px;
-    transition: all var(--transition-speed) var(--transition-smooth);
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-}
 
 .menu-trigger:hover .menu-trigger-content {
     background: var(--header-hover);
@@ -334,14 +325,6 @@ validateSessionIntegrity();
     color: var(--text-primary);
     letter-spacing: 0.5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Clock Styling */
-.clock-container {
-    margin-right: 1.5rem;
-    display: flex;
-    align-items: center;
-    height: 100%;
 }
 
 .clock-widget {
@@ -420,12 +403,6 @@ validateSessionIntegrity();
     border-color: rgba(54, 153, 255, 0.3);
     box-shadow: var(--shadow-medium);
     transform: translateY(-1px);
-}
-
-.user-avatar {
-    position: relative;
-    flex-shrink: 0;
-}
 
 .user-image {
     width: 40px;

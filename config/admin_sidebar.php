@@ -435,6 +435,13 @@ $role_display_name = getRoleDisplayName($user_role);
     margin-bottom: 0.5rem;
 }
 
+/* Remove all backgrounds when collapsed */
+.sidebar-collapse .user-panel {
+    padding: 1rem 0 !important;
+    border-bottom: none !important;
+    background: transparent !important;
+}
+
 .user-info-container {
     display: flex;
     align-items: center;
